@@ -523,27 +523,18 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ],
                             )?;
                             ctx.next()?;
-                            'b1: {
-                                let subject1 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("N-no, nothing.:I want to take a lesson.")],
-                                )?);
-                                let mut matched1 = false;
-                                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
+                                )? {
+                                1 => {
                                     ctx.lines_as(l_name_s.clone(), args!["Hm? That's strange."])?;
                                     ctx.call(Function::Emotion, vec![ctx.constant("ET_SWEAT")?])?;
                                     ctx.lines(args!["You didn't want to take", "the trials again, did you?"])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
+                                2 => {
                                     ctx.lines_as(
                                         l_name_s.clone(),
                                         args![
@@ -570,6 +561,7 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         } else {
                             if ctx.var("guildrelay_q").get()? == 1 {
@@ -942,18 +934,11 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ],
                                         )?;
                                         ctx.next()?;
-                                        'b2: {
-                                            let subject2 = Val::from(runtime::select_values(
+                                        match runtime::select_values(
                                                 ctx,
                                                 &[Val::from("I want to take the test.:Let me think about it.")],
-                                            )?);
-                                            let mut matched2 = false;
-                                            let no_case2 =
-                                                !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
+                                            )? {
+                                            1 => {
                                                 ctx.lines_as(
                                                     l_name_s.clone(),
                                                     args![
@@ -1015,10 +1000,7 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
+                                            2 => {
                                                 ctx.lines_as(
                                                     l_name_s.clone(),
                                                     args![
@@ -1033,6 +1015,7 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
+                                            _ => {}
                                         }
                                     }
                                 }
@@ -1847,17 +1830,11 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.next()?;
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("No, not really...:I was invited by the guild master.")],
-                )?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         l_name_s.clone(),
                         args![
@@ -1874,10 +1851,7 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                2 => {
                     ctx.lines_as(
                         l_name_s.clone(),
                         args![
@@ -1891,6 +1865,7 @@ fn relaydummy1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         }
     }
@@ -2002,69 +1977,52 @@ fn relaydummy2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "^FF000030 Tongues^000000,",
-                                "^FF000030 Dark Masks^000000, and",
-                                "^FF000030 Shoulder Protectors^000000.",
-                                "That shouldn't be too",
-                                "hard now, right?"
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7234), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(2))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "^FF000030 Worn Out Pages^000000,",
-                                "^FF000030 Round Shells^000000, and",
-                                "^FF000030 Mole Whiskers^000000.",
-                                "That shouldn't be too",
-                                "hard now, right?"
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7234), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(3))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "^FF000030 Frills^000000,",
-                                "^FF000030 Sharp Papers^000000, and",
-                                "^FF000030 Elder Pixie's Moustaches^000000.",
-                                "That shouldn't be too",
-                                "hard now, right?"
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7234), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(89))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                if subject1 == 1 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^FF000030 Tongues^000000,",
+                            "^FF000030 Dark Masks^000000, and",
+                            "^FF000030 Shoulder Protectors^000000.",
+                            "That shouldn't be too",
+                            "hard now, right?"
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7234), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(2))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject1 == 2 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^FF000030 Worn Out Pages^000000,",
+                            "^FF000030 Round Shells^000000, and",
+                            "^FF000030 Mole Whiskers^000000.",
+                            "That shouldn't be too",
+                            "hard now, right?"
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7234), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(3))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject1 == 3 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^FF000030 Frills^000000,",
+                            "^FF000030 Sharp Papers^000000, and",
+                            "^FF000030 Elder Pixie's Moustaches^000000.",
+                            "That shouldn't be too",
+                            "hard now, right?"
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7234), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(89))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if (((ctx.call(Function::CountItem, vec![Val::from(1015)])?.number()? > 29
@@ -2486,14 +2444,8 @@ fn relaydummy2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Donate Falcon:No way!")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                match runtime::select_values(ctx, &[Val::from("Donate Falcon:No way!")])? {
+                    1 => {
                         if ctx.call(Function::CheckFalcon, vec![])?.is_true() {
                             ctx.lines_as(
                                 l_name_s.clone(),
@@ -2537,10 +2489,7 @@ fn relaydummy2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             l_name_s.clone(),
                             args![
@@ -2555,6 +2504,7 @@ fn relaydummy2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
             if (ctx.var("guildrelay_q").get()? == 88 && ctx.call(Function::CountItem, vec![Val::from(7235)])?.number()? > 0) {
@@ -3053,69 +3003,49 @@ fn relaydummy3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "^8C171730 Burning Hearts^000000,",
-                                "^8C171730 Wolf Claws^000000, and",
-                                "^8C171730 Leopard Claws^000000.",
-                                "You might want to write",
-                                "these down so you don't",
-                                "forget. Good luck to you."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7241), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(10))?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "^8C171730 Soft Blades of Grass^000000,",
-                                "^8C171730 Wooden Hearts^000000, and",
-                                "^8C171730 Poisonous Toad Skins^000000.",
-                                "You might want to write",
-                                "these down so you don't",
-                                "forget. Good luck to you."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7241), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(11))?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "^8C171730 Antelope Horns^000000,",
-                                "^8C171730 Honey Pots^000000, and",
-                                "^8C171730 Porcupine Quills^000000.",
-                                "You might want to write",
-                                "these down so you don't",
-                                "forget. Good luck to you."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7241), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(80))?;
-                        break 'b1;
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                if subject1 == 1 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^8C171730 Burning Hearts^000000,",
+                            "^8C171730 Wolf Claws^000000, and",
+                            "^8C171730 Leopard Claws^000000.",
+                            "You might want to write",
+                            "these down so you don't",
+                            "forget. Good luck to you."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7241), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(10))?;
+                } else if subject1 == 2 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^8C171730 Soft Blades of Grass^000000,",
+                            "^8C171730 Wooden Hearts^000000, and",
+                            "^8C171730 Poisonous Toad Skins^000000.",
+                            "You might want to write",
+                            "these down so you don't",
+                            "forget. Good luck to you."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7241), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(11))?;
+                } else if subject1 == 3 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "^8C171730 Antelope Horns^000000,",
+                            "^8C171730 Honey Pots^000000, and",
+                            "^8C171730 Porcupine Quills^000000.",
+                            "You might want to write",
+                            "these down so you don't",
+                            "forget. Good luck to you."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7241), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(80))?;
                 }
                 ctx.next()?;
                 ctx.lines_as(
@@ -3882,75 +3812,58 @@ fn guilddummy4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "My task for you is to ^FF0000form"
                     ],
                 )?;
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["a party with 6 members^000000.", "No more and no less."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "This is a strange test,",
-                                "but if you can do this, it",
-                                "will clearly demonstrate",
-                                "to me that your people",
-                                "skills are up to par."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7246), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(91))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["a party with 8 members^000000.", "No more and no less."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "This is a strange test,",
-                                "but if you can do this, it",
-                                "will clearly demonstrate",
-                                "to me that your people",
-                                "skills are up to par."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7246), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(92))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines(args!["a party with 10 members^000000.", "No more and no less."])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "This is a strange test,",
-                                "but if you can do this, it",
-                                "will clearly demonstrate",
-                                "to me that your people",
-                                "skills are up to par."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7246), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(93))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                if subject1 == 1 {
+                    ctx.lines(args!["a party with 6 members^000000.", "No more and no less."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "This is a strange test,",
+                            "but if you can do this, it",
+                            "will clearly demonstrate",
+                            "to me that your people",
+                            "skills are up to par."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7246), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(91))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject1 == 2 {
+                    ctx.lines(args!["a party with 8 members^000000.", "No more and no less."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "This is a strange test,",
+                            "but if you can do this, it",
+                            "will clearly demonstrate",
+                            "to me that your people",
+                            "skills are up to par."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7246), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(92))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject1 == 3 {
+                    ctx.lines(args!["a party with 10 members^000000.", "No more and no less."])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "This is a strange test,",
+                            "but if you can do this, it",
+                            "will clearly demonstrate",
+                            "to me that your people",
+                            "skills are up to par."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7246), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(93))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             runtime::party_members(ctx, ctx.call(Function::GetCharacterId, vec![Val::from(1)])?, Val::from(0))?;
@@ -4486,72 +4399,55 @@ fn guilddummy4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "Please bring",
-                                "^FF000030 Dokebi Horns^000000,",
-                                "^FF000030 Fish Tails^000000, and",
-                                "^FF000030 Celestial Robes^000000.",
-                                "I shall be waiting",
-                                "for you right here."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7250), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(23))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "Please bring",
-                                "^FF000030 Rainbow Shells^000000,",
-                                "^FF000030 Elastic Bands^000000, and",
-                                "^FF000030 Horrendous Hairs^000000.",
-                                "I shall be waiting",
-                                "for you right here."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7250), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(24))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as(
-                            l_name_s.clone(),
-                            args![
-                                "Please bring",
-                                "^FF000030 Worn-out Kimonos^000000,",
-                                "^FF000030 Anolian Skins^000000, and",
-                                "^FF000030 PecoPeco Feathers^000000.",
-                                "I shall be waiting",
-                                "for you right here."
-                            ],
-                        )?;
-                        ctx.call(Function::DelItem, vec![Val::from(7250), Val::from(1)])?;
-                        ctx.var("guildrelay_q").set(Val::from(94))?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                if subject2 == 1 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Please bring",
+                            "^FF000030 Dokebi Horns^000000,",
+                            "^FF000030 Fish Tails^000000, and",
+                            "^FF000030 Celestial Robes^000000.",
+                            "I shall be waiting",
+                            "for you right here."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7250), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(23))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject2 == 2 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Please bring",
+                            "^FF000030 Rainbow Shells^000000,",
+                            "^FF000030 Elastic Bands^000000, and",
+                            "^FF000030 Horrendous Hairs^000000.",
+                            "I shall be waiting",
+                            "for you right here."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7250), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(24))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject2 == 3 {
+                    ctx.lines_as(
+                        l_name_s.clone(),
+                        args![
+                            "Please bring",
+                            "^FF000030 Worn-out Kimonos^000000,",
+                            "^FF000030 Anolian Skins^000000, and",
+                            "^FF000030 PecoPeco Feathers^000000.",
+                            "I shall be waiting",
+                            "for you right here."
+                        ],
+                    )?;
+                    ctx.call(Function::DelItem, vec![Val::from(7250), Val::from(1)])?;
+                    ctx.var("guildrelay_q").set(Val::from(94))?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
             if (((ctx.call(Function::CountItem, vec![Val::from(7165)])?.number()? > 29

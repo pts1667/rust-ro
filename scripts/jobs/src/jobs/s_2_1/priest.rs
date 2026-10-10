@@ -44,21 +44,13 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.next()?;
             ctx.lines_as("Bishop Paul", args!["I'm pleased to see that you are continuing to lead the children of God on the right path. Is there anything I can help you with today?"])?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "How is your health?:I want to help this Acolyte.:Father, I need your help.",
                     )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as("Bishop Paul", args!["Thank you for your concern. I'm doing fine and am in good health. Please give my regards to your brothers and sisters."])?;
                     ctx.next()?;
                     ctx.lines_as(
@@ -68,10 +60,7 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as(
                         "Bishop Paul",
                         args!["Ah, that's a good idea. Helping young Acolytes should also be one of a Priest's priorities."],
@@ -117,10 +106,7 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.lines_as(
                         "Bishop Paul",
                         args!["You must be strong. Have faith, as you are loved by God. I pray the wounds of the body are healed soon..."],
@@ -139,6 +125,7 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
             ctx.lines_as("Bishop Paul", args!["May God be"])?;
@@ -150,47 +137,31 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.next()?;
             ctx.lines_as("Bishop Paul", args!["You are in", "the Sanctuary.", "What brings you here?"])?;
             ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("I want to be an Acolyte.:I want to be a Priest.:Nothing, really.")],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         "Bishop Paul",
                         args!["Oh I see...", "If you wish to become an Acolyte, please visit the other room."],
                     )?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                2 => {
                     ctx.lines_as(
                         "Bishop Paul",
                         args![
                             "Oh I see. However, you must first become an Acolyte before becoming a Priest. Please visit the other room."
                         ],
                     )?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                3 => {
                     ctx.lines_as(
                         "Bishop Paul",
                         args!["Please make yourself at home. On Earth, nowhere is safer than this Sanctuary."],
                     )?;
-                    break 'b2;
                 }
+                _ => {}
             }
             ctx.next()?;
             ctx.lines_as("Bishop Paul", args!["May God bless you."])?;
@@ -206,17 +177,11 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.next()?;
             ctx.lines_as("Bishop Paul", args!["What brings you here", "to Prontera Sanctuary?"])?;
             ctx.next()?;
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("Information about Priests.:Nothing.")],
-                )?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         "Bishop Paul",
                         args!["Priests have the authority to perform and administer religious rites."],
@@ -247,19 +212,15 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.next()?;
                     ctx.lines_as("Bishop Paul", args!["I hope I explained enough of the class. Why don't you go outside and talk to some of the other Priests if you want to learn more about our way of life?"])?;
                     ctx.next()?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                2 => {
                     ctx.lines_as(
                         "Bishop Paul",
                         args!["Please make yourself at home. Nowhere on Earth is safer than the Prontera Sanctuary."],
                     )?;
                     ctx.next()?;
-                    break 'b3;
                 }
+                _ => {}
             }
             ctx.lines_as("Bishop Paul", args!["Well...", "May God", "bless you."])?;
             ctx.close_window()?;
@@ -275,17 +236,11 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         }
         ctx.lines(args!["What brings", "you to me?"])?;
         ctx.next()?;
-        'b4: {
-            let subject4 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("I want to be a Priest.:How are you, Father?")],
-            )?);
-            let mut matched4 = false;
-            let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                matched4 = true;
-            }
-            if matched4 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Bishop Paul",
                     args!["I see. So you wish to be a Priest. God will be delighted by your decision and will bless you."],
@@ -432,10 +387,7 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                matched4 = true;
-            }
-            if matched4 {
+            2 => {
                 ctx.lines_as(
                     "Bishop Paul",
                     args!["I see...", "I am doing fine", "and am in good health.", "Thank you for asking."],
@@ -455,6 +407,7 @@ fn high_bishop_prst_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         if ctx.var("priest_q").get()? == 1 {
@@ -773,17 +726,11 @@ fn sister_cecilia_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         }
         ctx.mes("May I ask what brings you here?")?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("I wish to become a Priest.:Nothing.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as("Sister Cecilia", args!["I see. You've devoted yourself to God. Many Acolytes wish to become Priests to continue on their personal journey towards holiness."])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -806,10 +753,7 @@ fn sister_cecilia_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Sister Cecilia",
                     args!["Make yourself at home. I insist that you recover and take a rest in this Sanctuary. May God bless you..."],
@@ -817,6 +761,7 @@ fn sister_cecilia_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         if ctx.var("priest_q").get()? == 1 {
@@ -1122,19 +1067,11 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                     ctx.next()?;
                     ctx.lines_as("Father Peter", args!["So...", "Are you gonna help him right now?"])?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Yes, I am.:Give me a minute.:I changed my mind.")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.lines_as(
                                 "Father Peter",
                                 args!["Go for it! As your Acolyte enters, the test will begin. Now, I will send you to the testing area."],
@@ -1143,10 +1080,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.call(Function::Warp, vec![Val::from("job_prist"), Val::from(24), Val::from(44)])?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(
                                 "Father Peter",
                                 args![
@@ -1158,10 +1092,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        3 => {
                             ctx.lines_as(
                                 "Father Peter",
                                 args!["Oh...?", "Then please,", "go ahead. God bless", "you, and take care!"],
@@ -1170,6 +1101,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
                 if ctx.var("priest_q").get()? == 5 {
@@ -1190,29 +1122,19 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                     ctx.next()?;
                     ctx.lines_as("Father Peter", args!["Anyway, let me give you a brief explanation of the spiritual training. Are you familiar with what the spiritual training is for Priests?"])?;
                     ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes, I do.:Sorry...")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                    match runtime::select_values(ctx, &[Val::from("Yes, I do.:Sorry...")])? {
+                        1 => {
                             ctx.lines_as("Father Peter", args!["Haha, I like you! But it never hurts to have too much information. The more well informed you are, the more easily you'll pass the test!"])?;
                             ctx.next()?;
-                            break 'b2;
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        2 => {
                             ctx.lines_as(
                                 "Father Peter",
                                 args!["Oh, no need to be sorry. I'm here to give you the information you need anyway. So, don't worry."],
                             )?;
                             ctx.next()?;
-                            break 'b2;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Father Peter", args!["In spiritual training, you will be defeating evil creatures. Creatures of the Undead and Demons are all evil. In choosing to serve darkness, they are our enemies!"])?;
                     ctx.next()?;
@@ -1230,19 +1152,11 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                         args!["If you are close to a Priest, you'd better ask him to assist you during this trial. Now, are you ready?"],
                     )?;
                     ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("I'm ready.:Please hold on.:I want to go back.")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        )? {
+                        1 => {
                             ctx.lines_as("Father Peter", args!["Now, let the spiritual training begin. It's simple. Just kill them all. Show no mercy to the creatures of darkness!"])?;
                             ctx.next()?;
                             ctx.lines_as("Father Peter", args!["Now...", "Go for it!"])?;
@@ -1256,10 +1170,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto#2::OnEnable")])?;
                             return Err(Stop::End);
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             ctx.var("priest_q").set(Val::from(6))?;
                             ctx.lines_as(
                                 "Father Peter",
@@ -1268,10 +1179,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             ctx.var("priest_q").set(Val::from(6))?;
                             ctx.lines_as("Father Peter", args!["What...?", "You wanna go back??"])?;
                             ctx.next()?;
@@ -1280,6 +1188,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else if ctx.var("priest_q").get()? == 6 {
                     ctx.lines(args![
@@ -1290,19 +1199,11 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                     ctx.next()?;
                     ctx.lines_as("Father Peter", args!["Are you ready then?"])?;
                     ctx.next()?;
-                    'b4: {
-                        let subject4 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("I'm ready.:Please hold on.:I want to go back.")],
-                        )?);
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                            && !subject4.loosely_equals(&Val::from(2))
-                            && !subject4.loosely_equals(&Val::from(3));
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        )? {
+                        1 => {
                             ctx.lines_as("Father Peter", args!["Now, let the spiritual training begin. For the glory of God, for peace on earth, and goodwill towards all men..."])?;
                             ctx.next()?;
                             ctx.lines_as("Father Peter", args!["Go...", "Kill those", "misbegotten creatures!"])?;
@@ -1316,10 +1217,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.call(Function::DoNpcEvent, vec![Val::from("Peter S. Alberto#2::OnEnable")])?;
                             return Err(Stop::End);
                         }
-                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        2 => {
                             ctx.lines_as(
                                 "Father Peter",
                                 args!["Hm? What is it you need?", "Well, no problem. You can", "afford to take your time."],
@@ -1327,10 +1225,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        3 => {
                             ctx.lines_as("Father Peter", args!["What...?", "You wanna go back??"])?;
                             ctx.next()?;
                             ctx.lines_as("Father Peter", args!["I understand. I suppose you have some important reason or business that you must attend to. Come back whenever you can."])?;
@@ -1338,6 +1233,7 @@ fn peter_s_alberto_run(ctx: &Ctx, mut step: PeterSAlbertoStep, args: Vec<Val>) -
                             ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(234), Val::from(318)])?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else {
                     ctx.mes("Go back!")?;

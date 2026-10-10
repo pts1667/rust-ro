@@ -83,21 +83,13 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                         ],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "To visit and learn about monks.:I wish to become a monk...:I'm tired and need to rest...",
                             )],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.lines_as(
                                 "Tohobu",
                                 args![
@@ -111,10 +103,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?)
                                 && ctx.var("JobLevel").get()?.number()? > 39)
                             {
@@ -168,10 +157,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                                 return Err(Stop::End);
                             }
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        3 => {
                             ctx.lines_as(
                                 "Tohobu",
                                 args![
@@ -195,6 +181,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else {
                     if (ctx.var("monk_q").get()? == 1 && ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?)) {
@@ -203,19 +190,11 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                             args!["What do you think? Did your visit reveal anything to your spirit?"],
                         )?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("No...:I wish to become a monk.:I need to rest...")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Tohobu",
                                     args![
@@ -229,10 +208,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?)
                                     && ctx.var("JobLevel").get()?.number()? > 39)
                                 {
@@ -286,10 +262,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                                     return Err(Stop::End);
                                 }
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            3 => {
                                 ctx.lines_as(
                                     "Tohobu",
                                     args![
@@ -313,6 +286,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if ctx.var("monk_q").get()? == 0 {
@@ -351,21 +325,13 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                             ],
                         )?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "To visit and learn about monks.:I wish to become a monk...:I'm tired and need to rest...",
                                 )],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Tohobu",
                                     args![
@@ -379,10 +345,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 if (ctx.var("BaseJob").get()?.loosely_equals(&ctx.constant("JOB_ACOLYTE")?)
                                     && ctx.var("JobLevel").get()?.number()? > 39)
                                 {
@@ -436,10 +399,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                                     return Err(Stop::End);
                                 }
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            3 => {
                                 ctx.lines_as(
                                     "Tohobu",
                                     args![
@@ -463,6 +423,7 @@ fn guarding_monk_mk_run(ctx: &Ctx, mut step: GuardingMonkMkStep, args: Vec<Val>)
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     } else if ctx.var("monk_q").get()? == 1 {
                         ctx.lines_as("Tohobu", args!["Listen carefully on your journey.", "There is much to learn."])?;
@@ -646,121 +607,77 @@ fn sensei_moohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         ctx.lines_as("Sensei Moohae", args!["Let us start with a simple task."])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(7)])?;
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4))
-                && !subject1.loosely_equals(&Val::from(5))
-                && !subject1.loosely_equals(&Val::from(6))
-                && !subject1.loosely_equals(&Val::from(7));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(938), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1055), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(10), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(511), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(20), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(3), false);
-                ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3017)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(942), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(20), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1002), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(510), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(3), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(4), false);
-                ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3018)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(905), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(30), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(909), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(955), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(10), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(5), false);
-                ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3019)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(943), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(935), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(20), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(912), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(6), false);
-                ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3020)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                matched1 = true;
-            }
-            if matched1 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(7053), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(509), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(10), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(508), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(10), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(7), false);
-                ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3021)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                matched1 = true;
-            }
-            if matched1 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(913), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(10), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(948), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(7033), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(20), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(8), false);
-                ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3022)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(7)) {
-                matched1 = true;
-            }
-            if matched1 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1027), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1025), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(20), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1042), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(10), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(9), false);
-                ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3023)])?;
-                break 'b1;
-            }
+        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(7)])?;
+        if subject1 == 1 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(938), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1055), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(10), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(511), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(20), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(3), false);
+            ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3017)])?;
+        } else if subject1 == 2 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(942), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(20), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1002), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(510), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(3), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(4), false);
+            ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3018)])?;
+        } else if subject1 == 3 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(905), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(30), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(909), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(955), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(10), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(5), false);
+            ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3019)])?;
+        } else if subject1 == 4 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(943), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(935), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(20), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(912), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(6), false);
+            ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3020)])?;
+        } else if subject1 == 5 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(7053), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(509), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(10), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(508), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(10), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(7), false);
+            ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3021)])?;
+        } else if subject1 == 6 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(913), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(10), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(948), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(7033), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(20), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(8), false);
+            ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3022)])?;
+        } else if subject1 == 7 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1027), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1025), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(20), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1042), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(10), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(9), false);
+            ctx.call(Function::ChangeQuest, vec![Val::from(3016), Val::from(3023)])?;
         }
         ctx.lines_as(
             "Sensei Moohae",
@@ -780,65 +697,21 @@ fn sensei_moohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("monk_q").set(runtime::local_get(&l_items, &Val::from(6), false))?;
         ctx.next()?;
         ctx.mes("[Sensei Moohae]")?;
-        'b2: {
-            let subject2 = runtime::local_get(&l_items, &Val::from(6), false);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(3))
-                && !subject2.loosely_equals(&Val::from(4))
-                && !subject2.loosely_equals(&Val::from(5))
-                && !subject2.loosely_equals(&Val::from(6))
-                && !subject2.loosely_equals(&Val::from(7))
-                && !subject2.loosely_equals(&Val::from(8))
-                && !subject2.loosely_equals(&Val::from(9));
-            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.mes("Why the face? This is a test of your abilities.")?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.mes("What's wrong? This is a test of your abilities.")?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.mes("You do understand don't you? This is a test of your abilities.")?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.mes("Don't look at me like that. This is a test of your abilities.")?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(7)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.mes("You don't seem concerned, this is a test of your abilities You should take this seriously.")?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(8)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.mes("It is a test of your abilities so make sure you acquire these on your own.")?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(9)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.mes("Don't be concerned, I believe you can do it. This is only to test your abilities.")?;
-                break 'b2;
-            }
+        let subject2 = runtime::local_get(&l_items, &Val::from(6), false);
+        if subject2 == 3 {
+            ctx.mes("Why the face? This is a test of your abilities.")?;
+        } else if subject2 == 4 {
+            ctx.mes("What's wrong? This is a test of your abilities.")?;
+        } else if subject2 == 5 {
+            ctx.mes("You do understand don't you? This is a test of your abilities.")?;
+        } else if subject2 == 6 {
+            ctx.mes("Don't look at me like that. This is a test of your abilities.")?;
+        } else if subject2 == 7 {
+            ctx.mes("You don't seem concerned, this is a test of your abilities You should take this seriously.")?;
+        } else if subject2 == 8 {
+            ctx.mes("It is a test of your abilities so make sure you acquire these on your own.")?;
+        } else if subject2 == 9 {
+            ctx.mes("Don't be concerned, I believe you can do it. This is only to test your abilities.")?;
         }
         ctx.next()?;
         ctx.lines_as(
@@ -1583,2779 +1456,1249 @@ fn touha_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.next()?;
         }
         if ctx.var("monk_q").get()? == 11 {
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "shall hold true:We monks:and will help protect others:through the teachings:In nomine Patris, et Filii:to what we believe:I seek the path:we learn through our lives.:et Spiritus Sancti.:of enlightenment.",
                     )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3))
-                    && !subject1.loosely_equals(&Val::from(4))
-                    && !subject1.loosely_equals(&Val::from(5))
-                    && !subject1.loosely_equals(&Val::from(6))
-                    && !subject1.loosely_equals(&Val::from(7))
-                    && !subject1.loosely_equals(&Val::from(8))
-                    && !subject1.loosely_equals(&Val::from(9))
-                    && !subject1.loosely_equals(&Val::from(10));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["shall hold true"])?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["We monks"])?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["and will help protect others"],
                     )?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                4 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["through the teachings"],
                     )?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                5 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["In nomine Patris, et Filii"],
                     )?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                6 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["to what we believe"],
                     )?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(7)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                7 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["I seek the path"])?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(8)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                8 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["we learn through our lives."],
                     )?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(9)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                9 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["et Spiritus Sancti."],
                     )?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(10)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                10 => {
                     ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["of enlightenment."])?;
-                    break 'b1;
                 }
+                _ => {}
             }
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "We monks:In nomine Patris, et Filii:I seek the path:shall hold true:of enlightenment.:and will help protect others:we learn through our lives.:through the teachings:to what we believe:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3))
-                    && !subject2.loosely_equals(&Val::from(4))
-                    && !subject2.loosely_equals(&Val::from(5))
-                    && !subject2.loosely_equals(&Val::from(6))
-                    && !subject2.loosely_equals(&Val::from(7))
-                    && !subject2.loosely_equals(&Val::from(8))
-                    && !subject2.loosely_equals(&Val::from(9))
-                    && !subject2.loosely_equals(&Val::from(10));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                )? {
+                1 => {
                     ctx.mes("We monks")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                2 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                3 => {
                     ctx.mes("I seek the path")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                4 => {
                     ctx.mes("shall hold true")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                5 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("of enlightenment.")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                6 => {
                     ctx.mes("and will help protect others")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(7)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                7 => {
                     ctx.mes("we learn through our lives.")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(8)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                8 => {
                     ctx.mes("through the teachings")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(9)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                9 => {
                     ctx.mes("to what we believe")?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(10)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b2;
                 }
+                _ => {}
             }
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "to what we believe:We monks:I seek the path:shall hold true:of enlightenment.:we learn through our lives.:In nomine Patris, et Filii:and will help protect others:through the teachings:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                    && !subject3.loosely_equals(&Val::from(2))
-                    && !subject3.loosely_equals(&Val::from(3))
-                    && !subject3.loosely_equals(&Val::from(4))
-                    && !subject3.loosely_equals(&Val::from(5))
-                    && !subject3.loosely_equals(&Val::from(6))
-                    && !subject3.loosely_equals(&Val::from(7))
-                    && !subject3.loosely_equals(&Val::from(8))
-                    && !subject3.loosely_equals(&Val::from(9))
-                    && !subject3.loosely_equals(&Val::from(10));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                )? {
+                1 => {
                     ctx.mes("to what we believe")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                2 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("We monks")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                3 => {
                     ctx.mes("I seek the path")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                4 => {
                     ctx.mes("shall hold true")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                5 => {
                     ctx.mes("of enlightenment.")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                6 => {
                     ctx.mes("we learn through our lives.")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(7)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                7 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(8)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                8 => {
                     ctx.mes("and will help protect others")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(9)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                9 => {
                     ctx.mes("through the teachings")?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(10)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b3;
                 }
+                _ => {}
             }
-            'b4: {
-                let subject4 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "shall hold true:I seek the path:We monks:In nomine Patris, et Filii:of enlightenment.:et Spiritus Sancti.:to what we believe:we learn through our lives.:and will help protect others:through the teachings",
                     )],
-                )?);
-                let mut matched4 = false;
-                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                    && !subject4.loosely_equals(&Val::from(2))
-                    && !subject4.loosely_equals(&Val::from(3))
-                    && !subject4.loosely_equals(&Val::from(4))
-                    && !subject4.loosely_equals(&Val::from(5))
-                    && !subject4.loosely_equals(&Val::from(6))
-                    && !subject4.loosely_equals(&Val::from(7))
-                    && !subject4.loosely_equals(&Val::from(8))
-                    && !subject4.loosely_equals(&Val::from(9))
-                    && !subject4.loosely_equals(&Val::from(10));
-                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                )? {
+                1 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("shall hold true")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                2 => {
                     ctx.mes("I seek the path")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                3 => {
                     ctx.mes("We monks")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                4 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                5 => {
                     ctx.mes("of enlightenment.")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                6 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(7)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                7 => {
                     ctx.mes("to what we believe")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(8)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                8 => {
                     ctx.mes("we learn through our lives.")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(9)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                9 => {
                     ctx.mes("and will help protect others")?;
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(10)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                10 => {
                     ctx.mes("through the teachings")?;
-                    break 'b4;
                 }
+                _ => {}
             }
-            'b5: {
-                let subject5 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "of enlightenment.:I seek the path:We monks:shall hold true:and will help protect others:through the teachings:we learn through our lives.:In nomine Patris, et Filii:to what we believe:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched5 = false;
-                let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                    && !subject5.loosely_equals(&Val::from(2))
-                    && !subject5.loosely_equals(&Val::from(3))
-                    && !subject5.loosely_equals(&Val::from(4))
-                    && !subject5.loosely_equals(&Val::from(5))
-                    && !subject5.loosely_equals(&Val::from(6))
-                    && !subject5.loosely_equals(&Val::from(7))
-                    && !subject5.loosely_equals(&Val::from(8))
-                    && !subject5.loosely_equals(&Val::from(9))
-                    && !subject5.loosely_equals(&Val::from(10));
-                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                )? {
+                1 => {
                     ctx.mes("of enlightenment.")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                2 => {
                     ctx.mes("I seek the path")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                3 => {
                     ctx.mes("We monks")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                4 => {
                     ctx.mes("shall hold true")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                5 => {
                     ctx.mes("and will help protect others")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                6 => {
                     ctx.mes("through the teachings")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(7)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                7 => {
                     ctx.mes("we learn through our lives.")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(8)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                8 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(9)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                9 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("to what we believe")?;
-                    break 'b5;
                 }
-                if !matched5 && subject5.loosely_equals(&Val::from(10)) {
-                    matched5 = true;
-                }
-                if matched5 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b5;
                 }
+                _ => {}
             }
-            'b6: {
-                let subject6 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "I seek the path:through the teachings:and will help protect others:of enlightenment.:shall hold true:et Spiritus Sancti.:In nomine Patris, et Filii:to what we believe:We monks:we learn through our lives.",
                     )],
-                )?);
-                let mut matched6 = false;
-                let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                    && !subject6.loosely_equals(&Val::from(2))
-                    && !subject6.loosely_equals(&Val::from(3))
-                    && !subject6.loosely_equals(&Val::from(4))
-                    && !subject6.loosely_equals(&Val::from(5))
-                    && !subject6.loosely_equals(&Val::from(6))
-                    && !subject6.loosely_equals(&Val::from(7))
-                    && !subject6.loosely_equals(&Val::from(8))
-                    && !subject6.loosely_equals(&Val::from(9))
-                    && !subject6.loosely_equals(&Val::from(10));
-                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                )? {
+                1 => {
                     ctx.mes("I seek the path")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                2 => {
                     ctx.mes("through the teachings")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                3 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("and will help protect others")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(4)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                4 => {
                     ctx.mes("of enlightenment.")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(5)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                5 => {
                     ctx.mes("shall hold true")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(6)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                6 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(7)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                7 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(8)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                8 => {
                     ctx.mes("to what we believe")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(9)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                9 => {
                     ctx.mes("We monks")?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(10)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                10 => {
                     ctx.mes("we learn through our lives.")?;
-                    break 'b6;
                 }
+                _ => {}
             }
-            'b7: {
-                let subject7 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "we learn through our lives.:In nomine Patris, et Filii:et Spiritus Sancti.:I seek the path:of enlightenment.:to what we believe:We monks:shall hold true:and will help protect others:through the teachings",
                     )],
-                )?);
-                let mut matched7 = false;
-                let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                    && !subject7.loosely_equals(&Val::from(2))
-                    && !subject7.loosely_equals(&Val::from(3))
-                    && !subject7.loosely_equals(&Val::from(4))
-                    && !subject7.loosely_equals(&Val::from(5))
-                    && !subject7.loosely_equals(&Val::from(6))
-                    && !subject7.loosely_equals(&Val::from(7))
-                    && !subject7.loosely_equals(&Val::from(8))
-                    && !subject7.loosely_equals(&Val::from(9))
-                    && !subject7.loosely_equals(&Val::from(10));
-                if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                )? {
+                1 => {
                     ctx.mes("we learn through our lives.")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                2 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                3 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                4 => {
                     ctx.mes("I seek the path")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(5)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                5 => {
                     ctx.mes("of enlightenment.")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(6)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                6 => {
                     ctx.mes("to what we believe")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(7)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                7 => {
                     ctx.mes("We monks")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(8)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                8 => {
                     ctx.mes("shall hold true")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(9)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                9 => {
                     ctx.mes("and will help protect others")?;
-                    break 'b7;
                 }
-                if !matched7 && subject7.loosely_equals(&Val::from(10)) {
-                    matched7 = true;
-                }
-                if matched7 {
+                10 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("through the teachings")?;
-                    break 'b7;
                 }
+                _ => {}
             }
-            'b8: {
-                let subject8 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "we learn through our lives.:In nomine Patris, et Filii:through the teachings:I seek the path:We monks:shall hold true:to what we believe:and will help protect others:of enlightenment.:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched8 = false;
-                let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                    && !subject8.loosely_equals(&Val::from(2))
-                    && !subject8.loosely_equals(&Val::from(3))
-                    && !subject8.loosely_equals(&Val::from(4))
-                    && !subject8.loosely_equals(&Val::from(5))
-                    && !subject8.loosely_equals(&Val::from(6))
-                    && !subject8.loosely_equals(&Val::from(7))
-                    && !subject8.loosely_equals(&Val::from(8))
-                    && !subject8.loosely_equals(&Val::from(9))
-                    && !subject8.loosely_equals(&Val::from(10));
-                if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                )? {
+                1 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("we learn through our lives.")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                2 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                3 => {
                     ctx.mes("through the teachings")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(4)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                4 => {
                     ctx.mes("I seek the path")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(5)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                5 => {
                     ctx.mes("We monks")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(6)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                6 => {
                     ctx.mes("shall hold true")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(7)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                7 => {
                     ctx.mes("to what we believe")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(8)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                8 => {
                     ctx.mes("and will help protect others")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(9)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                9 => {
                     ctx.mes("of enlightenment.")?;
-                    break 'b8;
                 }
-                if !matched8 && subject8.loosely_equals(&Val::from(10)) {
-                    matched8 = true;
-                }
-                if matched8 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b8;
                 }
+                _ => {}
             }
-            'b9: {
-                let subject9 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "I seek the path:of enlightenment.:We monks:shall hold true:to what we believe:et Spiritus Sancti.:and will help protect others:through the teachings:we learn through our lives.:In nomine Patris, et Filii",
                     )],
-                )?);
-                let mut matched9 = false;
-                let no_case9 = !subject9.loosely_equals(&Val::from(1))
-                    && !subject9.loosely_equals(&Val::from(2))
-                    && !subject9.loosely_equals(&Val::from(3))
-                    && !subject9.loosely_equals(&Val::from(4))
-                    && !subject9.loosely_equals(&Val::from(5))
-                    && !subject9.loosely_equals(&Val::from(6))
-                    && !subject9.loosely_equals(&Val::from(7))
-                    && !subject9.loosely_equals(&Val::from(8))
-                    && !subject9.loosely_equals(&Val::from(9))
-                    && !subject9.loosely_equals(&Val::from(10));
-                if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                )? {
+                1 => {
                     ctx.mes("I seek the path")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                2 => {
                     ctx.mes("of enlightenment.")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(3)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                3 => {
                     ctx.mes("We monks")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(4)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                4 => {
                     ctx.mes("shall hold true")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(5)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                5 => {
                     ctx.mes("to what we believe")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(6)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                6 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(7)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                7 => {
                     ctx.mes("and will help protect others")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(8)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                8 => {
                     ctx.mes("through the teachings")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(9)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                9 => {
                     ctx.mes("we learn through our lives.")?;
-                    break 'b9;
                 }
-                if !matched9 && subject9.loosely_equals(&Val::from(10)) {
-                    matched9 = true;
-                }
-                if matched9 {
+                10 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b9;
                 }
+                _ => {}
             }
-            'b10: {
-                let subject10 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "I seek the path:of enlightenment.:We monks:shall hold true:to what we believe:and will help protect others:through the teachings:we learn through our lives.:In nomine Patris, et Filii:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched10 = false;
-                let no_case10 = !subject10.loosely_equals(&Val::from(1))
-                    && !subject10.loosely_equals(&Val::from(2))
-                    && !subject10.loosely_equals(&Val::from(3))
-                    && !subject10.loosely_equals(&Val::from(4))
-                    && !subject10.loosely_equals(&Val::from(5))
-                    && !subject10.loosely_equals(&Val::from(6))
-                    && !subject10.loosely_equals(&Val::from(7))
-                    && !subject10.loosely_equals(&Val::from(8))
-                    && !subject10.loosely_equals(&Val::from(9))
-                    && !subject10.loosely_equals(&Val::from(10));
-                if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                )? {
+                1 => {
                     ctx.mes("I seek the path")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                2 => {
                     ctx.mes("of enlightenment.")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(3)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                3 => {
                     ctx.mes("We monks")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(4)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                4 => {
                     ctx.mes("shall hold true")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(5)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                5 => {
                     ctx.mes("to what we believe")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(6)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                6 => {
                     ctx.mes("and will help protect others")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(7)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                7 => {
                     ctx.mes("through the teachings")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(8)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                8 => {
                     ctx.mes("we learn through our lives.")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(9)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                9 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b10;
                 }
-                if !matched10 && subject10.loosely_equals(&Val::from(10)) {
-                    matched10 = true;
-                }
-                if matched10 {
+                10 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b10;
                 }
+                _ => {}
             }
         } else if ctx.var("monk_q").get()? == 12 {
-            'b11: {
-                let subject11 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "I will follow my path:veritas and aequitas.:to enlightenment and purity.:I commit myself to:I will protect my:victorious while I breathe.:brothers with my life.:Evil shall never be:In nomine Patris, et Filii:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched11 = false;
-                let no_case11 = !subject11.loosely_equals(&Val::from(1))
-                    && !subject11.loosely_equals(&Val::from(2))
-                    && !subject11.loosely_equals(&Val::from(3))
-                    && !subject11.loosely_equals(&Val::from(4))
-                    && !subject11.loosely_equals(&Val::from(5))
-                    && !subject11.loosely_equals(&Val::from(6))
-                    && !subject11.loosely_equals(&Val::from(7))
-                    && !subject11.loosely_equals(&Val::from(8))
-                    && !subject11.loosely_equals(&Val::from(9))
-                    && !subject11.loosely_equals(&Val::from(10));
-                if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["I will follow my path"],
                     )?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                2 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["veritas and aequitas."],
                     )?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(3)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                3 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["to enlightenment and purity."],
                     )?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(4)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                4 => {
                     ctx.lines(args![
                         ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
                     ])?;
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("I commit myself to")?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(5)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                5 => {
                     ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["I will protect my"])?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(6)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                6 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["victorious while I breathe."],
                     )?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(7)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                7 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["brothers with my life."],
                     )?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(8)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                8 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["Evil shall never be"],
                     )?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(9)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                9 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["In nomine Patris, et Filii"],
                     )?;
-                    break 'b11;
                 }
-                if !matched11 && subject11.loosely_equals(&Val::from(10)) {
-                    matched11 = true;
-                }
-                if matched11 {
+                10 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["et Spiritus Sancti."],
                     )?;
-                    break 'b11;
                 }
+                _ => {}
             }
-            'b12: {
-                let subject12 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "I will follow my path:I will protect my:brothers with my life.:to enlightenment and purity.:Evil shall never be:victorious while I breathe.:et Spiritus Sancti.:I commit myself to:veritas and aequitas.:In nomine Patris, et Filii",
                     )],
-                )?);
-                let mut matched12 = false;
-                let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                    && !subject12.loosely_equals(&Val::from(2))
-                    && !subject12.loosely_equals(&Val::from(3))
-                    && !subject12.loosely_equals(&Val::from(4))
-                    && !subject12.loosely_equals(&Val::from(5))
-                    && !subject12.loosely_equals(&Val::from(6))
-                    && !subject12.loosely_equals(&Val::from(7))
-                    && !subject12.loosely_equals(&Val::from(8))
-                    && !subject12.loosely_equals(&Val::from(9))
-                    && !subject12.loosely_equals(&Val::from(10));
-                if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                )? {
+                1 => {
                     ctx.mes("I will follow my path")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                2 => {
                     ctx.mes("I will protect my")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(3)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                3 => {
                     ctx.mes("brothers with my life.")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(4)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                4 => {
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(5)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                5 => {
                     ctx.mes("Evil shall never be")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(6)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                6 => {
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(7)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                7 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(8)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                8 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(9)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                9 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b12;
                 }
-                if !matched12 && subject12.loosely_equals(&Val::from(10)) {
-                    matched12 = true;
-                }
-                if matched12 {
+                10 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b12;
                 }
+                _ => {}
             }
-            'b13: {
-                let subject13 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "I will follow my path:veritas and aequitas.:I commit myself to:et Spiritus Sancti.:Evil shall never be:to enlightenment and purity.:In nomine Patris, et Filii:I will protect my:brothers with my life.:victorious while I breathe.",
                     )],
-                )?);
-                let mut matched13 = false;
-                let no_case13 = !subject13.loosely_equals(&Val::from(1))
-                    && !subject13.loosely_equals(&Val::from(2))
-                    && !subject13.loosely_equals(&Val::from(3))
-                    && !subject13.loosely_equals(&Val::from(4))
-                    && !subject13.loosely_equals(&Val::from(5))
-                    && !subject13.loosely_equals(&Val::from(6))
-                    && !subject13.loosely_equals(&Val::from(7))
-                    && !subject13.loosely_equals(&Val::from(8))
-                    && !subject13.loosely_equals(&Val::from(9))
-                    && !subject13.loosely_equals(&Val::from(10));
-                if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                )? {
+                1 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("I will follow my path")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                2 => {
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(3)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                3 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(4)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                4 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(5)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                5 => {
                     ctx.mes("Evil shall never be")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(6)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                6 => {
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(7)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                7 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(8)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                8 => {
                     ctx.mes("I will protect my")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(9)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                9 => {
                     ctx.mes("brothers with my life.")?;
-                    break 'b13;
                 }
-                if !matched13 && subject13.loosely_equals(&Val::from(10)) {
-                    matched13 = true;
-                }
-                if matched13 {
+                10 => {
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b13;
                 }
+                _ => {}
             }
-            'b14: {
-                let subject14 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "veritas and aequitas.:Evil shall never be:I will follow my path:I will protect my:victorious while I breathe.:to enlightenment and purity.:brothers with my life.:In nomine Patris, et Filii:et Spiritus Sancti.:I commit myself to",
                     )],
-                )?);
-                let mut matched14 = false;
-                let no_case14 = !subject14.loosely_equals(&Val::from(1))
-                    && !subject14.loosely_equals(&Val::from(2))
-                    && !subject14.loosely_equals(&Val::from(3))
-                    && !subject14.loosely_equals(&Val::from(4))
-                    && !subject14.loosely_equals(&Val::from(5))
-                    && !subject14.loosely_equals(&Val::from(6))
-                    && !subject14.loosely_equals(&Val::from(7))
-                    && !subject14.loosely_equals(&Val::from(8))
-                    && !subject14.loosely_equals(&Val::from(9))
-                    && !subject14.loosely_equals(&Val::from(10));
-                if !matched14 && subject14.loosely_equals(&Val::from(1)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                )? {
+                1 => {
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(2)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                2 => {
                     ctx.mes("Evil shall never be")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(3)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                3 => {
                     ctx.mes("I will follow my path")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(4)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                4 => {
                     ctx.mes("I will protect my")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(5)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                5 => {
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(6)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                6 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(7)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                7 => {
                     ctx.mes("brothers with my life.")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(8)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                8 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(9)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                9 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b14;
                 }
-                if !matched14 && subject14.loosely_equals(&Val::from(10)) {
-                    matched14 = true;
-                }
-                if matched14 {
+                10 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b14;
                 }
+                _ => {}
             }
-            'b15: {
-                let subject15 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "victorious while I breathe.:I commit myself to:to enlightenment and purity.:brothers with my life.:Evil shall never be:In nomine Patris, et Filii:et Spiritus Sancti.:I will follow my path:veritas and aequitas.:I will protect my",
                     )],
-                )?);
-                let mut matched15 = false;
-                let no_case15 = !subject15.loosely_equals(&Val::from(1))
-                    && !subject15.loosely_equals(&Val::from(2))
-                    && !subject15.loosely_equals(&Val::from(3))
-                    && !subject15.loosely_equals(&Val::from(4))
-                    && !subject15.loosely_equals(&Val::from(5))
-                    && !subject15.loosely_equals(&Val::from(6))
-                    && !subject15.loosely_equals(&Val::from(7))
-                    && !subject15.loosely_equals(&Val::from(8))
-                    && !subject15.loosely_equals(&Val::from(9))
-                    && !subject15.loosely_equals(&Val::from(10));
-                if !matched15 && subject15.loosely_equals(&Val::from(1)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                )? {
+                1 => {
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(2)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                2 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(3)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                3 => {
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(4)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                4 => {
                     ctx.mes("brothers with my life.")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(5)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                5 => {
                     ctx.mes("Evil shall never be")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(6)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                6 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(7)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                7 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(8)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                8 => {
                     ctx.mes("I will follow my path")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(9)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                9 => {
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b15;
                 }
-                if !matched15 && subject15.loosely_equals(&Val::from(10)) {
-                    matched15 = true;
-                }
-                if matched15 {
+                10 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("I will protect my")?;
-                    break 'b15;
                 }
+                _ => {}
             }
-            'b16: {
-                let subject16 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "to enlightenment and purity.:I will follow my path:veritas and aequitas.:I commit myself to:brothers with my life.:I will protect my:victorious while I breathe.:Evil shall never be:et Spiritus Sancti.:In nomine Patris, et Filii",
                     )],
-                )?);
-                let mut matched16 = false;
-                let no_case16 = !subject16.loosely_equals(&Val::from(1))
-                    && !subject16.loosely_equals(&Val::from(2))
-                    && !subject16.loosely_equals(&Val::from(3))
-                    && !subject16.loosely_equals(&Val::from(4))
-                    && !subject16.loosely_equals(&Val::from(5))
-                    && !subject16.loosely_equals(&Val::from(6))
-                    && !subject16.loosely_equals(&Val::from(7))
-                    && !subject16.loosely_equals(&Val::from(8))
-                    && !subject16.loosely_equals(&Val::from(9))
-                    && !subject16.loosely_equals(&Val::from(10));
-                if !matched16 && subject16.loosely_equals(&Val::from(1)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                )? {
+                1 => {
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(2)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                2 => {
                     ctx.mes("I will follow my path")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(3)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                3 => {
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(4)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                4 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(5)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                5 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("brothers with my life.")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(6)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                6 => {
                     ctx.mes("I will protect my")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(7)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                7 => {
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(8)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                8 => {
                     ctx.mes("Evil shall never be")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(9)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                9 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b16;
                 }
-                if !matched16 && subject16.loosely_equals(&Val::from(10)) {
-                    matched16 = true;
-                }
-                if matched16 {
+                10 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b16;
                 }
+                _ => {}
             }
-            'b17: {
-                let subject17 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "veritas and aequitas.:Evil shall never be:brothers with my life.:victorious while I breathe.:I will follow my path:to enlightenment and purity.:I will protect my:In nomine Patris, et Filii:et Spiritus Sancti.:I commit myself to",
                     )],
-                )?);
-                let mut matched17 = false;
-                let no_case17 = !subject17.loosely_equals(&Val::from(1))
-                    && !subject17.loosely_equals(&Val::from(2))
-                    && !subject17.loosely_equals(&Val::from(3))
-                    && !subject17.loosely_equals(&Val::from(4))
-                    && !subject17.loosely_equals(&Val::from(5))
-                    && !subject17.loosely_equals(&Val::from(6))
-                    && !subject17.loosely_equals(&Val::from(7))
-                    && !subject17.loosely_equals(&Val::from(8))
-                    && !subject17.loosely_equals(&Val::from(9))
-                    && !subject17.loosely_equals(&Val::from(10));
-                if !matched17 && subject17.loosely_equals(&Val::from(1)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                )? {
+                1 => {
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(2)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                2 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("Evil shall never be")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(3)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                3 => {
                     ctx.mes("brothers with my life.")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(4)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                4 => {
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(5)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                5 => {
                     ctx.mes("I will follow my path")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(6)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                6 => {
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(7)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                7 => {
                     ctx.mes("I will protect my")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(8)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                8 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(9)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                9 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b17;
                 }
-                if !matched17 && subject17.loosely_equals(&Val::from(10)) {
-                    matched17 = true;
-                }
-                if matched17 {
+                10 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b17;
                 }
+                _ => {}
             }
-            'b18: {
-                let subject18 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "victorious while I breathe.:to enlightenment and purity.:I will protect my:veritas and aequitas.:brothers with my life.:I will follow my path:Evil shall never be:In nomine Patris, et Filii:I commit myself to:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched18 = false;
-                let no_case18 = !subject18.loosely_equals(&Val::from(1))
-                    && !subject18.loosely_equals(&Val::from(2))
-                    && !subject18.loosely_equals(&Val::from(3))
-                    && !subject18.loosely_equals(&Val::from(4))
-                    && !subject18.loosely_equals(&Val::from(5))
-                    && !subject18.loosely_equals(&Val::from(6))
-                    && !subject18.loosely_equals(&Val::from(7))
-                    && !subject18.loosely_equals(&Val::from(8))
-                    && !subject18.loosely_equals(&Val::from(9))
-                    && !subject18.loosely_equals(&Val::from(10));
-                if !matched18 && subject18.loosely_equals(&Val::from(1)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                )? {
+                1 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(2)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                2 => {
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(3)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                3 => {
                     ctx.mes("I will protect my")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(4)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                4 => {
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(5)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                5 => {
                     ctx.mes("brothers with my life.")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(6)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                6 => {
                     ctx.mes("I will follow my path")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(7)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                7 => {
                     ctx.mes("Evil shall never be")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(8)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                8 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(9)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                9 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b18;
                 }
-                if !matched18 && subject18.loosely_equals(&Val::from(10)) {
-                    matched18 = true;
-                }
-                if matched18 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b18;
                 }
+                _ => {}
             }
-            'b19: {
-                let subject19 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "I commit myself to:I will follow my path:veritas and aequitas.:I will protect my:to enlightenment and purity.:brothers with my life.:Evil shall never be:In nomine Patris, et Filii:victorious while I breathe.:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched19 = false;
-                let no_case19 = !subject19.loosely_equals(&Val::from(1))
-                    && !subject19.loosely_equals(&Val::from(2))
-                    && !subject19.loosely_equals(&Val::from(3))
-                    && !subject19.loosely_equals(&Val::from(4))
-                    && !subject19.loosely_equals(&Val::from(5))
-                    && !subject19.loosely_equals(&Val::from(6))
-                    && !subject19.loosely_equals(&Val::from(7))
-                    && !subject19.loosely_equals(&Val::from(8))
-                    && !subject19.loosely_equals(&Val::from(9))
-                    && !subject19.loosely_equals(&Val::from(10));
-                if !matched19 && subject19.loosely_equals(&Val::from(1)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                )? {
+                1 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(2)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                2 => {
                     ctx.mes("I will follow my path")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(3)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                3 => {
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(4)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                4 => {
                     ctx.mes("I will protect my")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(5)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                5 => {
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(6)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                6 => {
                     ctx.mes("brothers with my life.")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(7)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                7 => {
                     ctx.mes("Evil shall never be")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(8)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                8 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(9)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                9 => {
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b19;
                 }
-                if !matched19 && subject19.loosely_equals(&Val::from(10)) {
-                    matched19 = true;
-                }
-                if matched19 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b19;
                 }
+                _ => {}
             }
-            'b20: {
-                let subject20 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "I commit myself to:veritas and aequitas.:I will follow my path:to enlightenment and purity.:I will protect my:brothers with my life.:Evil shall never be:victorious while I breathe.:In nomine Patris, et Filii:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched20 = false;
-                let no_case20 = !subject20.loosely_equals(&Val::from(1))
-                    && !subject20.loosely_equals(&Val::from(2))
-                    && !subject20.loosely_equals(&Val::from(3))
-                    && !subject20.loosely_equals(&Val::from(4))
-                    && !subject20.loosely_equals(&Val::from(5))
-                    && !subject20.loosely_equals(&Val::from(6))
-                    && !subject20.loosely_equals(&Val::from(7))
-                    && !subject20.loosely_equals(&Val::from(8))
-                    && !subject20.loosely_equals(&Val::from(9))
-                    && !subject20.loosely_equals(&Val::from(10));
-                if !matched20 && subject20.loosely_equals(&Val::from(1)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                )? {
+                1 => {
                     ctx.mes("I commit myself to")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(2)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                2 => {
                     ctx.mes("veritas and aequitas.")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(3)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                3 => {
                     ctx.mes("I will follow my path")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(4)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                4 => {
                     ctx.mes("to enlightenment and purity.")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(5)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                5 => {
                     ctx.mes("I will protect my")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(6)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                6 => {
                     ctx.mes("brothers with my life.")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(7)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                7 => {
                     ctx.mes("Evil shall never be")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(8)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                8 => {
                     ctx.mes("victorious while I breathe.")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(9)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                9 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b20;
                 }
-                if !matched20 && subject20.loosely_equals(&Val::from(10)) {
-                    matched20 = true;
-                }
-                if matched20 {
+                10 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b20;
                 }
+                _ => {}
             }
         } else if ctx.var("monk_q").get()? == 13 {
-            'b21: {
-                let subject21 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "for thee my lord for thee.:And shepherds we shall be,:Power hath descended forth:out thy command. And we shall:from the hand:flow a river forth to thee and:so our feet may swiftly carry:teeming with souls shall it ever be:et Spiritus Sancti.:In nomine Patris, et Filii",
                     )],
-                )?);
-                let mut matched21 = false;
-                let no_case21 = !subject21.loosely_equals(&Val::from(1))
-                    && !subject21.loosely_equals(&Val::from(2))
-                    && !subject21.loosely_equals(&Val::from(3))
-                    && !subject21.loosely_equals(&Val::from(4))
-                    && !subject21.loosely_equals(&Val::from(5))
-                    && !subject21.loosely_equals(&Val::from(6))
-                    && !subject21.loosely_equals(&Val::from(7))
-                    && !subject21.loosely_equals(&Val::from(8))
-                    && !subject21.loosely_equals(&Val::from(9))
-                    && !subject21.loosely_equals(&Val::from(10));
-                if !matched21 && subject21.loosely_equals(&Val::from(1)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["for thee my lord for thee."],
                     )?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(2)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                2 => {
                     ctx.lines(args![
                         ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
                     ])?;
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(3)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                3 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["Power hath descended forth"],
                     )?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(4)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                4 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["out thy command. And we shall"],
                     )?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(5)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                5 => {
                     ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["from the hand"])?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(6)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                6 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["flow a river forth to thee and"],
                     )?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(7)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                7 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["so our feet may swiftly carry"],
                     )?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(8)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                8 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["teeming with souls shall it ever be"],
                     )?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(9)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                9 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["et Spiritus Sancti."],
                     )?;
-                    break 'b21;
                 }
-                if !matched21 && subject21.loosely_equals(&Val::from(10)) {
-                    matched21 = true;
-                }
-                if matched21 {
+                10 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["In nomine Patris, et Filii"],
                     )?;
-                    break 'b21;
                 }
+                _ => {}
             }
-            'b22: {
-                let subject22 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "teeming with souls shall it ever be:flow a river forth to thee and:so our feet may swiftly carry:In nomine Patris, et Filii:et Spiritus Sancti.:Power hath descended forth:And shepherds we shall be,:for thee my lord for thee.:from the hand:out thy command. And we shall",
                     )],
-                )?);
-                let mut matched22 = false;
-                let no_case22 = !subject22.loosely_equals(&Val::from(1))
-                    && !subject22.loosely_equals(&Val::from(2))
-                    && !subject22.loosely_equals(&Val::from(3))
-                    && !subject22.loosely_equals(&Val::from(4))
-                    && !subject22.loosely_equals(&Val::from(5))
-                    && !subject22.loosely_equals(&Val::from(6))
-                    && !subject22.loosely_equals(&Val::from(7))
-                    && !subject22.loosely_equals(&Val::from(8))
-                    && !subject22.loosely_equals(&Val::from(9))
-                    && !subject22.loosely_equals(&Val::from(10));
-                if !matched22 && subject22.loosely_equals(&Val::from(1)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                )? {
+                1 => {
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(2)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                2 => {
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(3)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                3 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(4)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                4 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(5)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                5 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(6)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                6 => {
                     ctx.mes("Power hath descended forth")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(7)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                7 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(8)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                8 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(9)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                9 => {
                     ctx.mes("from the hand")?;
-                    break 'b22;
                 }
-                if !matched22 && subject22.loosely_equals(&Val::from(10)) {
-                    matched22 = true;
-                }
-                if matched22 {
+                10 => {
                     ctx.mes("out thy command. And we shall")?;
-                    break 'b22;
                 }
+                _ => {}
             }
-            'b23: {
-                let subject23 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "And shepherds we shall be,:for thee my lord for thee.:Power hath descended forth:from the hand:teeming with souls shall it ever be:et Spiritus Sancti.:In nomine Patris, et Filii:so our feet may swiftly carry:out thy command. And we shall:flow a river forth to thee and",
                     )],
-                )?);
-                let mut matched23 = false;
-                let no_case23 = !subject23.loosely_equals(&Val::from(1))
-                    && !subject23.loosely_equals(&Val::from(2))
-                    && !subject23.loosely_equals(&Val::from(3))
-                    && !subject23.loosely_equals(&Val::from(4))
-                    && !subject23.loosely_equals(&Val::from(5))
-                    && !subject23.loosely_equals(&Val::from(6))
-                    && !subject23.loosely_equals(&Val::from(7))
-                    && !subject23.loosely_equals(&Val::from(8))
-                    && !subject23.loosely_equals(&Val::from(9))
-                    && !subject23.loosely_equals(&Val::from(10));
-                if !matched23 && subject23.loosely_equals(&Val::from(1)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                )? {
+                1 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(2)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                2 => {
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(3)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                3 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("Power hath descended forth")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(4)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                4 => {
                     ctx.mes("from the hand")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(5)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                5 => {
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(6)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                6 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(7)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                7 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(8)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                8 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(9)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                9 => {
                     ctx.mes("out thy command. And we shall")?;
-                    break 'b23;
                 }
-                if !matched23 && subject23.loosely_equals(&Val::from(10)) {
-                    matched23 = true;
-                }
-                if matched23 {
+                10 => {
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b23;
                 }
+                _ => {}
             }
-            'b24: {
-                let subject24 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "for thee my lord for thee.:And shepherds we shall be,:Power hath descended forth:so our feet may swiftly carry:from the hand:flow a river forth to thee and:out thy command. And we shall:In nomine Patris, et Filii:teeming with souls shall it ever be:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched24 = false;
-                let no_case24 = !subject24.loosely_equals(&Val::from(1))
-                    && !subject24.loosely_equals(&Val::from(2))
-                    && !subject24.loosely_equals(&Val::from(3))
-                    && !subject24.loosely_equals(&Val::from(4))
-                    && !subject24.loosely_equals(&Val::from(5))
-                    && !subject24.loosely_equals(&Val::from(6))
-                    && !subject24.loosely_equals(&Val::from(7))
-                    && !subject24.loosely_equals(&Val::from(8))
-                    && !subject24.loosely_equals(&Val::from(9))
-                    && !subject24.loosely_equals(&Val::from(10));
-                if !matched24 && subject24.loosely_equals(&Val::from(1)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                )? {
+                1 => {
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(2)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                2 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(3)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                3 => {
                     ctx.mes("Power hath descended forth")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(4)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                4 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(5)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                5 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("from the hand")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(6)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                6 => {
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(7)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                7 => {
                     ctx.mes("out thy command. And we shall")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(8)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                8 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(9)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                9 => {
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b24;
                 }
-                if !matched24 && subject24.loosely_equals(&Val::from(10)) {
-                    matched24 = true;
-                }
-                if matched24 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b24;
                 }
+                _ => {}
             }
-            'b25: {
-                let subject25 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "And shepherds we shall be,:for thee my lord for thee.:Power hath descended forth:so our feet may swiftly carry:from the hand:so our feet may swiftly carry:flow a river forth to thee and:In nomine Patris, et Filii:teeming with souls shall it ever be:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched25 = false;
-                let no_case25 = !subject25.loosely_equals(&Val::from(1))
-                    && !subject25.loosely_equals(&Val::from(2))
-                    && !subject25.loosely_equals(&Val::from(3))
-                    && !subject25.loosely_equals(&Val::from(4))
-                    && !subject25.loosely_equals(&Val::from(5))
-                    && !subject25.loosely_equals(&Val::from(6))
-                    && !subject25.loosely_equals(&Val::from(7))
-                    && !subject25.loosely_equals(&Val::from(8))
-                    && !subject25.loosely_equals(&Val::from(9))
-                    && !subject25.loosely_equals(&Val::from(10));
-                if !matched25 && subject25.loosely_equals(&Val::from(1)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                )? {
+                1 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(2)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                2 => {
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(3)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                3 => {
                     ctx.mes("Power hath descended forth")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(4)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                4 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(5)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                5 => {
                     ctx.mes("from the hand")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(6)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                6 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(7)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                7 => {
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(8)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                8 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(9)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                9 => {
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b25;
                 }
-                if !matched25 && subject25.loosely_equals(&Val::from(10)) {
-                    matched25 = true;
-                }
-                if matched25 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b25;
                 }
+                _ => {}
             }
-            'b26: {
-                let subject26 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "for thee my lord for thee.:Power hath descended forth:And shepherds we shall be,:from the hand:so our feet may swiftly carry:flow a river forth to thee and:out thy command. And we shall:teeming with souls shall it ever be:In nomine Patris, et Filii:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched26 = false;
-                let no_case26 = !subject26.loosely_equals(&Val::from(1))
-                    && !subject26.loosely_equals(&Val::from(2))
-                    && !subject26.loosely_equals(&Val::from(3))
-                    && !subject26.loosely_equals(&Val::from(4))
-                    && !subject26.loosely_equals(&Val::from(5))
-                    && !subject26.loosely_equals(&Val::from(6))
-                    && !subject26.loosely_equals(&Val::from(7))
-                    && !subject26.loosely_equals(&Val::from(8))
-                    && !subject26.loosely_equals(&Val::from(9))
-                    && !subject26.loosely_equals(&Val::from(10));
-                if !matched26 && subject26.loosely_equals(&Val::from(1)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                )? {
+                1 => {
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(2)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                2 => {
                     ctx.mes("Power hath descended forth")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(3)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                3 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(4)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                4 => {
                     ctx.mes("from the hand")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(5)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                5 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(6)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                6 => {
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(7)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                7 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("out thy command. And we shall")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(8)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                8 => {
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(9)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                9 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b26;
                 }
-                if !matched26 && subject26.loosely_equals(&Val::from(10)) {
-                    matched26 = true;
-                }
-                if matched26 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b26;
                 }
+                _ => {}
             }
-            'b27: {
-                let subject27 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "for thee my lord for thee.:teeming with souls shall it ever be:flow a river forth to thee and:In nomine Patris, et Filii:et Spiritus Sancti.:Power hath descended forth:And shepherds we shall be,:so our feet may swiftly carry:from the hand:out thy command. And we shall",
                     )],
-                )?);
-                let mut matched27 = false;
-                let no_case27 = !subject27.loosely_equals(&Val::from(1))
-                    && !subject27.loosely_equals(&Val::from(2))
-                    && !subject27.loosely_equals(&Val::from(3))
-                    && !subject27.loosely_equals(&Val::from(4))
-                    && !subject27.loosely_equals(&Val::from(5))
-                    && !subject27.loosely_equals(&Val::from(6))
-                    && !subject27.loosely_equals(&Val::from(7))
-                    && !subject27.loosely_equals(&Val::from(8))
-                    && !subject27.loosely_equals(&Val::from(9))
-                    && !subject27.loosely_equals(&Val::from(10));
-                if !matched27 && subject27.loosely_equals(&Val::from(1)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                )? {
+                1 => {
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(2)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                2 => {
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(3)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                3 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(4)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                4 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(5)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                5 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(6)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                6 => {
                     ctx.mes("Power hath descended forth")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(7)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                7 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(8)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                8 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(9)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                9 => {
                     ctx.mes("from the hand")?;
-                    break 'b27;
                 }
-                if !matched27 && subject27.loosely_equals(&Val::from(10)) {
-                    matched27 = true;
-                }
-                if matched27 {
+                10 => {
                     ctx.mes("out thy command. And we shall")?;
-                    break 'b27;
                 }
+                _ => {}
             }
-            'b28: {
-                let subject28 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "teeming with souls shall it ever be:In nomine Patris, et Filii:And shepherds we shall be,:for thee my lord for thee.:Power hath descended forth:from the hand:so our feet may swiftly carry:out thy command. And we shall:flow a river forth to thee and:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched28 = false;
-                let no_case28 = !subject28.loosely_equals(&Val::from(1))
-                    && !subject28.loosely_equals(&Val::from(2))
-                    && !subject28.loosely_equals(&Val::from(3))
-                    && !subject28.loosely_equals(&Val::from(4))
-                    && !subject28.loosely_equals(&Val::from(5))
-                    && !subject28.loosely_equals(&Val::from(6))
-                    && !subject28.loosely_equals(&Val::from(7))
-                    && !subject28.loosely_equals(&Val::from(8))
-                    && !subject28.loosely_equals(&Val::from(9))
-                    && !subject28.loosely_equals(&Val::from(10));
-                if !matched28 && subject28.loosely_equals(&Val::from(1)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                )? {
+                1 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(2)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                2 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(3)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                3 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(4)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                4 => {
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(5)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                5 => {
                     ctx.mes("Power hath descended forth")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(6)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                6 => {
                     ctx.mes("from the hand")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(7)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                7 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(8)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                8 => {
                     ctx.mes("out thy command. And we shall")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(9)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                9 => {
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b28;
                 }
-                if !matched28 && subject28.loosely_equals(&Val::from(10)) {
-                    matched28 = true;
-                }
-                if matched28 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b28;
                 }
+                _ => {}
             }
-            'b29: {
-                let subject29 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Power hath descended forth:for thee my lord for thee.:And shepherds we shall be,:In nomine Patris, et Filii:so our feet may swiftly carry:from the hand:teeming with souls shall it ever be:flow a river forth to thee and:out thy command. And we shall:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched29 = false;
-                let no_case29 = !subject29.loosely_equals(&Val::from(1))
-                    && !subject29.loosely_equals(&Val::from(2))
-                    && !subject29.loosely_equals(&Val::from(3))
-                    && !subject29.loosely_equals(&Val::from(4))
-                    && !subject29.loosely_equals(&Val::from(5))
-                    && !subject29.loosely_equals(&Val::from(6))
-                    && !subject29.loosely_equals(&Val::from(7))
-                    && !subject29.loosely_equals(&Val::from(8))
-                    && !subject29.loosely_equals(&Val::from(9))
-                    && !subject29.loosely_equals(&Val::from(10));
-                if !matched29 && subject29.loosely_equals(&Val::from(1)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                )? {
+                1 => {
                     ctx.mes("Power hath descended forth")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(2)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                2 => {
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(3)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                3 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(4)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                4 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(5)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                5 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(6)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                6 => {
                     ctx.mes("from the hand")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(7)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                7 => {
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(8)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                8 => {
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(9)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                9 => {
                     ctx.mes("out thy command. And we shall")?;
-                    break 'b29;
                 }
-                if !matched29 && subject29.loosely_equals(&Val::from(10)) {
-                    matched29 = true;
-                }
-                if matched29 {
+                10 => {
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b29;
                 }
+                _ => {}
             }
-            'b30: {
-                let subject30 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "And shepherds we shall be,:for thee my lord for thee.:Power hath descended forth:from the hand:out thy command. And we shall:so our feet may swiftly carry:flow a river forth to thee and:teeming with souls shall it ever be:In nomine Patris, et Filii:et Spiritus Sancti.",
                     )],
-                )?);
-                let mut matched30 = false;
-                let no_case30 = !subject30.loosely_equals(&Val::from(1))
-                    && !subject30.loosely_equals(&Val::from(2))
-                    && !subject30.loosely_equals(&Val::from(3))
-                    && !subject30.loosely_equals(&Val::from(4))
-                    && !subject30.loosely_equals(&Val::from(5))
-                    && !subject30.loosely_equals(&Val::from(6))
-                    && !subject30.loosely_equals(&Val::from(7))
-                    && !subject30.loosely_equals(&Val::from(8))
-                    && !subject30.loosely_equals(&Val::from(9))
-                    && !subject30.loosely_equals(&Val::from(10));
-                if !matched30 && subject30.loosely_equals(&Val::from(1)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                )? {
+                1 => {
                     ctx.mes("And shepherds we shall be,")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(2)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                2 => {
                     ctx.mes("for thee my lord for thee.")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(3)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                3 => {
                     ctx.mes("Power hath descended forth")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(4)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                4 => {
                     ctx.mes("from the hand")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(5)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                5 => {
                     ctx.mes("out thy command. And we shall")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(6)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                6 => {
                     ctx.mes("so our feet may swiftly carry")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(7)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                7 => {
                     ctx.mes("flow a river forth to thee and")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(8)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                8 => {
                     ctx.mes("teeming with souls shall it ever be")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(9)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                9 => {
                     ctx.mes("In nomine Patris, et Filii")?;
-                    break 'b30;
                 }
-                if !matched30 && subject30.loosely_equals(&Val::from(10)) {
-                    matched30 = true;
-                }
-                if matched30 {
+                10 => {
                     l_monk_t = (l_monk_t.clone() + Val::from(10));
                     ctx.mes("et Spiritus Sancti.")?;
-                    break 'b30;
                 }
+                _ => {}
             }
         }
         ctx.next()?;
@@ -4501,21 +2844,13 @@ fn boohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         ctx.lines_as("Boohae", args!["What did you do with Touha?"])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "Umm... well...ah..:We recited a holy pledge.:He diagnosed my physical status.",
                 )],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Boohae",
                     args![
@@ -4527,28 +2862,16 @@ fn boohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as("Boohae", args!["... I see...", "Didn't he do anything for you?"])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Umm... well...ah..:He diagnosed my physical status.:He taught me about being a monk.:He modified my body.",
                         )],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Boohae",
                             args![
@@ -4560,10 +2883,7 @@ fn boohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "Boohae",
                             args!["That is unimportant to me...", "Stop disturbing me and go away!"],
@@ -4571,10 +2891,7 @@ fn boohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as(
                             "Boohae",
                             args![
@@ -4585,10 +2902,7 @@ fn boohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.lines_as(
                             "Boohae",
                             args![
@@ -4597,15 +2911,11 @@ fn boohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b2;
                     }
+                    _ => {}
                 }
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as(
                     "Boohae",
                     args!["...You interrupted me to tell me that...?", "Get lost before I break your legs..."],
@@ -4613,6 +2923,7 @@ fn boohae_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
         ctx.lines_as(
             "Boohae",
@@ -5320,33 +3631,20 @@ pub fn tomoon_mk(ctx: &Ctx) -> Script {
 fn proctor_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as("Proctor", args!["So, are you ready to undergo the spiritual training?"])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes!:No.:What do I have to do?")])?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Yes!:No.:What do I have to do?")])? {
+        1 => {
             ctx.lines_as("Proctor", args!["Alright! I wish you luck. If you get lost and can't find a way out, simply log out and log back in.", "Then you will return to your save point. What's that mean? Heck if I know, I'm just told to say that. Oh yes and also, please cooperate with your comrades."])?;
             ctx.close_window()?;
             ctx.var("monk_q").set(Val::from(26))?;
             ctx.call(Function::Warp, vec![Val::from("monk_test"), Val::from(125), Val::from(277)])?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as("Proctor", args!["I see. Take your time."])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Proctor",
                 args![
@@ -5367,6 +3665,7 @@ fn proctor_mk_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -5765,36 +4064,23 @@ pub fn exit_monk_1_ontouch(ctx: &Ctx) -> Script {
 fn proctor_mk2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as("Proctor", args!["So, are you ready to undergo this spiritual training?"])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Yes!:No.:Check the caution for the test.")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as("Proctor", args!["Alright! I wish you luck. If you get lost and can't find a way out, simply log out and log back in.", "Then you will return to your save point. What's that mean? Heck if I know, I'm just told to say that. Oh yes and also, please cooperate with your comrades."])?;
             ctx.close_window()?;
             ctx.var("monk_q").set(Val::from(26))?;
             ctx.call(Function::Warp, vec![Val::from("monk_test"), Val::from(125), Val::from(177)])?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as("Proctor", args!["I see. Take your time."])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Proctor",
                 args![
@@ -5815,6 +4101,7 @@ fn proctor_mk2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -6213,36 +4500,23 @@ pub fn exit_monk_2_ontouch(ctx: &Ctx) -> Script {
 fn proctor_btl_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines_as("Proctor", args!["So, are you ready to undergo this spiritual training?"])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Yes!:No.:Check the caution for the test.")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as("Proctor", args!["Alright! I wish you luck. If you get lost and can't find a way out, simply log out and log back in.", "Then you will return to your save point. What's that mean? Heck if I know, I'm just told to say that. Oh yes and also, please cooperate with your comrades."])?;
             ctx.close_window()?;
             ctx.var("monk_q").set(Val::from(26))?;
             ctx.call(Function::Warp, vec![Val::from("monk_test"), Val::from(230), Val::from(277)])?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as("Proctor", args!["I see. Take your time."])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Proctor",
                 args![
@@ -6263,6 +4537,7 @@ fn proctor_btl_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }

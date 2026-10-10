@@ -66,14 +66,8 @@ fn friar_patrick_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["The very place where the great Devil who once demolished this world is sleeping."],
             )?;
             ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Tell me more.:Stop talking.")])?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+            match runtime::select_values(ctx, &[Val::from("Tell me more.:Stop talking.")])? {
+                1 => {
                     ctx.call(Function::Cutin, vec![Val::from("ins_cata_pri_n"), Val::from(2)])?;
                     ctx.lines_as(
                         "Friar Patrick",
@@ -105,12 +99,8 @@ fn friar_patrick_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "Friar Patrick",
                         args!["Train more and use your skills to protect the world from evil's looming presence..."],
                     )?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                2 => {
                     ctx.call(Function::Cutin, vec![Val::from("ins_cata_pri_n"), Val::from(2)])?;
                     ctx.lines_as(
                         "Friar Patrick",
@@ -121,8 +111,8 @@ fn friar_patrick_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "Friar Patrick",
                         args!["Train more and use your skills to protect the world from evil's looming presence..."],
                     )?;
-                    break 'b2;
                 }
+                _ => {}
             }
             break 'b1;
         }
@@ -475,17 +465,11 @@ fn rust_blackhand_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Rust Blackhand", args!["The Cursed Baphomet Doll is the most important ingredient... I'll make you if you want. What would you like to do?"])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("I want to make one!:I don't need one.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Rust Blackhand", args!["kkk... Yes, wise men take their chances when the opportunity comes. I'll tell you the ingredients. Don't forget, and bring them all."])?;
                         ctx.next()?;
                         ctx.lines_as("Rust Blackhand", args!["^0000FFCursed Baphomet Doll, Magestic Goat, 30 Crystal of Darkness, 50 Fragment of Darkness^000000, and the most important, production cost is ^0000FF990000^000000 Zeny."])?;
@@ -506,10 +490,7 @@ fn rust_blackhand_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "Rust Blackhand",
                             args!["Huh... Do you? Do whatever you want... Do you really want to let this opportunity go to waste?"],
@@ -522,6 +503,7 @@ fn rust_blackhand_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -565,14 +547,8 @@ fn rust_blackhand_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["I'll tell you the ingredients again. So, do you want to make?"],
                 )?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("I want.:No, I don't want.")])?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                match runtime::select_values(ctx, &[Val::from("I want.:No, I don't want.")])? {
+                    1 => {
                         ctx.lines_as("Rust Blackhand", args!["kkk... Yes, wise men take their chances when the opportunity comes. I'll tell you the ingredients. Don't forget, and bring them all."])?;
                         ctx.next()?;
                         ctx.lines_as("Rust Blackhand", args!["^0000FFCursed Baphomet Doll, Magestic Goat, 30 Crystal of Darkness, 50 Fragment of Darkness^000000, and the most important, production cost is ^0000FF990000^000000 Zeny."])?;
@@ -591,10 +567,7 @@ fn rust_blackhand_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.lines_as(
                             "Rust Blackhand",
                             args![
@@ -609,6 +582,7 @@ fn rust_blackhand_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
             if !matched3 && subject3.loosely_equals(&Val::from(2)) {
@@ -1012,19 +986,11 @@ fn gravestone_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 break 'l1;
             }
             'b1: {
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Who are you?:Waited for me?:Cancel.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Voice of the Gravestone",
                             args!["I was one of the warriors to stop Baphomet like you. Now, I'm dead and only my soul remains..."],
@@ -1036,12 +1002,8 @@ fn gravestone_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Voice of the Gravestone", args!["I moved my soul's essence to my pendant, so that I could remain in this world. That's when I became this grave's guardian."])?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as("Voice of the Gravestone", args!["Baphomet's power is about to break the seal that we made. If you don't reactivate them... Baphomet's revival will only be a matter of time."])?;
                         ctx.next()?;
                         ctx.lines_as("Voice of the Gravestone", args!["To open the entrance, you must substantialize my soul. I'll open the entrance and reactivate the weakened seals after I am substantilized."])?;
@@ -1061,14 +1023,12 @@ fn gravestone_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.mes("I can feel the voice becoming faint.")?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
         }
@@ -1204,22 +1164,13 @@ fn ancient_hero_s_soul_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             }
             'b1: {
                 ctx.call(Function::Cutin, vec![Val::from("ins_cata_champ_n"), Val::from(2)])?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "What is Essence of Fire?:What is a Token of Apostle?:What should I do?:I am ready.",
                         )],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         l_ins_baphomet_1f_1 = (l_ins_baphomet_1f_1.clone() + Val::from(1));
                         ctx.lines_as("Ancient Hero's Soul", args!["You can see the torches here and there. These torches are the essence of Thor, the god of Thunder. They are inherited from our predecessors to stop the darkness of Baphomet..."])?;
                         ctx.next()?;
@@ -1229,12 +1180,8 @@ fn ancient_hero_s_soul_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Ancient Hero's Soul", args!["I'll give the token of the Inheritor of Faith to the party leader. Only the party leader can collect the ^0000FFEssence of Fire^000000."])?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         l_ins_baphomet_1f_2 = (l_ins_baphomet_1f_2.clone() + Val::from(1));
                         ctx.lines_as("Ancient Hero's Soul", args!["At that time, it was impossible to get rid of Devil Baphomet by ourselves. After numerous heroes sacrificed their lives, we could barely seal him under this Abbey."])?;
                         ctx.next()?;
@@ -1258,12 +1205,8 @@ fn ancient_hero_s_soul_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Kill the apostles and get the ^0000FFToken of Apostle^000000."],
                         )?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         l_ins_baphomet_1f_3 = (l_ins_baphomet_1f_3.clone() + Val::from(1));
                         if ctx
                             .call(Function::IsPartyLeader, vec![l_party_id.clone()])?
@@ -1303,12 +1246,8 @@ fn ancient_hero_s_soul_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             ctx.next()?;
                         }
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         if ((l_ins_baphomet_1f_1.clone().number()? > 0 && l_ins_baphomet_1f_2.clone().number()? > 0)
                             && l_ins_baphomet_1f_3.clone().number()? > 0)
                         {
@@ -1329,8 +1268,8 @@ fn ancient_hero_s_soul_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.lines_as("Ancient Hero's Soul", args!["Remember, you need to collect ^0000FF10 Essence of Fire^000000 from the torches and the ^0000FFToken of Apostle^000000 from the Apostles of Baphomet."])?;
                             ctx.next()?;
                         }
-                        break 'b2;
                     }
+                    _ => {}
                 }
                 if l_exitloop.clone().is_true() {
                     break 'l1;
@@ -2846,17 +2785,11 @@ fn ancient_hero_s_soul_2f_run(ctx: &Ctx, mut step: AncientHeroSSoul2fStep, args:
                 ctx.next()?;
                 ctx.lines_as("Ancient Hero's Soul", args!["The struggle for peace on this world will never end. But... my role here is finally over because there are brave heroes like you."])?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Let me leave the shrine.:Stop talking.")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Ancient Hero's Soul",
                             args!["Okay. I'll let you and your group leave here safely."],
@@ -2872,10 +2805,7 @@ fn ancient_hero_s_soul_2f_run(ctx: &Ctx, mut step: AncientHeroSSoul2fStep, args:
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(
                             "Ancient Hero's Soul",
                             args!["Do you still have something to do here? If you're done I'll let you leave safely..."],
@@ -2884,6 +2814,7 @@ fn ancient_hero_s_soul_2f_run(ctx: &Ctx, mut step: AncientHeroSSoul2fStep, args:
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
                 step = AncientHeroSSoul2fStep::OnInstanceInit;
                 continue 'machine;
@@ -3730,158 +3661,127 @@ fn ins_2f_hero_pattern_run(ctx: &Ctx, mut step: Ins2fHeroPatternStep, args: Vec<
                 return Err(Stop::End);
             }
             Ins2fHeroPatternStep::OnTimer70000 => {
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4))
-                        && !subject1.loosely_equals(&Val::from(5));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?,
-                                Val::from(
-                                    "Ancient Hero's Soul : The seal of the Main Altar is running out. Strengthen the Main Altar's seal!",
-                                ),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0xFFFF00"),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::EnableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::MapAnnounce, vec![ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?, Val::from("Ancient Hero's Soul : The magical power of the seal at 2 o'clock is running out. Go to 2 o'clock and put the magical power in the seal."), ctx.constant("BC_MAP")?, Val::from("0xFFFF00")])?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
-                        )?;
-                        ctx.call(
-                            Function::EnableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::MapAnnounce, vec![ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?, Val::from("Ancient Hero's Soul : The magical power of the seal at 4 o'clock is running out. Go to 4 o'clock and put the magical power in the seal."), ctx.constant("BC_MAP")?, Val::from("0xFFFF00")])?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
-                        )?;
-                        ctx.call(
-                            Function::EnableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::MapAnnounce, vec![ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?, Val::from("Ancient Hero's Soul : The magical power of the seal at 8 o'clock is running out. Go to 8 o'clock and put the magical power in the seal."), ctx.constant("BC_MAP")?, Val::from("0xFFFF00")])?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
-                        )?;
-                        ctx.call(
-                            Function::EnableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::MapAnnounce, vec![ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?, Val::from("Ancient Hero's Soul : The magical power of the seal at 10 o'clock is running out. Go to 10 o'clock and put the magical power in the seal."), ctx.constant("BC_MAP")?, Val::from("0xFFFF00")])?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
-                        )?;
-                        ctx.call(
-                            Function::DisableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
-                        )?;
-                        ctx.call(
-                            Function::EnableNpc,
-                            vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
-                        )?;
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
+                if subject1 == 1 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?,
+                            Val::from(
+                                "Ancient Hero's Soul : The seal of the Main Altar is running out. Strengthen the Main Altar's seal!",
+                            ),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0xFFFF00"),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::EnableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
+                    )?;
+                } else if subject1 == 2 {
+                    ctx.call(Function::MapAnnounce, vec![ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?, Val::from("Ancient Hero's Soul : The magical power of the seal at 2 o'clock is running out. Go to 2 o'clock and put the magical power in the seal."), ctx.constant("BC_MAP")?, Val::from("0xFFFF00")])?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
+                    )?;
+                    ctx.call(
+                        Function::EnableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
+                    )?;
+                } else if subject1 == 3 {
+                    ctx.call(Function::MapAnnounce, vec![ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?, Val::from("Ancient Hero's Soul : The magical power of the seal at 4 o'clock is running out. Go to 4 o'clock and put the magical power in the seal."), ctx.constant("BC_MAP")?, Val::from("0xFFFF00")])?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
+                    )?;
+                    ctx.call(
+                        Function::EnableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
+                    )?;
+                } else if subject1 == 4 {
+                    ctx.call(Function::MapAnnounce, vec![ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?, Val::from("Ancient Hero's Soul : The magical power of the seal at 8 o'clock is running out. Go to 8 o'clock and put the magical power in the seal."), ctx.constant("BC_MAP")?, Val::from("0xFFFF00")])?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
+                    )?;
+                    ctx.call(
+                        Function::EnableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
+                    )?;
+                } else if subject1 == 5 {
+                    ctx.call(Function::MapAnnounce, vec![ctx.call(Function::InstanceMapName, vec![Val::from("2@cata")])?, Val::from("Ancient Hero's Soul : The magical power of the seal at 10 o'clock is running out. Go to 10 o'clock and put the magical power in the seal."), ctx.constant("BC_MAP")?, Val::from("0xFFFF00")])?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#0")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#2")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#4")])?],
+                    )?;
+                    ctx.call(
+                        Function::DisableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#8")])?],
+                    )?;
+                    ctx.call(
+                        Function::EnableNpc,
+                        vec![ctx.call(Function::InstanceNpcName, vec![Val::from("Magical Seal#10")])?],
+                    )?;
                 }
                 ctx.call(Function::StopNpcTimer, vec![])?;
                 ctx.call(

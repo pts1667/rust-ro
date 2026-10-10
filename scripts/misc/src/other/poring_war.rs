@@ -40,18 +40,11 @@ fn poring_war_recruiter_wop_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Alright, I'm with you!:What's that?:Ignore")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             if ctx.var("Zeny").get()?.number()? > 499 {
                 ctx.lines_as(
                     "Poring",
@@ -78,10 +71,7 @@ fn poring_war_recruiter_wop_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 return Err(Stop::End);
             }
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Poring",
                 args![
@@ -93,14 +83,12 @@ fn poring_war_recruiter_wop_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as("Poring", args!["Huhhhh! Hu.. Humans are so cold and cruel!!!"])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -343,64 +331,21 @@ fn poring_vending_machine_w_run(ctx: &Ctx, mut step: PoringVendingMachineWStep, 
                                                         "What could it be?"
                                                     ])?;
                                                     ctx.next()?;
-                                                    'b4: {
-                                                        let subject4 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(17)])?;
-                                                        let mut matched4 = false;
-                                                        let no_case4 = !subject4.loosely_equals(&Val::from(5))
-                                                            && !subject4.loosely_equals(&Val::from(6))
-                                                            && !subject4.loosely_equals(&Val::from(8))
-                                                            && !subject4.loosely_equals(&Val::from(11))
-                                                            && !subject4.loosely_equals(&Val::from(13))
-                                                            && !subject4.loosely_equals(&Val::from(14));
-                                                        if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
-                                                            l_random_figure = Val::from(2766);
-                                                            break 'b4;
-                                                        }
-                                                        if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
-                                                            l_random_figure = Val::from(2767);
-                                                            break 'b4;
-                                                        }
-                                                        if !matched4 && subject4.loosely_equals(&Val::from(8)) {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
-                                                            l_random_figure = Val::from(2770);
-                                                            break 'b4;
-                                                        }
-                                                        if !matched4 && subject4.loosely_equals(&Val::from(11)) {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
-                                                            l_random_figure = Val::from(2771);
-                                                            break 'b4;
-                                                        }
-                                                        if !matched4 && subject4.loosely_equals(&Val::from(13)) {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
-                                                            l_random_figure = Val::from(2769);
-                                                            break 'b4;
-                                                        }
-                                                        if !matched4 && subject4.loosely_equals(&Val::from(14)) {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
-                                                            l_random_figure = Val::from(2768);
-                                                            break 'b4;
-                                                        }
-                                                        if !matched4 && no_case4 {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
-                                                            l_random_figure = Val::from(2765);
-                                                            break 'b4;
-                                                        }
+                                                    let subject4 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(17)])?;
+                                                    if subject4 == 5 {
+                                                        l_random_figure = Val::from(2766);
+                                                    } else if subject4 == 6 {
+                                                        l_random_figure = Val::from(2767);
+                                                    } else if subject4 == 8 {
+                                                        l_random_figure = Val::from(2770);
+                                                    } else if subject4 == 11 {
+                                                        l_random_figure = Val::from(2771);
+                                                    } else if subject4 == 13 {
+                                                        l_random_figure = Val::from(2769);
+                                                    } else if subject4 == 14 {
+                                                        l_random_figure = Val::from(2768);
+                                                    } else {
+                                                        l_random_figure = Val::from(2765);
                                                     }
                                                     ctx.lines(args![
                                                         ((Val::from("A nice ")
@@ -529,22 +474,13 @@ fn sweet_devi_wop_run(ctx: &Ctx, mut step: SweetDeviWopStep, args: Vec<Val>) -> 
                     ],
                 )?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Am I qualified to join?:How do I join the war?:Cancel:Let me out of here, please!",
                         )],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Deviruchi",
                             args![
@@ -563,10 +499,7 @@ fn sweet_devi_wop_run(ctx: &Ctx, mut step: SweetDeviWopStep, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(
                             "Deviruchi",
                             args![
@@ -605,18 +538,12 @@ fn sweet_devi_wop_run(ctx: &Ctx, mut step: SweetDeviWopStep, args: Vec<Val>) -> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["hmm, I see."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    4 => {
                         ctx.lines_as(
                             "Deviruchi",
                             args!["Oh, Alright. I can help.", "I'll send you back to your savepoint."],
@@ -647,6 +574,7 @@ fn sweet_devi_wop_run(ctx: &Ctx, mut step: SweetDeviWopStep, args: Vec<Val>) -> 
                         )?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
                 step = SweetDeviWopStep::OnPCLogoutEvent;
                 continue 'machine;
@@ -1589,14 +1517,8 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                         ],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("No! Wait!:Go to the staging area.")])?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                    match runtime::select_values(ctx, &[Val::from("No! Wait!:Go to the staging area.")])? {
+                        1 => {
                             ctx.lines_as(
                                 "Mr. Doppel",
                                 args![
@@ -1613,10 +1535,7 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             if ctx
                                 .call(
                                     Function::IsPartyLeader,
@@ -1629,25 +1548,16 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                                     args!["So, you are the leader. Before going to the battlefield, you should check all your members."],
                                 )?;
                                 ctx.next()?;
-                                'b2: {
-                                    let subject2 = Val::from(runtime::select_values(
+                                match runtime::select_values(
                                         ctx,
                                         &[Val::from("Very well. I'll be the last.:I am the last. Send me to the battlefield.")],
-                                    )?);
-                                    let mut matched2 = false;
-                                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    )? {
+                                    1 => {
                                         ctx.lines_as("Mr. Doppel", args!["First, make sure all the members are in your party."])?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    2 => {
                                         ctx.lines_as("Mr. Doppel", args!["Very well. Nice you have done everything on time."])?;
                                         ctx.call(
                                             Function::DelItem,
@@ -1658,6 +1568,7 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                                         ctx.call(Function::Warp, vec![Val::from("poring_w02"), Val::from(44), Val::from(82)])?;
                                         return Err(Stop::End);
                                     }
+                                    _ => {}
                                 }
                             } else {
                                 ctx.lines_as(
@@ -1677,6 +1588,7 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                                 return Err(Stop::End);
                             }
                         }
+                        _ => {}
                     }
                 } else if ctx
                     .call(
@@ -1706,27 +1618,16 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                             ],
                         )?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("No! You're wrong.:Yes. I would like to register that name.:Cancel")],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            )? {
+                            1 => {
                                 ctx.lines_as("Mr. Doppel", args!["Hey, I don't have all day! Make your mind and register as fast as you can.", "Don't forget to let all the members join the party. Only the members of a registered party can join the battle."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 ctx.lines_as(
                                     "Mr. Doppel",
                                     args![
@@ -1741,10 +1642,7 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            3 => {
                                 ctx.lines_as(
                                     "Mr. Doppel",
                                     args!["The clock is ticking. Make up your mind and register as soon as you can."],
@@ -1752,6 +1650,7 @@ fn mr_doppel_wop_team_a_run(ctx: &Ctx, mut step: MrDoppelWopTeamAStep, args: Vec
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     } else {
                         ctx.lines_as(
@@ -1870,14 +1769,8 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                         ],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("No! Wait!:Go to the staging area.")])?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                    match runtime::select_values(ctx, &[Val::from("No! Wait!:Go to the staging area.")])? {
+                        1 => {
                             ctx.lines_as(
                                 "Mr. Doppel",
                                 args![
@@ -1894,10 +1787,7 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             if ctx
                                 .call(
                                     Function::IsPartyLeader,
@@ -1910,25 +1800,16 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                                     args!["So, you are the leader. Before going to the battlefield, you should check all your members."],
                                 )?;
                                 ctx.next()?;
-                                'b2: {
-                                    let subject2 = Val::from(runtime::select_values(
+                                match runtime::select_values(
                                         ctx,
                                         &[Val::from("Very well. I'll be the last.:I am the last. Send me to the battlefield.")],
-                                    )?);
-                                    let mut matched2 = false;
-                                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    )? {
+                                    1 => {
                                         ctx.lines_as("Mr. Doppel", args!["First, make sure all the members are in your party."])?;
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    2 => {
                                         ctx.lines_as("Mr. Doppel", args!["Very well. Nice you have done everything on time."])?;
                                         ctx.call(
                                             Function::DelItem,
@@ -1939,6 +1820,7 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                                         ctx.call(Function::Warp, vec![Val::from("poring_w02"), Val::from(153), Val::from(82)])?;
                                         return Err(Stop::End);
                                     }
+                                    _ => {}
                                 }
                             } else {
                                 ctx.lines_as(
@@ -1958,6 +1840,7 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                                 return Err(Stop::End);
                             }
                         }
+                        _ => {}
                     }
                 } else if ctx
                     .call(
@@ -1987,27 +1870,16 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                             ],
                         )?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("No! You're wrong.:Yes. I would like to register that name.:Cancel")],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            )? {
+                            1 => {
                                 ctx.lines_as("Mr. Doppel", args!["Hey, I don't have all day! Make your mind and register as fast as you can.", "Don't forget to let all the members join the party. Only the members of a registered party can join the battle."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 ctx.lines_as(
                                     "Mr. Doppel",
                                     args![
@@ -2022,10 +1894,7 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            3 => {
                                 ctx.lines_as(
                                     "Mr. Doppel",
                                     args!["The clock is ticking. Make up your mind and register as soon as you can."],
@@ -2033,6 +1902,7 @@ fn mr_doppel_wop_team_d_run(ctx: &Ctx, mut step: MrDoppelWopTeamDStep, args: Vec
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     } else {
                         ctx.lines_as(
@@ -3336,14 +3206,8 @@ fn angeling_guardian_wop_da_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 "I can see the empty slots to equip the Badges."
             ])?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Equip War Badge.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+            match runtime::select_values(ctx, &[Val::from("Equip War Badge.:Cancel.")])? {
+                1 => {
                     if ctx.call(Function::CountItem, vec![Val::from(7773)])?.is_true() {
                         if ctx.var("$@wop_doorcount_a").get()?.number()? < 4 {
                             ctx.mes("War Badge equipped.")?;
@@ -3369,15 +3233,12 @@ fn angeling_guardian_wop_da_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                         ctx.mes("^4d4dff - War Badge missing. You can obtain a War badge by killing members of the other team. - ^000000")?;
                         ctx.close_window()?;
                     }
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.mes("Cancel.")?;
                     ctx.close_window()?;
                 }
+                _ => {}
             }
         } else {
             ctx.lines(args![
@@ -3507,14 +3368,8 @@ fn deviling_guardian_wop_dd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 "I can see the empty slots to equip the Badges."
             ])?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Equip War Badge.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+            match runtime::select_values(ctx, &[Val::from("Equip War Badge.:Cancel.")])? {
+                1 => {
                     if ctx.call(Function::CountItem, vec![Val::from(7773)])?.is_true() {
                         if ctx.var("$@wop_doorcount_d").get()?.number()? < 4 {
                             ctx.mes("War Badge equipped.")?;
@@ -3540,15 +3395,12 @@ fn deviling_guardian_wop_dd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                         ctx.mes("^4d4dff - War Badge missing. You can obtain a War badge by killing members of the other team. - ^000000")?;
                         ctx.close_window()?;
                     }
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.mes("Cancel.")?;
                     ctx.close_window()?;
                 }
+                _ => {}
             }
         } else {
             ctx.lines(args![

@@ -189,19 +189,11 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("5 Yellow Gemstones:5 Blue Gemstones:5 Red Gemstones")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.lines_as(
                                 "Pisruik",
                                 args![
@@ -315,25 +307,15 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ],
                                     )?;
                                     ctx.next()?;
-                                    'b2: {
-                                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Medicine?:Bomb?")])?);
-                                        let mut matched2 = false;
-                                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
+                                    match runtime::select_values(ctx, &[Val::from("Medicine?:Bomb?")])? {
+                                        1 => {
                                             ctx.var("alche_sk").set(Val::from(4))?;
                                             ctx.lines_as(
                                                 "Pisruik",
                                                 args!["Hahahah, that's right!", "I'm working on making", "a new form of medicine."],
                                             )?;
-                                            break 'b2;
                                         }
-                                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                            matched2 = true;
-                                        }
-                                        if matched2 {
+                                        2 => {
                                             ctx.var("alche_sk").set(Val::from(4))?;
                                             ctx.lines_as(
                                                 "Pisruik",
@@ -346,8 +328,8 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     "I test them? Here? No way!"
                                                 ],
                                             )?;
-                                            break 'b2;
                                         }
+                                        _ => {}
                                     }
                                     ctx.next()?;
                                     ctx.lines_as(
@@ -397,19 +379,11 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ],
                                     )?;
                                     ctx.next()?;
-                                    'b3: {
-                                        let subject3 = Val::from(runtime::select_values(
+                                    match runtime::select_values(
                                             ctx,
                                             &[Val::from("Nope, I'm too busy!:Sure, I'll help you.:What's in it for me?")],
-                                        )?);
-                                        let mut matched3 = false;
-                                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                            && !subject3.loosely_equals(&Val::from(2))
-                                            && !subject3.loosely_equals(&Val::from(3));
-                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
+                                        )? {
+                                        1 => {
                                             ctx.var("alche_sk").set(Val::from(5))?;
                                             ctx.lines_as(
                                                 "Pisruik",
@@ -424,10 +398,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
+                                        2 => {
                                             ctx.var("alche_sk").set(Val::from(6))?;
                                             ctx.lines_as(
                                                 "Pisruik",
@@ -493,10 +464,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
+                                        3 => {
                                             ctx.lines_as(
                                                 "Pisruik",
                                                 args![
@@ -593,6 +561,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 } else if (((ctx.call(Function::CountItem, vec![Val::from(715)])? == 0
                                     && ctx.call(Function::CountItem, vec![Val::from(1093)])? == 0)
@@ -653,10 +622,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(
                                 "Pisruik",
                                 args![
@@ -671,10 +637,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        3 => {
                             ctx.lines_as(
                                 "Pisruik",
                                 args![
@@ -689,6 +652,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else {
                     if ctx.var("alche_sk").get()? == 3 {
@@ -792,19 +756,11 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ],
                             )?;
                             ctx.next()?;
-                            'b4: {
-                                let subject4 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("Nope, I'm too busy!:Sure, I'll help you.:What's in it for me?")],
-                                )?);
-                                let mut matched4 = false;
-                                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                    && !subject4.loosely_equals(&Val::from(2))
-                                    && !subject4.loosely_equals(&Val::from(3));
-                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
+                                )? {
+                                1 => {
                                     ctx.var("alche_sk").set(Val::from(5))?;
                                     ctx.lines_as(
                                         "Pisruik",
@@ -819,10 +775,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
+                                2 => {
                                     ctx.var("alche_sk").set(Val::from(6))?;
                                     ctx.lines_as(
                                         "Pisruik",
@@ -888,10 +841,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
+                                3 => {
                                     ctx.lines_as(
                                         "Pisruik",
                                         args![
@@ -988,6 +938,7 @@ fn pisruik_qsk_al_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         } else {
                             if ctx.var("alche_sk").get()? == 5 {

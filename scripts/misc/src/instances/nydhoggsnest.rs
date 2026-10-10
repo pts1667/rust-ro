@@ -33,17 +33,11 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                     ctx.next()?;
                     ctx.mes("Near the bottom of the gate, Laphine tribeswomen have been turned to stone and now look like they are part of the great door.")?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Move closer to look more carefully.:Step back.")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HOLYHIT")?])?;
                             ctx.call(Function::PushPc, vec![Val::from(3), Val::from(3)])?;
                             if ctx.var("ep13_1_edq").get()? == 14 {
@@ -62,13 +56,11 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else {
                     if ctx.var("ins_nyd").get()? == 1 {
@@ -95,17 +87,11 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                             ctx.next()?;
                             ctx.lines_as("??????", args!["Wingless one... Our promised words..."])?;
                             ctx.next()?;
-                            'b2: {
-                                let subject2 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("'Guardian's spell'!:Take a step back.")],
-                                )?);
-                                let mut matched2 = false;
-                                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                )? {
+                                1 => {
                                     ctx.lines_as(
                                         "??????",
                                         args!["Promised words... Guardian's spell... proof of their existence."],
@@ -124,13 +110,11 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                2 => {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         } else if ((ctx.var("ins_nyd").get()? == 131 || ctx.var("ins_nyd").get()? == 132)
                             || ctx.var("ins_nyd").get()?.number()? > 199)
@@ -169,19 +153,11 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                                         args!["The loyal servants of the Guardian... what can I do for you?"],
                                     )?;
                                     ctx.next()?;
-                                    'b3: {
-                                        let subject3 = Val::from(runtime::select_values(
+                                    match runtime::select_values(
                                             ctx,
                                             &[Val::from("Please allow me to enter.:I want to go in.:I want to leave.")],
-                                        )?);
-                                        let mut matched3 = false;
-                                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                            && !subject3.loosely_equals(&Val::from(2))
-                                            && !subject3.loosely_equals(&Val::from(3));
-                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
+                                        )? {
+                                        1 => {
                                             if ctx.call(Function::InstanceCreate, vec![l_md_name_s.clone()])?.number()? < 0 {
                                                 ctx.lines_as("Yggdrasil Gatekeeper", args!["The Guardian seems to wish to be alone. I will go in and check, please wait out here."])?;
                                                 ctx.close_window()?;
@@ -199,20 +175,15 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
+                                        2 => {
                                             step = YggdrasilGatekeeperStep::LEnter;
                                             continue 'machine;
                                         }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
+                                        3 => {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 }
                                 ctx.lines_as(
@@ -274,17 +245,11 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                             ctx.next()?;
                             ctx.mes("Near the bottom of the gate, Laphine tribeswomen have been turned to stone and now look like they are part of the great door.")?;
                             ctx.next()?;
-                            'b4: {
-                                let subject4 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("Move closer to look more carefully.:Step back.")],
-                                )?);
-                                let mut matched4 = false;
-                                let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
+                                )? {
+                                1 => {
                                     ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_HOLYHIT")?])?;
                                     ctx.call(Function::PushPc, vec![Val::from(3), Val::from(3)])?;
                                     ctx.mes("A mysterious power prevents you from getting too close. It looks like there is something strong beyond the door...")?;
@@ -293,13 +258,11 @@ fn yggdrasil_gatekeeper_run(ctx: &Ctx, mut step: YggdrasilGatekeeperStep, args: 
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
+                                2 => {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         }
                     }
@@ -489,24 +452,15 @@ fn historian_magnifier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                         args!["So, did you read the whole story that I have prepared?"],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Not yet.:I read all the stories.")])?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                    match runtime::select_values(ctx, &[Val::from("Not yet.:I read all the stories.")])? {
+                        1 => {
                             ctx.lines_as("Historian Magnifier", args!["Sheesh~ I prepared these stories for you carefully, but you didn't bother to check anything out did you?"])?;
                             ctx.next()?;
                             ctx.lines_as("Historian Magnifier", args!["It would be better if you returned after reading all of them. That's very basic data of what we should do for the future."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(
                                 "Historian Magnifier",
                                 args!["Hm, good job. Maybe I don't need to check anything else, right?"],
@@ -554,6 +508,7 @@ fn historian_magnifier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else if ((ctx.var("ins_nyd").get()? == 5 || ctx.var("ins_nyd").get()? == 51) || ctx.var("ins_nyd").get()? == 52) {
                     ctx.mes("Okay, let's try to contact them first, to be clear about any caves or treasures.")?;
@@ -688,25 +643,16 @@ fn assistant_naomi_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["Don't you see I am too busy? Don't hesitate. Just do it."],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Look busy, and take a step back.:Help her just this once.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as("Assistant Naomi", args!["Gosh! Where is-? Where did-? Ugh! It's so difficult!"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Assistant Naomi",
                     args!["Ah... if you're done moving those, then these should go in shelf 3 row B."],
@@ -823,21 +769,16 @@ fn assistant_naomi_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else if ctx.var("ins_nyd").get()? == 4 {
         ctx.mes("Browse around, to take a look at the books.")?;
         ctx.next()?;
-        'b2: {
-            let subject2 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Discovery of Heterogeneity:Report of Indigenous Tribes")],
-            )?);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
+            )? {
+            1 => {
                 ctx.mes("Satan Morocc has known that he didn't resurrect normally or by himself.")?;
                 ctx.next()?;
                 ctx.mes("Continuously, adventurers from Rune-Midgarts have attacked him and he is slowly losing his power. He would need more time to resurrect completely.")?;
@@ -882,10 +823,7 @@ fn assistant_naomi_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
+            2 => {
                 ctx.mes("Long ago, there wasn't a sun, moon, or stars; just empty earth... and Ymir was born. Then, by making sons, Ymir grew.")?;
                 ctx.next()?;
                 ctx.mes("But, his sons grew as well and he was killed by Odin, Vili, and Ve; 3 brothers, Gods, that attacked from different sides.")?;
@@ -908,6 +846,7 @@ fn assistant_naomi_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.mes("The doctor never ever tries to come back, and there're too many things to do... How can I do it all...")?;
@@ -932,21 +871,13 @@ fn grumbling_soldier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.mes("Nowadays, the world has turned unstable. I can't even fly comfortably anymore.")?;
         ctx.next()?;
         if ctx.var("ins_nyd").get()? == 5 {
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "What's with the cave up north?:Who are the Sapha tribesmen?:Hmm. We can talk later.",
                     )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         "Grumbling Soldier",
                         args!["What? If you wander around there... you might return with injuries."],
@@ -969,10 +900,7 @@ fn grumbling_soldier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as(
                         "Grumbling Soldier",
                         args![
@@ -997,13 +925,11 @@ fn grumbling_soldier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else {
             ctx.lines_as(
@@ -1051,21 +977,13 @@ fn sighing_soldier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.mes("When will we be finished with this combat with the Sapha? Ugghhhh...")?;
         ctx.next()?;
         if ctx.var("ins_nyd").get()? == 5 {
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "What's with the cave up north?:Who are the Sapha tribesmen?:Hmm. We can talk later.",
                     )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         "Sighing Soldier",
                         args!["Well... I'm not sure, but we have avoided going to that area."],
@@ -1083,10 +1001,7 @@ fn sighing_soldier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as("Sighing Soldier", args!["I don't know what others think about it... but we've had some trouble with our attitude against the Sapha tribes."])?;
                     ctx.next()?;
                     ctx.lines_as(
@@ -1108,13 +1023,11 @@ fn sighing_soldier_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else {
             ctx.lines_as(
@@ -2069,22 +1982,13 @@ fn laphine_prisoner_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["Please, talk to my people in Splendide. They will come to help me."],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "What happened to you?:What's in the cave to the north?:Tell me about your tribe.:I will leave you alone.",
                     )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3))
-                    && !subject1.loosely_equals(&Val::from(4));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         "Laphine Prisoner",
                         args!["During out last battle with the Sapha tribe... they caught me and took me prisoner."],
@@ -2109,10 +2013,7 @@ fn laphine_prisoner_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as("Laphine Prisoner", args!["There is..."])?;
                     ctx.next()?;
                     ctx.lines_as(
@@ -2128,10 +2029,7 @@ fn laphine_prisoner_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.lines_as(
                         "Laphine Prisoner",
                         args!["The Laphines have protected the Yggdrasil World Tree for generations."],
@@ -2156,13 +2054,11 @@ fn laphine_prisoner_edq_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                4 => {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else {
             if ctx.var("ins_nyd").get()? == 92 {
@@ -2400,14 +2296,8 @@ fn murdered_yggdrasilid_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                 break 'l1;
             }
             'b1: {
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Who are you?:What do you mean?")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                match runtime::select_values(ctx, &[Val::from("Who are you?:What do you mean?")])? {
+                    1 => {
                         ctx.lines_as("World Tree World Tree Yggdrasil", args!["I... I am the World Tree Yggdrasil, servant of the Guardian of Nidhoggur, as well as the High Priest leading the Laphine Tribe."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -2422,12 +2312,8 @@ fn murdered_yggdrasilid_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                             args!["Hurry... and leave... leave this place before it's too late."],
                         )?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "World Tree World Tree Yggdrasil",
                             args!["The guardian... something's wrong with the guardian. I don't know what made him like this."],
@@ -2454,6 +2340,7 @@ fn murdered_yggdrasilid_1f_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                         ctx.next()?;
                         l_exit = Val::from(1);
                     }
+                    _ => {}
                 }
                 if l_exit.clone().is_true() {
                     break 'l1;
@@ -3635,173 +3522,151 @@ fn nyd_2f_boss_enter_call_run(ctx: &Ctx, mut step: Nyd2fBossEnterCallStep, args:
             }
             Nyd2fBossEnterCallStep::OnWarpColor => {
                 l_map_s = ctx.call(Function::InstanceMapName, vec![Val::from("2@nyd")])?;
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from("Nidhoggur's Shadow : In this chaos... your blood is just what I need."),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0xFFFF00"),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_white")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_yellow")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_green")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_red")])? + Val::from("::OnEnable"))],
-                        )?;
-                        ctx.call(
-                            Function::InstanceWarpAll,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(115),
-                                Val::from(278),
-                                ctx.call(Function::InstanceId, vec![])?,
-                            ],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from("Nidhoggur's Shadow : I will freeze every last drop of your blood."),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0xFFFF00"),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_red")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_yellow")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_green")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_white")])? + Val::from("::OnEnable"))],
-                        )?;
-                        ctx.call(
-                            Function::InstanceWarpAll,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(115),
-                                Val::from(373),
-                                ctx.call(Function::InstanceId, vec![])?,
-                            ],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from("Nidhoggur's Shadow : Sleep for eternity in an empty illusion."),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0xFFFF00"),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_red")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_white")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_green")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_yellow")])? + Val::from("::OnEnable"))],
-                        )?;
-                        ctx.call(
-                            Function::InstanceWarpAll,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(284),
-                                Val::from(278),
-                                ctx.call(Function::InstanceId, vec![])?,
-                            ],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::MapAnnounce,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from("Nidhoggur's Shadow : I'll let you enjoy the pain of dying slowly."),
-                                ctx.constant("BC_MAP")?,
-                                Val::from("0xFFFF00"),
-                            ],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_red")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_white")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_yellow")])? + Val::from("::OnDisable"))],
-                        )?;
-                        ctx.call(
-                            Function::DoNpcEvent,
-                            vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_green")])? + Val::from("::OnEnable"))],
-                        )?;
-                        ctx.call(
-                            Function::InstanceWarpAll,
-                            vec![
-                                l_map_s.clone(),
-                                Val::from(284),
-                                Val::from(374),
-                                ctx.call(Function::InstanceId, vec![])?,
-                            ],
-                        )?;
-                        return Err(Stop::End);
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
+                if subject1 == 1 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from("Nidhoggur's Shadow : In this chaos... your blood is just what I need."),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0xFFFF00"),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_white")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_yellow")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_green")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_red")])? + Val::from("::OnEnable"))],
+                    )?;
+                    ctx.call(
+                        Function::InstanceWarpAll,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(115),
+                            Val::from(278),
+                            ctx.call(Function::InstanceId, vec![])?,
+                        ],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 2 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from("Nidhoggur's Shadow : I will freeze every last drop of your blood."),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0xFFFF00"),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_red")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_yellow")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_green")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_white")])? + Val::from("::OnEnable"))],
+                    )?;
+                    ctx.call(
+                        Function::InstanceWarpAll,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(115),
+                            Val::from(373),
+                            ctx.call(Function::InstanceId, vec![])?,
+                        ],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 3 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from("Nidhoggur's Shadow : Sleep for eternity in an empty illusion."),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0xFFFF00"),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_red")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_white")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_green")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_yellow")])? + Val::from("::OnEnable"))],
+                    )?;
+                    ctx.call(
+                        Function::InstanceWarpAll,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(284),
+                            Val::from(278),
+                            ctx.call(Function::InstanceId, vec![])?,
+                        ],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 4 {
+                    ctx.call(
+                        Function::MapAnnounce,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from("Nidhoggur's Shadow : I'll let you enjoy the pain of dying slowly."),
+                            ctx.constant("BC_MAP")?,
+                            Val::from("0xFFFF00"),
+                        ],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_red")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_white")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_yellow")])? + Val::from("::OnDisable"))],
+                    )?;
+                    ctx.call(
+                        Function::DoNpcEvent,
+                        vec![(ctx.call(Function::InstanceNpcName, vec![Val::from("nyd_2f_green")])? + Val::from("::OnEnable"))],
+                    )?;
+                    ctx.call(
+                        Function::InstanceWarpAll,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(284),
+                            Val::from(374),
+                            ctx.call(Function::InstanceId, vec![])?,
+                        ],
+                    )?;
+                    return Err(Stop::End);
                 }
                 return Err(Stop::End);
             }
@@ -4005,26 +3870,17 @@ fn world_tree_yggdrasil_2f_run(ctx: &Ctx, mut step: WorldTreeYggdrasil2fStep, ar
                     args!["Now... Allow me to escort you out of the cursed nest."],
                 )?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Please let me out.:I want to look around for a while.")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.var("'ins_nyd2").set(Val::from(0))?;
                         ctx.var("ins_nyd").set(Val::from(203))?;
                         ctx.call(Function::Warp, vec![Val::from("nyd_dun02"), Val::from(98), Val::from(196)])?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(
                             "World Tree Yggdrasil",
                             args!["Is that so... I'll be around if you want to leave."],
@@ -4032,6 +3888,7 @@ fn world_tree_yggdrasil_2f_run(ctx: &Ctx, mut step: WorldTreeYggdrasil2fStep, ar
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
                 step = WorldTreeYggdrasil2fStep::OnInstanceInit;
                 continue 'machine;
@@ -4907,22 +4764,13 @@ fn nidhoggur_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     }
     ctx.mes("What do you need to do?")?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from(
                 "Reset variables to allow entrance to Nidhoggur:change variable 'ins_nyd':Remove 3 day timer 3135:Confirm variable number",
             )],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.var("ins_nyd").set(Val::from(200))?;
             ctx.var("ins_nyd2").set(Val::from(0))?;
             ctx.call(Function::EraseQuest, vec![Val::from(3135)])?;
@@ -4930,30 +4778,17 @@ fn nidhoggur_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.mes("Which variable do you want to change?")?;
             ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("ins_nyd:ins_nyd2")])?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+            match runtime::select_values(ctx, &[Val::from("ins_nyd:ins_nyd2")])? {
+                1 => {
                     l_var_s = Val::from("ins_nyd");
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                2 => {
                     l_var_s = Val::from("ins_nyd2");
-                    break 'b2;
                 }
+                _ => {}
             }
             ctx.mes("Input the variable number")?;
             ctx.next()?;
@@ -4974,10 +4809,7 @@ fn nidhoggur_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.mes("The 3 day timer will be removed when you close this dialog.")?;
             ctx.next()?;
             ctx.call(Function::EraseQuest, vec![Val::from(3135)])?;
@@ -4985,10 +4817,7 @@ fn nidhoggur_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
+        4 => {
             ctx.lines(args![
                 ((Val::from("ins_nyd is at ") + ctx.var("ins_nyd").get()?) + Val::from(".")),
                 ((Val::from("ins_nyd2 is at ") + ctx.var("ins_nyd2").get()?) + Val::from("."))
@@ -4996,6 +4825,7 @@ fn nidhoggur_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -5015,62 +4845,41 @@ fn purification_admin_nyd2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
         ctx.close_window()?;
         return Err(Stop::End);
     }
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from(
                 "Generate Purification Stone:Remove Purification Stone:Turn Entrance NPC OFF:Turn Entrance NPC On:Cancel",
             )],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4))
-            && !subject1.loosely_equals(&Val::from(5));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.mes("Purification stone has been created and will stay on for 30 minutes.")?;
             ctx.call(Function::DoNpcEvent, vec![Val::from("Purification Stone#nyd2::OnEnable")])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.mes("The Purification Stone has been destroyed.")?;
             ctx.call(Function::DoNpcEvent, vec![Val::from("Purification Stone#nyd2::OnDisable")])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.mes("The Yggdrasil Gatekeeper at nyd_dun02 100 201 is now OFF.")?;
             ctx.call(Function::DisableNpc, vec![Val::from("Yggdrasil Gatekeeper")])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
+        4 => {
             ctx.mes("The Yggdrasil Gatekeeper at nyd_dun02 100 201 is now On.")?;
             ctx.call(Function::EnableNpc, vec![Val::from("Yggdrasil Gatekeeper")])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-            matched1 = true;
-        }
-        if matched1 {
+        5 => {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }

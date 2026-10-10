@@ -416,20 +416,13 @@ fn klaubis_zen3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from(
                 "Have you lived in here long?:I agree.:Have you heard about the serial killer?",
             )],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as(
                 "Klaubis",
                 args![
@@ -455,10 +448,7 @@ fn klaubis_zen3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Klaubis",
                 args![
@@ -473,10 +463,7 @@ fn klaubis_zen3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Klaubis",
                 args![
@@ -491,6 +478,7 @@ fn klaubis_zen3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -1463,18 +1451,11 @@ fn merpi_zen2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Well, I have nothing to ask...:Any news or rumors?:I like laundry too.")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as(
                 "Merpi",
                 args![
@@ -1489,10 +1470,7 @@ fn merpi_zen2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Merpi",
                 args![
@@ -1507,10 +1485,7 @@ fn merpi_zen2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Merpi",
                 args![
@@ -1523,6 +1498,7 @@ fn merpi_zen2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -1532,151 +1508,135 @@ pub fn merpi_zen2(ctx: &Ctx) -> Script {
 }
 
 fn berru_lhz_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as("Berru", args!["Daddy...! Waaaaah~!", "I wanna see my Daddy!"])?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_CRY")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Berru#lhz_01")])?,
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Pilia",
-                args![
-                    "Berru, I don't ",
-                    "think Daddy's coming",
-                    "home tonight. Come on,",
-                    "we should go to bed."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Berru",
-                args![
-                    "No, I'm not gonna",
-                    "sleep till Daddy gets",
-                    "home! He said he'll",
-                    "bring us candy tonight!",
-                    "You go sleep first, Pilia!"
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_ANGER")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Berru#lhz_01")])?,
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Pilia",
-                args![
-                    "^333333*Sigh...*^000000",
-                    "Where's our Daddy?",
-                    "He said he found a",
-                    "good job, but we haven't",
-                    "heard from him since then..."
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_THINK")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Pilia#lhz_01")])?,
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Pilia",
-                args![
-                    "What's taking him",
-                    "so long? I hope Daddy",
-                    "comes back home soon.",
-                    "Come on, Berru, don't cry."
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_THINK")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Pilia#lhz_01")])?,
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as("Berru", args!["^333333*Sob...*^000000", "But I'm hungry", "and I miss Daddy!"])?;
-            ctx.next()?;
-            ctx.lines_as("Pilia", args!["Uncle Togii from", "next door hasn't", "come back either..."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Pilia",
-                args![
-                    "Hmm? Oh, I'm sorry,",
-                    "but my little brother",
-                    "just won't stop crying.",
-                    "I'm sorry if we're loud..."
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_QUESTION")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Pilia#lhz_01")])?,
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Pilia",
-                args![
-                    "Our daddy goes to work",
-                    "somewhere far away. He",
-                    "finally has a good job, but",
-                    "sometimes we don't hear",
-                    "from him for days. We get",
-                    "really worried about him."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Pilia",
-                args![
-                    "My brother Berru always",
-                    "misses him a lot. I don't",
-                    "know how to make him",
-                    "stop crying! What do I do?"
-                ],
-            )?;
-            ctx.call(
-                Function::Emotion,
-                vec![
-                    ctx.constant("ET_PROFUSELY_SWEAT")?,
-                    ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Pilia#lhz_01")])?,
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
+    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+    if subject1 == 1 {
+        ctx.lines_as("Berru", args!["Daddy...! Waaaaah~!", "I wanna see my Daddy!"])?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_CRY")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Berru#lhz_01")])?,
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Pilia",
+            args![
+                "Berru, I don't ",
+                "think Daddy's coming",
+                "home tonight. Come on,",
+                "we should go to bed."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Berru",
+            args![
+                "No, I'm not gonna",
+                "sleep till Daddy gets",
+                "home! He said he'll",
+                "bring us candy tonight!",
+                "You go sleep first, Pilia!"
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_ANGER")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Berru#lhz_01")])?,
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Pilia",
+            args![
+                "^333333*Sigh...*^000000",
+                "Where's our Daddy?",
+                "He said he found a",
+                "good job, but we haven't",
+                "heard from him since then..."
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_THINK")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Pilia#lhz_01")])?,
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if subject1 == 2 {
+        ctx.lines_as(
+            "Pilia",
+            args![
+                "What's taking him",
+                "so long? I hope Daddy",
+                "comes back home soon.",
+                "Come on, Berru, don't cry."
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_THINK")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Pilia#lhz_01")])?,
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as("Berru", args!["^333333*Sob...*^000000", "But I'm hungry", "and I miss Daddy!"])?;
+        ctx.next()?;
+        ctx.lines_as("Pilia", args!["Uncle Togii from", "next door hasn't", "come back either..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if subject1 == 3 {
+        ctx.lines_as(
+            "Pilia",
+            args![
+                "Hmm? Oh, I'm sorry,",
+                "but my little brother",
+                "just won't stop crying.",
+                "I'm sorry if we're loud..."
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_QUESTION")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Pilia#lhz_01")])?,
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Pilia",
+            args![
+                "Our daddy goes to work",
+                "somewhere far away. He",
+                "finally has a good job, but",
+                "sometimes we don't hear",
+                "from him for days. We get",
+                "really worried about him."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Pilia",
+            args![
+                "My brother Berru always",
+                "misses him a lot. I don't",
+                "know how to make him",
+                "stop crying! What do I do?"
+            ],
+        )?;
+        ctx.call(
+            Function::Emotion,
+            vec![
+                ctx.constant("ET_PROFUSELY_SWEAT")?,
+                ctx.call(Function::GetNpcId, vec![Val::from(0), Val::from("Pilia#lhz_01")])?,
+            ],
+        )?;
+        ctx.close_window()?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -1734,316 +1694,299 @@ fn beggar_lhz_02_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         )?;
         ctx.call(Function::Emotion, vec![ctx.constant("ET_THANKS")?])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "Everyone's been in",
-                        "a situation where you",
-                        "sometimes you feel that",
-                        "you have to make a choice",
-                        "between doing the right thing",
-                        "and doing what you want, right?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "You may feel trapped.",
-                        "Well, let me tell you, when",
-                        "it comes to a problem, all",
-                        "the solutions available to",
-                        "you aren't always obvious.",
-                        "So just calm down and think."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "What you can see and",
-                        "understand might not match",
-                        "with reality. Like the stars that are always there, but not visible",
-                        "during the day, we'll always have hope, even if we can't see it."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.mes(". . . . . . . . . . . .")?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.lines(args![". . . . . . . . . . . .", ". . . . . . . . . . . ."])?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.lines(args![
-                    ". . . . . . . . . . . .",
-                    ". . . . . . . . . . . .",
-                    ". . . . . . . . . . . ."
-                ])?;
-                ctx.next()?;
-                ctx.mes("[Beggar]")?;
-                ctx.call(Function::Emotion, vec![ctx.constant("ET_QUESTION")?])?;
-                ctx.lines(args!["Hmm...?", "You seem surprised~"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "I sort of believe in fate and",
-                        "sort of don't. Let me explain",
-                        "it this way. I take life day by",
-                        "day, with each day covering its",
-                        "own spectrum with miracle on one end and tragedy on the other."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "So each day has the capacity",
-                        "for experiences that can be",
-                        "good, bad or both. I believe",
-                        "each person can take an ",
-                        "active role in shaping their",
-                        "destiny, day by day."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "Now, there may be certain",
-                        "things that you can't control,",
-                        "but even a pessimist might",
-                        "be able to agree that this",
-                        "is a world that not only has",
-                        "tragedy, but miracles as well."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "Stand up when you're down",
-                        "and live your life with passion. The capacity for miracles will",
-                        "always be there and know that",
-                        "you can be someone else's",
-                        "miracle. Isn't that wonderful?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.mes(". . . . . . . . . . . .")?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.lines(args![". . . . . . . . . . . .", ". . . . . . . . . . . ."])?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.lines(args![
-                    ". . . . . . . . . . . .",
-                    ". . . . . . . . . . . .",
-                    ". . . . . . . . . . . ."
-                ])?;
-                ctx.next()?;
-                ctx.mes("[Beggar]")?;
-                ctx.call(Function::Emotion, vec![ctx.constant("ET_QUESTION")?])?;
-                ctx.lines(args![
-                    "Don't believe me?",
-                    "Well, you'll see for",
-                    "yourself, youngster.",
-                    "There's much good in you."
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "Anger. People deal with",
-                        "it in different ways. Some",
-                        "suppress it. Some relish it.",
-                        "Some fear being angry. Now,",
-                        "to be simple, let's say there",
-                        "are two kinds of anger."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "The first is the kind that",
-                        "isn't so productive. More of",
-                        "a frustration that you can let",
-                        "go. Someone cut you off on the",
-                        "freeway or a friend innocently forgot your birthday? No biggie."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "Don't let this kind of",
-                        "anger get to you or you'll",
-                        "look like a loser. Think of",
-                        "the big picture and if you're",
-                        "still upset, vent appropriately. Be honest without hurting anyone."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "The second kind of anger",
-                        "is righteous anger. You've",
-                        "been wronged and need ",
-                        "some form of retribution. ",
-                        "Just don't misdirect your anger",
-                        "and respond appropriately."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "The second kind of anger is",
-                        "righteous anger. You've been",
-                        "wronged and need some form",
-                        "of retribution. Remember to",
-                        "make appropriate confrontations",
-                        "and don't misdirect your rage."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Beggar",
-                    args![
-                        "Getting into a fight with",
-                        "righteous anger, say to protect",
-                        "someone dear to you, will make",
-                        "you a hero. Fighting with anger",
-                        "born of frustration will make you a bully. Know the difference."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.mes(". . . . . . . . . . . .")?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.lines(args![". . . . . . . . . . . .", ". . . . . . . . . . . ."])?;
-                ctx.next()?;
-                ctx.lines(args![
-                    ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                ])?;
-                ctx.call(
-                    Function::Emotion,
-                    vec![
-                        ctx.constant("ET_THINK")?,
-                        Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                    ],
-                )?;
-                ctx.lines(args![
-                    ". . . . . . . . . . . .",
-                    ". . . . . . . . . . . .",
-                    ". . . . . . . . . . . ."
-                ])?;
-                ctx.next()?;
-                ctx.mes("[Beggar]")?;
-                ctx.call(Function::Emotion, vec![ctx.constant("ET_QUESTION")?])?;
-                ctx.lines(args!["What's wrong?", "It might be a lot", "to take in, I know."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+        if subject1 == 1 {
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "Everyone's been in",
+                    "a situation where you",
+                    "sometimes you feel that",
+                    "you have to make a choice",
+                    "between doing the right thing",
+                    "and doing what you want, right?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "You may feel trapped.",
+                    "Well, let me tell you, when",
+                    "it comes to a problem, all",
+                    "the solutions available to",
+                    "you aren't always obvious.",
+                    "So just calm down and think."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "What you can see and",
+                    "understand might not match",
+                    "with reality. Like the stars that are always there, but not visible",
+                    "during the day, we'll always have hope, even if we can't see it."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.mes(". . . . . . . . . . . .")?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.lines(args![". . . . . . . . . . . .", ". . . . . . . . . . . ."])?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.lines(args![
+                ". . . . . . . . . . . .",
+                ". . . . . . . . . . . .",
+                ". . . . . . . . . . . ."
+            ])?;
+            ctx.next()?;
+            ctx.mes("[Beggar]")?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_QUESTION")?])?;
+            ctx.lines(args!["Hmm...?", "You seem surprised~"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 2 {
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "I sort of believe in fate and",
+                    "sort of don't. Let me explain",
+                    "it this way. I take life day by",
+                    "day, with each day covering its",
+                    "own spectrum with miracle on one end and tragedy on the other."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "So each day has the capacity",
+                    "for experiences that can be",
+                    "good, bad or both. I believe",
+                    "each person can take an ",
+                    "active role in shaping their",
+                    "destiny, day by day."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "Now, there may be certain",
+                    "things that you can't control,",
+                    "but even a pessimist might",
+                    "be able to agree that this",
+                    "is a world that not only has",
+                    "tragedy, but miracles as well."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "Stand up when you're down",
+                    "and live your life with passion. The capacity for miracles will",
+                    "always be there and know that",
+                    "you can be someone else's",
+                    "miracle. Isn't that wonderful?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.mes(". . . . . . . . . . . .")?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.lines(args![". . . . . . . . . . . .", ". . . . . . . . . . . ."])?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.lines(args![
+                ". . . . . . . . . . . .",
+                ". . . . . . . . . . . .",
+                ". . . . . . . . . . . ."
+            ])?;
+            ctx.next()?;
+            ctx.mes("[Beggar]")?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_QUESTION")?])?;
+            ctx.lines(args![
+                "Don't believe me?",
+                "Well, you'll see for",
+                "yourself, youngster.",
+                "There's much good in you."
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 3 {
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "Anger. People deal with",
+                    "it in different ways. Some",
+                    "suppress it. Some relish it.",
+                    "Some fear being angry. Now,",
+                    "to be simple, let's say there",
+                    "are two kinds of anger."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "The first is the kind that",
+                    "isn't so productive. More of",
+                    "a frustration that you can let",
+                    "go. Someone cut you off on the",
+                    "freeway or a friend innocently forgot your birthday? No biggie."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "Don't let this kind of",
+                    "anger get to you or you'll",
+                    "look like a loser. Think of",
+                    "the big picture and if you're",
+                    "still upset, vent appropriately. Be honest without hurting anyone."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "The second kind of anger",
+                    "is righteous anger. You've",
+                    "been wronged and need ",
+                    "some form of retribution. ",
+                    "Just don't misdirect your anger",
+                    "and respond appropriately."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "The second kind of anger is",
+                    "righteous anger. You've been",
+                    "wronged and need some form",
+                    "of retribution. Remember to",
+                    "make appropriate confrontations",
+                    "and don't misdirect your rage."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Beggar",
+                args![
+                    "Getting into a fight with",
+                    "righteous anger, say to protect",
+                    "someone dear to you, will make",
+                    "you a hero. Fighting with anger",
+                    "born of frustration will make you a bully. Know the difference."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.mes(". . . . . . . . . . . .")?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.lines(args![". . . . . . . . . . . .", ". . . . . . . . . . . ."])?;
+            ctx.next()?;
+            ctx.lines(args![
+                ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+            ])?;
+            ctx.call(
+                Function::Emotion,
+                vec![
+                    ctx.constant("ET_THINK")?,
+                    Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                ],
+            )?;
+            ctx.lines(args![
+                ". . . . . . . . . . . .",
+                ". . . . . . . . . . . .",
+                ". . . . . . . . . . . ."
+            ])?;
+            ctx.next()?;
+            ctx.mes("[Beggar]")?;
+            ctx.call(Function::Emotion, vec![ctx.constant("ET_QUESTION")?])?;
+            ctx.lines(args!["What's wrong?", "It might be a lot", "to take in, I know."])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["...", "......"])?;
@@ -4559,20 +4502,13 @@ fn vergil_zen4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from(
                 "Where do you want to go?:But shouldn't you go to work?:Have you heard about the serial killer?",
             )],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as(
                 "Vergil",
                 args![
@@ -4622,10 +4558,7 @@ fn vergil_zen4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Vergil",
                 args![
@@ -4650,10 +4583,7 @@ fn vergil_zen4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Vergil",
                 args![
@@ -4692,6 +4622,7 @@ fn vergil_zen4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -4714,74 +4645,57 @@ fn jorje_zero_run(ctx: &Ctx, mut step: JorjeZeroStep, args: Vec<Val>) -> Result<
                 continue 'machine;
             }
             JorjeZeroStep::OnTouch => {
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            "Jorje",
-                            args![
-                                "Arrrgh, I don't",
-                                "have any time for",
-                                "talking! I'm in the",
-                                "middle of an important",
-                                "task! H-hold on a second!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            "Jorje",
-                            args![
-                                "D-don't come any",
-                                "closer! Anyone who",
-                                "comes near me might",
-                                "just screw me up! Back off!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.lines_as(
-                            "Jorje",
-                            args![
-                                "Oh man...",
-                                "I've been working so",
-                                "hard and haven't taken",
-                                "any breaks. I think I'll",
-                                "reward myself and buy",
-                                "something like maybe--"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Jorje",
-                            args![
-                                "No! No, I'm not",
-                                "gonna buy anything!",
-                                "I've got my future wife",
-                                "to think about! Must...",
-                                "Save... More... Money!"
-                            ],
-                        )?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                if subject1 == 1 {
+                    ctx.lines_as(
+                        "Jorje",
+                        args![
+                            "Arrrgh, I don't",
+                            "have any time for",
+                            "talking! I'm in the",
+                            "middle of an important",
+                            "task! H-hold on a second!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject1 == 2 {
+                    ctx.lines_as(
+                        "Jorje",
+                        args![
+                            "D-don't come any",
+                            "closer! Anyone who",
+                            "comes near me might",
+                            "just screw me up! Back off!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject1 == 3 {
+                    ctx.lines_as(
+                        "Jorje",
+                        args![
+                            "Oh man...",
+                            "I've been working so",
+                            "hard and haven't taken",
+                            "any breaks. I think I'll",
+                            "reward myself and buy",
+                            "something like maybe--"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Jorje",
+                        args![
+                            "No! No, I'm not",
+                            "gonna buy anything!",
+                            "I've got my future wife",
+                            "to think about! Must...",
+                            "Save... More... Money!"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
                 return Err(Stop::End);
             }
@@ -4885,18 +4799,11 @@ fn cool_event_staff_saera_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Temporary headquarters?:Voting:No, thanks.")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as(
                 "Saera",
                 args![
@@ -4910,10 +4817,7 @@ fn cool_event_staff_saera_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             if ctx.var("lhz_boss").get()?.number()? < 17 {
                 ctx.lines_as(
                     "Saera",
@@ -4997,14 +4901,12 @@ fn cool_event_staff_saera_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as("Saera", args!["Thank you.", "Have a good day."])?;
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }

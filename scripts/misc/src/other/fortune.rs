@@ -92,8 +92,7 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         args!["...", "Once you have emptied your mind, think of the thing you most wish to know."],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[
                 Val::from(" (I would like to know my love fortune.) "),
@@ -101,16 +100,8 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 Val::from(" (I need advice about my future.) "),
                 Val::from(" (Can I get a warning of any dangers awaiting?) "),
             ],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as("Lhimetorra", args![" I see it... I see a sign of love... "])?;
             ctx.next()?;
             l_card_1_love = ctx.call(Function::Rand, vec![Val::from(1), Val::from(74)])?;
@@ -164,905 +155,459 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 }
             }
             ctx.mes("[Lhimetorra]")?;
-            'b2: {
-                let subject2 = l_card_1_love.clone();
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3))
-                    && !subject2.loosely_equals(&Val::from(4))
-                    && !subject2.loosely_equals(&Val::from(5))
-                    && !subject2.loosely_equals(&Val::from(6))
-                    && !subject2.loosely_equals(&Val::from(7))
-                    && !subject2.loosely_equals(&Val::from(8))
-                    && !subject2.loosely_equals(&Val::from(9))
-                    && !subject2.loosely_equals(&Val::from(10))
-                    && !subject2.loosely_equals(&Val::from(11))
-                    && !subject2.loosely_equals(&Val::from(12))
-                    && !subject2.loosely_equals(&Val::from(13))
-                    && !subject2.loosely_equals(&Val::from(14))
-                    && !subject2.loosely_equals(&Val::from(15))
-                    && !subject2.loosely_equals(&Val::from(16))
-                    && !subject2.loosely_equals(&Val::from(17))
-                    && !subject2.loosely_equals(&Val::from(18))
-                    && !subject2.loosely_equals(&Val::from(19))
-                    && !subject2.loosely_equals(&Val::from(20))
-                    && !subject2.loosely_equals(&Val::from(21))
-                    && !subject2.loosely_equals(&Val::from(22))
-                    && !subject2.loosely_equals(&Val::from(23))
-                    && !subject2.loosely_equals(&Val::from(24))
-                    && !subject2.loosely_equals(&Val::from(25))
-                    && !subject2.loosely_equals(&Val::from(26))
-                    && !subject2.loosely_equals(&Val::from(27))
-                    && !subject2.loosely_equals(&Val::from(28))
-                    && !subject2.loosely_equals(&Val::from(29))
-                    && !subject2.loosely_equals(&Val::from(30))
-                    && !subject2.loosely_equals(&Val::from(31))
-                    && !subject2.loosely_equals(&Val::from(32))
-                    && !subject2.loosely_equals(&Val::from(33))
-                    && !subject2.loosely_equals(&Val::from(34))
-                    && !subject2.loosely_equals(&Val::from(35))
-                    && !subject2.loosely_equals(&Val::from(36))
-                    && !subject2.loosely_equals(&Val::from(37))
-                    && !subject2.loosely_equals(&Val::from(38))
-                    && !subject2.loosely_equals(&Val::from(39))
-                    && !subject2.loosely_equals(&Val::from(40))
-                    && !subject2.loosely_equals(&Val::from(41))
-                    && !subject2.loosely_equals(&Val::from(42))
-                    && !subject2.loosely_equals(&Val::from(43))
-                    && !subject2.loosely_equals(&Val::from(44))
-                    && !subject2.loosely_equals(&Val::from(45))
-                    && !subject2.loosely_equals(&Val::from(46))
-                    && !subject2.loosely_equals(&Val::from(47))
-                    && !subject2.loosely_equals(&Val::from(48))
-                    && !subject2.loosely_equals(&Val::from(49))
-                    && !subject2.loosely_equals(&Val::from(50))
-                    && !subject2.loosely_equals(&Val::from(51))
-                    && !subject2.loosely_equals(&Val::from(52))
-                    && !subject2.loosely_equals(&Val::from(53))
-                    && !subject2.loosely_equals(&Val::from(54))
-                    && !subject2.loosely_equals(&Val::from(55))
-                    && !subject2.loosely_equals(&Val::from(56))
-                    && !subject2.loosely_equals(&Val::from(57))
-                    && !subject2.loosely_equals(&Val::from(58))
-                    && !subject2.loosely_equals(&Val::from(59))
-                    && !subject2.loosely_equals(&Val::from(60))
-                    && !subject2.loosely_equals(&Val::from(61))
-                    && !subject2.loosely_equals(&Val::from(62))
-                    && !subject2.loosely_equals(&Val::from(63))
-                    && !subject2.loosely_equals(&Val::from(64))
-                    && !subject2.loosely_equals(&Val::from(65))
-                    && !subject2.loosely_equals(&Val::from(66))
-                    && !subject2.loosely_equals(&Val::from(67))
-                    && !subject2.loosely_equals(&Val::from(68))
-                    && !subject2.loosely_equals(&Val::from(69))
-                    && !subject2.loosely_equals(&Val::from(70))
-                    && !subject2.loosely_equals(&Val::from(71))
-                    && !subject2.loosely_equals(&Val::from(72))
-                    && !subject2.loosely_equals(&Val::from(73))
-                    && !subject2.loosely_equals(&Val::from(74));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " You are afraid to show yourself working, to your loved one.. ",
-                        " But that is not love. Do not be afraid to show different sides of yourself to your loved one.. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" So do not worry and move on. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Maybe you are using love as an excuse to work? The card is saying to try observing love from a different perspective. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Shoveling requires skills as well. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(
-                        " How about taking a break from love and giving yourself time to relax.. I agree with what the card is saying. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Love is not meant to be so hard. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" A shovel..? ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Strange that this would come up about love.. bizarre.. You aren't using this shovel to take revenge on someone, are you?? ", " Don't get malicious thoughts. Keep a kind heart. "])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" How about taking a break from love and giving yourself time to relax.. I agree with this card. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![" Its pure eyes look at a loved one but cannot recognize them, the wings flutter towards the loved one, but it helplessly stays in one place, ", " it calls its loved one, but they cannot hear.. "])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " What a sad fortune.. ",
-                            " Indeed, it is sad love... it might be hard to overcome. "
-                        ],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " The passion of love like a raging wave... You can't even hide it. ",
-                        " With such passionate love, isn't there only one way..? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Passionate love is nearby. It is a good sign. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(7)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" The teeth of dustiness are very strong. This means.. use your teeth for victory?! ")?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(8)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " The card is telling me, 'Fly to your loved one as you were a butterfly and shoot at it as you were a star.' ",
-                        "..even though it doesn't sound like something a moth would say. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" The passion of love like a raging wave.. You can't even hide it. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(9)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Perhaps the person you believe to be a butterfly is actually a moth. This fortune is awaiting a prudent judgement. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Love is indeed a subject to be dealt with prudence. Keep that in mind young one. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(10)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " The one you love will give you a kiss of death. ",
-                        " The irresistable kiss.. It is up to you to decide whether to avoid it or not. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Charisma... is the sweetest poison. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(11)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " You are looking at a wonderful person, but their eyes are fixed in darkness. ",
-                        " How about trying to grab their attention? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" so, you need to try something other than charisma. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(12)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " Your love needs fresh blood. Healthy exercises and eating habits are necessary! ",
-                        " You must change your living pattern first. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Health is the best. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(13)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Don't you think you are infatuated by outer appearance and gambling with love? You might have to be more careful about it this time. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Beauty is only skin deep. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(14)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Become a pirate of love! It is a simple, yet strong fortune! ")?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(15)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " No matter how romantic and beautiful love is, it is not rightful, it is undesirable.. ",
-                        " is what this card means. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" I hope you are not disappointed by the moral of this fortune. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(16)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " In the rough sea called the world, only pirates, the outlaws of love, are the law. ",
-                        " This card supports strong love. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You must overcome it - no matter how strong the wave is. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(17)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " It is a warning not to get involved in false love like pirated editions! ",
-                        " You may have to reconsider your love right now. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Illegal copying is not love! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(18)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " This is praising the type of love that is always there, yet barely has a form as it does not exist. ",
-                        " Are you involved this type of love? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Love's form is obscure. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(19)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" You must be careful. Love is quietly approaching and spreading poison. Be careful of the poison of love. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" There is no cure for this poison! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(20)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " Aren't you already caught in love that you cannot run away from? Look around you. ",
-                        " You might be captured inside invisible walls. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You have been blinded by love and became a prisoner! Shouldn't you escape? "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(21)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " This fortune is saying that love is.. approaching wobbly and softly~ and then bam~ embracing it. ",
-                        " Very romantic. Hehe. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Romance is the best part of love~ "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(22)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " This card is warning you to not treat your loved one like a puppet. ",
-                        " You're not doing this, are you? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Love is not supposed to be about controlling and restraining~ mm~ "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(23)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Dolls understand a human's heart more than a human. Try treating your loved one as they were a doll. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Your loved one can't be worse than a doll, can they? "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(24)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " you are afraid to look into a doll's eyes, that is because there is a dark shadow covering your love. ",
-                        " Rid yourselves of that shadow. Then the doll will smile as well. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" That is what love is. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(25)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " Dolls become accustomed to the owner the more they are handled. Give your doll more attention. ",
-                        " The doll is craving attention. A lot of attention. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Delicate treatment and attention is the best in love. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(26)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " Do you fear the snake hair of a Medusa? However, love cannot be achieved with fear. ",
-                        " You must move forward! "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Love must be pushed forward! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(27)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " Warriors that hastily attacked the Medusa all failed, but the one hero that used a mirror succeeded. ",
-                        " You cannot succeed in love with brute force. You must use wisdom. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Do you understand what I mean young one? "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(28)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Must you love the one that has hair of snakes? Reconsider this love and think about it earnestly. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" What do you think? Isn't this a great opportunity to ponder about the relationship. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(29)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(
-                        " It is a hint saying that a strong hairstyle is the key to turning over the situation. Change your hairstyle! ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Fashion is in the hands of those who are ahead! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(30)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Love must have two things: great strength and the will to live. Have you thought about whether or not you can overcome this with your current self? ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Know love and know thyself! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(31)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " A scythe may seem burdensome but a strong Baphomet can freely use it. ",
-                        " It is the same concept. you are ready, any type of love is possible. There is no such thing as impossible. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Love requires preparation as well! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(32)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Love must have two things: great strength and the will to live. Have you thought about whether or not you can overcome this with your current self? ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Know love and know thyself! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(33)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" There are those who are born, destined to run into this wall, an obstacle. Your love seems to have reached that wall.. It must be hard. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" What a pity. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(34)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" This Baphomet looks as it is having a hard time. The person must be exhausted even it may not seem so. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Approach then with affection. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(35)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Can't you hear the cry of the card? It is suffering. Love is like that.. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" So don't be upset about it! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(36)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Your love right now is so bored that it is yawning. How about trying something fresh and new? ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Try changing your dating style. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(37)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Deep sleep brings happiness and dreams. I think what you need right now is sleep. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Get some sleep. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(38)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" I feel some sort of emptiness.. Maybe there is a gap in your love? ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Take a close look. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(39)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Even a traditional beauty can seem cold to others. Try looking at your loved one from a different point of view. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Look at love from a different perspective. You never know when you'll be able to discover something. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(40)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " They may seem dreary and ominous but their attire is spotless. They show devotion to the other. ",
-                        " Even though you are not satisfied with your love right now, take a look at their attire. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" it is carefully worn, their heart for you can be seen in it as well.. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(41)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" There is a person you must not deal with thoughtlessly nearby. Don't say or do anything carelessly. You must be careful when dealing with this person. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Bear that in mind. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(42)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Even the wind blows and the trail of her clothes flutter, her posture never changes. Loving a person with that type of heart will bring goodwill and happiness. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Keep a righteous heart and mind. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(43)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" That lightens and attacks with a pickaxe! You must aggressively move forward. What do you think? Your fortune is a good one. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Is your heart ready young one? "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(44)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " The card only shows gaunt bones, but notice how it has all the necessary tools?",
-                        " Even though your love right now may seem as there is nothing to it, it has everything you need. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Don't get too greedy about things. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(45)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " It has a lantern on its back and even in its hand.. it believes one light is insufficient. ",
-                        " you are only shining one type of light to your loved one, shining another might help. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" They might be feeling that one is not enough. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(46)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" You know the smile of Mona Lisa.. Perhaps the person you are looking at has the same expression? ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't try to gaze straight them. Make an effort to approach them. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(47)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" A knight on a horse is a fantasy in every person's heart. Make it so that this fantasy becomes real. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Then there will surely be progress. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(48)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " Is that soldier waiting to attack? I can feel great tension between the horse and knight. ",
-                        " Don't run forward carelessly. Raise your sword and wait for your chance. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" This means now is a time to wait. How about it, would you like to wait a while? "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(49)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![" He is falling asleep awaiting a battle. Is it because he is laid back, or simply pathetic? Depends on the situation I suppose. ", " But you've got to give him credit for his boldness. "])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" How about becoming a brave warrior in the battle of love? "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(50)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Very favorable. It's to a point that I can feel strong energy from the card. I will give some of this energy to you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Devote that energy to love..! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(51)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" What does the god of death have to say about love? It is something ominous for sure. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" I think it is trying to give a warning. Be careful. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(52)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Hmm. How about giving a cute puppy as a gift? One with a round nose. Then they will surely be happy. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" But can't help it they don't like puppies. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(53)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" I can tell what it was doing from the way it is crying while holding an axe with blood. It is deeply wounded by love. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" that wound isn't cured soon, it will become as Anubis wanted. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(54)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" The pattern of the clothes symbolizes a warning. It is saying to be careful of love. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args!["Be cautious. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(55)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" He is a warning you not to drool over someone else. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" That's bad! You will be punished! "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(56)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Who is he so fiercly gazing at with those grand muscles? He is looking at someone else for sure. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't get sidetracked and look elsewhere! You will be cursed! "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(57)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Strengthen your body and observe the target. That is the step to success. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" you want love as well, why don't you take the card's advice and prepare yourself first? "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(58)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" His navel is very pretty. You have to meet someone with that type of navel to be happy. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Ok? Keep that in mind~ "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(59)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" You'll get hurt you mess around. This card is giving you a piece of advice. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You did something wrong to your loved one, didn't you? Make an effort to make up for it~! "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(60)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" From the way he is massaging its back because of a shoulder cramp, maybe your love is seeking someone to massage them. Love starts from little thoughts.")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Next time you meet them, give them a massage. Start with the little things. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(61)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![" His expression is in awe. When encountering an absurd incident, his face and expression becomes peculiarly distorted. ", " I think the one you are looking towards has that type of expression. "])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Did you do something absurd to that person? Are you sure? Think about it~ "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(62)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" the lover does something wrong he pokes them with a needle. How scary.. ")?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(63)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" A person's heart is like this card. you flip it over nobody can tell what is behind it. Try turning the person's card over. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" You must approach their true heart. Understand? "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(64)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines(args![
-                        " Jokers are sly, but that is just because it is their habit. ",
-                        " The reason the person may seem capricious or cunning is partially because they are born like that. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Will you be able to approach them regardless? To do so, you must prepare you heart.. mm.. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(65)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" The joker can't use any of his strength because he is tied to a card. Perhaps the person is caught in something and can't show their true merit? ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" you love them, free them from the chains tying them down.. That is consideration.. and love "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(66)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Don't get fooled by tricks. They are a person, too. They know how to lie once in a while. Search for the trick calmly and carefully. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" And then search for a different route. That is the wise decision. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(67)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" It is saying that daring action is necessary, such as that of the Hode that strikes up from the sand. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Maybe you are discouraged a little too much right now. Be brave and daring young one. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(68)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Seeing that the Hode spits out sand to those who bother them, you must have done something to bother the person somehow. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Maybe you are being troublesome? Make an effort to relax a little more. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(69)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" The Hode has a very strong will to live. It is to survive in the forest. It is suggesting dating with that kind of will.")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Hmm, try love with more spirit. You will get good results. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(70)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Ah.. there is a noble person up north. North it is. This direction will never change. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Trust me and go for it. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(71)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" A walking bull is rare. The person you are looking towards is that rare. Don't let go of them. You may never see them again.. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" The card is saying this. "])?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(72)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" Can you see the strong muscles that even arrows cannot pierce? The person is like that, too. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" To attack with love.. you will need a stronger attack.. Mmm.. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(73)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" The scariest thing is not the hammer nor horn. It is the massive legs that support its heavy weight. Nobody can survive a hit by those legs. The person is also probably hiding the most dangerous part. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You must love but be careful at the same time. You never know when you will be hit by the hind legs. "],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(74)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.mes(" No matter how fearful the bull may be, it has a nose ring, it has already been tamed by humans. No matter how astonishing that person may be, taming is your responsibility. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Approach them with more sincerity and consideration. "])?;
-                    break 'b2;
-                }
+            let subject2 = l_card_1_love.clone();
+            if subject2 == 1 {
+                ctx.lines(args![
+                    " You are afraid to show yourself working, to your loved one.. ",
+                    " But that is not love. Do not be afraid to show different sides of yourself to your loved one.. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" So do not worry and move on. "])?;
+            } else if subject2 == 2 {
+                ctx.mes(" Maybe you are using love as an excuse to work? The card is saying to try observing love from a different perspective. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Shoveling requires skills as well. "])?;
+            } else if subject2 == 3 {
+                ctx.mes(
+                    " How about taking a break from love and giving yourself time to relax.. I agree with what the card is saying. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Love is not meant to be so hard. "])?;
+            } else if subject2 == 4 {
+                ctx.mes(" A shovel..? ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Strange that this would come up about love.. bizarre.. You aren't using this shovel to take revenge on someone, are you?? ", " Don't get malicious thoughts. Keep a kind heart. "])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" How about taking a break from love and giving yourself time to relax.. I agree with this card. "],
+                )?;
+            } else if subject2 == 5 {
+                ctx.lines(args![" Its pure eyes look at a loved one but cannot recognize them, the wings flutter towards the loved one, but it helplessly stays in one place, ", " it calls its loved one, but they cannot hear.. "])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " What a sad fortune.. ",
+                        " Indeed, it is sad love... it might be hard to overcome. "
+                    ],
+                )?;
+            } else if subject2 == 6 {
+                ctx.lines(args![
+                    " The passion of love like a raging wave... You can't even hide it. ",
+                    " With such passionate love, isn't there only one way..? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Passionate love is nearby. It is a good sign. "])?;
+            } else if subject2 == 7 {
+                ctx.mes(" The teeth of dustiness are very strong. This means.. use your teeth for victory?! ")?;
+            } else if subject2 == 8 {
+                ctx.lines(args![
+                    " The card is telling me, 'Fly to your loved one as you were a butterfly and shoot at it as you were a star.' ",
+                    "..even though it doesn't sound like something a moth would say. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" The passion of love like a raging wave.. You can't even hide it. "],
+                )?;
+            } else if subject2 == 9 {
+                ctx.mes(" Perhaps the person you believe to be a butterfly is actually a moth. This fortune is awaiting a prudent judgement. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Love is indeed a subject to be dealt with prudence. Keep that in mind young one. "],
+                )?;
+            } else if subject2 == 10 {
+                ctx.lines(args![
+                    " The one you love will give you a kiss of death. ",
+                    " The irresistable kiss.. It is up to you to decide whether to avoid it or not. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Charisma... is the sweetest poison. "])?;
+            } else if subject2 == 11 {
+                ctx.lines(args![
+                    " You are looking at a wonderful person, but their eyes are fixed in darkness. ",
+                    " How about trying to grab their attention? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" so, you need to try something other than charisma. "])?;
+            } else if subject2 == 12 {
+                ctx.lines(args![
+                    " Your love needs fresh blood. Healthy exercises and eating habits are necessary! ",
+                    " You must change your living pattern first. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Health is the best. "])?;
+            } else if subject2 == 13 {
+                ctx.mes(" Don't you think you are infatuated by outer appearance and gambling with love? You might have to be more careful about it this time. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Beauty is only skin deep. "])?;
+            } else if subject2 == 14 {
+                ctx.mes(" Become a pirate of love! It is a simple, yet strong fortune! ")?;
+            } else if subject2 == 15 {
+                ctx.lines(args![
+                    " No matter how romantic and beautiful love is, it is not rightful, it is undesirable.. ",
+                    " is what this card means. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" I hope you are not disappointed by the moral of this fortune. "],
+                )?;
+            } else if subject2 == 16 {
+                ctx.lines(args![
+                    " In the rough sea called the world, only pirates, the outlaws of love, are the law. ",
+                    " This card supports strong love. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You must overcome it - no matter how strong the wave is. "],
+                )?;
+            } else if subject2 == 17 {
+                ctx.lines(args![
+                    " It is a warning not to get involved in false love like pirated editions! ",
+                    " You may have to reconsider your love right now. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Illegal copying is not love! "])?;
+            } else if subject2 == 18 {
+                ctx.lines(args![
+                    " This is praising the type of love that is always there, yet barely has a form as it does not exist. ",
+                    " Are you involved this type of love? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Love's form is obscure. "])?;
+            } else if subject2 == 19 {
+                ctx.mes(" You must be careful. Love is quietly approaching and spreading poison. Be careful of the poison of love. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" There is no cure for this poison! "])?;
+            } else if subject2 == 20 {
+                ctx.lines(args![
+                    " Aren't you already caught in love that you cannot run away from? Look around you. ",
+                    " You might be captured inside invisible walls. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You have been blinded by love and became a prisoner! Shouldn't you escape? "],
+                )?;
+            } else if subject2 == 21 {
+                ctx.lines(args![
+                    " This fortune is saying that love is.. approaching wobbly and softly~ and then bam~ embracing it. ",
+                    " Very romantic. Hehe. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Romance is the best part of love~ "])?;
+            } else if subject2 == 22 {
+                ctx.lines(args![
+                    " This card is warning you to not treat your loved one like a puppet. ",
+                    " You're not doing this, are you? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Love is not supposed to be about controlling and restraining~ mm~ "],
+                )?;
+            } else if subject2 == 23 {
+                ctx.mes(" Dolls understand a human's heart more than a human. Try treating your loved one as they were a doll. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Your loved one can't be worse than a doll, can they? "])?;
+            } else if subject2 == 24 {
+                ctx.lines(args![
+                    " you are afraid to look into a doll's eyes, that is because there is a dark shadow covering your love. ",
+                    " Rid yourselves of that shadow. Then the doll will smile as well. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" That is what love is. "])?;
+            } else if subject2 == 25 {
+                ctx.lines(args![
+                    " Dolls become accustomed to the owner the more they are handled. Give your doll more attention. ",
+                    " The doll is craving attention. A lot of attention. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Delicate treatment and attention is the best in love. "])?;
+            } else if subject2 == 26 {
+                ctx.lines(args![
+                    " Do you fear the snake hair of a Medusa? However, love cannot be achieved with fear. ",
+                    " You must move forward! "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Love must be pushed forward! "])?;
+            } else if subject2 == 27 {
+                ctx.lines(args![
+                    " Warriors that hastily attacked the Medusa all failed, but the one hero that used a mirror succeeded. ",
+                    " You cannot succeed in love with brute force. You must use wisdom. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Do you understand what I mean young one? "])?;
+            } else if subject2 == 28 {
+                ctx.mes(" Must you love the one that has hair of snakes? Reconsider this love and think about it earnestly. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" What do you think? Isn't this a great opportunity to ponder about the relationship. "],
+                )?;
+            } else if subject2 == 29 {
+                ctx.mes(
+                    " It is a hint saying that a strong hairstyle is the key to turning over the situation. Change your hairstyle! ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Fashion is in the hands of those who are ahead! "])?;
+            } else if subject2 == 30 {
+                ctx.mes(" Love must have two things: great strength and the will to live. Have you thought about whether or not you can overcome this with your current self? ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Know love and know thyself! "])?;
+            } else if subject2 == 31 {
+                ctx.lines(args![
+                    " A scythe may seem burdensome but a strong Baphomet can freely use it. ",
+                    " It is the same concept. you are ready, any type of love is possible. There is no such thing as impossible. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Love requires preparation as well! "])?;
+            } else if subject2 == 32 {
+                ctx.mes(" Love must have two things: great strength and the will to live. Have you thought about whether or not you can overcome this with your current self? ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Know love and know thyself! "])?;
+            } else if subject2 == 33 {
+                ctx.mes(" There are those who are born, destined to run into this wall, an obstacle. Your love seems to have reached that wall.. It must be hard. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" What a pity. "])?;
+            } else if subject2 == 34 {
+                ctx.mes(" This Baphomet looks as it is having a hard time. The person must be exhausted even it may not seem so. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Approach then with affection. "])?;
+            } else if subject2 == 35 {
+                ctx.mes(" Can't you hear the cry of the card? It is suffering. Love is like that.. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" So don't be upset about it! "])?;
+            } else if subject2 == 36 {
+                ctx.mes(" Your love right now is so bored that it is yawning. How about trying something fresh and new? ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Try changing your dating style. "])?;
+            } else if subject2 == 37 {
+                ctx.mes(" Deep sleep brings happiness and dreams. I think what you need right now is sleep. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Get some sleep. "])?;
+            } else if subject2 == 38 {
+                ctx.mes(" I feel some sort of emptiness.. Maybe there is a gap in your love? ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Take a close look. "])?;
+            } else if subject2 == 39 {
+                ctx.mes(" Even a traditional beauty can seem cold to others. Try looking at your loved one from a different point of view. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Look at love from a different perspective. You never know when you'll be able to discover something. "],
+                )?;
+            } else if subject2 == 40 {
+                ctx.lines(args![
+                    " They may seem dreary and ominous but their attire is spotless. They show devotion to the other. ",
+                    " Even though you are not satisfied with your love right now, take a look at their attire. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" it is carefully worn, their heart for you can be seen in it as well.. "],
+                )?;
+            } else if subject2 == 41 {
+                ctx.mes(" There is a person you must not deal with thoughtlessly nearby. Don't say or do anything carelessly. You must be careful when dealing with this person. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Bear that in mind. "])?;
+            } else if subject2 == 42 {
+                ctx.mes(" Even the wind blows and the trail of her clothes flutter, her posture never changes. Loving a person with that type of heart will bring goodwill and happiness. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Keep a righteous heart and mind. "])?;
+            } else if subject2 == 43 {
+                ctx.mes(" That lightens and attacks with a pickaxe! You must aggressively move forward. What do you think? Your fortune is a good one. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Is your heart ready young one? "])?;
+            } else if subject2 == 44 {
+                ctx.lines(args![
+                    " The card only shows gaunt bones, but notice how it has all the necessary tools?",
+                    " Even though your love right now may seem as there is nothing to it, it has everything you need. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Don't get too greedy about things. "])?;
+            } else if subject2 == 45 {
+                ctx.lines(args![
+                    " It has a lantern on its back and even in its hand.. it believes one light is insufficient. ",
+                    " you are only shining one type of light to your loved one, shining another might help. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" They might be feeling that one is not enough. "])?;
+            } else if subject2 == 46 {
+                ctx.mes(" You know the smile of Mona Lisa.. Perhaps the person you are looking at has the same expression? ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't try to gaze straight them. Make an effort to approach them. "],
+                )?;
+            } else if subject2 == 47 {
+                ctx.mes(" A knight on a horse is a fantasy in every person's heart. Make it so that this fantasy becomes real. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Then there will surely be progress. "])?;
+            } else if subject2 == 48 {
+                ctx.lines(args![
+                    " Is that soldier waiting to attack? I can feel great tension between the horse and knight. ",
+                    " Don't run forward carelessly. Raise your sword and wait for your chance. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" This means now is a time to wait. How about it, would you like to wait a while? "],
+                )?;
+            } else if subject2 == 49 {
+                ctx.lines(args![" He is falling asleep awaiting a battle. Is it because he is laid back, or simply pathetic? Depends on the situation I suppose. ", " But you've got to give him credit for his boldness. "])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" How about becoming a brave warrior in the battle of love? "],
+                )?;
+            } else if subject2 == 50 {
+                ctx.mes(" Very favorable. It's to a point that I can feel strong energy from the card. I will give some of this energy to you. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Devote that energy to love..! "])?;
+            } else if subject2 == 51 {
+                ctx.mes(" What does the god of death have to say about love? It is something ominous for sure. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" I think it is trying to give a warning. Be careful. "])?;
+            } else if subject2 == 52 {
+                ctx.mes(" Hmm. How about giving a cute puppy as a gift? One with a round nose. Then they will surely be happy. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" But can't help it they don't like puppies. "])?;
+            } else if subject2 == 53 {
+                ctx.mes(" I can tell what it was doing from the way it is crying while holding an axe with blood. It is deeply wounded by love. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" that wound isn't cured soon, it will become as Anubis wanted. "],
+                )?;
+            } else if subject2 == 54 {
+                ctx.mes(" The pattern of the clothes symbolizes a warning. It is saying to be careful of love. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args!["Be cautious. "])?;
+            } else if subject2 == 55 {
+                ctx.mes(" He is a warning you not to drool over someone else. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" That's bad! You will be punished! "])?;
+            } else if subject2 == 56 {
+                ctx.mes(" Who is he so fiercly gazing at with those grand muscles? He is looking at someone else for sure. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't get sidetracked and look elsewhere! You will be cursed! "],
+                )?;
+            } else if subject2 == 57 {
+                ctx.mes(" Strengthen your body and observe the target. That is the step to success. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" you want love as well, why don't you take the card's advice and prepare yourself first? "],
+                )?;
+            } else if subject2 == 58 {
+                ctx.mes(" His navel is very pretty. You have to meet someone with that type of navel to be happy. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Ok? Keep that in mind~ "])?;
+            } else if subject2 == 59 {
+                ctx.mes(" You'll get hurt you mess around. This card is giving you a piece of advice. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You did something wrong to your loved one, didn't you? Make an effort to make up for it~! "],
+                )?;
+            } else if subject2 == 60 {
+                ctx.mes(" From the way he is massaging its back because of a shoulder cramp, maybe your love is seeking someone to massage them. Love starts from little thoughts.")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Next time you meet them, give them a massage. Start with the little things. "],
+                )?;
+            } else if subject2 == 61 {
+                ctx.lines(args![" His expression is in awe. When encountering an absurd incident, his face and expression becomes peculiarly distorted. ", " I think the one you are looking towards has that type of expression. "])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Did you do something absurd to that person? Are you sure? Think about it~ "],
+                )?;
+            } else if subject2 == 62 {
+                ctx.mes(" the lover does something wrong he pokes them with a needle. How scary.. ")?;
+            } else if subject2 == 63 {
+                ctx.mes(" A person's heart is like this card. you flip it over nobody can tell what is behind it. Try turning the person's card over. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" You must approach their true heart. Understand? "])?;
+            } else if subject2 == 64 {
+                ctx.lines(args![
+                    " Jokers are sly, but that is just because it is their habit. ",
+                    " The reason the person may seem capricious or cunning is partially because they are born like that. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Will you be able to approach them regardless? To do so, you must prepare you heart.. mm.. "],
+                )?;
+            } else if subject2 == 65 {
+                ctx.mes(" The joker can't use any of his strength because he is tied to a card. Perhaps the person is caught in something and can't show their true merit? ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" you love them, free them from the chains tying them down.. That is consideration.. and love "],
+                )?;
+            } else if subject2 == 66 {
+                ctx.mes(" Don't get fooled by tricks. They are a person, too. They know how to lie once in a while. Search for the trick calmly and carefully. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" And then search for a different route. That is the wise decision. "],
+                )?;
+            } else if subject2 == 67 {
+                ctx.mes(" It is saying that daring action is necessary, such as that of the Hode that strikes up from the sand. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Maybe you are discouraged a little too much right now. Be brave and daring young one. "],
+                )?;
+            } else if subject2 == 68 {
+                ctx.mes(" Seeing that the Hode spits out sand to those who bother them, you must have done something to bother the person somehow. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Maybe you are being troublesome? Make an effort to relax a little more. "],
+                )?;
+            } else if subject2 == 69 {
+                ctx.mes(" The Hode has a very strong will to live. It is to survive in the forest. It is suggesting dating with that kind of will.")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Hmm, try love with more spirit. You will get good results. "],
+                )?;
+            } else if subject2 == 70 {
+                ctx.mes(" Ah.. there is a noble person up north. North it is. This direction will never change. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Trust me and go for it. "])?;
+            } else if subject2 == 71 {
+                ctx.mes(" A walking bull is rare. The person you are looking towards is that rare. Don't let go of them. You may never see them again.. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" The card is saying this. "])?;
+            } else if subject2 == 72 {
+                ctx.mes(" Can you see the strong muscles that even arrows cannot pierce? The person is like that, too. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" To attack with love.. you will need a stronger attack.. Mmm.. "],
+                )?;
+            } else if subject2 == 73 {
+                ctx.mes(" The scariest thing is not the hammer nor horn. It is the massive legs that support its heavy weight. Nobody can survive a hit by those legs. The person is also probably hiding the most dangerous part. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You must love but be careful at the same time. You never know when you will be hit by the hind legs. "],
+                )?;
+            } else if subject2 == 74 {
+                ctx.mes(" No matter how fearful the bull may be, it has a nose ring, it has already been tamed by humans. No matter how astonishing that person may be, taming is your responsibility. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Approach them with more sincerity and consideration. "])?;
             }
             ctx.next()?;
             ctx.lines_as(
@@ -1078,10 +623,7 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Lhimetorra",
                 args![" Ooh... something about your fortune is starting to show... "],
@@ -1159,864 +701,430 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 }
             }
             ctx.mes("[Lhimetorra]")?;
-            'b3: {
-                let subject3 = l_card_1_money.clone();
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                    && !subject3.loosely_equals(&Val::from(2))
-                    && !subject3.loosely_equals(&Val::from(3))
-                    && !subject3.loosely_equals(&Val::from(4))
-                    && !subject3.loosely_equals(&Val::from(5))
-                    && !subject3.loosely_equals(&Val::from(6))
-                    && !subject3.loosely_equals(&Val::from(7))
-                    && !subject3.loosely_equals(&Val::from(8))
-                    && !subject3.loosely_equals(&Val::from(9))
-                    && !subject3.loosely_equals(&Val::from(10))
-                    && !subject3.loosely_equals(&Val::from(11))
-                    && !subject3.loosely_equals(&Val::from(12))
-                    && !subject3.loosely_equals(&Val::from(13))
-                    && !subject3.loosely_equals(&Val::from(14))
-                    && !subject3.loosely_equals(&Val::from(15))
-                    && !subject3.loosely_equals(&Val::from(16))
-                    && !subject3.loosely_equals(&Val::from(17))
-                    && !subject3.loosely_equals(&Val::from(18))
-                    && !subject3.loosely_equals(&Val::from(19))
-                    && !subject3.loosely_equals(&Val::from(20))
-                    && !subject3.loosely_equals(&Val::from(21))
-                    && !subject3.loosely_equals(&Val::from(22))
-                    && !subject3.loosely_equals(&Val::from(23))
-                    && !subject3.loosely_equals(&Val::from(24))
-                    && !subject3.loosely_equals(&Val::from(25))
-                    && !subject3.loosely_equals(&Val::from(26))
-                    && !subject3.loosely_equals(&Val::from(28))
-                    && !subject3.loosely_equals(&Val::from(29))
-                    && !subject3.loosely_equals(&Val::from(30))
-                    && !subject3.loosely_equals(&Val::from(31))
-                    && !subject3.loosely_equals(&Val::from(32))
-                    && !subject3.loosely_equals(&Val::from(33))
-                    && !subject3.loosely_equals(&Val::from(34))
-                    && !subject3.loosely_equals(&Val::from(35))
-                    && !subject3.loosely_equals(&Val::from(36))
-                    && !subject3.loosely_equals(&Val::from(37))
-                    && !subject3.loosely_equals(&Val::from(38))
-                    && !subject3.loosely_equals(&Val::from(39))
-                    && !subject3.loosely_equals(&Val::from(40))
-                    && !subject3.loosely_equals(&Val::from(41))
-                    && !subject3.loosely_equals(&Val::from(42))
-                    && !subject3.loosely_equals(&Val::from(43))
-                    && !subject3.loosely_equals(&Val::from(44))
-                    && !subject3.loosely_equals(&Val::from(45))
-                    && !subject3.loosely_equals(&Val::from(46))
-                    && !subject3.loosely_equals(&Val::from(47))
-                    && !subject3.loosely_equals(&Val::from(48))
-                    && !subject3.loosely_equals(&Val::from(49))
-                    && !subject3.loosely_equals(&Val::from(50))
-                    && !subject3.loosely_equals(&Val::from(51))
-                    && !subject3.loosely_equals(&Val::from(52))
-                    && !subject3.loosely_equals(&Val::from(53))
-                    && !subject3.loosely_equals(&Val::from(54))
-                    && !subject3.loosely_equals(&Val::from(55))
-                    && !subject3.loosely_equals(&Val::from(56))
-                    && !subject3.loosely_equals(&Val::from(57))
-                    && !subject3.loosely_equals(&Val::from(58))
-                    && !subject3.loosely_equals(&Val::from(59))
-                    && !subject3.loosely_equals(&Val::from(60))
-                    && !subject3.loosely_equals(&Val::from(61))
-                    && !subject3.loosely_equals(&Val::from(62))
-                    && !subject3.loosely_equals(&Val::from(63))
-                    && !subject3.loosely_equals(&Val::from(64))
-                    && !subject3.loosely_equals(&Val::from(65))
-                    && !subject3.loosely_equals(&Val::from(66))
-                    && !subject3.loosely_equals(&Val::from(67))
-                    && !subject3.loosely_equals(&Val::from(68))
-                    && !subject3.loosely_equals(&Val::from(69))
-                    && !subject3.loosely_equals(&Val::from(70))
-                    && !subject3.loosely_equals(&Val::from(71))
-                    && !subject3.loosely_equals(&Val::from(72))
-                    && !subject3.loosely_equals(&Val::from(73));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" You must work hard to become wealthy. Don't think of other things.. Focus on and put effort into achieving your goals. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Then good luck and try your best. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Something very rare may come your way. A gold mine has been the dream of many since ancient times. You have a gold mine right in front of you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" All in all, a big fortune is right in front of your eyes. I'll be looking forward to it. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" In the stomach pocket, there must be a secret treasure. There may be something in your pocket as well. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Are you hiding things from other people? You should get rid of them. They may bring bad luck. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The card says that you should not be too greedy, for that may cause you to dig your own grave. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You may not feel good about it, but you should accept the card's advice..! "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Did you know that a moth's wings has infinite amounts of powder on it? A moth symbolizes wealth in the sense that it can gather wealth just as the powder on its wings. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Young one, you will gather much wealth. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" You must work hard to become wealthy. Don't think of other things. Simply focusing on your goals putting effort into it will help. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Good luck and try your best. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(7)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" There is a common saying that when a moth flaps its wings, wealth will fly away as well. It's not a very good sign. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Be careful not to lose your assets. Take good care of your wallet. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(8)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Dustiness teeth are very strong. This means.. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Your tooth will become a gold tooth?! "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(9)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" When a dustiness flies around, a big expense comes up. You may need to spend some money soon. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You might want to set up a budget to prepare for this expense. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(10)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Dracula brings in money. Maybe it is the moral influence from when it was a count. It is expensive to be a vampire, but I've never seen a poor one before. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" You don't need to worry about money. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(11)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" To Dracula, money is not important. Blood is more valuable. To you, money must not be that important. You don't need to be concerned about money. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" How about it? Try being a little more casual about money. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(12)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Dracula mocks human's money. To him it is worthless. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You should not be so concerned about money and assets, too. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(13)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(
-                        " No matter what, stealing is wrong! Even a Drake blesses you in the name of pirates! Stealing is forbidden! ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Noooooooo stealing! "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(14)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" You will gather good fortune in a secretive and peculiar way.. Although, there seems to be shadows over some parts of your life. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" It's an uneasy fortune. Are you ready? "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(15)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The reason pirates indulge in others assets in the vast rough ocean, is because it is the only way to let the people of the land know of their existence. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" But those who live on land do not need to do so. Don't look over other people's belongings. It is the advice of a pirate. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(16)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Marina prefers clean funds. It hates suspicious money. Your possessions should be clean as well. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Why? The Marina might get rid of it all. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(17)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Marina gathers money quietly, little by little, and freely roaming at the same time. That's the real way to make money. The Marina is suggesting this method to you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You should take a shot at it. You've got nothing to lose. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(18)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Marina is not interested in money. The card suggests that you will resemble these traits as well. You will enjoy life apart from money. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" That's the fortune from a Marina card. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(19)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" You will gather money swiftly and quietly, then boom~ blow it all at once. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Very witty, hoho. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(20)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Marionette treasures art over wealth. Bear that in mind. Honor over assets. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" What an important lesson.. Mmm... "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(21)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Marionette likes shiny money. Not dull money, but the shiny kind. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Anyways, search for that type of money. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(22)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Marionette requires lots of money. Its expenditures are enormous. You must have many expenditures ahead of you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" A gloomy fortune. How about being cautious? "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(23)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Marionette uses a lot of money. There is someone around you that is like that, too. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" There is a person like that for sure. You should watch out. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(24)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(
-                        " The hair of the Medusa symbolizes the amount of wealth. Seems as something good will happen to you, young one. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" You can look forward to it. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(25)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The hair of the Medusa are all snakes. Snakes symbolize greed and slyness. When gathering things, it seems as a cunning force will join you. It's not exactly a bright sign.. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" But you surely will get money. Hmm.. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(26)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Medusa is strongly recommending saving. This card is telling you to save. It says to put many savings accounts in your hair and make yourself resemble its head shape. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" That is what it believes to be wealth. Oooh! "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(28)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Medusa does not enjoy playing with money. you are attempting to use money other than the way it should be used, you should stop. Why? ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Because there can be a curse of the Medusa. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(29)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The great strength of the Baphomet brings in fortune. It seems as you will be able to gather much wealth with the aid of the Baphomet's force! ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" It's a good sign! Congratulations! "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(30)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The scythe of the Baphomet means a strong tool to gather wealth. you have a strong tool like his, it should be easy to gather wealth. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" What the Baphomet is trying to say is, find a mean that can help you like his tool. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(31)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" How about getting involved in raising cattle? It seems like you can gather much wealth through it. ")?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(32)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Baphomet would like a tribute. He is saying that you do, he will return great benefits. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" So try offering a part of your assets to the Baphomet. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(33)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(
-                        " The Sandman cries with sadness when money comes up. It is sad because money does not possess love or affection. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" I wonder the meaning of money will slowly disappear from your life as well. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(34)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Sandman is screaming because it saw too much money. It saw the money in the hands of your future. I wonder what all that money is? ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" I wonder.. Aren't you curious? "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(35)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Sandman's body is empty inside. Your wallet seems to be emtpy, too. You should save up some money. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" The Sandman likes to save, too. Even a monster likes to save, but when a human doesn't... "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(36)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Money is like sand. Even you save it, once the wind blows, it disappears. This card shows the emptiness of money. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Indeed, money is futile. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(37)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Sohee is wearing a fine article. To wear something like that, you would need plenty of money. Do you know what the secret is? Sohee saved very much when she was once alive. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" So you should start saving, too. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(38)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Sohee hates misers. She believes she has become like that because of a miser. Don't be stingy in front of Sohee! ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" That type of stinginess will spite other people. Use money when it is necessary. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(39)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Sohee dislikes the wealthy. They try to gather money, but never use it for others. you don't want to be cursed by Sohee, you need to learn how to be generous with money. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" So you have malicious desires, forget them. An ill heart easily gathers misfortune. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(40)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Sohee likes foreign money. They are cute and pretty. you have foreign currency, Sohee will love you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Keep an eye out for foreign currency. It will bring you luck. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(41)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Those who work hard will gather great fortune. The Skeleton says diligent work will help greatly in gathering wealth. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Hmm~ a ghost is saying strange things. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(42)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Its youth is gone after a lifetime of chasing after gold. It became a monster with only bones left. No matter how much you like money and your work, look after your life as well. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" There is much more to life than wealth. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(43)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" To become rich, you must work hard as you became a skeleton. The Skeleton is saying to work hard until you become a skeleton. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Then not only the Skeleton, but many people will repay you greatly. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(44)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Skeleton says that you can make money by going north. Go north. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" There must be great fortune in that direction. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(45)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(
-                        " A knight is a job that requires a lot of money. A hint of a big expense. You might want to tighten your belt. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" That is, you don't want go to bankrupt. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(46)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Knights do not fight for money. they did, they would be a mercenary. A knight reaches for something higher. What the knight wants to tell you is the way to live. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Set a goal higher than money and wealth. Do you understand, young one? "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(47)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" A knight values honor more than fortune. They consider discussing wealth itself dirty not worthy. How would you be able to ask such a knight a fortune about wealth? ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" The knight says that a new road of life will open once you look away from fortune. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(48)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" You need to think of an ideal more noble than money. The fortune the knight suggests is this: Knights never speak of ways to make money. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " Compared to life, they believe money is foolish. The knight would like to understand these ideas of life. "
-                        ],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(49)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Working hard is the only way to gather wealth; don't get sidetracked and put effort into working will help your fortune. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" So do your best. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(50)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(
-                        " What does the god of death have to say about wealth? It is surely a bad omen. It is trying to warn something. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Be careful. It is the word of the god of death. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(51)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Anubis is very interested in the sacrifices offered. The offerings he likes are youth and effort. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" you offer these two things, the Anubis says he will bring you wealth. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(52)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Anubis is giving a warning of the west. There is a being there that can break away your wealth. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" you want to protect your assets, beware of the west. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(53)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Anubis hates those who try to gather money for his death. He believes it's a waste of money. Don't make the mistake of gathering money for death. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" This is the true advice of a Anubis. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(54)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Orc Lord possesses much wealth. It's because of greed. Greed is essential in collecting money. The desire and greediness to make money is not something to be ashamed about. Be diligent and go make money. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" But, too much greed is forbidden. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(55)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Orc Lord starts drooling about anything involving money. He targets anybody with money. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Therefore, don't speak of money to the Orc Lord. "])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Same goes for humans. Be wary of those who are avaricious like the Orc Lord. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(56)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" There should be great wealth awaiting in the direction the Orc Lord's horn is pointing. The card is directing towards.. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" The northwest? Would you like to try your luck in that direction? "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(57)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" The Orc Lord likes gold. Of all the treasures, gold is the best. Closely watch gold. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Gold is rather peculiar compared to other assets. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(58)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Jack makes money through jokes. Others' happiness is the key to his wealth. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Why don't you learn how to make others happy? It should be of great help. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(59)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines(args![
-                        " Jack likes fun money. He detests sad and burdensome money. ",
-                        " He always says this. Light-hearted and easy money isn't dangerous even it piles up. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" As Jack's advice says, stay closer to light money. It is safer and better. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(60)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines(args![
-                        " Jack thinks of money as a foolish item. But somehow he makes that kind of money. ",
-                        " That's why those who are controlled by fools consider the other a fool, too. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " you don't want to be considered a fool by Jack, don't be controlled by money. ",
-                            " Or else, Jack will attack. "
-                        ],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(61)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Jack is asking for money. Don't be stingy about paying those who bring entertainment and fun. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Then, Jack will reward you in return. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(62)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Do you know what a joker's specialty is? It is tricking others and making money. Be wary of the joker. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Jokers do not exist in one form. They will aim for your money in several different ways. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(63)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines(args![" The Joker says you let him borrow money, he will repay you with more. You're going to refuse, right? But the Joker's temptation does not end after one try. ", " He will linger around you as a neighbor, or a rare item and ask for money. "])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Act wisely! You'll be in trouble you are tricked easily! "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(64)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines(args![" Even a joker asks for change, never give any to him. He will ask for change, then end up ask for a big sum of money. ", " Jokers are like that. They have the ability to turn a small mistake into a big calamity. "])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" That's why you should be more careful about it. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(65)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines(args![
-                        " There is only one reason a Joker requests money.. to take yours. ",
-                        " His goal is not to become rich. A real foul playful one. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" But losing money isn't a joke now, is it? You should be careful. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(66)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Hodes do not know about money. They just gobble everything up. But that might be the shortcut to gaining great wealth. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't focus too much on money. Just work at it. It's saying that it is the best method. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(67)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines(args![
-                        " Hodes do not know anything about money. But they do not forgive those who have an eye on their things. ",
-                        " Not being greedy and taking care of your share is the wisest way to manage your wealth. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Indeed, the Hode is right. Do you understand as well? "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(68)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines(args![
-                        " The Hode knows nothing about money. But a very rare item drops from a Hode's body. ",
-                        " It has a treasure in it without knowing. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Take a careful look around you. Treasures are hidden all over. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(69)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Hodes are strong even though they live in the desert. Just because the environment is poor, doesn't mean that you can't gather wealth. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't blame the environment. That excuse is only for whiners. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(70)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Do you know the saying that says those who work like bulls become rich? Working hard is the best way. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Just like a bull. "])?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(71)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Bulls only know how to work, but the bull itself has a lot to offer. Meat, leather, horn.. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You, too, should look after yourself and not just work. You have many hidden values. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(72)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.mes(" Bulls continue to work even on gloomy days. Then they can gather a lot of things. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't be picky about the days you work. You will be able to make more money. "],
-                    )?;
-                    break 'b3;
-                }
-                if !matched3 && subject3.loosely_equals(&Val::from(73)) {
-                    matched3 = true;
-                }
-                if matched3 {
-                    ctx.lines(args![
-                        " Bulls do not like working for money. They are disgruntled when others consider labor as money. ",
-                        " Shouldn't you reconsider working against your will just for money? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" It is a serious problem. It is your life, so ponder about it young one. "],
-                    )?;
-                    break 'b3;
-                }
+            let subject3 = l_card_1_money.clone();
+            if subject3 == 1 {
+                ctx.mes(" You must work hard to become wealthy. Don't think of other things.. Focus on and put effort into achieving your goals. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Then good luck and try your best. "])?;
+            } else if subject3 == 2 {
+                ctx.mes(" Something very rare may come your way. A gold mine has been the dream of many since ancient times. You have a gold mine right in front of you. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" All in all, a big fortune is right in front of your eyes. I'll be looking forward to it. "],
+                )?;
+            } else if subject3 == 3 {
+                ctx.mes(" In the stomach pocket, there must be a secret treasure. There may be something in your pocket as well. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Are you hiding things from other people? You should get rid of them. They may bring bad luck. "],
+                )?;
+            } else if subject3 == 4 {
+                ctx.mes(" The card says that you should not be too greedy, for that may cause you to dig your own grave. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You may not feel good about it, but you should accept the card's advice..! "],
+                )?;
+            } else if subject3 == 5 {
+                ctx.mes(" Did you know that a moth's wings has infinite amounts of powder on it? A moth symbolizes wealth in the sense that it can gather wealth just as the powder on its wings. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Young one, you will gather much wealth. "])?;
+            } else if subject3 == 6 {
+                ctx.mes(" You must work hard to become wealthy. Don't think of other things. Simply focusing on your goals putting effort into it will help. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Good luck and try your best. "])?;
+            } else if subject3 == 7 {
+                ctx.mes(" There is a common saying that when a moth flaps its wings, wealth will fly away as well. It's not a very good sign. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Be careful not to lose your assets. Take good care of your wallet. "],
+                )?;
+            } else if subject3 == 8 {
+                ctx.mes(" Dustiness teeth are very strong. This means.. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Your tooth will become a gold tooth?! "])?;
+            } else if subject3 == 9 {
+                ctx.mes(" When a dustiness flies around, a big expense comes up. You may need to spend some money soon. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You might want to set up a budget to prepare for this expense. "],
+                )?;
+            } else if subject3 == 10 {
+                ctx.mes(" Dracula brings in money. Maybe it is the moral influence from when it was a count. It is expensive to be a vampire, but I've never seen a poor one before. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" You don't need to worry about money. "])?;
+            } else if subject3 == 11 {
+                ctx.mes(" To Dracula, money is not important. Blood is more valuable. To you, money must not be that important. You don't need to be concerned about money. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" How about it? Try being a little more casual about money. "],
+                )?;
+            } else if subject3 == 12 {
+                ctx.mes(" Dracula mocks human's money. To him it is worthless. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You should not be so concerned about money and assets, too. "],
+                )?;
+            } else if subject3 == 13 {
+                ctx.mes(
+                    " No matter what, stealing is wrong! Even a Drake blesses you in the name of pirates! Stealing is forbidden! ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Noooooooo stealing! "])?;
+            } else if subject3 == 14 {
+                ctx.mes(" You will gather good fortune in a secretive and peculiar way.. Although, there seems to be shadows over some parts of your life. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" It's an uneasy fortune. Are you ready? "])?;
+            } else if subject3 == 15 {
+                ctx.mes(" The reason pirates indulge in others assets in the vast rough ocean, is because it is the only way to let the people of the land know of their existence. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" But those who live on land do not need to do so. Don't look over other people's belongings. It is the advice of a pirate. "])?;
+            } else if subject3 == 16 {
+                ctx.mes(" Marina prefers clean funds. It hates suspicious money. Your possessions should be clean as well. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Why? The Marina might get rid of it all. "])?;
+            } else if subject3 == 17 {
+                ctx.mes(" The Marina gathers money quietly, little by little, and freely roaming at the same time. That's the real way to make money. The Marina is suggesting this method to you. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You should take a shot at it. You've got nothing to lose. "],
+                )?;
+            } else if subject3 == 18 {
+                ctx.mes(" The Marina is not interested in money. The card suggests that you will resemble these traits as well. You will enjoy life apart from money. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" That's the fortune from a Marina card. "])?;
+            } else if subject3 == 19 {
+                ctx.mes(" You will gather money swiftly and quietly, then boom~ blow it all at once. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Very witty, hoho. "])?;
+            } else if subject3 == 20 {
+                ctx.mes(" The Marionette treasures art over wealth. Bear that in mind. Honor over assets. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" What an important lesson.. Mmm... "])?;
+            } else if subject3 == 21 {
+                ctx.mes(" The Marionette likes shiny money. Not dull money, but the shiny kind. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Anyways, search for that type of money. "])?;
+            } else if subject3 == 22 {
+                ctx.mes(" The Marionette requires lots of money. Its expenditures are enormous. You must have many expenditures ahead of you. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" A gloomy fortune. How about being cautious? "])?;
+            } else if subject3 == 23 {
+                ctx.mes(" The Marionette uses a lot of money. There is someone around you that is like that, too. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" There is a person like that for sure. You should watch out. "],
+                )?;
+            } else if subject3 == 24 {
+                ctx.mes(
+                    " The hair of the Medusa symbolizes the amount of wealth. Seems as something good will happen to you, young one. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" You can look forward to it. "])?;
+            } else if subject3 == 25 {
+                ctx.mes(" The hair of the Medusa are all snakes. Snakes symbolize greed and slyness. When gathering things, it seems as a cunning force will join you. It's not exactly a bright sign.. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" But you surely will get money. Hmm.. "])?;
+            } else if subject3 == 26 {
+                ctx.mes(" The Medusa is strongly recommending saving. This card is telling you to save. It says to put many savings accounts in your hair and make yourself resemble its head shape. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" That is what it believes to be wealth. Oooh! "])?;
+            } else if subject3 == 28 {
+                ctx.mes(" The Medusa does not enjoy playing with money. you are attempting to use money other than the way it should be used, you should stop. Why? ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Because there can be a curse of the Medusa. "])?;
+            } else if subject3 == 29 {
+                ctx.mes(" The great strength of the Baphomet brings in fortune. It seems as you will be able to gather much wealth with the aid of the Baphomet's force! ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" It's a good sign! Congratulations! "])?;
+            } else if subject3 == 30 {
+                ctx.mes(" The scythe of the Baphomet means a strong tool to gather wealth. you have a strong tool like his, it should be easy to gather wealth. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" What the Baphomet is trying to say is, find a mean that can help you like his tool. "],
+                )?;
+            } else if subject3 == 31 {
+                ctx.mes(" How about getting involved in raising cattle? It seems like you can gather much wealth through it. ")?;
+            } else if subject3 == 32 {
+                ctx.mes(" The Baphomet would like a tribute. He is saying that you do, he will return great benefits. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" So try offering a part of your assets to the Baphomet. "])?;
+            } else if subject3 == 33 {
+                ctx.mes(
+                    " The Sandman cries with sadness when money comes up. It is sad because money does not possess love or affection. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" I wonder the meaning of money will slowly disappear from your life as well. "],
+                )?;
+            } else if subject3 == 34 {
+                ctx.mes(" The Sandman is screaming because it saw too much money. It saw the money in the hands of your future. I wonder what all that money is? ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" I wonder.. Aren't you curious? "])?;
+            } else if subject3 == 35 {
+                ctx.mes(" The Sandman's body is empty inside. Your wallet seems to be emtpy, too. You should save up some money. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" The Sandman likes to save, too. Even a monster likes to save, but when a human doesn't... "],
+                )?;
+            } else if subject3 == 36 {
+                ctx.mes(" Money is like sand. Even you save it, once the wind blows, it disappears. This card shows the emptiness of money. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Indeed, money is futile. "])?;
+            } else if subject3 == 37 {
+                ctx.mes(" Sohee is wearing a fine article. To wear something like that, you would need plenty of money. Do you know what the secret is? Sohee saved very much when she was once alive. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" So you should start saving, too. "])?;
+            } else if subject3 == 38 {
+                ctx.mes(" Sohee hates misers. She believes she has become like that because of a miser. Don't be stingy in front of Sohee! ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" That type of stinginess will spite other people. Use money when it is necessary. "],
+                )?;
+            } else if subject3 == 39 {
+                ctx.mes(" Sohee dislikes the wealthy. They try to gather money, but never use it for others. you don't want to be cursed by Sohee, you need to learn how to be generous with money. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" So you have malicious desires, forget them. An ill heart easily gathers misfortune. "],
+                )?;
+            } else if subject3 == 40 {
+                ctx.mes(" Sohee likes foreign money. They are cute and pretty. you have foreign currency, Sohee will love you. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Keep an eye out for foreign currency. It will bring you luck. "],
+                )?;
+            } else if subject3 == 41 {
+                ctx.mes(" Those who work hard will gather great fortune. The Skeleton says diligent work will help greatly in gathering wealth. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Hmm~ a ghost is saying strange things. "])?;
+            } else if subject3 == 42 {
+                ctx.mes(" Its youth is gone after a lifetime of chasing after gold. It became a monster with only bones left. No matter how much you like money and your work, look after your life as well. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" There is much more to life than wealth. "])?;
+            } else if subject3 == 43 {
+                ctx.mes(" To become rich, you must work hard as you became a skeleton. The Skeleton is saying to work hard until you become a skeleton. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Then not only the Skeleton, but many people will repay you greatly. "],
+                )?;
+            } else if subject3 == 44 {
+                ctx.mes(" The Skeleton says that you can make money by going north. Go north. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" There must be great fortune in that direction. "])?;
+            } else if subject3 == 45 {
+                ctx.mes(
+                    " A knight is a job that requires a lot of money. A hint of a big expense. You might want to tighten your belt. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" That is, you don't want go to bankrupt. "])?;
+            } else if subject3 == 46 {
+                ctx.mes(" Knights do not fight for money. they did, they would be a mercenary. A knight reaches for something higher. What the knight wants to tell you is the way to live. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Set a goal higher than money and wealth. Do you understand, young one? "],
+                )?;
+            } else if subject3 == 47 {
+                ctx.mes(" A knight values honor more than fortune. They consider discussing wealth itself dirty not worthy. How would you be able to ask such a knight a fortune about wealth? ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" The knight says that a new road of life will open once you look away from fortune. "],
+                )?;
+            } else if subject3 == 48 {
+                ctx.mes(" You need to think of an ideal more noble than money. The fortune the knight suggests is this: Knights never speak of ways to make money. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " Compared to life, they believe money is foolish. The knight would like to understand these ideas of life. "
+                    ],
+                )?;
+            } else if subject3 == 49 {
+                ctx.mes(" Working hard is the only way to gather wealth; don't get sidetracked and put effort into working will help your fortune. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" So do your best. "])?;
+            } else if subject3 == 50 {
+                ctx.mes(
+                    " What does the god of death have to say about wealth? It is surely a bad omen. It is trying to warn something. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Be careful. It is the word of the god of death. "])?;
+            } else if subject3 == 51 {
+                ctx.mes(" The Anubis is very interested in the sacrifices offered. The offerings he likes are youth and effort. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" you offer these two things, the Anubis says he will bring you wealth. "],
+                )?;
+            } else if subject3 == 52 {
+                ctx.mes(" The Anubis is giving a warning of the west. There is a being there that can break away your wealth. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" you want to protect your assets, beware of the west. "])?;
+            } else if subject3 == 53 {
+                ctx.mes(" The Anubis hates those who try to gather money for his death. He believes it's a waste of money. Don't make the mistake of gathering money for death. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" This is the true advice of a Anubis. "])?;
+            } else if subject3 == 54 {
+                ctx.mes(" The Orc Lord possesses much wealth. It's because of greed. Greed is essential in collecting money. The desire and greediness to make money is not something to be ashamed about. Be diligent and go make money. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" But, too much greed is forbidden. "])?;
+            } else if subject3 == 55 {
+                ctx.mes(" The Orc Lord starts drooling about anything involving money. He targets anybody with money. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Therefore, don't speak of money to the Orc Lord. "])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Same goes for humans. Be wary of those who are avaricious like the Orc Lord. "],
+                )?;
+            } else if subject3 == 56 {
+                ctx.mes(" There should be great wealth awaiting in the direction the Orc Lord's horn is pointing. The card is directing towards.. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" The northwest? Would you like to try your luck in that direction? "],
+                )?;
+            } else if subject3 == 57 {
+                ctx.mes(" The Orc Lord likes gold. Of all the treasures, gold is the best. Closely watch gold. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Gold is rather peculiar compared to other assets. "])?;
+            } else if subject3 == 58 {
+                ctx.mes(" Jack makes money through jokes. Others' happiness is the key to his wealth. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Why don't you learn how to make others happy? It should be of great help. "],
+                )?;
+            } else if subject3 == 59 {
+                ctx.lines(args![
+                    " Jack likes fun money. He detests sad and burdensome money. ",
+                    " He always says this. Light-hearted and easy money isn't dangerous even it piles up. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" As Jack's advice says, stay closer to light money. It is safer and better. "],
+                )?;
+            } else if subject3 == 60 {
+                ctx.lines(args![
+                    " Jack thinks of money as a foolish item. But somehow he makes that kind of money. ",
+                    " That's why those who are controlled by fools consider the other a fool, too. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " you don't want to be considered a fool by Jack, don't be controlled by money. ",
+                        " Or else, Jack will attack. "
+                    ],
+                )?;
+            } else if subject3 == 61 {
+                ctx.mes(" Jack is asking for money. Don't be stingy about paying those who bring entertainment and fun. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Then, Jack will reward you in return. "])?;
+            } else if subject3 == 62 {
+                ctx.mes(" Do you know what a joker's specialty is? It is tricking others and making money. Be wary of the joker. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Jokers do not exist in one form. They will aim for your money in several different ways. "],
+                )?;
+            } else if subject3 == 63 {
+                ctx.lines(args![" The Joker says you let him borrow money, he will repay you with more. You're going to refuse, right? But the Joker's temptation does not end after one try. ", " He will linger around you as a neighbor, or a rare item and ask for money. "])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Act wisely! You'll be in trouble you are tricked easily! "],
+                )?;
+            } else if subject3 == 64 {
+                ctx.lines(args![" Even a joker asks for change, never give any to him. He will ask for change, then end up ask for a big sum of money. ", " Jokers are like that. They have the ability to turn a small mistake into a big calamity. "])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" That's why you should be more careful about it. "])?;
+            } else if subject3 == 65 {
+                ctx.lines(args![
+                    " There is only one reason a Joker requests money.. to take yours. ",
+                    " His goal is not to become rich. A real foul playful one. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" But losing money isn't a joke now, is it? You should be careful. "],
+                )?;
+            } else if subject3 == 66 {
+                ctx.mes(" Hodes do not know about money. They just gobble everything up. But that might be the shortcut to gaining great wealth. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't focus too much on money. Just work at it. It's saying that it is the best method. "],
+                )?;
+            } else if subject3 == 67 {
+                ctx.lines(args![
+                    " Hodes do not know anything about money. But they do not forgive those who have an eye on their things. ",
+                    " Not being greedy and taking care of your share is the wisest way to manage your wealth. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Indeed, the Hode is right. Do you understand as well? "])?;
+            } else if subject3 == 68 {
+                ctx.lines(args![
+                    " The Hode knows nothing about money. But a very rare item drops from a Hode's body. ",
+                    " It has a treasure in it without knowing. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Take a careful look around you. Treasures are hidden all over. "],
+                )?;
+            } else if subject3 == 69 {
+                ctx.mes(" Hodes are strong even though they live in the desert. Just because the environment is poor, doesn't mean that you can't gather wealth. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't blame the environment. That excuse is only for whiners. "],
+                )?;
+            } else if subject3 == 70 {
+                ctx.mes(" Do you know the saying that says those who work like bulls become rich? Working hard is the best way. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Just like a bull. "])?;
+            } else if subject3 == 71 {
+                ctx.mes(" Bulls only know how to work, but the bull itself has a lot to offer. Meat, leather, horn.. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You, too, should look after yourself and not just work. You have many hidden values. "],
+                )?;
+            } else if subject3 == 72 {
+                ctx.mes(" Bulls continue to work even on gloomy days. Then they can gather a lot of things. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't be picky about the days you work. You will be able to make more money. "],
+                )?;
+            } else if subject3 == 73 {
+                ctx.lines(args![
+                    " Bulls do not like working for money. They are disgruntled when others consider labor as money. ",
+                    " Shouldn't you reconsider working against your will just for money? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" It is a serious problem. It is your life, so ponder about it young one. "],
+                )?;
             }
             ctx.next()?;
             ctx.lines_as(
@@ -2035,10 +1143,7 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Lhimetorra",
                 args![" Future... the card that sees the future is beginning to speak...... Prepare yourself... "],
@@ -2118,898 +1223,500 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 }
             }
             ctx.mes("[Lhimetorra]")?;
-            'b4: {
-                let subject4 = l_card_1_future.clone();
-                let mut matched4 = false;
-                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                    && !subject4.loosely_equals(&Val::from(2))
-                    && !subject4.loosely_equals(&Val::from(3))
-                    && !subject4.loosely_equals(&Val::from(4))
-                    && !subject4.loosely_equals(&Val::from(5))
-                    && !subject4.loosely_equals(&Val::from(6))
-                    && !subject4.loosely_equals(&Val::from(7))
-                    && !subject4.loosely_equals(&Val::from(8))
-                    && !subject4.loosely_equals(&Val::from(9))
-                    && !subject4.loosely_equals(&Val::from(10))
-                    && !subject4.loosely_equals(&Val::from(11))
-                    && !subject4.loosely_equals(&Val::from(12))
-                    && !subject4.loosely_equals(&Val::from(13))
-                    && !subject4.loosely_equals(&Val::from(14))
-                    && !subject4.loosely_equals(&Val::from(15))
-                    && !subject4.loosely_equals(&Val::from(16))
-                    && !subject4.loosely_equals(&Val::from(17))
-                    && !subject4.loosely_equals(&Val::from(18))
-                    && !subject4.loosely_equals(&Val::from(19))
-                    && !subject4.loosely_equals(&Val::from(20))
-                    && !subject4.loosely_equals(&Val::from(21))
-                    && !subject4.loosely_equals(&Val::from(22))
-                    && !subject4.loosely_equals(&Val::from(23))
-                    && !subject4.loosely_equals(&Val::from(24))
-                    && !subject4.loosely_equals(&Val::from(25))
-                    && !subject4.loosely_equals(&Val::from(26))
-                    && !subject4.loosely_equals(&Val::from(27))
-                    && !subject4.loosely_equals(&Val::from(28))
-                    && !subject4.loosely_equals(&Val::from(29))
-                    && !subject4.loosely_equals(&Val::from(30))
-                    && !subject4.loosely_equals(&Val::from(31))
-                    && !subject4.loosely_equals(&Val::from(32))
-                    && !subject4.loosely_equals(&Val::from(33))
-                    && !subject4.loosely_equals(&Val::from(34))
-                    && !subject4.loosely_equals(&Val::from(35))
-                    && !subject4.loosely_equals(&Val::from(36))
-                    && !subject4.loosely_equals(&Val::from(37))
-                    && !subject4.loosely_equals(&Val::from(38))
-                    && !subject4.loosely_equals(&Val::from(39))
-                    && !subject4.loosely_equals(&Val::from(40))
-                    && !subject4.loosely_equals(&Val::from(41))
-                    && !subject4.loosely_equals(&Val::from(42))
-                    && !subject4.loosely_equals(&Val::from(43))
-                    && !subject4.loosely_equals(&Val::from(44))
-                    && !subject4.loosely_equals(&Val::from(45))
-                    && !subject4.loosely_equals(&Val::from(46))
-                    && !subject4.loosely_equals(&Val::from(47))
-                    && !subject4.loosely_equals(&Val::from(48))
-                    && !subject4.loosely_equals(&Val::from(49))
-                    && !subject4.loosely_equals(&Val::from(50))
-                    && !subject4.loosely_equals(&Val::from(51))
-                    && !subject4.loosely_equals(&Val::from(52))
-                    && !subject4.loosely_equals(&Val::from(53))
-                    && !subject4.loosely_equals(&Val::from(54))
-                    && !subject4.loosely_equals(&Val::from(56))
-                    && !subject4.loosely_equals(&Val::from(57))
-                    && !subject4.loosely_equals(&Val::from(58))
-                    && !subject4.loosely_equals(&Val::from(59))
-                    && !subject4.loosely_equals(&Val::from(60))
-                    && !subject4.loosely_equals(&Val::from(61))
-                    && !subject4.loosely_equals(&Val::from(62))
-                    && !subject4.loosely_equals(&Val::from(63))
-                    && !subject4.loosely_equals(&Val::from(64))
-                    && !subject4.loosely_equals(&Val::from(65))
-                    && !subject4.loosely_equals(&Val::from(66))
-                    && !subject4.loosely_equals(&Val::from(67));
-                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Youth is not eternal. At one point when you wake up, you realize you are already a middle-aged worker. ",
-                        " Even reminiscing about the past over a cup of coffee can't bring back time. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Treasure the present.. is what the card is saying. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " This fortune is foreshadowing that you will become a strong and healthy worker in the future. ",
-                        " Not a normal worker, but one that has great strength and might.. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" You should prepare for your future. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Smoking in a mine is an imprudent, life-threatening thing to do. You are wasting your precious life with that kind of behavior. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Act with a little more wisdom for your future. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" You may be shoveling in the future. In a dark dark place, shoveling that requires great strength. You must be careful young one. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" This type of fortune is never wrong. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " The moth is used when it is a caterpillar and ignored after it becomes a moth, by humans. ",
-                        " Which is better? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Check to see if there is an aspect of your life that is like the moth. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The moth flies around without worrying about the future. It is telling you to fly freely rather than getting anxious about the future.. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" This is the fortune from this card. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(7)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Dustiness' teeth are very strong. This means... ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" To live the future with strong teeth?! "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(8)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The moth says that this is not a time to think about wealth and prosperity. It says that someone important has appeared near you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Any ideas who that may be? "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(9)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Dustiness symbolizes a hazy future. It is similar to your mind right now. It says it is obvious. ",
-                        " It says that there is no set path in the future. Isn't a relief in a way? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" It is not good nor bad, so there is always room for new possibilities. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(10)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Sometime in your future, a future like Dracula awaits you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" If you hope for that type of future, it is no problem, but you should be careful nonetheless. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(11)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" If the condition is just right, vampires can live forever. But, when that perfect condition is disrupted, they meet a tragic end. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" This means that if you go after fame and eternal life, tragedy awaits you in the end. They are not the important things in life. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(12)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Dracula says to be true to the present. Indeed, thinking and being true to the present is much more important than trying to figure out your future. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Unfortunately, I agree with it young one. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(13)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Pirates do not have a future. That doesn't mean you do not have one. But.. you simply need to make more prudent decisions. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" How about changing your lifestyle? That's what this means. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(14)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(
-                        " In this world, being a pirate out in the rough seas is very dangerous. But, they do not regret their decisions. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Because they find their meaning of life in the process. Young one, how about searching for the meaning of your life? "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(15)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Pirates are remembered as pirates even after they pass away. A person's name is beyond the matter of life and death. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" You should live with that aspect in mind."])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(16)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Marina does not think of its future.. But I can tell you one thing. Survival. The Marina only thinks about survival and life. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" You.. no, all of us should learn and do the same. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(17)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Marina doesn't think of its future.. but I can tell you one thing. Freedom. The Marina swims freely. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" How about living like that, too? "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(18)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Leave your future to the Marina. The Marina treasures its precious ocean. The sea will be of great significance in your future, too. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" A fisherman? Oceanographer? Pirate? Although I do not know which job it is... "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(19)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" A Marionette is a Marionette forever. Its past and future never changes. Its present is its future. Don't you think it is rather sad? ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" But that could also be a good thing. This is the meaning of a Marionette. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(20)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" A Marionette is restrained but it has hope that it will be freed one day. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Very nice. This fortune signifies 'hope'. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(21)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The eyes of a Marionette symbolize 'challenge.' Challenge will mean a lot in your future. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" ...to the point where that challenge will change your life. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(22)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Marionette believes the present is more important than the future. Basically, asking about the future is pointless. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" The Marionette devotes everything into the present. It suggests that type of attitude to you, too. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(23)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Medusa symbolizes the absolute one who accepts everyone's challenge. Your future will be in a position that is challenged by many. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" It could be good and bad. It is also a very tiring position. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(24)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Medusa symbolizes the absolute one who accepts everyone's challenge. Your future must be filled with challenges! ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Always challenge others! It is alright to fail, since challenge itself will become life. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(25)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Medusa says that there will be great chaos in the future. Chaos... I'm not sure what type of chaos it means, but it is definitely something that has never happened before. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" There is something that you must fight.. and win, in your future. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(26)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The hair of the Medusa are sticking up. It is nervous about the big change that is going to happen. A change that even makes the scary Medusa worried. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" How about preparing yourself as well? "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(27)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Baphomet doesn't care about a human's future. They simply observe quietly. Hmm... It seems like it has nothing to say about your future as well... ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" It has an unconcerned expression. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(28)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " The scythe the Baphomet is holding signifies the strong will to conquer the future. ",
-                        " What you need is not someone else's help or wisdom, but strong willpower. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Once you have that type of willpower, the road to the future will be very broad and promising. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(29)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " The Baphomet says that humans have no future. It says that their greed and selfishness shows no hope. ",
-                        " The future will only open to those that go beyond human's greed. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" The card expects something like that from you. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(30)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![" The Baphomet is facing the future. No matter how much effort you put in, without an eye that looks towards the future, it is pointless. ", " The Baphomet is telling you to look towards the future. "])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" To know your position right now and where to aim in the future. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(31)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" A sand's future is simply sand. Not a rock, nor mud. Some things just don't change young one. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" What the Sandman card is trying to say is to treasure your present self. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(32)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(
-                        " A sand dune changes its shape even after a day. The Sandman card is speaking of a future with many changes. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" It says not to be too caught up with the present, because the future is always changing. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(33)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" You will have a son in the future. Hmm? What'd you say? No plans for a baby? ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" That's why it is the future. Unexpected things happen every once in a while in the future. Lala~ "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(34)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" There are rare and precious treasures in the sand. The Sandman says that in the vast sand of the world, a treasure, will be discovered. That treasure is you young one.")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Hmm... Expecting a lot. Hehe~ "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(35)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![" Do you know what a Sohee thinks the most pitiful thing is? The future. It is because she was not able to live her future. ", " That is why you cannot bring up the subject of future in front of Sohee. I'm very sorry I cannot help. "])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" But isn't it better than a curse. Just think of it as that and forget about it. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(36)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Even in darkness you will shine for your goal. ",
-                        " The Skeleton is encouraging you to not lose your light even in a life in dark and damp places. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You must feel good, getting a word of encouragement from the Skeleton. Lala~ "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(37)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The story I heard from the skeleton goes like this. I am the king of the future. What in the world is that supposed to mean? ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" I don't know. Maybe it is saying that a scrawny person will do something great in the future? "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(38)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " If you want to do something great in the future, you must express your thankfulness to the Skeleton. ",
-                        " Then the Skeleton will help you. How do you express your thankfulness? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " If you see someone that resembles the Skeleton, help them. ",
-                            " Then the Skeleton will think that you helped itself and be happy. What a silly monster. Haha. "
-                        ],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(39)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " The Skeleton has the ability to dig where it feels the future, rather than looking into it. ",
-                        " It is digging in the east right now. How about it, won't you try going there? "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Who knows, the key to the future may be lying in the east. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(40)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " A knight's future leads to death. An honorable death on the battlefield. ",
-                        " One cannot live as a knight without being proud of that type of future. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " The knight wants you to be proud of yourself. ",
-                            " It says what you need is pride. Not honor, wealth, or love.. but pride. "
-                        ],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(41)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " A knight commenting about a person's future is very rare. ",
-                        " It says nothing for you in particular. Nothing ominous. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" It is a very good thing. Means a bright and clear future. Hohoho~ "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(42)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " A knight commenting about a person's future is very rare. ",
-                        " It says it will say one thing for you. Dark clouds can be seen beyond the clear skies. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You must find out for yourself what those clouds mean. Anyways, you must be careful. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(43)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" It is necessary to reflect upon the past and present in order to look into the future. This card says to look carefully into your past. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" ..with the attitude of reflecting upon yourself. What do you think? Don't you think you lived too much looking into the future? "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(44)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" What does the god of death want to say about the future? It is definitely an ominous sign. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" It is trying to warn something about the future. Be careful. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(45)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Anubis likes comedy despite people's expectations. It looks forward to comedy. Comedy must be important in the future. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" In your case, it would be wise to grow your sense of humor. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(46)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Anubis is the god of death, but it expresses more interest in the future than death. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Even the Anubis doesn't think about death, so why should you be thinking about it? Expect a good future young one. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(47)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Anubis says it has no interest in you. It is a good sign. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" What can be better than being ignored by the god of death? "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(48)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The Orc Lord says that dairy farming will develop in the future. Why don't you invest in it as well? ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" A business looking into the future? "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(49)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(
-                        " The Orc Lord says you need great strength in the future. Strength that is three, four times greater than now. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Make yourself stronger in any form. In the future, you will need it. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(50)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " The Orc Lord says that love for your companions will become great strength in the future. ",
-                        " Your strength is not enough. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" To become a Lord, you will need colleagues. You should take the Orc Lord's advice! "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(51)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " The Orc Lord is expressing opposition in being too curious about the future. ",
-                        " Pay a little more attention to the present. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Respect his opinion young one. You have nothing to lose. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(52)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Jack says something interesting will happen in the future. According to him, the future will be more fun than the present. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Are you looking forward to it? "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(53)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Jack says, in order to prepare for the future, a delightful preparation is necessary. ",
-                        " Delightful preparation? I don't understand.. I suppose I am too old. Maybe young ones get it.. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" What do you think? Any assumptions? "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(54)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Jack is jealous because a splendid person is headed your way in the future. ",
-                        " I wonder what type of person it is to make that Jack jealous! "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" One thing for sure is that you will be very happy! Congratulations young one! "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(56)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Jack says you may be frustrated in the future. ",
-                        " He says to overcome the frustration, it is necessary to think of happy thoughts. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Meaning your future will become a battle between happiness and frustration.. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(57)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " The Joker is trying to trick you. This card has all different types of ominous fortunes. ",
-                        " He wants to enjoy watching you tremble with anxiety. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Sadness, failure, darkness, loneliness.. you may feel all of these emotions, but they are not fatal. Don't worry. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(58)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Jokers don't just appear and go away. They come back in the future. ",
-                        " They will seduce you numerous times. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " So train yourself not to be tempted. ",
-                            " Or else you will face frustration or commit a blunder. "
-                        ],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(59)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Do you see the thing that looks like a leaf flying around the Joker? That is the spade mark. ",
-                        " Spades means death. Jokers leave those kinds of marks on purpose. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't get disturbed by the mark of death. It's merely a Joker's joke. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(60)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Joker offers a nice insurance and says to prepare for the future, but most of it is a waste of time. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't prepare for the future carelessly. A loose measure is worse than a prepared adventure. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(61)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Hodes do not know about tomorrow. But though they are quiet, they endanger other living things. ",
-                        " Effort into oneself puts great power into the mere existence of one. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't forget that you must think about yorsrelf the most. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(62)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Hodes do not know about tomorrow, but they still know about death. ",
-                        " Even though you may be honest and simple, in a time of a crisis, you must be alert. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Or else you will really be a simple and honest fool. That may be troublesome. "],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " Hodes do not ponder about life, but their will to live is very strong.",
-                            " You can gain a lot simply through the will to hold on to life. "
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Be thankful that you are alive. Thankfullness itself should help greatly. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(63)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Hodes are afraid of crises. You should try not to be afraid of crises either. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Don't think of them too much. A crisis is simply a crisis. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(64)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" Before, bulls used to be thought of as foolishly honest workers, but these days bulls are great strong fighters. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Finding different sides of oneself is the way to improve. Study about yourself. "],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(65)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " Do bulls leave leather when they pass away? Or was it the tiger? ",
-                        " Anyways, he is jealous of the humans that leave their name in history. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " If you don't leave your name, he may bear hatred against you for wasting your life. ",
-                            " So, to not be cursed, make an effort to leave your name in history. "
-                        ],
-                    )?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(66)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.lines(args![
-                        " It might seem funny that a bull will look into the future, but the bull is looking into your future right now. ",
-                        " He says your future is mixed with storms and fall weather. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" It may be difficult if you are caught up with one situation. In good times, prepare for the bad, and in bad times look forward to good luck. "])?;
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(67)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    ctx.mes(" The bull thinks of the happiness awaiting in the future, but it doesn't like reduced efficiency because of that happiness. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " Even though happiness may be on its way, don't let it affect your work right now. ",
-                            " This is the bull's thought and your fortune. "
-                        ],
-                    )?;
-                    break 'b4;
-                }
+            let subject4 = l_card_1_future.clone();
+            if subject4 == 1 {
+                ctx.lines(args![
+                    " Youth is not eternal. At one point when you wake up, you realize you are already a middle-aged worker. ",
+                    " Even reminiscing about the past over a cup of coffee can't bring back time. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Treasure the present.. is what the card is saying. "])?;
+            } else if subject4 == 2 {
+                ctx.lines(args![
+                    " This fortune is foreshadowing that you will become a strong and healthy worker in the future. ",
+                    " Not a normal worker, but one that has great strength and might.. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" You should prepare for your future. "])?;
+            } else if subject4 == 3 {
+                ctx.mes(" Smoking in a mine is an imprudent, life-threatening thing to do. You are wasting your precious life with that kind of behavior. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Act with a little more wisdom for your future. "])?;
+            } else if subject4 == 4 {
+                ctx.mes(" You may be shoveling in the future. In a dark dark place, shoveling that requires great strength. You must be careful young one. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" This type of fortune is never wrong. "])?;
+            } else if subject4 == 5 {
+                ctx.lines(args![
+                    " The moth is used when it is a caterpillar and ignored after it becomes a moth, by humans. ",
+                    " Which is better? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Check to see if there is an aspect of your life that is like the moth. "],
+                )?;
+            } else if subject4 == 6 {
+                ctx.mes(" The moth flies around without worrying about the future. It is telling you to fly freely rather than getting anxious about the future.. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" This is the fortune from this card. "])?;
+            } else if subject4 == 7 {
+                ctx.mes(" Dustiness' teeth are very strong. This means... ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" To live the future with strong teeth?! "])?;
+            } else if subject4 == 8 {
+                ctx.mes(" The moth says that this is not a time to think about wealth and prosperity. It says that someone important has appeared near you. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Any ideas who that may be? "])?;
+            } else if subject4 == 9 {
+                ctx.lines(args![
+                    " Dustiness symbolizes a hazy future. It is similar to your mind right now. It says it is obvious. ",
+                    " It says that there is no set path in the future. Isn't a relief in a way? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" It is not good nor bad, so there is always room for new possibilities. "],
+                )?;
+            } else if subject4 == 10 {
+                ctx.mes(" Sometime in your future, a future like Dracula awaits you. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" If you hope for that type of future, it is no problem, but you should be careful nonetheless. "],
+                )?;
+            } else if subject4 == 11 {
+                ctx.mes(" If the condition is just right, vampires can live forever. But, when that perfect condition is disrupted, they meet a tragic end. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" This means that if you go after fame and eternal life, tragedy awaits you in the end. They are not the important things in life. "])?;
+            } else if subject4 == 12 {
+                ctx.mes(" The Dracula says to be true to the present. Indeed, thinking and being true to the present is much more important than trying to figure out your future. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Unfortunately, I agree with it young one. "])?;
+            } else if subject4 == 13 {
+                ctx.mes(" Pirates do not have a future. That doesn't mean you do not have one. But.. you simply need to make more prudent decisions. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" How about changing your lifestyle? That's what this means. "],
+                )?;
+            } else if subject4 == 14 {
+                ctx.mes(
+                    " In this world, being a pirate out in the rough seas is very dangerous. But, they do not regret their decisions. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Because they find their meaning of life in the process. Young one, how about searching for the meaning of your life? "])?;
+            } else if subject4 == 15 {
+                ctx.mes(" Pirates are remembered as pirates even after they pass away. A person's name is beyond the matter of life and death. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" You should live with that aspect in mind."])?;
+            } else if subject4 == 16 {
+                ctx.mes(" The Marina does not think of its future.. But I can tell you one thing. Survival. The Marina only thinks about survival and life. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" You.. no, all of us should learn and do the same. "])?;
+            } else if subject4 == 17 {
+                ctx.mes(" The Marina doesn't think of its future.. but I can tell you one thing. Freedom. The Marina swims freely. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" How about living like that, too? "])?;
+            } else if subject4 == 18 {
+                ctx.mes(" Leave your future to the Marina. The Marina treasures its precious ocean. The sea will be of great significance in your future, too. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" A fisherman? Oceanographer? Pirate? Although I do not know which job it is... "],
+                )?;
+            } else if subject4 == 19 {
+                ctx.mes(" A Marionette is a Marionette forever. Its past and future never changes. Its present is its future. Don't you think it is rather sad? ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" But that could also be a good thing. This is the meaning of a Marionette. "],
+                )?;
+            } else if subject4 == 20 {
+                ctx.mes(" A Marionette is restrained but it has hope that it will be freed one day. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Very nice. This fortune signifies 'hope'. "])?;
+            } else if subject4 == 21 {
+                ctx.mes(" The eyes of a Marionette symbolize 'challenge.' Challenge will mean a lot in your future. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" ...to the point where that challenge will change your life. "],
+                )?;
+            } else if subject4 == 22 {
+                ctx.mes(" The Marionette believes the present is more important than the future. Basically, asking about the future is pointless. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" The Marionette devotes everything into the present. It suggests that type of attitude to you, too. "],
+                )?;
+            } else if subject4 == 23 {
+                ctx.mes(" The Medusa symbolizes the absolute one who accepts everyone's challenge. Your future will be in a position that is challenged by many. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" It could be good and bad. It is also a very tiring position. "],
+                )?;
+            } else if subject4 == 24 {
+                ctx.mes(" The Medusa symbolizes the absolute one who accepts everyone's challenge. Your future must be filled with challenges! ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Always challenge others! It is alright to fail, since challenge itself will become life. "],
+                )?;
+            } else if subject4 == 25 {
+                ctx.mes(" The Medusa says that there will be great chaos in the future. Chaos... I'm not sure what type of chaos it means, but it is definitely something that has never happened before. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" There is something that you must fight.. and win, in your future. "],
+                )?;
+            } else if subject4 == 26 {
+                ctx.mes(" The hair of the Medusa are sticking up. It is nervous about the big change that is going to happen. A change that even makes the scary Medusa worried. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" How about preparing yourself as well? "])?;
+            } else if subject4 == 27 {
+                ctx.mes(" The Baphomet doesn't care about a human's future. They simply observe quietly. Hmm... It seems like it has nothing to say about your future as well... ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" It has an unconcerned expression. "])?;
+            } else if subject4 == 28 {
+                ctx.lines(args![
+                    " The scythe the Baphomet is holding signifies the strong will to conquer the future. ",
+                    " What you need is not someone else's help or wisdom, but strong willpower. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Once you have that type of willpower, the road to the future will be very broad and promising. "],
+                )?;
+            } else if subject4 == 29 {
+                ctx.lines(args![
+                    " The Baphomet says that humans have no future. It says that their greed and selfishness shows no hope. ",
+                    " The future will only open to those that go beyond human's greed. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" The card expects something like that from you. "])?;
+            } else if subject4 == 30 {
+                ctx.lines(args![" The Baphomet is facing the future. No matter how much effort you put in, without an eye that looks towards the future, it is pointless. ", " The Baphomet is telling you to look towards the future. "])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" To know your position right now and where to aim in the future. "],
+                )?;
+            } else if subject4 == 31 {
+                ctx.mes(" A sand's future is simply sand. Not a rock, nor mud. Some things just don't change young one. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" What the Sandman card is trying to say is to treasure your present self. "],
+                )?;
+            } else if subject4 == 32 {
+                ctx.mes(
+                    " A sand dune changes its shape even after a day. The Sandman card is speaking of a future with many changes. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" It says not to be too caught up with the present, because the future is always changing. "],
+                )?;
+            } else if subject4 == 33 {
+                ctx.mes(" You will have a son in the future. Hmm? What'd you say? No plans for a baby? ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" That's why it is the future. Unexpected things happen every once in a while in the future. Lala~ "],
+                )?;
+            } else if subject4 == 34 {
+                ctx.mes(" There are rare and precious treasures in the sand. The Sandman says that in the vast sand of the world, a treasure, will be discovered. That treasure is you young one.")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Hmm... Expecting a lot. Hehe~ "])?;
+            } else if subject4 == 35 {
+                ctx.lines(args![" Do you know what a Sohee thinks the most pitiful thing is? The future. It is because she was not able to live her future. ", " That is why you cannot bring up the subject of future in front of Sohee. I'm very sorry I cannot help. "])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" But isn't it better than a curse. Just think of it as that and forget about it. "],
+                )?;
+            } else if subject4 == 36 {
+                ctx.lines(args![
+                    " Even in darkness you will shine for your goal. ",
+                    " The Skeleton is encouraging you to not lose your light even in a life in dark and damp places. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You must feel good, getting a word of encouragement from the Skeleton. Lala~ "],
+                )?;
+            } else if subject4 == 37 {
+                ctx.mes(" The story I heard from the skeleton goes like this. I am the king of the future. What in the world is that supposed to mean? ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" I don't know. Maybe it is saying that a scrawny person will do something great in the future? "],
+                )?;
+            } else if subject4 == 38 {
+                ctx.lines(args![
+                    " If you want to do something great in the future, you must express your thankfulness to the Skeleton. ",
+                    " Then the Skeleton will help you. How do you express your thankfulness? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " If you see someone that resembles the Skeleton, help them. ",
+                        " Then the Skeleton will think that you helped itself and be happy. What a silly monster. Haha. "
+                    ],
+                )?;
+            } else if subject4 == 39 {
+                ctx.lines(args![
+                    " The Skeleton has the ability to dig where it feels the future, rather than looking into it. ",
+                    " It is digging in the east right now. How about it, won't you try going there? "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Who knows, the key to the future may be lying in the east. "],
+                )?;
+            } else if subject4 == 40 {
+                ctx.lines(args![
+                    " A knight's future leads to death. An honorable death on the battlefield. ",
+                    " One cannot live as a knight without being proud of that type of future. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " The knight wants you to be proud of yourself. ",
+                        " It says what you need is pride. Not honor, wealth, or love.. but pride. "
+                    ],
+                )?;
+            } else if subject4 == 41 {
+                ctx.lines(args![
+                    " A knight commenting about a person's future is very rare. ",
+                    " It says nothing for you in particular. Nothing ominous. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" It is a very good thing. Means a bright and clear future. Hohoho~ "],
+                )?;
+            } else if subject4 == 42 {
+                ctx.lines(args![
+                    " A knight commenting about a person's future is very rare. ",
+                    " It says it will say one thing for you. Dark clouds can be seen beyond the clear skies. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You must find out for yourself what those clouds mean. Anyways, you must be careful. "],
+                )?;
+            } else if subject4 == 43 {
+                ctx.mes(" It is necessary to reflect upon the past and present in order to look into the future. This card says to look carefully into your past. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" ..with the attitude of reflecting upon yourself. What do you think? Don't you think you lived too much looking into the future? "])?;
+            } else if subject4 == 44 {
+                ctx.mes(" What does the god of death want to say about the future? It is definitely an ominous sign. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" It is trying to warn something about the future. Be careful. "],
+                )?;
+            } else if subject4 == 45 {
+                ctx.mes(" The Anubis likes comedy despite people's expectations. It looks forward to comedy. Comedy must be important in the future. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" In your case, it would be wise to grow your sense of humor. "],
+                )?;
+            } else if subject4 == 46 {
+                ctx.mes(" The Anubis is the god of death, but it expresses more interest in the future than death. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Even the Anubis doesn't think about death, so why should you be thinking about it? Expect a good future young one. "])?;
+            } else if subject4 == 47 {
+                ctx.mes(" The Anubis says it has no interest in you. It is a good sign. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" What can be better than being ignored by the god of death? "],
+                )?;
+            } else if subject4 == 48 {
+                ctx.mes(" The Orc Lord says that dairy farming will develop in the future. Why don't you invest in it as well? ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" A business looking into the future? "])?;
+            } else if subject4 == 49 {
+                ctx.mes(
+                    " The Orc Lord says you need great strength in the future. Strength that is three, four times greater than now. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Make yourself stronger in any form. In the future, you will need it. "],
+                )?;
+            } else if subject4 == 50 {
+                ctx.lines(args![
+                    " The Orc Lord says that love for your companions will become great strength in the future. ",
+                    " Your strength is not enough. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" To become a Lord, you will need colleagues. You should take the Orc Lord's advice! "],
+                )?;
+            } else if subject4 == 51 {
+                ctx.lines(args![
+                    " The Orc Lord is expressing opposition in being too curious about the future. ",
+                    " Pay a little more attention to the present. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Respect his opinion young one. You have nothing to lose. "],
+                )?;
+            } else if subject4 == 52 {
+                ctx.mes(" Jack says something interesting will happen in the future. According to him, the future will be more fun than the present. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Are you looking forward to it? "])?;
+            } else if subject4 == 53 {
+                ctx.lines(args![
+                    " Jack says, in order to prepare for the future, a delightful preparation is necessary. ",
+                    " Delightful preparation? I don't understand.. I suppose I am too old. Maybe young ones get it.. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" What do you think? Any assumptions? "])?;
+            } else if subject4 == 54 {
+                ctx.lines(args![
+                    " Jack is jealous because a splendid person is headed your way in the future. ",
+                    " I wonder what type of person it is to make that Jack jealous! "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" One thing for sure is that you will be very happy! Congratulations young one! "],
+                )?;
+            } else if subject4 == 56 {
+                ctx.lines(args![
+                    " Jack says you may be frustrated in the future. ",
+                    " He says to overcome the frustration, it is necessary to think of happy thoughts. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Meaning your future will become a battle between happiness and frustration.. "],
+                )?;
+            } else if subject4 == 57 {
+                ctx.lines(args![
+                    " The Joker is trying to trick you. This card has all different types of ominous fortunes. ",
+                    " He wants to enjoy watching you tremble with anxiety. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Sadness, failure, darkness, loneliness.. you may feel all of these emotions, but they are not fatal. Don't worry. "])?;
+            } else if subject4 == 58 {
+                ctx.lines(args![
+                    " Jokers don't just appear and go away. They come back in the future. ",
+                    " They will seduce you numerous times. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " So train yourself not to be tempted. ",
+                        " Or else you will face frustration or commit a blunder. "
+                    ],
+                )?;
+            } else if subject4 == 59 {
+                ctx.lines(args![
+                    " Do you see the thing that looks like a leaf flying around the Joker? That is the spade mark. ",
+                    " Spades means death. Jokers leave those kinds of marks on purpose. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't get disturbed by the mark of death. It's merely a Joker's joke. "],
+                )?;
+            } else if subject4 == 60 {
+                ctx.mes(" Joker offers a nice insurance and says to prepare for the future, but most of it is a waste of time. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't prepare for the future carelessly. A loose measure is worse than a prepared adventure. "],
+                )?;
+            } else if subject4 == 61 {
+                ctx.lines(args![
+                    " Hodes do not know about tomorrow. But though they are quiet, they endanger other living things. ",
+                    " Effort into oneself puts great power into the mere existence of one. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't forget that you must think about yorsrelf the most. "],
+                )?;
+            } else if subject4 == 62 {
+                ctx.lines(args![
+                    " Hodes do not know about tomorrow, but they still know about death. ",
+                    " Even though you may be honest and simple, in a time of a crisis, you must be alert. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Or else you will really be a simple and honest fool. That may be troublesome. "],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " Hodes do not ponder about life, but their will to live is very strong.",
+                        " You can gain a lot simply through the will to hold on to life. "
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Be thankful that you are alive. Thankfullness itself should help greatly. "],
+                )?;
+            } else if subject4 == 63 {
+                ctx.mes(" Hodes are afraid of crises. You should try not to be afraid of crises either. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Don't think of them too much. A crisis is simply a crisis. "],
+                )?;
+            } else if subject4 == 64 {
+                ctx.mes(" Before, bulls used to be thought of as foolishly honest workers, but these days bulls are great strong fighters. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Finding different sides of oneself is the way to improve. Study about yourself. "],
+                )?;
+            } else if subject4 == 65 {
+                ctx.lines(args![
+                    " Do bulls leave leather when they pass away? Or was it the tiger? ",
+                    " Anyways, he is jealous of the humans that leave their name in history. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " If you don't leave your name, he may bear hatred against you for wasting your life. ",
+                        " So, to not be cursed, make an effort to leave your name in history. "
+                    ],
+                )?;
+            } else if subject4 == 66 {
+                ctx.lines(args![
+                    " It might seem funny that a bull will look into the future, but the bull is looking into your future right now. ",
+                    " He says your future is mixed with storms and fall weather. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" It may be difficult if you are caught up with one situation. In good times, prepare for the bad, and in bad times look forward to good luck. "])?;
+            } else if subject4 == 67 {
+                ctx.mes(" The bull thinks of the happiness awaiting in the future, but it doesn't like reduced efficiency because of that happiness. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " Even though happiness may be on its way, don't let it affect your work right now. ",
+                        " This is the bull's thought and your fortune. "
+                    ],
+                )?;
             }
             ctx.next()?;
             ctx.lines_as(
@@ -3031,10 +1738,7 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
+        4 => {
             ctx.lines_as(
                 "Lhimetorra",
                 args![" Someone that knows of the dangers you do not, will warn you in the form of cards... so listen carefully-! "],
@@ -3112,874 +1816,452 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 }
             }
             ctx.mes("[Lhimetorra]")?;
-            'b5: {
-                let subject5 = l_card_1_warning.clone();
-                let mut matched5 = false;
-                let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                    && !subject5.loosely_equals(&Val::from(2))
-                    && !subject5.loosely_equals(&Val::from(3))
-                    && !subject5.loosely_equals(&Val::from(4))
-                    && !subject5.loosely_equals(&Val::from(5))
-                    && !subject5.loosely_equals(&Val::from(6))
-                    && !subject5.loosely_equals(&Val::from(7))
-                    && !subject5.loosely_equals(&Val::from(8))
-                    && !subject5.loosely_equals(&Val::from(9))
-                    && !subject5.loosely_equals(&Val::from(10))
-                    && !subject5.loosely_equals(&Val::from(11))
-                    && !subject5.loosely_equals(&Val::from(12))
-                    && !subject5.loosely_equals(&Val::from(13))
-                    && !subject5.loosely_equals(&Val::from(14))
-                    && !subject5.loosely_equals(&Val::from(15))
-                    && !subject5.loosely_equals(&Val::from(16))
-                    && !subject5.loosely_equals(&Val::from(17))
-                    && !subject5.loosely_equals(&Val::from(18))
-                    && !subject5.loosely_equals(&Val::from(19))
-                    && !subject5.loosely_equals(&Val::from(20))
-                    && !subject5.loosely_equals(&Val::from(21))
-                    && !subject5.loosely_equals(&Val::from(22))
-                    && !subject5.loosely_equals(&Val::from(23))
-                    && !subject5.loosely_equals(&Val::from(24))
-                    && !subject5.loosely_equals(&Val::from(25))
-                    && !subject5.loosely_equals(&Val::from(26))
-                    && !subject5.loosely_equals(&Val::from(27))
-                    && !subject5.loosely_equals(&Val::from(28))
-                    && !subject5.loosely_equals(&Val::from(29))
-                    && !subject5.loosely_equals(&Val::from(30))
-                    && !subject5.loosely_equals(&Val::from(31))
-                    && !subject5.loosely_equals(&Val::from(32))
-                    && !subject5.loosely_equals(&Val::from(33))
-                    && !subject5.loosely_equals(&Val::from(34))
-                    && !subject5.loosely_equals(&Val::from(35))
-                    && !subject5.loosely_equals(&Val::from(36))
-                    && !subject5.loosely_equals(&Val::from(37))
-                    && !subject5.loosely_equals(&Val::from(38))
-                    && !subject5.loosely_equals(&Val::from(39))
-                    && !subject5.loosely_equals(&Val::from(40))
-                    && !subject5.loosely_equals(&Val::from(41))
-                    && !subject5.loosely_equals(&Val::from(42))
-                    && !subject5.loosely_equals(&Val::from(43))
-                    && !subject5.loosely_equals(&Val::from(44))
-                    && !subject5.loosely_equals(&Val::from(45))
-                    && !subject5.loosely_equals(&Val::from(46))
-                    && !subject5.loosely_equals(&Val::from(47))
-                    && !subject5.loosely_equals(&Val::from(48))
-                    && !subject5.loosely_equals(&Val::from(49))
-                    && !subject5.loosely_equals(&Val::from(50))
-                    && !subject5.loosely_equals(&Val::from(51))
-                    && !subject5.loosely_equals(&Val::from(52))
-                    && !subject5.loosely_equals(&Val::from(53))
-                    && !subject5.loosely_equals(&Val::from(54))
-                    && !subject5.loosely_equals(&Val::from(55))
-                    && !subject5.loosely_equals(&Val::from(56))
-                    && !subject5.loosely_equals(&Val::from(57))
-                    && !subject5.loosely_equals(&Val::from(58))
-                    && !subject5.loosely_equals(&Val::from(59))
-                    && !subject5.loosely_equals(&Val::from(60))
-                    && !subject5.loosely_equals(&Val::from(61))
-                    && !subject5.loosely_equals(&Val::from(62))
-                    && !subject5.loosely_equals(&Val::from(63))
-                    && !subject5.loosely_equals(&Val::from(64))
-                    && !subject5.loosely_equals(&Val::from(65))
-                    && !subject5.loosely_equals(&Val::from(66))
-                    && !subject5.loosely_equals(&Val::from(67))
-                    && !subject5.loosely_equals(&Val::from(68))
-                    && !subject5.loosely_equals(&Val::from(69))
-                    && !subject5.loosely_equals(&Val::from(70));
-                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Do you see the forbidden mark on its shoulder? It is telling you to not do something. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" If you are thinking of something right now, stop your movement. Or else disaster may be headed your way. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(
-                        " Someone is after you. The person is very strong like the picture. They might be holding grudges against you. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Look around you. Of course, look for anyone you might have spited.. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" It is saying to be careful not to burn your mustache with a cigarette. When you do something, something is always at risk.. It is probably warning about that. ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(
-                        " 'Be careful of shoveling'.. You might get hit by a shovel. Should you be careful around a construction site? ",
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The sound of a moth's wings fluttering means chaos. A chaotic event may occur around you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" The moth is warning you of this. You should be careful. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Be aware of the wings. Wings symbolize flight, adventure, and fickleness of a player. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" If a word strikes you, be wary of that. Maybe.. a player? "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(7)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The teeth of Dustiness are very strong. This means.. Someone may attempt to bite you with their teeth?! ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(8)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The moth's warning: 'Dangerous!'. A very simple, yet obvious warning. ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(9)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Dracula says, 'Be careful in the streets at night.' ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(10)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Dracula says, 'Don't be too picky.' ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(11)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Dracula says, 'Brush your teeth 3 times a day.' Make sure you brush your teeth! ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(12)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Dracula says, 'Study the important points first.' Cramming will not work! ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(13)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" If you see the flag of a pirate, either run or do as they say. Pirates do not give more than one warning. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" It is the same in life. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(14)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Pirates give warnings about many things. But right now, this card is speaking of betrayal. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" To pirates, betrayal means tragic death. Be careful of betrayals. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(15)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The pirate is warning you of your beauty. Don't show off your beauty too much. Pirates are very jealous of appearance, as well. ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(16)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Marina is warning of a hot stinging poison. Be cautious of poison. ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(17)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(
-                        " The Marina is warning about a lazy lifestyle. It says such a lifestyle will lead to something like itself. ",
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(18)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(
-                        " The Marina doesn't really think about anything else.. But it will say one thing. Food. The Marina loves food. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Eating is happiness. Same goes for humans as well. Value food and enjoy eating. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(19)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Marina is warning about a big belly. It's not happy because it resembles itself.. How about losing some weight? ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(20)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Marionette says that you must not rely on violence and to use a different method. ",
-                        " I'm not quite sure, but it may become an important word of advice to you..? "
-                    ])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(21)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(
-                        " The Marionette is warning about ominous activities. If you did something recently, you should settle it soon. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" A bad result may come your way. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(22)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Marionette's eyes are warning about your falsehood. Lies, deceit, fake calculations and actions.. The Marionette is warning about all of them. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" This is all for you young one. Therefore, follow this fortune and rid yourself of falsehood. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(23)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Marionette is emphasizing a proper diet. Don't rely too much on meat. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Take the Marionette's advice. She never says anything wrong. Hoho... "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(24)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Medusa punishes those who challenge it without warning. Unexpected punishment. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" That is a Medusa. You should be careful. The warning ended a long time ago. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(25)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Medusa is warning you to be nice to others, or else it will turn you into stone.")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" What a rightful Medusa. Hmm... "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(26)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Medusa is warning you to return anything you borrow on time. ",
-                        " Saying it will not forgive those who use other's things like a black hole.. borrowing and never returning "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Are you sure you returned everything you have borrowed? Better take care of everything before you get punished. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(27)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Medusa is warning about a person near you. Of their existence.. and the relationship, ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" The Medusa's warning is very stern. Take a close look around you. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(28)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Baphomet says to beware when intervening with others' issues. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" He is very angry about intruding in others' spaces. Accept the Baphomet's warning. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(29)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Baphomet is warning about arrogance. Even a strong and wise warrior must show respect to a Baphomet, ",
-                        " Arrogance takes away that respect. The Baphomet hates that type of arrogance. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Maybe it means he sees that type of arrogance in you? Since the Baphomet is warning you.. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(30)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Baphomet is warning about the laziness that stops one from sharpening the scythe. ",
-                        " That laziness will cause you to lose your life in an instant. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Laziness is more dangerous than the monster in front of you. Don't forget about this warning. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(31)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Baphomet says it has nothing to say. I wonder why? Isn't it a very good sign?!! ")?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(32)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Sand is an instant cure of athlete's foot. He says to beware of athlete's foot and that he hates those rubbing their infected feet into his body. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" A Sandman's warning is very stern. Wash your feet regularly, young one. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(33)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " A chicken puts sand in its mouth to aid its insufficient digestion system. ",
-                        " The Sandman says to watch out before you become like a chicken. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" And don't eat too much spicy and salty food, alcohol, etc. What a thoughtful Sandman. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(34)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Sandman says over-sleepers will be punished by society! ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Oooh, a stern warning about the future! Young one, bear this in mind. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(35)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" One warning from the Sandman, respect your parents. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" If you don't, you will end up like him. Listen to the Sandman. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(36)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Sohee dislikes stinky feet. Don't forget to wash your feet. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Bah, don't laugh about it! This is a solemn warning. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(37)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " Sohee stands on the tip of her toes. It is because her toes are very strong. ",
-                        " No matter what a person does, physical strength is the most important. Exercise and get stronger. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" If you sit around all day, even the things that were going to work won't. Got it? Exercise, exercise! "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(38)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " Look at Sohee's hairstyle. Isn't it splendid. ",
-                        " Sohee likes to take care of her appearance. If you don't, Sohee will get mad at you. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " Making yourself look presentable is just as important as keeping a good heart. ",
-                            " Take care of your appearance. And get that pepper out from between your teeth! "
-                        ],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(39)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " Once, Sohee didn't get her change back when she asked a baby ghost to run an errand. ",
-                        " No can do! Always return the change. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" No matter how little the amount, you must not just keep it. Sohee greatly dislikes it. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(40)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Even though it is a skeleton with only bones, it has all the safety gear needed. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" What the skeleton wants to say is, be aware of 'safety'. Being ignorant about safety is dangerous. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(41)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The skeleton card has a gray tone. If you read the grey, you can see the darkness. ",
-                        " It seems like darkness is on its way. Be careful, this darkness isn't ordinary. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Hmm.. would you like an amulet? "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(42)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The skeleton is warning you about an irregular eating pattern. ",
-                        " It says it became like that because of a bad eating habit. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Eat the right food at the right time. That's the only way your body will survive. You can't afford to become like a skeleton. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(43)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The skeleton's pickaxe is very strong. Even though its body seems weak, with the right tools, it can do great things. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" So don't blame your body right now and go search for the right tools. Then you will have a good result. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(44)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The knight is warning you of reckless driving. Do you ride a Pecopeco by any chance? ",
-                        " Anyhow, you should avoid reckless driving.. If a knight is saying that, it is a big problem. "
-                    ])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(45)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The knight is warning you of cruelty. It could be yours or that of someone around you. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Anyhow, cruelty will harm you for sure. Be cautious of it. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(46)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The misfortune shown in the knight card is hastiness. That is also what takes away a knight's life, too. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![
-                            " This knight is warning you from the bottom of his heart, ",
-                            " so that you don't repeat his mistake. Be ware of hastiness. "
-                        ],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(47)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " This knight is warning you of loneliness. He doesn't have a person to help his horse, ",
-                        " nor a lover awaiting him, so loneliness hits him in the heart. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Loneliness is not simply sadness. It is a formless devil eating your life. Stay away from loneliness. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(48)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The warning of the god of death is death itself. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Be cautious of death.. death that can be your turn, or maybe someone else. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(49)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Anubis says to be careful of darkness. In darkness, death lingers in the dark. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Take the Anubis's advice and avoid the dark. That is the wisest choice. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(50)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Anubis doesn't like foul language. You don't have a foul mouth, do you? ",
-                        " Watch your mouth. The Anubis is after those that say foul language."
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Humans have a problem with their mouths. Mmm~ Agh. Me, too?! "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(51)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Anubis is warning you of hatred. Hatred only brings upon death. ",
-                        " The Anubis must not like being busy these days. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Seeing that he is warning about hatred. Don't you think it's a good idea to avoid his eyes at a time like this? "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(52)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(
-                        " The Orc Lord is warning you of self-righteousness. It is the most dangerous noxious bug that will feed on you. ",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Learn how to accept others' opinions. How about starting from accepting the Orc Lord's? "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(53)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Orc Lord is warning you about freedom. Isn't freedom a good thing? ",
-                        " Not always! Too much freedom can lead to self-indulgence! "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" He knows about the danger of freedom as a lord. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(54)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Orc Lord warning you of the opposite sex. Yes. They are poisonous. Keep your distance. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Especially a young one like you... You are too close to one. Cough. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(55)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" The Orc Lord is warning about destruction. He knows destruction very well because he is a master of destruction. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" That's why he knows about the danger and misfortune destruction brings. Don't destroy thoughtlessly. You will end up destroying yourself as well. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(56)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Jack is warning you of lame jokes. When he finds one saying them, he tends to hit them with his stick. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" If you don't want to be hit, stop your lame jokes! "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(57)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Jack is warning you about others' anger and that anger takes away happiness and kills a joke. ")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Anger only exhausts you. Keep your distance from anger and befriend jokes. Jack's word. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(58)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " It seems like Jack is worried about excessive jokes. ",
-                        " Jokes are fun, but too much will turn you into a ghost like him. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" Be careful. When Jack speaks like this, he playfulness is gone. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(59)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Jokers enjoy giving opposite warnings. He says to enjoy sleeping in.")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" I think you should wake up early. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(60)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" Jokers enjoy giving opposite warnings. He says to enjoy a midnight snack. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Don't eat anything at night. Your stomach will hurt. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(61)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " Jokers enjoy giving opposite warnings. ",
-                        " He says if someone has something you want, make it yours. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Need I say more? That's a dangerous thought!! "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(62)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " Joker enjoys giving opposite warnings. ",
-                        " What he is telling you is to not fear death. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" If a Joker is saying this, be careful. There is no cure for thoughtless fools. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(63)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Hode can forgive others, but not those who hurt it. ",
-                        " You should also only not forgive those who hurt you. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" A small territory will ensure great happiness. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(64)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Hode is warning you of voracious eating that made it sluggish. ",
-                        " Eating is good, but the wild is a dangerous place. Leave your stomach partially empty. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" So you can quickly respond to crises. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(65)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Hode is warning you of voracious eating that made it sluggish. ",
-                        " Eating is good, but the wild is a dangerous place. Leave your stomach partially empty."
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" So you can quickly respond to crises. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(66)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.mes(" If you are to the point of being warned by a Hode.. you must be one considerable person. ")?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" It says to do better.. I have no idea what it means. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(67)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The Bull warns of corruption. A lazy hedonist that is not diligent. ",
-                        " He believes that is like a cancer cell that can't be removed. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" Be careful to not have that kind of cell stuck on you. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(68)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The bull is warning about ignorance about a crisis. ",
-                        " Not knowing that a crisis is a crisis is the most dangerous of all. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" You will need to learn how to read danger. Accept the bull's advice. "],
-                    )?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(69)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The bull is warning of something that will make life sad. ",
-                        " Sadness is a natural feeling, but don't let that put you down. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as("Lhimetorra", args![" A bull is an honest worker that cries even while it works. It knows that it must not be lazy about what it needs to do, even when expressing sadness. ", " It seems like he wants to tell you this. "])?;
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(70)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    ctx.lines(args![
-                        " The bull is warning about meat from watered cows. ",
-                        " Saying that, that type of behavior will surely bring upon monsters' curses. "
-                    ])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Lhimetorra",
-                        args![" I don't know why he would warn you about it.. Do you raise cattle by any chance? "],
-                    )?;
-                    break 'b5;
-                }
+            let subject5 = l_card_1_warning.clone();
+            if subject5 == 1 {
+                ctx.mes(" Do you see the forbidden mark on its shoulder? It is telling you to not do something. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" If you are thinking of something right now, stop your movement. Or else disaster may be headed your way. "],
+                )?;
+            } else if subject5 == 2 {
+                ctx.mes(
+                    " Someone is after you. The person is very strong like the picture. They might be holding grudges against you. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Look around you. Of course, look for anyone you might have spited.. "],
+                )?;
+            } else if subject5 == 3 {
+                ctx.mes(" It is saying to be careful not to burn your mustache with a cigarette. When you do something, something is always at risk.. It is probably warning about that. ")?;
+            } else if subject5 == 4 {
+                ctx.mes(
+                    " 'Be careful of shoveling'.. You might get hit by a shovel. Should you be careful around a construction site? ",
+                )?;
+            } else if subject5 == 5 {
+                ctx.mes(" The sound of a moth's wings fluttering means chaos. A chaotic event may occur around you. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" The moth is warning you of this. You should be careful. "])?;
+            } else if subject5 == 6 {
+                ctx.mes(" Be aware of the wings. Wings symbolize flight, adventure, and fickleness of a player. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" If a word strikes you, be wary of that. Maybe.. a player? "],
+                )?;
+            } else if subject5 == 7 {
+                ctx.mes(" The teeth of Dustiness are very strong. This means.. Someone may attempt to bite you with their teeth?! ")?;
+            } else if subject5 == 8 {
+                ctx.mes(" The moth's warning: 'Dangerous!'. A very simple, yet obvious warning. ")?;
+            } else if subject5 == 9 {
+                ctx.mes(" Dracula says, 'Be careful in the streets at night.' ")?;
+            } else if subject5 == 10 {
+                ctx.mes(" Dracula says, 'Don't be too picky.' ")?;
+            } else if subject5 == 11 {
+                ctx.mes(" Dracula says, 'Brush your teeth 3 times a day.' Make sure you brush your teeth! ")?;
+            } else if subject5 == 12 {
+                ctx.mes(" Dracula says, 'Study the important points first.' Cramming will not work! ")?;
+            } else if subject5 == 13 {
+                ctx.mes(" If you see the flag of a pirate, either run or do as they say. Pirates do not give more than one warning. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" It is the same in life. "])?;
+            } else if subject5 == 14 {
+                ctx.mes(" Pirates give warnings about many things. But right now, this card is speaking of betrayal. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" To pirates, betrayal means tragic death. Be careful of betrayals. "],
+                )?;
+            } else if subject5 == 15 {
+                ctx.mes(" The pirate is warning you of your beauty. Don't show off your beauty too much. Pirates are very jealous of appearance, as well. ")?;
+            } else if subject5 == 16 {
+                ctx.mes(" The Marina is warning of a hot stinging poison. Be cautious of poison. ")?;
+            } else if subject5 == 17 {
+                ctx.mes(
+                    " The Marina is warning about a lazy lifestyle. It says such a lifestyle will lead to something like itself. ",
+                )?;
+            } else if subject5 == 18 {
+                ctx.mes(
+                    " The Marina doesn't really think about anything else.. But it will say one thing. Food. The Marina loves food. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Eating is happiness. Same goes for humans as well. Value food and enjoy eating. "],
+                )?;
+            } else if subject5 == 19 {
+                ctx.mes(" The Marina is warning about a big belly. It's not happy because it resembles itself.. How about losing some weight? ")?;
+            } else if subject5 == 20 {
+                ctx.lines(args![
+                    " The Marionette says that you must not rely on violence and to use a different method. ",
+                    " I'm not quite sure, but it may become an important word of advice to you..? "
+                ])?;
+            } else if subject5 == 21 {
+                ctx.mes(
+                    " The Marionette is warning about ominous activities. If you did something recently, you should settle it soon. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" A bad result may come your way. "])?;
+            } else if subject5 == 22 {
+                ctx.mes(" The Marionette's eyes are warning about your falsehood. Lies, deceit, fake calculations and actions.. The Marionette is warning about all of them. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" This is all for you young one. Therefore, follow this fortune and rid yourself of falsehood. "],
+                )?;
+            } else if subject5 == 23 {
+                ctx.mes(" The Marionette is emphasizing a proper diet. Don't rely too much on meat. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Take the Marionette's advice. She never says anything wrong. Hoho... "],
+                )?;
+            } else if subject5 == 24 {
+                ctx.mes(" The Medusa punishes those who challenge it without warning. Unexpected punishment. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" That is a Medusa. You should be careful. The warning ended a long time ago. "],
+                )?;
+            } else if subject5 == 25 {
+                ctx.mes(" The Medusa is warning you to be nice to others, or else it will turn you into stone.")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" What a rightful Medusa. Hmm... "])?;
+            } else if subject5 == 26 {
+                ctx.lines(args![
+                    " The Medusa is warning you to return anything you borrow on time. ",
+                    " Saying it will not forgive those who use other's things like a black hole.. borrowing and never returning "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Are you sure you returned everything you have borrowed? Better take care of everything before you get punished. "])?;
+            } else if subject5 == 27 {
+                ctx.mes(" The Medusa is warning about a person near you. Of their existence.. and the relationship, ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" The Medusa's warning is very stern. Take a close look around you. "],
+                )?;
+            } else if subject5 == 28 {
+                ctx.mes(" The Baphomet says to beware when intervening with others' issues. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" He is very angry about intruding in others' spaces. Accept the Baphomet's warning. "],
+                )?;
+            } else if subject5 == 29 {
+                ctx.lines(args![
+                    " The Baphomet is warning about arrogance. Even a strong and wise warrior must show respect to a Baphomet, ",
+                    " Arrogance takes away that respect. The Baphomet hates that type of arrogance. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Maybe it means he sees that type of arrogance in you? Since the Baphomet is warning you.. "],
+                )?;
+            } else if subject5 == 30 {
+                ctx.lines(args![
+                    " The Baphomet is warning about the laziness that stops one from sharpening the scythe. ",
+                    " That laziness will cause you to lose your life in an instant. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Laziness is more dangerous than the monster in front of you. Don't forget about this warning. "],
+                )?;
+            } else if subject5 == 31 {
+                ctx.mes(" The Baphomet says it has nothing to say. I wonder why? Isn't it a very good sign?!! ")?;
+            } else if subject5 == 32 {
+                ctx.mes(" Sand is an instant cure of athlete's foot. He says to beware of athlete's foot and that he hates those rubbing their infected feet into his body. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" A Sandman's warning is very stern. Wash your feet regularly, young one. "],
+                )?;
+            } else if subject5 == 33 {
+                ctx.lines(args![
+                    " A chicken puts sand in its mouth to aid its insufficient digestion system. ",
+                    " The Sandman says to watch out before you become like a chicken. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" And don't eat too much spicy and salty food, alcohol, etc. What a thoughtful Sandman. "],
+                )?;
+            } else if subject5 == 34 {
+                ctx.mes(" The Sandman says over-sleepers will be punished by society! ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Oooh, a stern warning about the future! Young one, bear this in mind. "],
+                )?;
+            } else if subject5 == 35 {
+                ctx.mes(" One warning from the Sandman, respect your parents. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" If you don't, you will end up like him. Listen to the Sandman. "],
+                )?;
+            } else if subject5 == 36 {
+                ctx.mes(" Sohee dislikes stinky feet. Don't forget to wash your feet. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Bah, don't laugh about it! This is a solemn warning. "])?;
+            } else if subject5 == 37 {
+                ctx.lines(args![
+                    " Sohee stands on the tip of her toes. It is because her toes are very strong. ",
+                    " No matter what a person does, physical strength is the most important. Exercise and get stronger. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" If you sit around all day, even the things that were going to work won't. Got it? Exercise, exercise! "],
+                )?;
+            } else if subject5 == 38 {
+                ctx.lines(args![
+                    " Look at Sohee's hairstyle. Isn't it splendid. ",
+                    " Sohee likes to take care of her appearance. If you don't, Sohee will get mad at you. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " Making yourself look presentable is just as important as keeping a good heart. ",
+                        " Take care of your appearance. And get that pepper out from between your teeth! "
+                    ],
+                )?;
+            } else if subject5 == 39 {
+                ctx.lines(args![
+                    " Once, Sohee didn't get her change back when she asked a baby ghost to run an errand. ",
+                    " No can do! Always return the change. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" No matter how little the amount, you must not just keep it. Sohee greatly dislikes it. "],
+                )?;
+            } else if subject5 == 40 {
+                ctx.mes(" Even though it is a skeleton with only bones, it has all the safety gear needed. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" What the skeleton wants to say is, be aware of 'safety'. Being ignorant about safety is dangerous. "],
+                )?;
+            } else if subject5 == 41 {
+                ctx.lines(args![
+                    " The skeleton card has a gray tone. If you read the grey, you can see the darkness. ",
+                    " It seems like darkness is on its way. Be careful, this darkness isn't ordinary. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Hmm.. would you like an amulet? "])?;
+            } else if subject5 == 42 {
+                ctx.lines(args![
+                    " The skeleton is warning you about an irregular eating pattern. ",
+                    " It says it became like that because of a bad eating habit. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Eat the right food at the right time. That's the only way your body will survive. You can't afford to become like a skeleton. "])?;
+            } else if subject5 == 43 {
+                ctx.mes(" The skeleton's pickaxe is very strong. Even though its body seems weak, with the right tools, it can do great things. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" So don't blame your body right now and go search for the right tools. Then you will have a good result. "],
+                )?;
+            } else if subject5 == 44 {
+                ctx.lines(args![
+                    " The knight is warning you of reckless driving. Do you ride a Pecopeco by any chance? ",
+                    " Anyhow, you should avoid reckless driving.. If a knight is saying that, it is a big problem. "
+                ])?;
+            } else if subject5 == 45 {
+                ctx.mes(" The knight is warning you of cruelty. It could be yours or that of someone around you. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Anyhow, cruelty will harm you for sure. Be cautious of it. "],
+                )?;
+            } else if subject5 == 46 {
+                ctx.mes(" The misfortune shown in the knight card is hastiness. That is also what takes away a knight's life, too. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![
+                        " This knight is warning you from the bottom of his heart, ",
+                        " so that you don't repeat his mistake. Be ware of hastiness. "
+                    ],
+                )?;
+            } else if subject5 == 47 {
+                ctx.lines(args![
+                    " This knight is warning you of loneliness. He doesn't have a person to help his horse, ",
+                    " nor a lover awaiting him, so loneliness hits him in the heart. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Loneliness is not simply sadness. It is a formless devil eating your life. Stay away from loneliness. "],
+                )?;
+            } else if subject5 == 48 {
+                ctx.mes(" The warning of the god of death is death itself. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Be cautious of death.. death that can be your turn, or maybe someone else. "],
+                )?;
+            } else if subject5 == 49 {
+                ctx.mes(" The Anubis says to be careful of darkness. In darkness, death lingers in the dark. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Take the Anubis's advice and avoid the dark. That is the wisest choice. "],
+                )?;
+            } else if subject5 == 50 {
+                ctx.lines(args![
+                    " The Anubis doesn't like foul language. You don't have a foul mouth, do you? ",
+                    " Watch your mouth. The Anubis is after those that say foul language."
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Humans have a problem with their mouths. Mmm~ Agh. Me, too?! "],
+                )?;
+            } else if subject5 == 51 {
+                ctx.lines(args![
+                    " The Anubis is warning you of hatred. Hatred only brings upon death. ",
+                    " The Anubis must not like being busy these days. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Seeing that he is warning about hatred. Don't you think it's a good idea to avoid his eyes at a time like this? "])?;
+            } else if subject5 == 52 {
+                ctx.mes(
+                    " The Orc Lord is warning you of self-righteousness. It is the most dangerous noxious bug that will feed on you. ",
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Learn how to accept others' opinions. How about starting from accepting the Orc Lord's? "],
+                )?;
+            } else if subject5 == 53 {
+                ctx.lines(args![
+                    " The Orc Lord is warning you about freedom. Isn't freedom a good thing? ",
+                    " Not always! Too much freedom can lead to self-indulgence! "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" He knows about the danger of freedom as a lord. "])?;
+            } else if subject5 == 54 {
+                ctx.mes(" The Orc Lord warning you of the opposite sex. Yes. They are poisonous. Keep your distance. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Especially a young one like you... You are too close to one. Cough. "],
+                )?;
+            } else if subject5 == 55 {
+                ctx.mes(" The Orc Lord is warning about destruction. He knows destruction very well because he is a master of destruction. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" That's why he knows about the danger and misfortune destruction brings. Don't destroy thoughtlessly. You will end up destroying yourself as well. "])?;
+            } else if subject5 == 56 {
+                ctx.mes(" Jack is warning you of lame jokes. When he finds one saying them, he tends to hit them with his stick. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" If you don't want to be hit, stop your lame jokes! "])?;
+            } else if subject5 == 57 {
+                ctx.mes(" Jack is warning you about others' anger and that anger takes away happiness and kills a joke. ")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Anger only exhausts you. Keep your distance from anger and befriend jokes. Jack's word. "],
+                )?;
+            } else if subject5 == 58 {
+                ctx.lines(args![
+                    " It seems like Jack is worried about excessive jokes. ",
+                    " Jokes are fun, but too much will turn you into a ghost like him. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" Be careful. When Jack speaks like this, he playfulness is gone. "],
+                )?;
+            } else if subject5 == 59 {
+                ctx.mes(" Jokers enjoy giving opposite warnings. He says to enjoy sleeping in.")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" I think you should wake up early. "])?;
+            } else if subject5 == 60 {
+                ctx.mes(" Jokers enjoy giving opposite warnings. He says to enjoy a midnight snack. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Don't eat anything at night. Your stomach will hurt. "])?;
+            } else if subject5 == 61 {
+                ctx.lines(args![
+                    " Jokers enjoy giving opposite warnings. ",
+                    " He says if someone has something you want, make it yours. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Need I say more? That's a dangerous thought!! "])?;
+            } else if subject5 == 62 {
+                ctx.lines(args![
+                    " Joker enjoys giving opposite warnings. ",
+                    " What he is telling you is to not fear death. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" If a Joker is saying this, be careful. There is no cure for thoughtless fools. "],
+                )?;
+            } else if subject5 == 63 {
+                ctx.lines(args![
+                    " The Hode can forgive others, but not those who hurt it. ",
+                    " You should also only not forgive those who hurt you. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" A small territory will ensure great happiness. "])?;
+            } else if subject5 == 64 {
+                ctx.lines(args![
+                    " The Hode is warning you of voracious eating that made it sluggish. ",
+                    " Eating is good, but the wild is a dangerous place. Leave your stomach partially empty. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" So you can quickly respond to crises. "])?;
+            } else if subject5 == 65 {
+                ctx.lines(args![
+                    " The Hode is warning you of voracious eating that made it sluggish. ",
+                    " Eating is good, but the wild is a dangerous place. Leave your stomach partially empty."
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" So you can quickly respond to crises. "])?;
+            } else if subject5 == 66 {
+                ctx.mes(" If you are to the point of being warned by a Hode.. you must be one considerable person. ")?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" It says to do better.. I have no idea what it means. "])?;
+            } else if subject5 == 67 {
+                ctx.lines(args![
+                    " The Bull warns of corruption. A lazy hedonist that is not diligent. ",
+                    " He believes that is like a cancer cell that can't be removed. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" Be careful to not have that kind of cell stuck on you. "])?;
+            } else if subject5 == 68 {
+                ctx.lines(args![
+                    " The bull is warning about ignorance about a crisis. ",
+                    " Not knowing that a crisis is a crisis is the most dangerous of all. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" You will need to learn how to read danger. Accept the bull's advice. "],
+                )?;
+            } else if subject5 == 69 {
+                ctx.lines(args![
+                    " The bull is warning of something that will make life sad. ",
+                    " Sadness is a natural feeling, but don't let that put you down. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as("Lhimetorra", args![" A bull is an honest worker that cries even while it works. It knows that it must not be lazy about what it needs to do, even when expressing sadness. ", " It seems like he wants to tell you this. "])?;
+            } else if subject5 == 70 {
+                ctx.lines(args![
+                    " The bull is warning about meat from watered cows. ",
+                    " Saying that, that type of behavior will surely bring upon monsters' curses. "
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Lhimetorra",
+                    args![" I don't know why he would warn you about it.. Do you raise cattle by any chance? "],
+                )?;
             }
             ctx.next()?;
             ctx.lines_as(
@@ -3995,6 +2277,7 @@ fn fortune_teller_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -4084,299 +2367,89 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                 ctx.next()?;
                 ctx.lines_as("Chocarle", args![" Then~ gently think of your wish! "])?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             " (I'm curious about love!) : (I would like to do well in school!) : (Will my friendship be intact?) : (I want to know about my future self!) : (Will I make a lot of money?) ",
                         )],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4))
-                        && !subject1.loosely_equals(&Val::from(5));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Chocarle", args![" Ohh! Cute love fortune! Heh! Lets look at the cards! "])?;
                         ctx.next()?;
                         l_card_2_love = ctx.call(Function::Rand, vec![Val::from(1), Val::from(33)])?;
                         poring_fortune_teller_run(ctx, PoringFortuneTellerStep::LDisplaycutin, vec![l_card_2_love.clone()])?;
                         ctx.mes("[Chocarle]")?;
-                        'b2: {
-                            let subject2 = l_card_2_love.clone();
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3))
-                                && !subject2.loosely_equals(&Val::from(4))
-                                && !subject2.loosely_equals(&Val::from(5))
-                                && !subject2.loosely_equals(&Val::from(6))
-                                && !subject2.loosely_equals(&Val::from(7))
-                                && !subject2.loosely_equals(&Val::from(8))
-                                && !subject2.loosely_equals(&Val::from(9))
-                                && !subject2.loosely_equals(&Val::from(10))
-                                && !subject2.loosely_equals(&Val::from(11))
-                                && !subject2.loosely_equals(&Val::from(12))
-                                && !subject2.loosely_equals(&Val::from(13))
-                                && !subject2.loosely_equals(&Val::from(14))
-                                && !subject2.loosely_equals(&Val::from(15))
-                                && !subject2.loosely_equals(&Val::from(16))
-                                && !subject2.loosely_equals(&Val::from(17))
-                                && !subject2.loosely_equals(&Val::from(18))
-                                && !subject2.loosely_equals(&Val::from(19))
-                                && !subject2.loosely_equals(&Val::from(20))
-                                && !subject2.loosely_equals(&Val::from(21))
-                                && !subject2.loosely_equals(&Val::from(22))
-                                && !subject2.loosely_equals(&Val::from(23))
-                                && !subject2.loosely_equals(&Val::from(24))
-                                && !subject2.loosely_equals(&Val::from(25))
-                                && !subject2.loosely_equals(&Val::from(26))
-                                && !subject2.loosely_equals(&Val::from(27))
-                                && !subject2.loosely_equals(&Val::from(28))
-                                && !subject2.loosely_equals(&Val::from(29))
-                                && !subject2.loosely_equals(&Val::from(30))
-                                && !subject2.loosely_equals(&Val::from(31))
-                                && !subject2.loosely_equals(&Val::from(32))
-                                && !subject2.loosely_equals(&Val::from(33));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Oh! Your lover is about to leave your side! Hold on tight! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Agh! You're about to give your soul to your loved one! Take it down a notch! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" No! Your heart is about to leave your love! Catch it! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Love is like juice in the forest! It is refreshing! Take care of your loved one! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(
-                                    " Uh! You didn't share your juice with your loved one! What a shame! Take care of your loved one! ",
-                                )?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Why not share with your loved one? Don't be too greedy and try to keep it all! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(7)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Your love is going to have a crisis! Protect your love! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(8)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Hee! Go after your love like a mole! Puhahaha! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(9)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Oh no! Your love is in danger! Run away from the menace! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(10)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Oh no! You lost your loved one. And, nobody similar around you. Cheer up! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(11)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Ah! A sexy rival has appeared! Don't get sidetracked! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(12)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" You are desperately searching for love! If you go beyond this desert, you can find love! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(13)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Prepare an event of love! They will be flying with happiness! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(14)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Love is sweet! Be careful not to get cavities! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(15)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Prepare a present for your love! They might get a heart attack because they will be overwhelmed with happiness! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(16)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Don't be shy in front of your loved one! Love transcends everything! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(17)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Embrace every aspect of your loved one! That is true love! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(18)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Love will blossom with a totally different person! Wow, so cool! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(19)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" No matter what other people say, run towards your loved one! One-track love! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(20)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Go to your loved one with a present! They will be very happy! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(21)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Love requires health and strength! Exercise to become stronger! Power and love! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(22)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(
-                                    " Even if you wish to approach your loved one, your body is discomforted! Take a break and rest! ",
-                                )?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(23)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Love is bending yourself for someone! Service! Sacrifice! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(24)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" You will be meeting your lover's parents! Prepare well! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(25)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Your relationship must be very happy as it seems you two are flying amongst the clouds! Very jealous! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(26)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Make an opportunity to be alone with each other! It will bring much happiness! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(27)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Uh oh! Someone is peeping at your love! Go scold them! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(28)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Love blossoms from the foundation! Be true to the basics! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(29)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" When your loved one is hurt, be by them! They will be very happy! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(30)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" One day, when you wake up, your loved one will leave a present! Be happy! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(31)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Give lots~~ of presents to your loved one! Then you will experience many~ many good things! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(32)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" Lean against a wall and await your love! *Boom* Love will appear! ")?;
-                                break 'b2;
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(33)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.mes(" You must be lonely! It's ok, cheer up! ")?;
-                                break 'b2;
-                            }
+                        let subject2 = l_card_2_love.clone();
+                        if subject2 == 1 {
+                            ctx.mes(" Oh! Your lover is about to leave your side! Hold on tight! ")?;
+                        } else if subject2 == 2 {
+                            ctx.mes(" Agh! You're about to give your soul to your loved one! Take it down a notch! ")?;
+                        } else if subject2 == 3 {
+                            ctx.mes(" No! Your heart is about to leave your love! Catch it! ")?;
+                        } else if subject2 == 4 {
+                            ctx.mes(" Love is like juice in the forest! It is refreshing! Take care of your loved one! ")?;
+                        } else if subject2 == 5 {
+                            ctx.mes(
+                                " Uh! You didn't share your juice with your loved one! What a shame! Take care of your loved one! ",
+                            )?;
+                        } else if subject2 == 6 {
+                            ctx.mes(" Why not share with your loved one? Don't be too greedy and try to keep it all! ")?;
+                        } else if subject2 == 7 {
+                            ctx.mes(" Your love is going to have a crisis! Protect your love! ")?;
+                        } else if subject2 == 8 {
+                            ctx.mes(" Hee! Go after your love like a mole! Puhahaha! ")?;
+                        } else if subject2 == 9 {
+                            ctx.mes(" Oh no! Your love is in danger! Run away from the menace! ")?;
+                        } else if subject2 == 10 {
+                            ctx.mes(" Oh no! You lost your loved one. And, nobody similar around you. Cheer up! ")?;
+                        } else if subject2 == 11 {
+                            ctx.mes(" Ah! A sexy rival has appeared! Don't get sidetracked! ")?;
+                        } else if subject2 == 12 {
+                            ctx.mes(" You are desperately searching for love! If you go beyond this desert, you can find love! ")?;
+                        } else if subject2 == 13 {
+                            ctx.mes(" Prepare an event of love! They will be flying with happiness! ")?;
+                        } else if subject2 == 14 {
+                            ctx.mes(" Love is sweet! Be careful not to get cavities! ")?;
+                        } else if subject2 == 15 {
+                            ctx.mes(" Prepare a present for your love! They might get a heart attack because they will be overwhelmed with happiness! ")?;
+                        } else if subject2 == 16 {
+                            ctx.mes(" Don't be shy in front of your loved one! Love transcends everything! ")?;
+                        } else if subject2 == 17 {
+                            ctx.mes(" Embrace every aspect of your loved one! That is true love! ")?;
+                        } else if subject2 == 18 {
+                            ctx.mes(" Love will blossom with a totally different person! Wow, so cool! ")?;
+                        } else if subject2 == 19 {
+                            ctx.mes(" No matter what other people say, run towards your loved one! One-track love! ")?;
+                        } else if subject2 == 20 {
+                            ctx.mes(" Go to your loved one with a present! They will be very happy! ")?;
+                        } else if subject2 == 21 {
+                            ctx.mes(" Love requires health and strength! Exercise to become stronger! Power and love! ")?;
+                        } else if subject2 == 22 {
+                            ctx.mes(
+                                " Even if you wish to approach your loved one, your body is discomforted! Take a break and rest! ",
+                            )?;
+                        } else if subject2 == 23 {
+                            ctx.mes(" Love is bending yourself for someone! Service! Sacrifice! ")?;
+                        } else if subject2 == 24 {
+                            ctx.mes(" You will be meeting your lover's parents! Prepare well! ")?;
+                        } else if subject2 == 25 {
+                            ctx.mes(" Your relationship must be very happy as it seems you two are flying amongst the clouds! Very jealous! ")?;
+                        } else if subject2 == 26 {
+                            ctx.mes(" Make an opportunity to be alone with each other! It will bring much happiness! ")?;
+                        } else if subject2 == 27 {
+                            ctx.mes(" Uh oh! Someone is peeping at your love! Go scold them! ")?;
+                        } else if subject2 == 28 {
+                            ctx.mes(" Love blossoms from the foundation! Be true to the basics! ")?;
+                        } else if subject2 == 29 {
+                            ctx.mes(" When your loved one is hurt, be by them! They will be very happy! ")?;
+                        } else if subject2 == 30 {
+                            ctx.mes(" One day, when you wake up, your loved one will leave a present! Be happy! ")?;
+                        } else if subject2 == 31 {
+                            ctx.mes(" Give lots~~ of presents to your loved one! Then you will experience many~ many good things! ")?;
+                        } else if subject2 == 32 {
+                            ctx.mes(" Lean against a wall and await your love! *Boom* Love will appear! ")?;
+                        } else if subject2 == 33 {
+                            ctx.mes(" You must be lonely! It's ok, cheer up! ")?;
                         }
                         ctx.next()?;
                         ctx.lines_as(
@@ -4392,10 +2465,7 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(
                             "Chocarle",
                             args![" Issues about studying is a serious matter! Lets take a look! Yap! "],
@@ -4404,279 +2474,79 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                         l_card_2_study = ctx.call(Function::Rand, vec![Val::from(1), Val::from(33)])?;
                         poring_fortune_teller_run(ctx, PoringFortuneTellerStep::LDisplaycutin, vec![l_card_2_study.clone()])?;
                         ctx.mes("[Chocarle]")?;
-                        'b3: {
-                            let subject3 = l_card_2_study.clone();
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3))
-                                && !subject3.loosely_equals(&Val::from(4))
-                                && !subject3.loosely_equals(&Val::from(5))
-                                && !subject3.loosely_equals(&Val::from(6))
-                                && !subject3.loosely_equals(&Val::from(7))
-                                && !subject3.loosely_equals(&Val::from(8))
-                                && !subject3.loosely_equals(&Val::from(9))
-                                && !subject3.loosely_equals(&Val::from(10))
-                                && !subject3.loosely_equals(&Val::from(11))
-                                && !subject3.loosely_equals(&Val::from(12))
-                                && !subject3.loosely_equals(&Val::from(13))
-                                && !subject3.loosely_equals(&Val::from(14))
-                                && !subject3.loosely_equals(&Val::from(15))
-                                && !subject3.loosely_equals(&Val::from(16))
-                                && !subject3.loosely_equals(&Val::from(17))
-                                && !subject3.loosely_equals(&Val::from(18))
-                                && !subject3.loosely_equals(&Val::from(19))
-                                && !subject3.loosely_equals(&Val::from(20))
-                                && !subject3.loosely_equals(&Val::from(21))
-                                && !subject3.loosely_equals(&Val::from(22))
-                                && !subject3.loosely_equals(&Val::from(23))
-                                && !subject3.loosely_equals(&Val::from(24))
-                                && !subject3.loosely_equals(&Val::from(25))
-                                && !subject3.loosely_equals(&Val::from(26))
-                                && !subject3.loosely_equals(&Val::from(27))
-                                && !subject3.loosely_equals(&Val::from(28))
-                                && !subject3.loosely_equals(&Val::from(29))
-                                && !subject3.loosely_equals(&Val::from(30))
-                                && !subject3.loosely_equals(&Val::from(31))
-                                && !subject3.loosely_equals(&Val::from(32))
-                                && !subject3.loosely_equals(&Val::from(33));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Agh! Don't die from studying! Take breaks while you're at it! You need some rest! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Oh, no! You're missing the main points! Figure out the essentials! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Mmph! You're dying not to study! At times like this, a break is the best! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Studying is just like hunting a monster in the desert. Resting for a little is the best. Understand? ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" A nice cup of cold juice under the hot sun! Studying should be done like that, too! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Even though it is the desert, you seem to have a relaxed smile! Maybe you need to relax like this when studying as well! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(7)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Your grades are in danger! You must study harder! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(8)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" There may be a big crisis! Don't get too stressed just because you can't study! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(9)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" It is saying studying in the dark night can be dangerous! Careful when studying at night! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(10)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Studying came to a strange place! It needs to find its original path! You can do it! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(11)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" You're gazing at a smart friend with the eyes of a Poring! Heehee! Doing good! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(12)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Eh? You're too smart! You're at a much higher level than your friends! Take a break! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(13)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" You will be rewarded for your accomplishments! It was worth the effort! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(14)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Forget about studying for a moment and enjoy the party! It should be refreshing~! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(15)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Study something that will make people happy! Future set! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(16)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" If you're not sure of something, ask a friend! It's not something to be ashamed about! You can do it! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(17)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Don't think that your head is empty! Because, you are smart! You can do it! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(18)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" There's a phenomenon you don't understand! Do a little more research! You'll be able to figure it out soon! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(19)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Don't get lazy about studying wherever you go! Seek the road of truth and go down it to find the answer! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(20)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" You need strength to study! Get stronger! Running is a start! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(21)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" You will become an admirable person because of all the effort put into studying! You must feel very worth while! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(22)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Try studying the history of our country! From when the tiger started smoking! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(23)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(
-                                    " You must be having a hard time studying because of all the pressure! Go out and get some fresh air! ",
-                                )?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(24)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Your head seems to be heavy because of studying! You need a diversion! Put studying aside for a moment! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(25)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Try studying aerospace or meteorology! Don't you think it would be fun? ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(26)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" How about studying theology? You even get to study about angels! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(27)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Study little by little and make yourself feel lighter! You can't study if you're overloaded with words! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(28)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" When studying, you should have a snack! It may seem trivial, but it is rather important! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(29)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Even when you are sick, don't forget about studying! Where there is effort, there is bound to be good results! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(30)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" Newton discovered gravity through a falling apple! Be wary of even the little things in your surroundings! ")?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(31)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(
-                                    " Green is good for studying! Color your walls green or get a green drink! The lucky color! Green! ",
-                                )?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(32)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(
-                                    " There is a jewel in your mind! You need to bring all the wisdom to life! Don't study bad things! ",
-                                )?;
-                                break 'b3;
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(33)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.mes(" You will receive good results from studying! You can focus on your current studies! ")?;
-                                break 'b3;
-                            }
+                        let subject3 = l_card_2_study.clone();
+                        if subject3 == 1 {
+                            ctx.mes(" Agh! Don't die from studying! Take breaks while you're at it! You need some rest! ")?;
+                        } else if subject3 == 2 {
+                            ctx.mes(" Oh, no! You're missing the main points! Figure out the essentials! ")?;
+                        } else if subject3 == 3 {
+                            ctx.mes(" Mmph! You're dying not to study! At times like this, a break is the best! ")?;
+                        } else if subject3 == 4 {
+                            ctx.mes(" Studying is just like hunting a monster in the desert. Resting for a little is the best. Understand? ")?;
+                        } else if subject3 == 5 {
+                            ctx.mes(" A nice cup of cold juice under the hot sun! Studying should be done like that, too! ")?;
+                        } else if subject3 == 6 {
+                            ctx.mes(" Even though it is the desert, you seem to have a relaxed smile! Maybe you need to relax like this when studying as well! ")?;
+                        } else if subject3 == 7 {
+                            ctx.mes(" Your grades are in danger! You must study harder! ")?;
+                        } else if subject3 == 8 {
+                            ctx.mes(" There may be a big crisis! Don't get too stressed just because you can't study! ")?;
+                        } else if subject3 == 9 {
+                            ctx.mes(" It is saying studying in the dark night can be dangerous! Careful when studying at night! ")?;
+                        } else if subject3 == 10 {
+                            ctx.mes(" Studying came to a strange place! It needs to find its original path! You can do it! ")?;
+                        } else if subject3 == 11 {
+                            ctx.mes(" You're gazing at a smart friend with the eyes of a Poring! Heehee! Doing good! ")?;
+                        } else if subject3 == 12 {
+                            ctx.mes(" Eh? You're too smart! You're at a much higher level than your friends! Take a break! ")?;
+                        } else if subject3 == 13 {
+                            ctx.mes(" You will be rewarded for your accomplishments! It was worth the effort! ")?;
+                        } else if subject3 == 14 {
+                            ctx.mes(" Forget about studying for a moment and enjoy the party! It should be refreshing~! ")?;
+                        } else if subject3 == 15 {
+                            ctx.mes(" Study something that will make people happy! Future set! ")?;
+                        } else if subject3 == 16 {
+                            ctx.mes(" If you're not sure of something, ask a friend! It's not something to be ashamed about! You can do it! ")?;
+                        } else if subject3 == 17 {
+                            ctx.mes(" Don't think that your head is empty! Because, you are smart! You can do it! ")?;
+                        } else if subject3 == 18 {
+                            ctx.mes(" There's a phenomenon you don't understand! Do a little more research! You'll be able to figure it out soon! ")?;
+                        } else if subject3 == 19 {
+                            ctx.mes(" Don't get lazy about studying wherever you go! Seek the road of truth and go down it to find the answer! ")?;
+                        } else if subject3 == 20 {
+                            ctx.mes(" You need strength to study! Get stronger! Running is a start! ")?;
+                        } else if subject3 == 21 {
+                            ctx.mes(" You will become an admirable person because of all the effort put into studying! You must feel very worth while! ")?;
+                        } else if subject3 == 22 {
+                            ctx.mes(" Try studying the history of our country! From when the tiger started smoking! ")?;
+                        } else if subject3 == 23 {
+                            ctx.mes(
+                                " You must be having a hard time studying because of all the pressure! Go out and get some fresh air! ",
+                            )?;
+                        } else if subject3 == 24 {
+                            ctx.mes(" Your head seems to be heavy because of studying! You need a diversion! Put studying aside for a moment! ")?;
+                        } else if subject3 == 25 {
+                            ctx.mes(" Try studying aerospace or meteorology! Don't you think it would be fun? ")?;
+                        } else if subject3 == 26 {
+                            ctx.mes(" How about studying theology? You even get to study about angels! ")?;
+                        } else if subject3 == 27 {
+                            ctx.mes(" Study little by little and make yourself feel lighter! You can't study if you're overloaded with words! ")?;
+                        } else if subject3 == 28 {
+                            ctx.mes(" When studying, you should have a snack! It may seem trivial, but it is rather important! ")?;
+                        } else if subject3 == 29 {
+                            ctx.mes(" Even when you are sick, don't forget about studying! Where there is effort, there is bound to be good results! ")?;
+                        } else if subject3 == 30 {
+                            ctx.mes(" Newton discovered gravity through a falling apple! Be wary of even the little things in your surroundings! ")?;
+                        } else if subject3 == 31 {
+                            ctx.mes(
+                                " Green is good for studying! Color your walls green or get a green drink! The lucky color! Green! ",
+                            )?;
+                        } else if subject3 == 32 {
+                            ctx.mes(
+                                " There is a jewel in your mind! You need to bring all the wisdom to life! Don't study bad things! ",
+                            )?;
+                        } else if subject3 == 33 {
+                            ctx.mes(" You will receive good results from studying! You can focus on your current studies! ")?;
                         }
                         ctx.next()?;
                         ctx.lines_as(
@@ -4695,282 +2565,79 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.lines_as("Chocarle", args![" Relationships among friends is more difficult than people think! Let's use the cards to try and solve this complicated puzzle of friendship! "])?;
                         ctx.next()?;
                         l_card_2_buddy = ctx.call(Function::Rand, vec![Val::from(1), Val::from(33)])?;
                         poring_fortune_teller_run(ctx, PoringFortuneTellerStep::LDisplaycutin, vec![l_card_2_buddy.clone()])?;
                         ctx.mes("[Chocarle]")?;
-                        'b4: {
-                            let subject4 = l_card_2_buddy.clone();
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                && !subject4.loosely_equals(&Val::from(2))
-                                && !subject4.loosely_equals(&Val::from(3))
-                                && !subject4.loosely_equals(&Val::from(4))
-                                && !subject4.loosely_equals(&Val::from(5))
-                                && !subject4.loosely_equals(&Val::from(6))
-                                && !subject4.loosely_equals(&Val::from(7))
-                                && !subject4.loosely_equals(&Val::from(8))
-                                && !subject4.loosely_equals(&Val::from(9))
-                                && !subject4.loosely_equals(&Val::from(10))
-                                && !subject4.loosely_equals(&Val::from(11))
-                                && !subject4.loosely_equals(&Val::from(12))
-                                && !subject4.loosely_equals(&Val::from(13))
-                                && !subject4.loosely_equals(&Val::from(14))
-                                && !subject4.loosely_equals(&Val::from(15))
-                                && !subject4.loosely_equals(&Val::from(16))
-                                && !subject4.loosely_equals(&Val::from(17))
-                                && !subject4.loosely_equals(&Val::from(18))
-                                && !subject4.loosely_equals(&Val::from(19))
-                                && !subject4.loosely_equals(&Val::from(20))
-                                && !subject4.loosely_equals(&Val::from(21))
-                                && !subject4.loosely_equals(&Val::from(22))
-                                && !subject4.loosely_equals(&Val::from(23))
-                                && !subject4.loosely_equals(&Val::from(24))
-                                && !subject4.loosely_equals(&Val::from(25))
-                                && !subject4.loosely_equals(&Val::from(26))
-                                && !subject4.loosely_equals(&Val::from(27))
-                                && !subject4.loosely_equals(&Val::from(28))
-                                && !subject4.loosely_equals(&Val::from(29))
-                                && !subject4.loosely_equals(&Val::from(30))
-                                && !subject4.loosely_equals(&Val::from(31))
-                                && !subject4.loosely_equals(&Val::from(32))
-                                && !subject4.loosely_equals(&Val::from(33));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Ah! Your friend has gone crazy! They need the heal of friendship! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Mmm! You both have gone crazy. You must overcome it through conversations! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Agh! You are suffering because of your friend! Try opening your heart and be more lenient! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" You even split a pea between friends! Don't be so cruel. Reflect upon yourself and apologize! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Oh no! Your friend is ignoring you! Offer a bottle of juice to your friend! Your friendship may come back? ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Eh!? What kind of friendship is this?! Hurry up and make up! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(7)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes("Oh no?! This person is not your friend, but an enemy! You must be careful! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(8)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Your friend is in danger! You must help your friend! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(9)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Your friendship is on the verge of falling apart! Cast a shield around your friendship! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(10)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" One person is left out amongst your friends! Be more friendly! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(11)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Your friend hit you! Don't cry even if it may hurt! Hurry and make up! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(12)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" You must be alone! It must be hard to make friends! Try putting on a brighter face! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(13)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Give your friends a present! Your friendship will become deeper! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(14)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Prepare a hat to cover your friend's large head! They will be moved by your care! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(15)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" A friend is waiting for you! Be nice to your friend! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(16)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Being close friends despite differences is true friendship! Shelter each other's differences! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(17)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Your misunderstandings will be removed if you take the time to talk! Go have a conversation with your friend! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(18)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" When a friend is sick, visit them! They will be happy! For sure! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(19)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Go out and have some fun with your friend! Your friendship will surely get stronger! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(20)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Give your friend a present! They'll go bragging around town?! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(21)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Share your bone with your friend! Sacrifices in friendship are beautiful! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(22)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Do anything for your friend! With all your heart and soul! Your friend will be delighted! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(23)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" No smoking, even with a friend! Stop smoking for your health! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(24)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" You and your friend will encounter hardships! Combine your powers and overcome it! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(25)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Go on a trip with your friend! Friendship can get stronger in new environments! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(26)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Give your friend a ride in a plane! They'll probably fly with joy!? ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(27)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Don't forget your friend in heaven! Friendship is eternal! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(28)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Help your friend's scar. Your friend would greatly appreciate it! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(29)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" You even split a slice of an apple among friends! Share more things with your friend! Something good will happen! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(30)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" When your friend is sleeping, think of them! Then there will be progress in your friendship! What do you think~ it means~?! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(31)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" Don't measure friendship with money! If you do, be careful for there will be a crack in your friendship! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(32)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" It seems as if your friend will give you many presents! Look forward to it! ")?;
-                                break 'b4;
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(33)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.mes(" You must be lonely without a friend! A good friend will come along soon! ")?;
-                                break 'b4;
-                            }
+                        let subject4 = l_card_2_buddy.clone();
+                        if subject4 == 1 {
+                            ctx.mes(" Ah! Your friend has gone crazy! They need the heal of friendship! ")?;
+                        } else if subject4 == 2 {
+                            ctx.mes(" Mmm! You both have gone crazy. You must overcome it through conversations! ")?;
+                        } else if subject4 == 3 {
+                            ctx.mes(" Agh! You are suffering because of your friend! Try opening your heart and be more lenient! ")?;
+                        } else if subject4 == 4 {
+                            ctx.mes(" You even split a pea between friends! Don't be so cruel. Reflect upon yourself and apologize! ")?;
+                        } else if subject4 == 5 {
+                            ctx.mes(" Oh no! Your friend is ignoring you! Offer a bottle of juice to your friend! Your friendship may come back? ")?;
+                        } else if subject4 == 6 {
+                            ctx.mes(" Eh!? What kind of friendship is this?! Hurry up and make up! ")?;
+                        } else if subject4 == 7 {
+                            ctx.mes("Oh no?! This person is not your friend, but an enemy! You must be careful! ")?;
+                        } else if subject4 == 8 {
+                            ctx.mes(" Your friend is in danger! You must help your friend! ")?;
+                        } else if subject4 == 9 {
+                            ctx.mes(" Your friendship is on the verge of falling apart! Cast a shield around your friendship! ")?;
+                        } else if subject4 == 10 {
+                            ctx.mes(" One person is left out amongst your friends! Be more friendly! ")?;
+                        } else if subject4 == 11 {
+                            ctx.mes(" Your friend hit you! Don't cry even if it may hurt! Hurry and make up! ")?;
+                        } else if subject4 == 12 {
+                            ctx.mes(" You must be alone! It must be hard to make friends! Try putting on a brighter face! ")?;
+                        } else if subject4 == 13 {
+                            ctx.mes(" Give your friends a present! Your friendship will become deeper! ")?;
+                        } else if subject4 == 14 {
+                            ctx.mes(" Prepare a hat to cover your friend's large head! They will be moved by your care! ")?;
+                        } else if subject4 == 15 {
+                            ctx.mes(" A friend is waiting for you! Be nice to your friend! ")?;
+                        } else if subject4 == 16 {
+                            ctx.mes(" Being close friends despite differences is true friendship! Shelter each other's differences! ")?;
+                        } else if subject4 == 17 {
+                            ctx.mes(" Your misunderstandings will be removed if you take the time to talk! Go have a conversation with your friend! ")?;
+                        } else if subject4 == 18 {
+                            ctx.mes(" When a friend is sick, visit them! They will be happy! For sure! ")?;
+                        } else if subject4 == 19 {
+                            ctx.mes(" Go out and have some fun with your friend! Your friendship will surely get stronger! ")?;
+                        } else if subject4 == 20 {
+                            ctx.mes(" Give your friend a present! They'll go bragging around town?! ")?;
+                        } else if subject4 == 21 {
+                            ctx.mes(" Share your bone with your friend! Sacrifices in friendship are beautiful! ")?;
+                        } else if subject4 == 22 {
+                            ctx.mes(" Do anything for your friend! With all your heart and soul! Your friend will be delighted! ")?;
+                        } else if subject4 == 23 {
+                            ctx.mes(" No smoking, even with a friend! Stop smoking for your health! ")?;
+                        } else if subject4 == 24 {
+                            ctx.mes(" You and your friend will encounter hardships! Combine your powers and overcome it! ")?;
+                        } else if subject4 == 25 {
+                            ctx.mes(" Go on a trip with your friend! Friendship can get stronger in new environments! ")?;
+                        } else if subject4 == 26 {
+                            ctx.mes(" Give your friend a ride in a plane! They'll probably fly with joy!? ")?;
+                        } else if subject4 == 27 {
+                            ctx.mes(" Don't forget your friend in heaven! Friendship is eternal! ")?;
+                        } else if subject4 == 28 {
+                            ctx.mes(" Help your friend's scar. Your friend would greatly appreciate it! ")?;
+                        } else if subject4 == 29 {
+                            ctx.mes(" You even split a slice of an apple among friends! Share more things with your friend! Something good will happen! ")?;
+                        } else if subject4 == 30 {
+                            ctx.mes(" When your friend is sleeping, think of them! Then there will be progress in your friendship! What do you think~ it means~?! ")?;
+                        } else if subject4 == 31 {
+                            ctx.mes(" Don't measure friendship with money! If you do, be careful for there will be a crack in your friendship! ")?;
+                        } else if subject4 == 32 {
+                            ctx.mes(" It seems as if your friend will give you many presents! Look forward to it! ")?;
+                        } else if subject4 == 33 {
+                            ctx.mes(" You must be lonely without a friend! A good friend will come along soon! ")?;
                         }
                         ctx.next()?;
                         ctx.lines_as(
@@ -4989,10 +2656,7 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    4 => {
                         ctx.lines_as(
                             "Chocarle",
                             args![" If you say fortunetelling! Of course it is about the future! Let's try to figure this out! "],
@@ -5001,279 +2665,79 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                         l_card_2_future = ctx.call(Function::Rand, vec![Val::from(1), Val::from(33)])?;
                         poring_fortune_teller_run(ctx, PoringFortuneTellerStep::LDisplaycutin, vec![l_card_2_future.clone()])?;
                         ctx.mes("[Chocarle]")?;
-                        'b5: {
-                            let subject5 = l_card_2_future.clone();
-                            let mut matched5 = false;
-                            let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                                && !subject5.loosely_equals(&Val::from(2))
-                                && !subject5.loosely_equals(&Val::from(3))
-                                && !subject5.loosely_equals(&Val::from(4))
-                                && !subject5.loosely_equals(&Val::from(5))
-                                && !subject5.loosely_equals(&Val::from(6))
-                                && !subject5.loosely_equals(&Val::from(7))
-                                && !subject5.loosely_equals(&Val::from(8))
-                                && !subject5.loosely_equals(&Val::from(9))
-                                && !subject5.loosely_equals(&Val::from(10))
-                                && !subject5.loosely_equals(&Val::from(11))
-                                && !subject5.loosely_equals(&Val::from(12))
-                                && !subject5.loosely_equals(&Val::from(13))
-                                && !subject5.loosely_equals(&Val::from(14))
-                                && !subject5.loosely_equals(&Val::from(15))
-                                && !subject5.loosely_equals(&Val::from(16))
-                                && !subject5.loosely_equals(&Val::from(17))
-                                && !subject5.loosely_equals(&Val::from(18))
-                                && !subject5.loosely_equals(&Val::from(19))
-                                && !subject5.loosely_equals(&Val::from(20))
-                                && !subject5.loosely_equals(&Val::from(21))
-                                && !subject5.loosely_equals(&Val::from(22))
-                                && !subject5.loosely_equals(&Val::from(23))
-                                && !subject5.loosely_equals(&Val::from(24))
-                                && !subject5.loosely_equals(&Val::from(25))
-                                && !subject5.loosely_equals(&Val::from(26))
-                                && !subject5.loosely_equals(&Val::from(27))
-                                && !subject5.loosely_equals(&Val::from(28))
-                                && !subject5.loosely_equals(&Val::from(29))
-                                && !subject5.loosely_equals(&Val::from(30))
-                                && !subject5.loosely_equals(&Val::from(31))
-                                && !subject5.loosely_equals(&Val::from(32))
-                                && !subject5.loosely_equals(&Val::from(33));
-                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Oh no! You are not confident about the future! Trust yourself a little more! Hope! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Oh! Do you keep on thinking about your death in the future! First, forget about death and live your life! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Cut! You are filled with uncertainty about the future! Let's get rid of this! Wee! It's gone! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(
-                                    " Life may seem like a hot and dry desert, but in the future, delicious juice and rest awaits you! ",
-                                )?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Even in a hot and dry desert, isn't the future happier since you can encounter sweet juice? Put forth your strength! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(
-                                    " Don't your troubles disappear watching a poring smile? Your future must be filled with good things! ",
-                                )?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(7)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" There is danger waiting ahead! You should avoid it for now! Take care of yourself! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(8)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You must be fearing your future!? Don't worry too much! Think of happy thoughts! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(9)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You may endanger someone in the future! Don't become a bad person~! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(10)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You may have to stand alone in the future! Prepare yourself right now! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(11)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Many hardships await you in the future! But you can overcome them! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(12)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You might not even be able to buy summer clothes in the future! Don't waste your money! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(13)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Something exciting may happen! What can it be? Fun! Fun! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(14)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Something good might happen on this nice day! You can look forward to it! Yay! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(15)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" A splendid event will be held! Go get ready! Look forward to it! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(16)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You will meet someone new! It will be very interesting! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(17)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" If you go little by little, something good will happen! Sit and take a look around you! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(18)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You get a headache from thinking about the future? Empty your mind! You will feel refreshed! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(19)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You will become a respectable person in the future! Good job! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(20)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" I can see you working hard in the future! What a lively future! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(21)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You have a very busy future! Take care of your health! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(22)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Pick a job where you can work with other people! It will be very rewarding, right? ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(23)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Try doing some volunteer work! It is worthwhile and you will feel good about it, too! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(24)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You may become a commander! Mmm~! Kind of scary! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(25)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Choose a job that involves flying! You show potential! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(26)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Scrumptious ice cream that could even be eaten in heaven! Challenge yourself and get involved in a job making things of that sort! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(27)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" In the future, things that cannot be done right now will be accomplished! You can look forward to it! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(28)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Little things in life will bring you happiness and joy in the future! Even more than now! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(29)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Do what you have to do. Live life to the fullest, even though the world may end tomorrow! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(30)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" You will deal with fruits in the future! How about preparing yourself? ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(31)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Your future self will encounter a high wall! Although, I'm not sure what type of building it may be! ")?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(32)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(
-                                    " Green symbolizes peace! Your future seems as if it will be very peaceful! It's a good thing, right? ",
-                                )?;
-                                break 'b5;
-                            }
-                            if !matched5 && subject5.loosely_equals(&Val::from(33)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
-                                ctx.mes(" Romance lays ahead in your future! Relax yourself and prepare yourself! ")?;
-                                break 'b5;
-                            }
+                        let subject5 = l_card_2_future.clone();
+                        if subject5 == 1 {
+                            ctx.mes(" Oh no! You are not confident about the future! Trust yourself a little more! Hope! ")?;
+                        } else if subject5 == 2 {
+                            ctx.mes(" Oh! Do you keep on thinking about your death in the future! First, forget about death and live your life! ")?;
+                        } else if subject5 == 3 {
+                            ctx.mes(" Cut! You are filled with uncertainty about the future! Let's get rid of this! Wee! It's gone! ")?;
+                        } else if subject5 == 4 {
+                            ctx.mes(
+                                " Life may seem like a hot and dry desert, but in the future, delicious juice and rest awaits you! ",
+                            )?;
+                        } else if subject5 == 5 {
+                            ctx.mes(" Even in a hot and dry desert, isn't the future happier since you can encounter sweet juice? Put forth your strength! ")?;
+                        } else if subject5 == 6 {
+                            ctx.mes(
+                                " Don't your troubles disappear watching a poring smile? Your future must be filled with good things! ",
+                            )?;
+                        } else if subject5 == 7 {
+                            ctx.mes(" There is danger waiting ahead! You should avoid it for now! Take care of yourself! ")?;
+                        } else if subject5 == 8 {
+                            ctx.mes(" You must be fearing your future!? Don't worry too much! Think of happy thoughts! ")?;
+                        } else if subject5 == 9 {
+                            ctx.mes(" You may endanger someone in the future! Don't become a bad person~! ")?;
+                        } else if subject5 == 10 {
+                            ctx.mes(" You may have to stand alone in the future! Prepare yourself right now! ")?;
+                        } else if subject5 == 11 {
+                            ctx.mes(" Many hardships await you in the future! But you can overcome them! ")?;
+                        } else if subject5 == 12 {
+                            ctx.mes(" You might not even be able to buy summer clothes in the future! Don't waste your money! ")?;
+                        } else if subject5 == 13 {
+                            ctx.mes(" Something exciting may happen! What can it be? Fun! Fun! ")?;
+                        } else if subject5 == 14 {
+                            ctx.mes(" Something good might happen on this nice day! You can look forward to it! Yay! ")?;
+                        } else if subject5 == 15 {
+                            ctx.mes(" A splendid event will be held! Go get ready! Look forward to it! ")?;
+                        } else if subject5 == 16 {
+                            ctx.mes(" You will meet someone new! It will be very interesting! ")?;
+                        } else if subject5 == 17 {
+                            ctx.mes(" If you go little by little, something good will happen! Sit and take a look around you! ")?;
+                        } else if subject5 == 18 {
+                            ctx.mes(" You get a headache from thinking about the future? Empty your mind! You will feel refreshed! ")?;
+                        } else if subject5 == 19 {
+                            ctx.mes(" You will become a respectable person in the future! Good job! ")?;
+                        } else if subject5 == 20 {
+                            ctx.mes(" I can see you working hard in the future! What a lively future! ")?;
+                        } else if subject5 == 21 {
+                            ctx.mes(" You have a very busy future! Take care of your health! ")?;
+                        } else if subject5 == 22 {
+                            ctx.mes(" Pick a job where you can work with other people! It will be very rewarding, right? ")?;
+                        } else if subject5 == 23 {
+                            ctx.mes(" Try doing some volunteer work! It is worthwhile and you will feel good about it, too! ")?;
+                        } else if subject5 == 24 {
+                            ctx.mes(" You may become a commander! Mmm~! Kind of scary! ")?;
+                        } else if subject5 == 25 {
+                            ctx.mes(" Choose a job that involves flying! You show potential! ")?;
+                        } else if subject5 == 26 {
+                            ctx.mes(" Scrumptious ice cream that could even be eaten in heaven! Challenge yourself and get involved in a job making things of that sort! ")?;
+                        } else if subject5 == 27 {
+                            ctx.mes(" In the future, things that cannot be done right now will be accomplished! You can look forward to it! ")?;
+                        } else if subject5 == 28 {
+                            ctx.mes(" Little things in life will bring you happiness and joy in the future! Even more than now! ")?;
+                        } else if subject5 == 29 {
+                            ctx.mes(" Do what you have to do. Live life to the fullest, even though the world may end tomorrow! ")?;
+                        } else if subject5 == 30 {
+                            ctx.mes(" You will deal with fruits in the future! How about preparing yourself? ")?;
+                        } else if subject5 == 31 {
+                            ctx.mes(" Your future self will encounter a high wall! Although, I'm not sure what type of building it may be! ")?;
+                        } else if subject5 == 32 {
+                            ctx.mes(
+                                " Green symbolizes peace! Your future seems as if it will be very peaceful! It's a good thing, right? ",
+                            )?;
+                        } else if subject5 == 33 {
+                            ctx.mes(" Romance lays ahead in your future! Relax yourself and prepare yourself! ")?;
                         }
                         ctx.next()?;
                         ctx.lines_as(
@@ -5292,10 +2756,7 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    5 => {
                         ctx.lines_as(
                             "Chocarle",
                             args![
@@ -5307,277 +2768,77 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                         l_card_2_fortune = ctx.call(Function::Rand, vec![Val::from(1), Val::from(33)])?;
                         poring_fortune_teller_run(ctx, PoringFortuneTellerStep::LDisplaycutin, vec![l_card_2_fortune.clone()])?;
                         ctx.mes("[Chocarle]")?;
-                        'b6: {
-                            let subject6 = l_card_2_fortune.clone();
-                            let mut matched6 = false;
-                            let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                && !subject6.loosely_equals(&Val::from(2))
-                                && !subject6.loosely_equals(&Val::from(3))
-                                && !subject6.loosely_equals(&Val::from(4))
-                                && !subject6.loosely_equals(&Val::from(5))
-                                && !subject6.loosely_equals(&Val::from(6))
-                                && !subject6.loosely_equals(&Val::from(7))
-                                && !subject6.loosely_equals(&Val::from(8))
-                                && !subject6.loosely_equals(&Val::from(9))
-                                && !subject6.loosely_equals(&Val::from(10))
-                                && !subject6.loosely_equals(&Val::from(11))
-                                && !subject6.loosely_equals(&Val::from(12))
-                                && !subject6.loosely_equals(&Val::from(13))
-                                && !subject6.loosely_equals(&Val::from(14))
-                                && !subject6.loosely_equals(&Val::from(15))
-                                && !subject6.loosely_equals(&Val::from(16))
-                                && !subject6.loosely_equals(&Val::from(17))
-                                && !subject6.loosely_equals(&Val::from(18))
-                                && !subject6.loosely_equals(&Val::from(19))
-                                && !subject6.loosely_equals(&Val::from(20))
-                                && !subject6.loosely_equals(&Val::from(21))
-                                && !subject6.loosely_equals(&Val::from(22))
-                                && !subject6.loosely_equals(&Val::from(23))
-                                && !subject6.loosely_equals(&Val::from(24))
-                                && !subject6.loosely_equals(&Val::from(25))
-                                && !subject6.loosely_equals(&Val::from(26))
-                                && !subject6.loosely_equals(&Val::from(27))
-                                && !subject6.loosely_equals(&Val::from(28))
-                                && !subject6.loosely_equals(&Val::from(29))
-                                && !subject6.loosely_equals(&Val::from(30))
-                                && !subject6.loosely_equals(&Val::from(31))
-                                && !subject6.loosely_equals(&Val::from(32))
-                                && !subject6.loosely_equals(&Val::from(33));
-                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Uh oh! You're about to be robbed! You must save a little first! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Kek! Your mind goes blank when you think about money! Think of other thoughts! Forget about money for a while! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Bah! This isn't a time to think about money. Calm down and put your mind at ease! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(4)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" If you look carefully, it is not drinking juice, but underground water through a straw in the ground! Money is hidden where nobody expects! Good luck searching! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(5)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(
-                                    " As you can quench your thirst in the dry desert, you can gather money even in this difficult world! ",
-                                )?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(6)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Just like the juice inside the needles of a cactus, you can still gather wealth though you may be in anguish. You can do it! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(7)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes("Agh! Someone is after your possessions! Be careful! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(8)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Uh oh! Someone is after your money! Take good care of it! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(9)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(
-                                    " It says you might be tempted to do something bad to gather money! Don't forget about a kind heart! ",
-                                )?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(10)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" You have hidden money in your clothes! Hidden rich one! Be careful not to be caught! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(11)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" In the future, it seems like you will be kicking money around with your feet like those Porings! Congratulations! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(12)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" You must be exhausted! Making money is not the easiest thing to do! But it will be that much more valuable! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(13)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Your tendency to spend money is growing! Be careful! Don't be left empty-handed! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(14)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Use your money to buy something fun! Then good luck will be headed your way! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(15)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Use your money on something exciting! It looks as if good luck will be headed your way! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(16)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" It seems like you will have two lucky offerings! Don't miss these two opportunities! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(17)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Doesn't it seem like there should be money in the small wallet? You will have some small income! Save money wisely! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(18)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" So~ empty. Upsetting, but don't worry too much about money! Something better ought to happen! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(19)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Someone will return something you lost! What a relief! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(20)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" No need to worry about osteoporosis! Wasn't it a good thing to eat so much calcium? Oops! This isn't about money?! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(21)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Seeing that you work so hard, seems like you will make lots of money! Congratz~! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(22)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Even if you save money, it disappears like smoke. Don't get too caught up with it! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(23)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" It's hard to make money, isn't it? But don't forget the good deeds in life! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(24)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Going around to collect money might lead you to a scary person! Be very careful! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(25)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Forget about money and fly~fly! You will feel very refreshed! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(26)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Money is like clouds! Instead of money, think about a happy life! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(27)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Even if it may seem pointless, if you persist, you will be able to make lots of money! You can do it! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(28)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" Don't neglect the trivial things on the floor! If you keep an open heart like that, you will be able to collect money! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(29)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" If you work with something that is related to mushrooms or apples, a good fortune awaits you! What kind of work would that be? ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(30)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" How can you think of money looking at such a peaceful card! That's not nice! Sniff..sniffles! Anyhow, it seems like you will gather much fortune! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(31)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" You have many fine stones! You will prosper if you are involved in this industry! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(32)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" It is an indication that you will prosper! No need to worry now! ")?;
-                                break 'b6;
-                            }
-                            if !matched6 && subject6.loosely_equals(&Val::from(33)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
-                                ctx.mes(" You will collect many treasures! But the problem is protecting all of it! ")?;
-                                break 'b6;
-                            }
+                        let subject6 = l_card_2_fortune.clone();
+                        if subject6 == 1 {
+                            ctx.mes(" Uh oh! You're about to be robbed! You must save a little first! ")?;
+                        } else if subject6 == 2 {
+                            ctx.mes(" Kek! Your mind goes blank when you think about money! Think of other thoughts! Forget about money for a while! ")?;
+                        } else if subject6 == 3 {
+                            ctx.mes(" Bah! This isn't a time to think about money. Calm down and put your mind at ease! ")?;
+                        } else if subject6 == 4 {
+                            ctx.mes(" If you look carefully, it is not drinking juice, but underground water through a straw in the ground! Money is hidden where nobody expects! Good luck searching! ")?;
+                        } else if subject6 == 5 {
+                            ctx.mes(
+                                " As you can quench your thirst in the dry desert, you can gather money even in this difficult world! ",
+                            )?;
+                        } else if subject6 == 6 {
+                            ctx.mes(" Just like the juice inside the needles of a cactus, you can still gather wealth though you may be in anguish. You can do it! ")?;
+                        } else if subject6 == 7 {
+                            ctx.mes("Agh! Someone is after your possessions! Be careful! ")?;
+                        } else if subject6 == 8 {
+                            ctx.mes(" Uh oh! Someone is after your money! Take good care of it! ")?;
+                        } else if subject6 == 9 {
+                            ctx.mes(
+                                " It says you might be tempted to do something bad to gather money! Don't forget about a kind heart! ",
+                            )?;
+                        } else if subject6 == 10 {
+                            ctx.mes(" You have hidden money in your clothes! Hidden rich one! Be careful not to be caught! ")?;
+                        } else if subject6 == 11 {
+                            ctx.mes(" In the future, it seems like you will be kicking money around with your feet like those Porings! Congratulations! ")?;
+                        } else if subject6 == 12 {
+                            ctx.mes(" You must be exhausted! Making money is not the easiest thing to do! But it will be that much more valuable! ")?;
+                        } else if subject6 == 13 {
+                            ctx.mes(" Your tendency to spend money is growing! Be careful! Don't be left empty-handed! ")?;
+                        } else if subject6 == 14 {
+                            ctx.mes(" Use your money to buy something fun! Then good luck will be headed your way! ")?;
+                        } else if subject6 == 15 {
+                            ctx.mes(" Use your money on something exciting! It looks as if good luck will be headed your way! ")?;
+                        } else if subject6 == 16 {
+                            ctx.mes(" It seems like you will have two lucky offerings! Don't miss these two opportunities! ")?;
+                        } else if subject6 == 17 {
+                            ctx.mes(" Doesn't it seem like there should be money in the small wallet? You will have some small income! Save money wisely! ")?;
+                        } else if subject6 == 18 {
+                            ctx.mes(" So~ empty. Upsetting, but don't worry too much about money! Something better ought to happen! ")?;
+                        } else if subject6 == 19 {
+                            ctx.mes(" Someone will return something you lost! What a relief! ")?;
+                        } else if subject6 == 20 {
+                            ctx.mes(" No need to worry about osteoporosis! Wasn't it a good thing to eat so much calcium? Oops! This isn't about money?! ")?;
+                        } else if subject6 == 21 {
+                            ctx.mes(" Seeing that you work so hard, seems like you will make lots of money! Congratz~! ")?;
+                        } else if subject6 == 22 {
+                            ctx.mes(" Even if you save money, it disappears like smoke. Don't get too caught up with it! ")?;
+                        } else if subject6 == 23 {
+                            ctx.mes(" It's hard to make money, isn't it? But don't forget the good deeds in life! ")?;
+                        } else if subject6 == 24 {
+                            ctx.mes(" Going around to collect money might lead you to a scary person! Be very careful! ")?;
+                        } else if subject6 == 25 {
+                            ctx.mes(" Forget about money and fly~fly! You will feel very refreshed! ")?;
+                        } else if subject6 == 26 {
+                            ctx.mes(" Money is like clouds! Instead of money, think about a happy life! ")?;
+                        } else if subject6 == 27 {
+                            ctx.mes(" Even if it may seem pointless, if you persist, you will be able to make lots of money! You can do it! ")?;
+                        } else if subject6 == 28 {
+                            ctx.mes(" Don't neglect the trivial things on the floor! If you keep an open heart like that, you will be able to collect money! ")?;
+                        } else if subject6 == 29 {
+                            ctx.mes(" If you work with something that is related to mushrooms or apples, a good fortune awaits you! What kind of work would that be? ")?;
+                        } else if subject6 == 30 {
+                            ctx.mes(" How can you think of money looking at such a peaceful card! That's not nice! Sniff..sniffles! Anyhow, it seems like you will gather much fortune! ")?;
+                        } else if subject6 == 31 {
+                            ctx.mes(" You have many fine stones! You will prosper if you are involved in this industry! ")?;
+                        } else if subject6 == 32 {
+                            ctx.mes(" It is an indication that you will prosper! No need to worry now! ")?;
+                        } else if subject6 == 33 {
+                            ctx.mes(" You will collect many treasures! But the problem is protecting all of it! ")?;
                         }
                         ctx.next()?;
                         ctx.lines_as("Chocarle", args![" There is something you need to keep in mind after being told a fortune about wealth! ", " Money does not automatically come to one without effort! No matter how good the fortune, you must work diligently! "])?;
@@ -5587,6 +2848,7 @@ fn poring_fortune_teller_run(ctx: &Ctx, mut step: PoringFortuneTellerStep, args:
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
                 step = PoringFortuneTellerStep::LDisplaycutin;
                 continue 'machine;

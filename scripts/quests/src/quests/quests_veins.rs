@@ -36,17 +36,11 @@ fn wincingoldman_veins_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Bend with your knees, yo.:Gosh, how bad is it?")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Zabaroo",
                     args![
@@ -59,10 +53,7 @@ fn wincingoldman_veins_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Zabaroo",
                     args![
@@ -172,19 +163,11 @@ fn wincingoldman_veins_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("What's with these stones?:Where's the old man?:Nothing.")],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Zabaroo",
                                     args![
@@ -211,12 +194,8 @@ fn wincingoldman_veins_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.next()?;
                                 ctx.lines_as("Zabaroo", args!["All of us are still", "barely making a living..."])?;
                                 ctx.next()?;
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 ctx.lines_as(
                                     "Zabaroo",
                                     args![
@@ -228,12 +207,8 @@ fn wincingoldman_veins_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ],
                                 )?;
                                 ctx.next()?;
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            3 => {
                                 ctx.lines_as(
                                     "Zabaroo",
                                     args![
@@ -248,10 +223,12 @@ fn wincingoldman_veins_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
             }
+            _ => {}
         }
     } else {
         if ctx.var("veins_stone").get()? == 1 {
@@ -1740,17 +1717,11 @@ fn upset_looking_bard_sch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Nothing.:I'm here on behalf of Mr. Lasda.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Vitre",
                     args!["Well...", "It's nice to", "receive visitors.", "Jail can be lonely...."],
@@ -1758,10 +1729,7 @@ fn upset_looking_bard_sch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Vitre",
                     args![
@@ -1835,6 +1803,7 @@ fn upset_looking_bard_sch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else if ctx.var("que_sch").get()?.number()? < 18 {
         ctx.lines_as(
@@ -3927,14 +3896,8 @@ fn kid_camelcamel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["Hmmm...", "Maybe your sister was", "kidnapped by bandits..."],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Decline Request:Accept Request")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+            match runtime::select_values(ctx, &[Val::from("Decline Request:Accept Request")])? {
+                1 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args![
@@ -3949,10 +3912,7 @@ fn kid_camelcamel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["Okay, I'll see what", "I can do. I'll try my best", "to find your sister."],
@@ -3985,6 +3945,7 @@ fn kid_camelcamel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else {
             if ctx.var("rachel_camel").get()? == 1 {
@@ -6991,159 +6952,144 @@ fn silk_sand_camel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "You may as well just feed it.^000000"
                 ])?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(3)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        if ctx.var("rachel_camel").get()? == 12 {
-                            ctx.lines_as(
-                                "Silk Sand Camel",
-                                args!["^333333*Chew Chew~*^000000", "^333333*Smacks lips*^000000"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFThe camel ate everything,",
-                                "but it doesn't seem like",
-                                "it'll go through any bowel",
-                                "movements anytime soon.^000000"
-                            ])?;
-                        } else {
-                            ctx.lines(args![
-                                "^3355FFThe camel grimaced",
-                                "as if it were suffering",
-                                "from a stomachache...",
-                                "And... Out pops 2 Sweet",
-                                "Potatoes. They're probably",
-                                "safe to eat... Hopefully.^000000"
-                            ])?;
-                            ctx.call(Function::GetItem, vec![Val::from(516), Val::from(2)])?;
-                        }
-                        ctx.call(Function::DelItem, vec![Val::from(519), Val::from(2)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(511), Val::from(20)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(909), Val::from(10)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(3)])?;
+                if subject1 == 1 {
+                    if ctx.var("rachel_camel").get()? == 12 {
                         ctx.lines_as(
                             "Silk Sand Camel",
                             args!["^333333*Chew Chew~*^000000", "^333333*Smacks lips*^000000"],
                         )?;
                         ctx.next()?;
                         ctx.lines(args![
+                            "^3355FFThe camel ate everything,",
+                            "but it doesn't seem like",
+                            "it'll go through any bowel",
+                            "movements anytime soon.^000000"
+                        ])?;
+                    } else {
+                        ctx.lines(args![
                             "^3355FFThe camel grimaced",
                             "as if it were suffering",
                             "from a stomachache...",
-                            "Huzzah! You got a lump",
-                            "of steaming camel dung!",
-                            "This is cause for celebration!^000000"
+                            "And... Out pops 2 Sweet",
+                            "Potatoes. They're probably",
+                            "safe to eat... Hopefully.^000000"
+                        ])?;
+                        ctx.call(Function::GetItem, vec![Val::from(516), Val::from(2)])?;
+                    }
+                    ctx.call(Function::DelItem, vec![Val::from(519), Val::from(2)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(511), Val::from(20)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(909), Val::from(10)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject1 == 2 {
+                    ctx.lines_as(
+                        "Silk Sand Camel",
+                        args!["^333333*Chew Chew~*^000000", "^333333*Smacks lips*^000000"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFThe camel grimaced",
+                        "as if it were suffering",
+                        "from a stomachache...",
+                        "Huzzah! You got a lump",
+                        "of steaming camel dung!",
+                        "This is cause for celebration!^000000"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
+                    ])?;
+                    if ctx.var("rachel_camel").get()? == 12 {
+                        ctx.lines(args!["Now all I need is", "just 4 more lumps", "of this nasty old dung."])?;
+                        ctx.var("rachel_camel").set(Val::from(13))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(3071), Val::from(3072)])?;
+                    } else if ctx.var("rachel_camel").get()? == 13 {
+                        ctx.lines(args!["Awesome! I got", "2 glorious camel dung", "lumps! Only 3 more to go!"])?;
+                        ctx.var("rachel_camel").set(Val::from(14))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(3072), Val::from(3073)])?;
+                    } else if ctx.var("rachel_camel").get()? == 14 {
+                        ctx.lines(args![
+                            "Yes! Now I have",
+                            "3 camel dung lumps.",
+                            "Just 2 more... I'm more",
+                            "than halfway done!"
+                        ])?;
+                        ctx.var("rachel_camel").set(Val::from(15))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(3073), Val::from(3074)])?;
+                    } else if ctx.var("rachel_camel").get()? == 15 {
+                        ctx.lines(args![
+                            "4 lumps of camel dung...",
+                            "Heh heh! This is going",
+                            "better than I thought!",
+                            "Only 1 more to go!"
+                        ])?;
+                        ctx.var("rachel_camel").set(Val::from(16))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(3074), Val::from(3075)])?;
+                    } else if ctx.var("rachel_camel").get()? == 16 {
+                        ctx.lines(args![
+                            "In my hands...",
+                            "I am holding",
+                            "5 lumps of camel dung.",
+                            "This is my finest moment."
                         ])?;
                         ctx.next()?;
-                        ctx.lines(args![
-                            ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
-                        ])?;
-                        if ctx.var("rachel_camel").get()? == 12 {
-                            ctx.lines(args!["Now all I need is", "just 4 more lumps", "of this nasty old dung."])?;
-                            ctx.var("rachel_camel").set(Val::from(13))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(3071), Val::from(3072)])?;
-                        } else if ctx.var("rachel_camel").get()? == 13 {
-                            ctx.lines(args!["Awesome! I got", "2 glorious camel dung", "lumps! Only 3 more to go!"])?;
-                            ctx.var("rachel_camel").set(Val::from(14))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(3072), Val::from(3073)])?;
-                        } else if ctx.var("rachel_camel").get()? == 14 {
-                            ctx.lines(args![
-                                "Yes! Now I have",
-                                "3 camel dung lumps.",
-                                "Just 2 more... I'm more",
-                                "than halfway done!"
-                            ])?;
-                            ctx.var("rachel_camel").set(Val::from(15))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(3073), Val::from(3074)])?;
-                        } else if ctx.var("rachel_camel").get()? == 15 {
-                            ctx.lines(args![
-                                "4 lumps of camel dung...",
-                                "Heh heh! This is going",
-                                "better than I thought!",
-                                "Only 1 more to go!"
-                            ])?;
-                            ctx.var("rachel_camel").set(Val::from(16))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(3074), Val::from(3075)])?;
-                        } else if ctx.var("rachel_camel").get()? == 16 {
-                            ctx.lines(args![
-                                "In my hands...",
-                                "I am holding",
-                                "5 lumps of camel dung.",
-                                "This is my finest moment."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "Never, in all my years",
-                                    "of adventuring, saving the",
-                                    "oppressed, protecting the",
-                                    "innocent, did I dare dream",
-                                    "that I'd accomplish such",
-                                    "a magnificent feat."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                                args![
-                                    "I am so happy--nay--",
-                                    "^4D4DFFproud^000000 that my strength, my",
-                                    "valor, and my determination",
-                                    "was up to this task. May the",
-                                    "annals of history never forget",
-                                    ((Val::from("this day! Long live ")
-                                        + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                        + Val::from("!"))
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args!["^3355FFIt's time for you to", "return to Mr. Saraman.^000000"])?;
-                            ctx.var("rachel_camel").set(Val::from(17))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(3075), Val::from(3076)])?;
-                        }
-                        ctx.call(Function::DelItem, vec![Val::from(519), Val::from(2)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(511), Val::from(20)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(909), Val::from(10)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(713), Val::from(1)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && no_case1 {
-                        matched1 = true;
-                    }
-                    if matched1 {
                         ctx.lines_as(
-                            "Silk Sand Camel",
-                            args!["^333333*Chew Chew~*^000000", "^333333*Smacks lips*^000000"],
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args![
+                                "Never, in all my years",
+                                "of adventuring, saving the",
+                                "oppressed, protecting the",
+                                "innocent, did I dare dream",
+                                "that I'd accomplish such",
+                                "a magnificent feat."
+                            ],
                         )?;
                         ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFThe camel grimaced",
-                            "as if it were suffering",
-                            "from a stomachache...",
-                            "And... Out pops a Sweet",
-                            "Potato. It's probably",
-                            "safe to eat... Maybe.^000000"
-                        ])?;
-                        ctx.call(Function::DelItem, vec![Val::from(519), Val::from(2)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(511), Val::from(20)])?;
-                        ctx.call(Function::DelItem, vec![Val::from(909), Val::from(10)])?;
-                        ctx.call(Function::GetItem, vec![Val::from(516), Val::from(1)])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
+                        ctx.lines_as(
+                            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                            args![
+                                "I am so happy--nay--",
+                                "^4D4DFFproud^000000 that my strength, my",
+                                "valor, and my determination",
+                                "was up to this task. May the",
+                                "annals of history never forget",
+                                ((Val::from("this day! Long live ")
+                                    + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("!"))
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args!["^3355FFIt's time for you to", "return to Mr. Saraman.^000000"])?;
+                        ctx.var("rachel_camel").set(Val::from(17))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(3075), Val::from(3076)])?;
                     }
+                    ctx.call(Function::DelItem, vec![Val::from(519), Val::from(2)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(511), Val::from(20)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(909), Val::from(10)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(713), Val::from(1)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else {
+                    ctx.lines_as(
+                        "Silk Sand Camel",
+                        args!["^333333*Chew Chew~*^000000", "^333333*Smacks lips*^000000"],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFThe camel grimaced",
+                        "as if it were suffering",
+                        "from a stomachache...",
+                        "And... Out pops a Sweet",
+                        "Potato. It's probably",
+                        "safe to eat... Maybe.^000000"
+                    ])?;
+                    ctx.call(Function::DelItem, vec![Val::from(519), Val::from(2)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(511), Val::from(20)])?;
+                    ctx.call(Function::DelItem, vec![Val::from(909), Val::from(10)])?;
+                    ctx.call(Function::GetItem, vec![Val::from(516), Val::from(1)])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             } else {
                 ctx.lines(args![

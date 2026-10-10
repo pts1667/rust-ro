@@ -2072,19 +2072,11 @@ fn storage_keeper_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("Sorry about that.:It's hot, isn't it?:I'm on an errand for the doctor.")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         "Jiang Xiayou",
                         args![
@@ -2095,10 +2087,7 @@ fn storage_keeper_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as(
                         "Jiang Xiayou",
                         args![
@@ -2113,10 +2102,7 @@ fn storage_keeper_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.lines_as(
                         "Jiang Xiayou",
                         args!["Oh yeah?", "Well, why didn't you", "say so? Let's see.", "Hmmm..."],
@@ -2210,6 +2196,7 @@ fn storage_keeper_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else {
             if ctx.var("ch_par").get()? == 4 {
@@ -2693,48 +2680,22 @@ fn studying_officer_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         let (input, status) = runtime::input_text(ctx, None, None)?;
         l_input_s = input;
-        'b1: {
-            let subject1 = ctx.var("ch_par").get()?;
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(11))
-                && !subject1.loosely_equals(&Val::from(12))
-                && !subject1.loosely_equals(&Val::from(13))
-                && !subject1.loosely_equals(&Val::from(14));
-            if !matched1 && subject1.loosely_equals(&Val::from(11)) {
-                matched1 = true;
+        let subject1 = ctx.var("ch_par").get()?;
+        if subject1 == 11 {
+            if l_input_s.clone() == "Residence Transfer Application" {
+                l_paper = Val::from(1);
             }
-            if matched1 {
-                if l_input_s.clone() == "Residence Transfer Application" {
-                    l_paper = Val::from(1);
-                }
-                break 'b1;
+        } else if subject1 == 12 {
+            if l_input_s.clone() == "Summer SAT Class Application" {
+                l_paper = Val::from(1);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(12)) {
-                matched1 = true;
+        } else if subject1 == 13 {
+            if l_input_s.clone() == "Sandy Dust Phenomenon Report" {
+                l_paper = Val::from(1);
             }
-            if matched1 {
-                if l_input_s.clone() == "Summer SAT Class Application" {
-                    l_paper = Val::from(1);
-                }
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(13)) {
-                matched1 = true;
-            }
-            if matched1 {
-                if l_input_s.clone() == "Sandy Dust Phenomenon Report" {
-                    l_paper = Val::from(1);
-                }
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(14)) {
-                matched1 = true;
-            }
-            if matched1 {
-                if l_input_s.clone() == "Communication Proposal" {
-                    l_paper = Val::from(1);
-                }
-                break 'b1;
+        } else if subject1 == 14 {
+            if l_input_s.clone() == "Communication Proposal" {
+                l_paper = Val::from(1);
             }
         }
         ctx.lines_as(
@@ -3282,22 +3243,13 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             || ctx.call(Function::CountItem, vec![Val::from(716)])?.number()? > 0)
             && (ctx.var("ch_poison").get()?.number()? > 0 && ctx.call(Function::Rand, vec![Val::from(1), Val::from(300)])?.number()? > 99))
         {
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Ask about the poem.:Ask about his hometown.:Ask about use of Poison.:Ask about his situation.",
                     )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3))
-                    && !subject1.loosely_equals(&Val::from(4));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         "Nagash Arses",
                         args![
@@ -3649,10 +3601,7 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as(
                         "Nagash Arses",
                         args![
@@ -3981,10 +3930,7 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         }
                     }
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     if (ctx.var("ch_poison").get()? == 4 || ctx.var("ch_poison").get()? == 5) {
                         ctx.lines_as(
                             "Nagash Arses",
@@ -4029,10 +3975,7 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                4 => {
                     if ctx.var("ch_poison").get()? == 3 {
                         ctx.lines_as(
                             "Nagash Arses",
@@ -4047,22 +3990,13 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Nagash Arses", args!["As I studied with them, together we started to clear the town of the remaining monsters. Can you guess the results of our efforts to clean up the city?"])?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "...??:It must have been good.:I guess it was okay?:I don't know, but how did it go?",
                                 )],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3))
-                                && !subject3.loosely_equals(&Val::from(4));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            )? {
+                            1 => {
                                 ctx.lines_as("Nagash Arses", args!["Did you even listen to me? It's no use talking to you if you don't even care about what I have to say."])?;
                                 ctx.next()?;
                                 ctx.lines_as(
@@ -4072,21 +4006,14 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 ctx.lines_as(
                                     "Nagash Arses",
                                     args!["You're right!", "We got rid of every", "single monster in the city!"],
                                 )?;
                                 ctx.next()?;
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            3 => {
                                 ctx.lines_as(
                                     "Nagash Arses",
                                     args!["Just okay...?", "I don't think you realized how powerful we were back then! Eh..."],
@@ -4099,13 +4026,11 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            4 => {
                                 ctx.lines_as("Nagash Arses", args!["We got rid of every single monster in the city!"])?;
                                 ctx.next()?;
                             }
+                            _ => {}
                         }
                         ctx.lines_as("Nagash Arses", args!["We managed to eliminate every monster that was wandering around Luoyang. At the time, we were the only people brave enough to take on this sort of task."])?;
                         ctx.next()?;
@@ -4148,25 +4073,16 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
+                _ => {}
             }
         } else {
-            'b4: {
-                let subject4 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Grin at him.:Lament for his grief.:Reprove him.:Listen to the poem again.:Show him a sad look.",
                     )],
-                )?);
-                let mut matched4 = false;
-                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                    && !subject4.loosely_equals(&Val::from(2))
-                    && !subject4.loosely_equals(&Val::from(3))
-                    && !subject4.loosely_equals(&Val::from(4))
-                    && !subject4.loosely_equals(&Val::from(5));
-                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         "Nagash Arses",
                         args![
@@ -4180,10 +4096,7 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                2 => {
                     ctx.lines_as(
                         "Nagash Arses",
                         args![
@@ -4196,18 +4109,12 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                3 => {
                     ctx.lines_as("Nagash Arses", args!["Wha--? I haven't wronged you in any way! Why must you be so mean to an old man? You don't even know half of what I've had to go through."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                4 => {
                     ctx.lines_as(
                         "Nagash Arses",
                         args![
@@ -4232,10 +4139,7 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                5 => {
                     ctx.lines_as(
                         "Nagash Arses",
                         args![
@@ -4305,6 +4209,7 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         }
     } else {
@@ -4350,29 +4255,18 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["By the way...", "You look pale...", "Did something happen?"],
                 )?;
                 ctx.next()?;
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Nothing.:I want to talk about your diciple.:I don't feel good.")],
-                    )?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                        && !subject5.loosely_equals(&Val::from(2))
-                        && !subject5.loosely_equals(&Val::from(3));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Nagash Arses", args!["Oh...", "I see...", "But take care", "of yourself."])?;
                         ctx.next()?;
                         ctx.lines_as("Nagash Arses", args!["You better enjoy your physical strength when you're young. When you're my age, it's tough to regain your health once you lose it."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    2 => {
                         ctx.lines_as(
                             "Nagash Arses",
                             args![
@@ -4451,10 +4345,7 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    3 => {
                         ctx.lines_as(
                             "Nagash Arses",
                             args![
@@ -4469,6 +4360,7 @@ fn poison_king_lou_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 if ctx.var("ch_poison").get()? == 13 {
@@ -4731,22 +4623,13 @@ fn employee_poison_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["I feel like you're looking at me. Is there something that you want?"],
         )?;
         ctx.next()?;
-        'b2: {
-            let subject2 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "......:Ask him about his master.:Ask about Poison Organization.:Ask why he's working here.",
                 )],
-            )?);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                && !subject2.loosely_equals(&Val::from(2))
-                && !subject2.loosely_equals(&Val::from(3))
-                && !subject2.loosely_equals(&Val::from(4));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Song Zhi Du",
                     args!["I guess there's nothing you really need from me. Well then, if you'll excuse me..."],
@@ -4754,10 +4637,7 @@ fn employee_poison_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
+            2 => {
                 ctx.lines_as(
                     "Song Zhi Du",
                     args!["Oh, I'm sorry, but I'm kind of busy right now. You see, we're running out of medicine..."],
@@ -4773,10 +4653,7 @@ fn employee_poison_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                matched2 = true;
-            }
-            if matched2 {
+            3 => {
                 ctx.lines_as("Song Zhi Du", args!["What...?", "What did", "you just say...?"])?;
                 ctx.next()?;
                 let (input, status) = runtime::input_text(ctx, None, None)?;
@@ -4790,10 +4667,7 @@ fn employee_poison_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                matched2 = true;
-            }
-            if matched2 {
+            4 => {
                 ctx.lines_as("Song Zhi Du", args!["Of course I'm working here to learn about medicine. I'm grateful for the chance to work under the most famous doctor in this area."])?;
                 ctx.next()?;
                 ctx.lines_as("Song Zhi Du", args!["Doctor Hua Tuo is such a great person. I'm more than happy to assist him in saving the lives of others with his medical knowledge."])?;
@@ -4817,6 +4691,7 @@ fn employee_poison_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         if (ctx.var("ch_par").get()?.number()? > 9 && ctx.var("ch_poison").get()?.number()? < 5) {
@@ -6413,22 +6288,13 @@ fn hermit_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Sun Mao", args!["I shall then engrave your name", "on this bloody pledge board. But before I do so, I shall ask once more. Do you truly wish to join us, through pain and bloodshed?"])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("No, wait!:I am 100% sure.")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                match runtime::select_values(ctx, &[Val::from("No, wait!:I am 100% sure.")])? {
+                    1 => {
                         ctx.lines_as("Sun Mao", args!["I understand if you need time to decide. If you do decide to join us, please return. Time is on our side, after all."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.var("ql_revol").set(Val::from(1))?;
                         ctx.lines_as("Sun Mao", args![(ctx.call(Function::StrCharInfo, vec![Val::from(0)])? + Val::from("...!")), "Your name is now engraved on this bloody pledge board. We will fight together to the death for Luoyang's future!"])?;
                         ctx.next()?;
@@ -6457,6 +6323,7 @@ fn hermit_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(3)) {
@@ -6504,68 +6371,36 @@ fn hermit_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.lines_as("Sun Mao", args!["Oh, you brought a new comrade! Welcome. Please help your friend understand our intentions before joining us."])?;
                     ctx.next()?;
                     ctx.mes("[Sun Mao]")?;
-                    'b3: {
-                        let subject3 = ctx.var("ql_revol").get()?;
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3))
-                            && !subject3.loosely_equals(&Val::from(4))
-                            && !subject3.loosely_equals(&Val::from(5))
-                            && !subject3.loosely_equals(&Val::from(6))
-                            && !subject3.loosely_equals(&Val::from(7));
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.mes("Please bring another friend that both of you can trust. Remember, add one person at a time into your party.")?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Sun Mao",
-                                args!["Otherwise, other people may learn of what we are doing, and that will lead to trouble."],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.mes("The three of you may all move together for our cause. Please try to find another recruit to be your fourth member, invite him to your party and bring him to this place.")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.mes("Ah, now there are four of you. However, we must continue to strengthen our ranks at a cautious pace. Please go and find one new recruit, and only one, to add to your party.")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.mes("Now, there are five of you. Needless to say, we still require more manpower. Please go out and seek another new member for our cause. Remember, only add one more person to your party and return to me.")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.mes("There are now six of you. So far, so good. Please go forth and find just one more person to add to your party and bring him to me so that we may recruit him.")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(7)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.mes("Now, there are seven of you, but we still lack the manpower we need. Please go forth and seek out one, and only one, more person to add to your party and then return to me.")?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                    let subject3 = ctx.var("ql_revol").get()?;
+                    if subject3 == 2 {
+                        ctx.mes("Please bring another friend that both of you can trust. Remember, add one person at a time into your party.")?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Sun Mao",
+                            args!["Otherwise, other people may learn of what we are doing, and that will lead to trouble."],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject3 == 3 {
+                        ctx.mes("The three of you may all move together for our cause. Please try to find another recruit to be your fourth member, invite him to your party and bring him to this place.")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject3 == 4 {
+                        ctx.mes("Ah, now there are four of you. However, we must continue to strengthen our ranks at a cautious pace. Please go and find one new recruit, and only one, to add to your party.")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject3 == 5 {
+                        ctx.mes("Now, there are five of you. Needless to say, we still require more manpower. Please go out and seek another new member for our cause. Remember, only add one more person to your party and return to me.")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject3 == 6 {
+                        ctx.mes("There are now six of you. So far, so good. Please go forth and find just one more person to add to your party and bring him to me so that we may recruit him.")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject3 == 7 {
+                        ctx.mes("Now, there are seven of you, but we still lack the manpower we need. Please go forth and seek out one, and only one, more person to add to your party and then return to me.")?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
                 ctx.lines_as("Sun Mao", args!["Great work, you've brought another new comrade! Welcome! Please explain our goals and the righteousness of our cause to our new friend so that he may fully join us."])?;
@@ -6612,138 +6447,65 @@ fn hermit_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             .is_true()
             {
                 ctx.mes("[Sun Mao]")?;
-                'b4: {
-                    let subject4 = ctx.var("ql_revol").get()?;
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3))
-                        && !subject4.loosely_equals(&Val::from(4))
-                        && !subject4.loosely_equals(&Val::from(5))
-                        && !subject4.loosely_equals(&Val::from(6))
-                        && !subject4.loosely_equals(&Val::from(7));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.mes("You made a party. Now, why don't you go recruit more followers? For now, just add one more person, lest we arouse the suspicion of our enemies.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.lines(args!["Hmmm...", "Having trouble finding a third person to add to your party? It's important that you find someone that is trustworthy. Be careful and don't get caught!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.lines(args!["Hmmm...", "Having trouble finding a forth person to add to your party? I understand that it's important that you find someone you can trust. Be careful and don't get caught!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.mes("Having trouble finding a fifth person to add to your party? I understand that it's important that you find someone you can trust. Be careful and don't get caught!")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.mes("Having trouble finding a six person to add to your party? It's important that you find someone that is trustworthy. Be careful and don't get caught!")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.mes("Having trouble finding a seventh person to add to your party? It's important that you find someone that is trustworthy. Be careful and don't get caught!")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(7)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.lines(args!["Hmmm...", "Having trouble finding an eighth person to add to your party? It's important that you find someone that is trustworthy. Be careful and don't get caught!"])?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                let subject4 = ctx.var("ql_revol").get()?;
+                if subject4 == 1 {
+                    ctx.mes("You made a party. Now, why don't you go recruit more followers? For now, just add one more person, lest we arouse the suspicion of our enemies.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject4 == 2 {
+                    ctx.lines(args!["Hmmm...", "Having trouble finding a third person to add to your party? It's important that you find someone that is trustworthy. Be careful and don't get caught!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject4 == 3 {
+                    ctx.lines(args!["Hmmm...", "Having trouble finding a forth person to add to your party? I understand that it's important that you find someone you can trust. Be careful and don't get caught!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject4 == 4 {
+                    ctx.mes("Having trouble finding a fifth person to add to your party? I understand that it's important that you find someone you can trust. Be careful and don't get caught!")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject4 == 5 {
+                    ctx.mes("Having trouble finding a six person to add to your party? It's important that you find someone that is trustworthy. Be careful and don't get caught!")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject4 == 6 {
+                    ctx.mes("Having trouble finding a seventh person to add to your party? It's important that you find someone that is trustworthy. Be careful and don't get caught!")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject4 == 7 {
+                    ctx.lines(args!["Hmmm...", "Having trouble finding an eighth person to add to your party? It's important that you find someone that is trustworthy. Be careful and don't get caught!"])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             } else {
                 ctx.lines_as("Sun Mao", args!["Oh no! You've brought more than one more person to join us! We can't do any recruiting now, it will bring unnecessary attention to our activities!"])?;
                 ctx.next()?;
                 ctx.mes("[Sun Mao]")?;
-                'b5: {
-                    let subject5 = ctx.var("ql_revol").get()?;
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                        && !subject5.loosely_equals(&Val::from(2))
-                        && !subject5.loosely_equals(&Val::from(3))
-                        && !subject5.loosely_equals(&Val::from(4))
-                        && !subject5.loosely_equals(&Val::from(5))
-                        && !subject5.loosely_equals(&Val::from(6))
-                        && !subject5.loosely_equals(&Val::from(7));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.mes("Please make sure that there is a total of two members in your party so that we can recruit your friend. I believe that will look natural.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.mes("At this stage in our plan, we cannot afford any unnecessary attention to our activities! Please make sure that there is a total of three members in your party so that we can recruit your friend.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.mes("Please make sure that there is a total of four members in your party so that we can recruit your friend. I believe that will look natural.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.mes("Please make sure that there is a total of five members in your party so that we can recruit your friend. I believe that will look natural.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                        matched5 = true;
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.mes("By this time, you should know that you should only bring one more person at a time. You know that it is crucial that we do not attract any undue attention before we can take action!")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
-                    if !matched5 && subject5.loosely_equals(&Val::from(7)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
-                        ctx.mes("At this stage in our plan, we cannot afford any unnecessary attention to our activities! Please make sure that there is a total of eight members in your party so that we can recruit your friend.")?;
-                        ctx.close_window()?;
-                        return Err(Stop::End);
-                    }
+                let subject5 = ctx.var("ql_revol").get()?;
+                if subject5 == 1 {
+                    ctx.mes("Please make sure that there is a total of two members in your party so that we can recruit your friend. I believe that will look natural.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject5 == 2 {
+                    ctx.mes("At this stage in our plan, we cannot afford any unnecessary attention to our activities! Please make sure that there is a total of three members in your party so that we can recruit your friend.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject5 == 3 {
+                    ctx.mes("Please make sure that there is a total of four members in your party so that we can recruit your friend. I believe that will look natural.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject5 == 4 {
+                    ctx.mes("Please make sure that there is a total of five members in your party so that we can recruit your friend. I believe that will look natural.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject5 == 5 || subject5 == 6 {
+                    ctx.mes("By this time, you should know that you should only bring one more person at a time. You know that it is crucial that we do not attract any undue attention before we can take action!")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject5 == 7 {
+                    ctx.mes("At this stage in our plan, we cannot afford any unnecessary attention to our activities! Please make sure that there is a total of eight members in your party so that we can recruit your friend.")?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
                 }
             }
         } else if ctx.var("ql_revol").get()? == 8 {
@@ -6856,14 +6618,8 @@ fn gunpowder_expert_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["Please give me", "a minute so that", "I may quickly make", "the gunpowder."],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Make Gunpowder.:Cancel.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+            match runtime::select_values(ctx, &[Val::from("Make Gunpowder.:Cancel.")])? {
+                1 => {
                     ctx.call(Function::DelItem, vec![Val::from(7068), Val::from(1)])?;
                     ctx.call(Function::DelItem, vec![Val::from(7096), Val::from(1)])?;
                     ctx.call(Function::DelItem, vec![Val::from(7004), Val::from(1)])?;
@@ -6873,10 +6629,7 @@ fn gunpowder_expert_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as("Hao Chenryu", args!["Is...", "Something wrong?!"])?;
                     ctx.next()?;
                     ctx.lines_as(
@@ -6892,6 +6645,7 @@ fn gunpowder_expert_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else {
             ctx.lines_as("Hao Chenryu", args!["Hmmm...", "It seems like", "you're one of us."])?;

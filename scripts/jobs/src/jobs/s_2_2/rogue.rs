@@ -199,383 +199,317 @@ fn rogue_guildsman_rg_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Markie",
-                        args!["1. Choose the skill necessary for learning ^880000Stalk^000000."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "^880000Hiding^000000:^880000Steal^000000:^880000Improve Dodge^000000:^880000Bash^000000",
-                        )],
-                    )?) == 1
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["2. In comparison to the Merchant's Level 10 ^880000Discount^000000 skill, how much more of a discount, in terms of percent, can a Rogue get with Level 10 ^880000Haggle^000000 skill?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("3 %:2 %:1 %:0 %")])?) == 3 {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["3. What is the correct description for the skill, ^880000Mug^000000?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "Steal items from players:Steal items from monsters:Steal Zeny from monsters:Steal Zeny from players",
-                        )],
-                    )?) == 3
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["4. How many Rogues does it require to activate the skill, ^880000Slyness^000000?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("1 Rogues + 2 Assassin:1 Thief + 2 Rogue:4 Thieves:2 Rogues")],
-                    )?) == 4
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["5. Choose the skill that you can learn at Level 5 ^880000Divest Helm^000000."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "^880000Envenom^000000:^880000Strip Tease^000000:^880000Venom Splasher^000000:^880000Divest Shield^000000",
-                        )],
-                    )?) == 4
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["6. Choose the skill which allows its user to move while hiding."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "^880000Hiding^000000:^880000Back Slide^000000:^880000Stalk^000000:^880000Sand Attack^000000",
-                        )],
-                    )?) == 3
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["7. Choose the card that increases the accuracy rate of its owner."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Andre Card.:Familiar Card.:Mummy Card.:Marina Card.")],
-                    )?) == 3
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["8. Choose the monster that receives more damage when it's attacked by a weapon with the Vadon card (20 % more damage on Fire property)."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Vadon:Deviruchi:Elder Willow:Baphomet")],
-                    )?) == 3
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["9. How much SP does the skill ^880000Double Attack^000000 require when used with a Dagger?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("15:Passive skill, no SP required.:Passive skill, 10 SP:54")],
-                    )?) == 2
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["10. Choose the most efficient dagger to use in the Byalan Dungeon."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Wind Main-Gauche:Ice Main-Gauche:Earth Main-Gauche:Fire Main-Gauche")],
-                    )?) == 1
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as("Markie", args!["1. Which monster drops a slotted Gladius?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Thief Bug:Peco Peco:Desert Wolf:Kobold")],
-                    )?) == 4
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["2. Which monster drops a slotted Main-Gauche?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Hornet:Desert Wolf:Marionette:Myst")])?) == 1 {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["3. Choose the class that is able to create unique potions."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Merchant:Alchemist:Blacksmith:Priest")],
-                    )?) == 2
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["4. Choose the weapon that Rogues aren't allowed to use."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Gakkung:Crossbow:Gladius:Katar")])?) == 4 {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["5. Choose the property that the monster Hode possesses."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Water:Fire:Wind:Earth")])?) == 4 {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["6. Choose the monster that is unable to be tamed for as a Cute Pet."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Poporing:Creamy:Orc:Poison Spore")])?) == 2 {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["7. Choose the monster that receives more damage from a Dagger with the Fire property."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Dagger Goblin:Mace Goblin:Morning Star Goblin:Hammer Goblin")],
-                    )?) == 4
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["8. Choose the town that doesn't have any guild castles."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Al De Baran:Alberta:Payon")])?) == 3 {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["9. Choose the plant that drops Blue Herbs."])?;
-                    ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Green Plant:Yellow Plant:Blue Plant:Shining Plant")],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(3)) && !subject2.loosely_equals(&Val::from(4));
-                        if !matched2 && no_case2 {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            break 'b2;
-                        }
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["10. Choose the monster that does not have the Undead property."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Zombie:Megalodon:Familiar:Khalitzburg")],
-                    )?) == 3
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.lines_as(
-                        "Markie",
-                        args!["1. By what percentage is the flee rate increased when a Thief masters the ^880000Improve Dodge^000000?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("30:40:160:20")])?) == 1 {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["2. Choose the monster that detects a characters using the Hiding or Cloaking skill."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Worm Tail:Argos:Mummy:Soldier Skeleton")],
-                    )?) == 2
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["3. Choose the location where Thieves can change their jobs to Rogues."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Comodo:Kokomo Beach:Paros Lighthouse:Morocc")],
-                    )?) == 3
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["4. In which town can Novices change their jobs to Thieves?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Comodo:Lutie:Alberta:Morocc")])?) == 4 {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["5. Choose the card that does not affect the DEX stat."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Rocker Card:Mummy Card:Zerom Card:Drops Card")],
-                    )?) == 2
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Markie", args!["6. So what's cool about being a Rogue?"])?;
-                    ctx.next()?;
-                    let choice = runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "Being totally badass.:The clothes, the style.:Getting to call other people, 'foo'':Excellent attack strength",
-                        )],
-                    )?;
-                    ctx.var("@menu").set(choice)?;
+            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+            if subject1 == 1 {
+                ctx.lines_as(
+                    "Markie",
+                    args!["1. Choose the skill necessary for learning ^880000Stalk^000000."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "^880000Hiding^000000:^880000Steal^000000:^880000Improve Dodge^000000:^880000Bash^000000",
+                    )],
+                )?) == 1
+                {
                     l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    ctx.lines_as("Markie", args!["7. When is it possible to change jobs from Thief to Rogue?"])?;
-                    ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("At job Level 30:At job Level 35:At Job Level 40:At Job Level 50")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(3)) && !subject3.loosely_equals(&Val::from(4));
-                        if !matched3 && no_case3 {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            break 'b3;
-                        }
+                }
+                ctx.lines_as("Markie", args!["2. In comparison to the Merchant's Level 10 ^880000Discount^000000 skill, how much more of a discount, in terms of percent, can a Rogue get with Level 10 ^880000Haggle^000000 skill?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("3 %:2 %:1 %:0 %")])?) == 3 {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["3. What is the correct description for the skill, ^880000Mug^000000?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Steal items from players:Steal items from monsters:Steal Zeny from monsters:Steal Zeny from players",
+                    )],
+                )?) == 3
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["4. How many Rogues does it require to activate the skill, ^880000Slyness^000000?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("1 Rogues + 2 Assassin:1 Thief + 2 Rogue:4 Thieves:2 Rogues")],
+                )?) == 4
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["5. Choose the skill that you can learn at Level 5 ^880000Divest Helm^000000."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "^880000Envenom^000000:^880000Strip Tease^000000:^880000Venom Splasher^000000:^880000Divest Shield^000000",
+                    )],
+                )?) == 4
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["6. Choose the skill which allows its user to move while hiding."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "^880000Hiding^000000:^880000Back Slide^000000:^880000Stalk^000000:^880000Sand Attack^000000",
+                    )],
+                )?) == 3
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["7. Choose the card that increases the accuracy rate of its owner."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Andre Card.:Familiar Card.:Mummy Card.:Marina Card.")],
+                )?) == 3
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["8. Choose the monster that receives more damage when it's attacked by a weapon with the Vadon card (20 % more damage on Fire property)."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Vadon:Deviruchi:Elder Willow:Baphomet")],
+                )?) == 3
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["9. How much SP does the skill ^880000Double Attack^000000 require when used with a Dagger?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("15:Passive skill, no SP required.:Passive skill, 10 SP:54")],
+                )?) == 2
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["10. Choose the most efficient dagger to use in the Byalan Dungeon."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Wind Main-Gauche:Ice Main-Gauche:Earth Main-Gauche:Fire Main-Gauche")],
+                )?) == 1
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+            } else if subject1 == 2 {
+                ctx.lines_as("Markie", args!["1. Which monster drops a slotted Gladius?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Thief Bug:Peco Peco:Desert Wolf:Kobold")],
+                )?) == 4
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["2. Which monster drops a slotted Main-Gauche?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Hornet:Desert Wolf:Marionette:Myst")])?) == 1 {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["3. Choose the class that is able to create unique potions."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Merchant:Alchemist:Blacksmith:Priest")],
+                )?) == 2
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["4. Choose the weapon that Rogues aren't allowed to use."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Gakkung:Crossbow:Gladius:Katar")])?) == 4 {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["5. Choose the property that the monster Hode possesses."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Water:Fire:Wind:Earth")])?) == 4 {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["6. Choose the monster that is unable to be tamed for as a Cute Pet."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Poporing:Creamy:Orc:Poison Spore")])?) == 2 {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["7. Choose the monster that receives more damage from a Dagger with the Fire property."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Dagger Goblin:Mace Goblin:Morning Star Goblin:Hammer Goblin")],
+                )?) == 4
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["8. Choose the town that doesn't have any guild castles."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Al De Baran:Alberta:Payon")])?) == 3 {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["9. Choose the plant that drops Blue Herbs."])?;
+                ctx.next()?;
+                match runtime::select_values(
+                        ctx,
+                        &[Val::from("Green Plant:Yellow Plant:Blue Plant:Shining Plant")],
+                    )? {
+                    3 => {
+                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
                     }
-                    ctx.lines_as("Markie", args!["8. You want to dye your hair blue. What town do you go to, and in which direction, with 12 o' clock being North."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
+                    4 => {
+                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                    }
+                    _ => {}
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["10. Choose the monster that does not have the Undead property."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Zombie:Megalodon:Familiar:Khalitzburg")],
+                )?) == 3
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+            } else if subject1 == 3 {
+                ctx.lines_as(
+                    "Markie",
+                    args!["1. By what percentage is the flee rate increased when a Thief masters the ^880000Improve Dodge^000000?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("30:40:160:20")])?) == 1 {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["2. Choose the monster that detects a characters using the Hiding or Cloaking skill."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Worm Tail:Argos:Mummy:Soldier Skeleton")],
+                )?) == 2
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["3. Choose the location where Thieves can change their jobs to Rogues."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Comodo:Kokomo Beach:Paros Lighthouse:Morocc")],
+                )?) == 3
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["4. In which town can Novices change their jobs to Thieves?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Comodo:Lutie:Alberta:Morocc")])?) == 4 {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["5. Choose the card that does not affect the DEX stat."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Rocker Card:Mummy Card:Zerom Card:Drops Card")],
+                )?) == 2
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Markie", args!["6. So what's cool about being a Rogue?"])?;
+                ctx.next()?;
+                let choice = runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Being totally badass.:The clothes, the style.:Getting to call other people, 'foo'':Excellent attack strength",
+                    )],
+                )?;
+                ctx.var("@menu").set(choice)?;
+                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                ctx.lines_as("Markie", args!["7. When is it possible to change jobs from Thief to Rogue?"])?;
+                ctx.next()?;
+                match runtime::select_values(
+                        ctx,
+                        &[Val::from("At job Level 30:At job Level 35:At Job Level 40:At Job Level 50")],
+                    )? {
+                    3 => {
+                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                    }
+                    4 => {
+                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                    }
+                    _ => {}
+                }
+                ctx.lines_as("Markie", args!["8. You want to dye your hair blue. What town do you go to, and in which direction, with 12 o' clock being North."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Morocc, 7 o'clock:Prontera, 7 o'clock:Morocc, 5 o'clock:Prontera, 1 o'clock",
+                    )],
+                )?) == 2
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Markie",
+                    args!["9. Choose the mushroom that is required on the Thief job change quest."],
+                )?;
+                ctx.next()?;
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
-                            "Morocc, 7 o'clock:Prontera, 7 o'clock:Morocc, 5 o'clock:Prontera, 1 o'clock",
+                            "Orange Gooey Mushroom:Red Hairy Mushroom:Orange Net Mushroom:Orange Sticky Mushroom",
                         )],
-                    )?) == 2
-                    {
+                    )? {
+                    1 | 3 => {
                         l_assassin_t = (l_assassin_t.clone() + Val::from(10));
                     }
-                    ctx.lines_as(
-                        "Markie",
-                        args!["9. Choose the mushroom that is required on the Thief job change quest."],
-                    )?;
-                    ctx.next()?;
-                    'b4: {
-                        let subject4 = Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "Orange Gooey Mushroom:Red Hairy Mushroom:Orange Net Mushroom:Orange Sticky Mushroom",
-                            )],
-                        )?);
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(3));
-                        if !matched4 && no_case4 {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            break 'b4;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
-                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            break 'b4;
-                        }
-                    }
-                    ctx.lines_as("Markie", args!["10. Choose the card that least benefits the Rogue class."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Whisper Card:Elder Willow Card:Zerom Card:Matyr Card")],
-                    )?) == 2
-                    {
-                        l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                    }
+                    _ => {}
+                }
+                ctx.lines_as("Markie", args!["10. Choose the card that least benefits the Rogue class."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Whisper Card:Elder Willow Card:Zerom Card:Matyr Card")],
+                )?) == 2
+                {
+                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
                 }
             }
             ctx.lines_as("Markie", args!["*Whew~*", "Finally.", "We're done."])?;
@@ -1158,119 +1092,102 @@ fn mr_smith_rg_run(ctx: &Ctx, mut step: MrSmithRgStep, args: Vec<Val>) -> Result
                                         } else {
                                             if ctx.var("rogue_q").get()? == 7 {
                                                 ctx.lines_as("Mr. Smith", args!["Let me see...", "Who would should", "I send you to...?"])?;
-                                                'b1: {
-                                                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                                                    let mut matched1 = false;
-                                                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                                        && !subject1.loosely_equals(&Val::from(2))
-                                                        && !subject1.loosely_equals(&Val::from(3));
-                                                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                                        matched1 = true;
+                                                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                                                if subject1 == 1 {
+                                                    ctx.var("rogue_q").set(Val::from(9))?;
+                                                    if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2022)])?;
+                                                    } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2022)])?;
+                                                    } else {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2022)])?;
                                                     }
-                                                    if matched1 {
-                                                        ctx.var("rogue_q").set(Val::from(9))?;
-                                                        if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2022)])?;
-                                                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2022)])?;
-                                                        } else {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2022)])?;
-                                                        }
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Right! I know", "just the guy~!"])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Go visit Aragham Junior who lives South of the Sandarman Fortress. That area is located one field east from here."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["He's a pretty nice guy, you know. He works hard and is really good at bill collecting."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Before he joined the Rogue Guild, people have been trying to kill him for something his father did in the past. So, he became a runaway."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Well anyway, that's why he's been with us. We've been helping him hide from his enemies."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Ah, you might want to remember the password if you want to meet him. He doesn't let anybody in his house without the password."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Mr. Smith",
-                                                            args!["The password is ^0000FFAragham never hoarded upgrade items^000000."],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Well, I will wish you luck. His place isn't that far from here, so come back as soon as possible. Being swift... That is the spirit of the Rogue."])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Right! I know", "just the guy~!"])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Go visit Aragham Junior who lives South of the Sandarman Fortress. That area is located one field east from here."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["He's a pretty nice guy, you know. He works hard and is really good at bill collecting."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Before he joined the Rogue Guild, people have been trying to kill him for something his father did in the past. So, he became a runaway."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Well anyway, that's why he's been with us. We've been helping him hide from his enemies."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Ah, you might want to remember the password if you want to meet him. He doesn't let anybody in his house without the password."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args!["The password is ^0000FFAragham never hoarded upgrade items^000000."],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Well, I will wish you luck. His place isn't that far from here, so come back as soon as possible. Being swift... That is the spirit of the Rogue."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                } else if subject1 == 2 {
+                                                    ctx.var("rogue_q").set(Val::from(10))?;
+                                                    if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2023)])?;
+                                                    } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2023)])?;
+                                                    } else {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2023)])?;
                                                     }
-                                                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                                        matched1 = true;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args![
+                                                            "Hmm...",
+                                                            "This guy might be",
+                                                            "good for you, but...",
+                                                            "He's a little dangerous."
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["I want you to meet Antonio Junior, son of Antonio the first. For some reason people have been trying to kill him because of something his father did in the past."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["He was brought up in Payon, but he's staying in an empty house near the Kokomo beach at the moment."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["I've heard lately that he's been complaining a lot about the noise outside of his house, and he fears an assassination attempt. Anyway..."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["He's kind of tense, so he throws a dagger at anyone who approaches his house. He has a violent personality."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["However, he does have magnificent business skills. And he also loves gambling. Once you get to know him, he'll take care of your Rogue training really well."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Ah, you might want to remember the password to meet him in person. The password is ^0000FFAntonio doesn't enjoy destroying upgrade items^000000."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
+                                                } else if subject1 == 3 {
+                                                    ctx.var("rogue_q").set(Val::from(11))?;
+                                                    if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2024)])?;
+                                                    } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2024)])?;
+                                                    } else {
+                                                        ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2024)])?;
                                                     }
-                                                    if matched1 {
-                                                        ctx.var("rogue_q").set(Val::from(10))?;
-                                                        if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2023)])?;
-                                                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2023)])?;
-                                                        } else {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2023)])?;
-                                                        }
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Mr. Smith",
-                                                            args![
-                                                                "Hmm...",
-                                                                "This guy might be",
-                                                                "good for you, but...",
-                                                                "He's a little dangerous."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["I want you to meet Antonio Junior, son of Antonio the first. For some reason people have been trying to kill him because of something his father did in the past."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["He was brought up in Payon, but he's staying in an empty house near the Kokomo beach at the moment."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["I've heard lately that he's been complaining a lot about the noise outside of his house, and he fears an assassination attempt. Anyway..."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["He's kind of tense, so he throws a dagger at anyone who approaches his house. He has a violent personality."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["However, he does have magnificent business skills. And he also loves gambling. Once you get to know him, he'll take care of your Rogue training really well."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Ah, you might want to remember the password to meet him in person. The password is ^0000FFAntonio doesn't enjoy destroying upgrade items^000000."])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
-                                                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                                        matched1 = true;
-                                                    }
-                                                    if matched1 {
-                                                        ctx.var("rogue_q").set(Val::from(11))?;
-                                                        if ctx.call(Function::CheckQuest, vec![Val::from(2018)])? != -1 {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2018), Val::from(2024)])?;
-                                                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2019)])? != -1 {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2019), Val::from(2024)])?;
-                                                        } else {
-                                                            ctx.call(Function::ChangeQuest, vec![Val::from(2020), Val::from(2024)])?;
-                                                        }
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Mr. Smith",
-                                                            args![
-                                                                "Hmm...",
-                                                                "This guy might be",
-                                                                "good for you, but...",
-                                                                "He's a little dangerous."
-                                                            ],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as(
-                                                            "Mr. Smith",
-                                                            args!["His name is", "Hollgrehenn Junior,", "a genius at manipulation."],
-                                                        )?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["However, because of something his father did long ago, people have been trying to kill him. Because of this, he is very high strung and will throw daggers at people he doesn't trust."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Our leader has been able to get him to join our guild, and his brilliant mind has been an asset to us. Once you get to know him, he'll take care of your Rogue training really well."])?;
-                                                        ctx.next()?;
-                                                        ctx.lines_as("Mr. Smith", args!["Ah, you might want to remember the password to meet him in person. The password is ^0000FFMy father never hoarded upgrade items^000000."])?;
-                                                        ctx.close_window()?;
-                                                        return Err(Stop::End);
-                                                    }
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args![
+                                                            "Hmm...",
+                                                            "This guy might be",
+                                                            "good for you, but...",
+                                                            "He's a little dangerous."
+                                                        ],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as(
+                                                        "Mr. Smith",
+                                                        args!["His name is", "Hollgrehenn Junior,", "a genius at manipulation."],
+                                                    )?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["However, because of something his father did long ago, people have been trying to kill him. Because of this, he is very high strung and will throw daggers at people he doesn't trust."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Our leader has been able to get him to join our guild, and his brilliant mind has been an asset to us. Once you get to know him, he'll take care of your Rogue training really well."])?;
+                                                    ctx.next()?;
+                                                    ctx.lines_as("Mr. Smith", args!["Ah, you might want to remember the password to meet him in person. The password is ^0000FFMy father never hoarded upgrade items^000000."])?;
+                                                    ctx.close_window()?;
+                                                    return Err(Stop::End);
                                                 }
                                             } else {
                                                 if ctx.var("rogue_q").get()? == 8 {
@@ -1601,164 +1518,75 @@ fn warp_1_run(ctx: &Ctx, mut step: Warp1Step, args: Vec<Val>) -> Result<Val, Sto
             Warp1Step::OnTouch => {
                 ctx.lines_as("???", args!["Who's there?!", "Who would dare", "intrude my territory?"])?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("My father:Aragham:Aragon:Legolas")])?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                match runtime::select_values(ctx, &[Val::from("My father:Aragham:Aragon:Legolas")])? {
+                    1 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["My father"])?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Aragham"])?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Aragon"])?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    4 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Legolas"])?;
-                        break 'b1;
                     }
+                    _ => {}
                 }
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("did not:didn't:never:ever")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                match runtime::select_values(ctx, &[Val::from("did not:didn't:never:ever")])? {
+                    1 => {
                         ctx.mes("did not")?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.mes("didn't")?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.mes("never")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.mes("ever")?;
-                        break 'b2;
                     }
+                    _ => {}
                 }
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("hoard:hoarded:hide:took:take")])?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3))
-                        && !subject3.loosely_equals(&Val::from(4))
-                        && !subject3.loosely_equals(&Val::from(5));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                match runtime::select_values(ctx, &[Val::from("hoard:hoarded:hide:took:take")])? {
+                    1 => {
                         ctx.mes("hoard")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.mes("hoarded")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         ctx.mes("hide")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    4 => {
                         ctx.mes("took")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    5 => {
                         ctx.mes("take")?;
-                        break 'b3;
                     }
+                    _ => {}
                 }
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("upgrade items.:forging items.:refining item.:upgrade item.")],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3))
-                        && !subject4.loosely_equals(&Val::from(4));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.mes("upgrade items.")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.mes("forging items.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.mes("refining item.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    4 => {
                         ctx.mes("upgrade item.")?;
-                        break 'b4;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 if l_rogue_t.clone().number()? > 30 {
@@ -1801,164 +1629,75 @@ fn warp_2_run(ctx: &Ctx, mut step: Warp2Step, args: Vec<Val>) -> Result<Val, Sto
             Warp2Step::OnTouch => {
                 ctx.lines_as("???", args!["Who's there?!", "Who would dare", "intrude my territory?"])?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("My father:Aragham:Aragon:Legolas")])?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                match runtime::select_values(ctx, &[Val::from("My father:Aragham:Aragon:Legolas")])? {
+                    1 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["My father"])?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Aragham"])?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Aragon"])?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    4 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Legolas"])?;
-                        break 'b1;
                     }
+                    _ => {}
                 }
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("did not:didn't:never:ever")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                match runtime::select_values(ctx, &[Val::from("did not:didn't:never:ever")])? {
+                    1 => {
                         ctx.mes("did not")?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.mes("didn't")?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.mes("never")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.mes("ever")?;
-                        break 'b2;
                     }
+                    _ => {}
                 }
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("hoard:takes:hide:took:hoarded")])?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3))
-                        && !subject3.loosely_equals(&Val::from(4))
-                        && !subject3.loosely_equals(&Val::from(5));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                match runtime::select_values(ctx, &[Val::from("hoard:takes:hide:took:hoarded")])? {
+                    1 => {
                         ctx.mes("hoard")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.mes("takes")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         ctx.mes("hide")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    4 => {
                         ctx.mes("took")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    5 => {
                         ctx.mes("hoarded")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b3;
                     }
+                    _ => {}
                 }
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("upgrade items.:forging items.:refining item.:upgrade item.")],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3))
-                        && !subject4.loosely_equals(&Val::from(4));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.mes("upgrade items.")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.mes("forging items.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.mes("refining item.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    4 => {
                         ctx.mes("upgrade item.")?;
-                        break 'b4;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 if l_rogue_t.clone().number()? > 30 {
@@ -2001,180 +1740,86 @@ fn warp_3_run(ctx: &Ctx, mut step: Warp3Step, args: Vec<Val>) -> Result<Val, Sto
             Warp3Step::OnTouch => {
                 ctx.lines_as("???", args!["Who's there?!", "Who would dare", "intrude my territory?"])?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Anntonio:Aragham:Antonio:Hollgrehenn")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Anntonio"])?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Aragham"])?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Antonio"])?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    4 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Hollgrehenn"])?;
-                        break 'b1;
                     }
+                    _ => {}
                 }
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("enjoys:doesn't enjoy:likes:doesn't like")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.mes("enjoys")?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.mes("doesn't enjoy")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.mes("likes")?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.mes("doesn't like")?;
-                        break 'b2;
                     }
+                    _ => {}
                 }
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("damaging:destroying:fixing:forging")])?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3))
-                        && !subject3.loosely_equals(&Val::from(4));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                match runtime::select_values(ctx, &[Val::from("damaging:destroying:fixing:forging")])? {
+                    1 => {
                         ctx.mes("damaging")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.mes("destroying")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         ctx.mes("fixing")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    4 => {
                         ctx.mes("forging")?;
-                        break 'b3;
                     }
+                    _ => {}
                 }
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "forging item.:refining items.:upgrade items.:refined items.:upgraded items.:forged items.",
                         )],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3))
-                        && !subject4.loosely_equals(&Val::from(4))
-                        && !subject4.loosely_equals(&Val::from(5))
-                        && !subject4.loosely_equals(&Val::from(6));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.mes("forging item.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.mes("refining items.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.mes("upgrade items.")?;
                         l_rogue_t = (l_rogue_t.clone() + Val::from(10));
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    4 => {
                         ctx.mes("refined items.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    5 => {
                         ctx.mes("upgraded items.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(6)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    6 => {
                         ctx.mes("forged items.")?;
-                        break 'b4;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 if l_rogue_t.clone().number()? > 30 {

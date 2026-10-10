@@ -1495,17 +1495,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Hans:Bankley:Geil:Muetro")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Hans:Bankley:Geil:Muetro")])? {
+            1 => {
                 ctx.lines_as(
                     "Dequ'ee",
                     args![
@@ -1520,10 +1511,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as("Dequ'ee", args!["Bankley...?", "Hey, you might be", "right. Let me check..."])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -1541,10 +1529,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Warp, vec![Val::from("moc_fild07"), Val::from(359), Val::from(201)])?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as(
                     "Dequ'ee",
                     args![
@@ -1559,10 +1544,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
+            4 => {
                 ctx.lines_as(
                     "Dequ'ee",
                     args![
@@ -1577,6 +1559,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     if ctx.var("tu_swordman").get()? == 16 {
@@ -1590,17 +1573,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["Hm, you guess the order and I'll try to formulate a cryptanalysis based on your guess."],
         )?;
         ctx.next()?;
-        'b2: {
-            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Muetro:Hans:Geil:Bankley")])?);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                && !subject2.loosely_equals(&Val::from(2))
-                && !subject2.loosely_equals(&Val::from(3))
-                && !subject2.loosely_equals(&Val::from(4));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
+        match runtime::select_values(ctx, &[Val::from("Muetro:Hans:Geil:Bankley")])? {
+            1 => {
                 ctx.lines_as(
                     "Dequ'ee",
                     args![
@@ -1627,14 +1601,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Hans...?", "Alright, then", "the person with", "the third code", "would be...?"],
                         )?;
                         ctx.next()?;
-                        'b4: {
-                            let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Geil:Bankley")])?);
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
+                        match runtime::select_values(ctx, &[Val::from("Geil:Bankley")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Muetro, Hans,", "Geil and Bankley.", "So then the full", "code would be..."],
@@ -1658,10 +1626,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Muetro, Hans,", "Geil and Bankley.", "So then the full", "code would be..."],
@@ -1685,6 +1650,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched3 && subject3.loosely_equals(&Val::from(2)) {
@@ -1696,14 +1662,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Geil's...?", "Alright, then", "the person with", "the third code", "would be...?"],
                         )?;
                         ctx.next()?;
-                        'b5: {
-                            let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Hans:Bankley")])?);
-                            let mut matched5 = false;
-                            let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
+                        match runtime::select_values(ctx, &[Val::from("Hans:Bankley")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Muetro, Geil,", "Hans and Bankley.", "So then the full", "code would be..."],
@@ -1727,10 +1687,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Muetro, Geil,", "Bankley and Hans.", "So then the full", "code would be..."],
@@ -1754,6 +1711,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched3 && subject3.loosely_equals(&Val::from(3)) {
@@ -1771,14 +1729,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b6: {
-                            let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("Hans:Geil")])?);
-                            let mut matched6 = false;
-                            let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
+                        match runtime::select_values(ctx, &[Val::from("Hans:Geil")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Muetro, Bankley,", "Hans and Geil.", "So then the full", "code would be..."],
@@ -1802,10 +1754,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Muetro, Bankley,", "Geil and Hans.", "So then the full", "code would be..."],
@@ -1829,15 +1778,12 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
-                break 'b2;
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
+            2 => {
                 ctx.lines_as(
                     "Dequ'ee",
                     args![
@@ -1870,14 +1816,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b8: {
-                            let subject8 = Val::from(runtime::select_values(ctx, &[Val::from("Geil:Bankley")])?);
-                            let mut matched8 = false;
-                            let no_case8 = !subject8.loosely_equals(&Val::from(1)) && !subject8.loosely_equals(&Val::from(2));
-                            if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                                matched8 = true;
-                            }
-                            if matched8 {
+                        match runtime::select_values(ctx, &[Val::from("Geil:Bankley")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Hans, Muetro,", "Geil and Bankley.", "So then the full", "code would be..."],
@@ -1901,10 +1841,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                                matched8 = true;
-                            }
-                            if matched8 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Hans, Muetro,", "Bankley and Geil.", "So then the full", "code would be..."],
@@ -1928,6 +1865,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched7 && subject7.loosely_equals(&Val::from(2)) {
@@ -1939,14 +1877,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Geil's...?", "Alright, then", "the person with", "the third code", "would be...?"],
                         )?;
                         ctx.next()?;
-                        'b9: {
-                            let subject9 = Val::from(runtime::select_values(ctx, &[Val::from("Muetro:Bankley")])?);
-                            let mut matched9 = false;
-                            let no_case9 = !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
-                            if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                                matched9 = true;
-                            }
-                            if matched9 {
+                        match runtime::select_values(ctx, &[Val::from("Muetro:Bankley")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Hans, Geil,", "Muetro and Bankley.", "So then the full", "code would be..."],
@@ -1970,10 +1902,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                                matched9 = true;
-                            }
-                            if matched9 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Hans, Geil,", "Bankley and Muetro.", "So then the full", "code would be..."],
@@ -1997,6 +1926,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched7 && subject7.loosely_equals(&Val::from(3)) {
@@ -2014,14 +1944,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b10: {
-                            let subject10 = Val::from(runtime::select_values(ctx, &[Val::from("Muetro:Geil")])?);
-                            let mut matched10 = false;
-                            let no_case10 = !subject10.loosely_equals(&Val::from(1)) && !subject10.loosely_equals(&Val::from(2));
-                            if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                                matched10 = true;
-                            }
-                            if matched10 {
+                        match runtime::select_values(ctx, &[Val::from("Muetro:Geil")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Hans, Bankley,", "Muetro and Geil.", "So then the full", "code would be..."],
@@ -2045,10 +1969,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                                matched10 = true;
-                            }
-                            if matched10 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Hans, Bankley,", "Geil and Muetro.", "So then the full", "code would be..."],
@@ -2072,15 +1993,12 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
-                break 'b2;
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                matched2 = true;
-            }
-            if matched2 {
+            3 => {
                 ctx.lines_as(
                     "Dequ'ee",
                     args![
@@ -2113,14 +2031,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b12: {
-                            let subject12 = Val::from(runtime::select_values(ctx, &[Val::from("Hans:Bankley")])?);
-                            let mut matched12 = false;
-                            let no_case12 = !subject12.loosely_equals(&Val::from(1)) && !subject12.loosely_equals(&Val::from(2));
-                            if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                matched12 = true;
-                            }
-                            if matched12 {
+                        match runtime::select_values(ctx, &[Val::from("Hans:Bankley")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Geil, Muetro,", "Hans and Bankley.", "So then the full", "code would be..."],
@@ -2155,10 +2067,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                matched12 = true;
-                            }
-                            if matched12 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Geil, Muetro,", "Bankley and Hans.", "So then the full", "code would be..."],
@@ -2182,6 +2091,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched11 && subject11.loosely_equals(&Val::from(2)) {
@@ -2193,14 +2103,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Han's...?", "Alright, then", "the person with", "the third code", "would be...?"],
                         )?;
                         ctx.next()?;
-                        'b13: {
-                            let subject13 = Val::from(runtime::select_values(ctx, &[Val::from("Muetro:Bankley")])?);
-                            let mut matched13 = false;
-                            let no_case13 = !subject13.loosely_equals(&Val::from(1)) && !subject13.loosely_equals(&Val::from(2));
-                            if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                                matched13 = true;
-                            }
-                            if matched13 {
+                        match runtime::select_values(ctx, &[Val::from("Muetro:Bankley")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Geil, Hans,", "Muetro and Bankley.", "So then the full", "code would be..."],
@@ -2224,10 +2128,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                                matched13 = true;
-                            }
-                            if matched13 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Geil, Hans,", "Bankley and Muetro.", "So then the full", "code would be..."],
@@ -2251,6 +2152,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched11 && subject11.loosely_equals(&Val::from(3)) {
@@ -2268,14 +2170,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b14: {
-                            let subject14 = Val::from(runtime::select_values(ctx, &[Val::from("Muetro:Hans")])?);
-                            let mut matched14 = false;
-                            let no_case14 = !subject14.loosely_equals(&Val::from(1)) && !subject14.loosely_equals(&Val::from(2));
-                            if !matched14 && subject14.loosely_equals(&Val::from(1)) {
-                                matched14 = true;
-                            }
-                            if matched14 {
+                        match runtime::select_values(ctx, &[Val::from("Muetro:Hans")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Geil, Bankley,", "Muetro and Hans.", "So then the full", "code would be..."],
@@ -2299,10 +2195,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched14 && subject14.loosely_equals(&Val::from(2)) {
-                                matched14 = true;
-                            }
-                            if matched14 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Geil, Bankley,", "Hans and Muetro.", "So then the full", "code would be..."],
@@ -2326,15 +2219,12 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
-                break 'b2;
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                matched2 = true;
-            }
-            if matched2 {
+            4 => {
                 ctx.lines_as(
                     "Dequ'ee",
                     args![
@@ -2367,14 +2257,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b16: {
-                            let subject16 = Val::from(runtime::select_values(ctx, &[Val::from("Hans:Geil")])?);
-                            let mut matched16 = false;
-                            let no_case16 = !subject16.loosely_equals(&Val::from(1)) && !subject16.loosely_equals(&Val::from(2));
-                            if !matched16 && subject16.loosely_equals(&Val::from(1)) {
-                                matched16 = true;
-                            }
-                            if matched16 {
+                        match runtime::select_values(ctx, &[Val::from("Hans:Geil")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Bankley, Muetro,", "Hans and Geil.", "So then the full", "code would be..."],
@@ -2398,10 +2282,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched16 && subject16.loosely_equals(&Val::from(2)) {
-                                matched16 = true;
-                            }
-                            if matched16 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Bankley, Muetro,", "Geil and Hans.", "So then the full", "code would be..."],
@@ -2425,6 +2306,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched15 && subject15.loosely_equals(&Val::from(2)) {
@@ -2436,14 +2318,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Hans's...?", "Alright, then", "the person with", "the third code", "would be...?"],
                         )?;
                         ctx.next()?;
-                        'b17: {
-                            let subject17 = Val::from(runtime::select_values(ctx, &[Val::from("Muetro:Geil")])?);
-                            let mut matched17 = false;
-                            let no_case17 = !subject17.loosely_equals(&Val::from(1)) && !subject17.loosely_equals(&Val::from(2));
-                            if !matched17 && subject17.loosely_equals(&Val::from(1)) {
-                                matched17 = true;
-                            }
-                            if matched17 {
+                        match runtime::select_values(ctx, &[Val::from("Muetro:Geil")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Bankley, Hans,", "Muetro and Geil.", "So then the full", "code would be..."],
@@ -2467,10 +2343,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched17 && subject17.loosely_equals(&Val::from(2)) {
-                                matched17 = true;
-                            }
-                            if matched17 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args![
@@ -2499,6 +2372,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched15 && subject15.loosely_equals(&Val::from(3)) {
@@ -2510,14 +2384,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Geil's...?", "Alright, then", "the person with", "the third code", "would be...?"],
                         )?;
                         ctx.next()?;
-                        'b18: {
-                            let subject18 = Val::from(runtime::select_values(ctx, &[Val::from("Muetro:Hans")])?);
-                            let mut matched18 = false;
-                            let no_case18 = !subject18.loosely_equals(&Val::from(1)) && !subject18.loosely_equals(&Val::from(2));
-                            if !matched18 && subject18.loosely_equals(&Val::from(1)) {
-                                matched18 = true;
-                            }
-                            if matched18 {
+                        match runtime::select_values(ctx, &[Val::from("Muetro:Hans")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Bankley, Geil,", "Muetro, and Hans.", "So then the full", "code would be..."],
@@ -2552,10 +2420,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched18 && subject18.loosely_equals(&Val::from(2)) {
-                                matched18 = true;
-                            }
-                            if matched18 {
+                            2 => {
                                 ctx.lines_as(
                                     "Dequ'ee",
                                     args!["Bankley, Geil,", "Hans, Muetro.", "So then the full", "code would be..."],
@@ -2579,11 +2444,12 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
-                break 'b2;
             }
+            _ => {}
         }
     }
     if ctx.var("tu_swordman").get()? == 15 {
@@ -2824,14 +2690,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         ctx.lines_as("Dequ'ee", args!["Now tell me...", "What message does", "Shurank have for me?"])?;
         ctx.next()?;
-        'b19: {
-            let subject19 = Val::from(runtime::select_values(ctx, &[Val::from("Killer...:Murderer...")])?);
-            let mut matched19 = false;
-            let no_case19 = !subject19.loosely_equals(&Val::from(1)) && !subject19.loosely_equals(&Val::from(2));
-            if !matched19 && subject19.loosely_equals(&Val::from(1)) {
-                matched19 = true;
-            }
-            if matched19 {
+        match runtime::select_values(ctx, &[Val::from("Killer...:Murderer...")])? {
+            1 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["What happened", "to the killer?"],
@@ -2850,14 +2710,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Did you find", "out who he is?", "If you did..."],
                         )?;
                         ctx.next()?;
-                        'b21: {
-                            let subject21 = Val::from(runtime::select_values(ctx, &[Val::from("Why are we...:What are we...")])?);
-                            let mut matched21 = false;
-                            let no_case21 = !subject21.loosely_equals(&Val::from(1)) && !subject21.loosely_equals(&Val::from(2));
-                            if !matched21 && subject21.loosely_equals(&Val::from(1)) {
-                                matched21 = true;
-                            }
-                            if matched21 {
+                        match runtime::select_values(ctx, &[Val::from("Why are we...:What are we...")])? {
+                            1 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["Why are sitting", "around, doing nothing?!"],
@@ -2884,10 +2738,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched21 && subject21.loosely_equals(&Val::from(2)) {
-                                matched21 = true;
-                            }
-                            if matched21 {
+                            2 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["What are we", "supposed to do now?"],
@@ -2914,6 +2765,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched20 && subject20.loosely_equals(&Val::from(2)) {
@@ -2925,14 +2777,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Did you figure out", "who's behind all this?", "If you did..."],
                         )?;
                         ctx.next()?;
-                        'b22: {
-                            let subject22 = Val::from(runtime::select_values(ctx, &[Val::from("Why are we...:What are we...")])?);
-                            let mut matched22 = false;
-                            let no_case22 = !subject22.loosely_equals(&Val::from(1)) && !subject22.loosely_equals(&Val::from(2));
-                            if !matched22 && subject22.loosely_equals(&Val::from(1)) {
-                                matched22 = true;
-                            }
-                            if matched22 {
+                        match runtime::select_values(ctx, &[Val::from("Why are we...:What are we...")])? {
+                            1 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["Why are sitting", "around, doing nothing?!"],
@@ -2959,10 +2805,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched22 && subject22.loosely_equals(&Val::from(2)) {
-                                matched22 = true;
-                            }
-                            if matched22 {
+                            2 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["What are we", "supposed to do now?"],
@@ -2989,15 +2832,12 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
-                break 'b19;
             }
-            if !matched19 && subject19.loosely_equals(&Val::from(2)) {
-                matched19 = true;
-            }
-            if matched19 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["What happened", "to the murderer?"],
@@ -3016,14 +2856,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Did you find", "out who he is?", "If you did..."],
                         )?;
                         ctx.next()?;
-                        'b24: {
-                            let subject24 = Val::from(runtime::select_values(ctx, &[Val::from("Why are we...:What are we...")])?);
-                            let mut matched24 = false;
-                            let no_case24 = !subject24.loosely_equals(&Val::from(1)) && !subject24.loosely_equals(&Val::from(2));
-                            if !matched24 && subject24.loosely_equals(&Val::from(1)) {
-                                matched24 = true;
-                            }
-                            if matched24 {
+                        match runtime::select_values(ctx, &[Val::from("Why are we...:What are we...")])? {
+                            1 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["Why are sitting", "around, doing nothing?!"],
@@ -3053,10 +2887,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched24 && subject24.loosely_equals(&Val::from(2)) {
-                                matched24 = true;
-                            }
-                            if matched24 {
+                            2 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["What are we", "supposed to do now?"],
@@ -3111,6 +2942,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched23 && subject23.loosely_equals(&Val::from(2)) {
@@ -3122,14 +2954,8 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Did you figure out", "who's behind all this?", "If you did..."],
                         )?;
                         ctx.next()?;
-                        'b25: {
-                            let subject25 = Val::from(runtime::select_values(ctx, &[Val::from("Why are we...:What are we...")])?);
-                            let mut matched25 = false;
-                            let no_case25 = !subject25.loosely_equals(&Val::from(1)) && !subject25.loosely_equals(&Val::from(2));
-                            if !matched25 && subject25.loosely_equals(&Val::from(1)) {
-                                matched25 = true;
-                            }
-                            if matched25 {
+                        match runtime::select_values(ctx, &[Val::from("Why are we...:What are we...")])? {
+                            1 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["Why are sitting", "around, doing nothing?!"],
@@ -3158,10 +2984,7 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched25 && subject25.loosely_equals(&Val::from(2)) {
-                                matched25 = true;
-                            }
-                            if matched25 {
+                            2 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["What are we", "supposed to do now?"],
@@ -3191,11 +3014,12 @@ fn dequ_ee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
-                break 'b19;
             }
+            _ => {}
         }
     }
     ctx.lines(args!["Hmm...?", "Do you have any", "business with me?"])?;

@@ -516,14 +516,8 @@ fn ledrion_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Sure!:No.")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Sure!:No.")])? {
+        1 => {
             if (((ctx.var("BaseLevel").get()?.number()? > 39 && l_partyleader.clone().loosely_equals(&Val::from(1)))
                 && ctx.call(Function::GetCharacterId, vec![Val::from(2)])?.number()? > 0)
                 && l_partymembercount.clone().number()? > 5)
@@ -563,10 +557,7 @@ fn ledrion_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Ledrion",
                 args![
@@ -581,6 +572,7 @@ fn ledrion_payon_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }

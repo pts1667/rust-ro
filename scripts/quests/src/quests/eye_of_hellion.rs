@@ -2834,22 +2834,13 @@ fn buddha_statue_paypuzz6_run(ctx: &Ctx, mut step: BuddhaStatuePaypuzz6Step, arg
                         ],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "I will kill to survive.:I have no choice, but to die.:I won't kill, but I'll find a way to live!:I'll ask that person if it's okay to kill him.",
                             )],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3))
-                            && !subject1.loosely_equals(&Val::from(4));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.lines_as(
                                 "Echoing Voice",
                                 args!["There is a primal truth", "to your answer. However...", "You have chosen poorly."],
@@ -2858,10 +2849,7 @@ fn buddha_statue_paypuzz6_run(ctx: &Ctx, mut step: BuddhaStatuePaypuzz6Step, arg
                             ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(
                                 "Echoing Voice",
                                 args![
@@ -2876,10 +2864,7 @@ fn buddha_statue_paypuzz6_run(ctx: &Ctx, mut step: BuddhaStatuePaypuzz6Step, arg
                             ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        3 => {
                             ctx.lines_as(
                                 "Echoing Voice",
                                 args![
@@ -2904,10 +2889,7 @@ fn buddha_statue_paypuzz6_run(ctx: &Ctx, mut step: BuddhaStatuePaypuzz6Step, arg
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        4 => {
                             ctx.lines_as(
                                 "Echoing Voice",
                                 args![
@@ -2921,6 +2903,7 @@ fn buddha_statue_paypuzz6_run(ctx: &Ctx, mut step: BuddhaStatuePaypuzz6Step, arg
                             ctx.call(Function::PercentHeal, vec![Val::from(-100), Val::from(0)])?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
                 step = BuddhaStatuePaypuzz6Step::OnTouch;

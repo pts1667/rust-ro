@@ -1642,18 +1642,11 @@ fn game_guide_single_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         args!["Welcome to the", "Monster Race Arena.", "How can I help you?"],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Monster Race Info:Wager Info:Ticket Redemption Info")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as(
                 "Game Guide",
                 args![
@@ -1716,12 +1709,8 @@ fn game_guide_single_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.next()?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Game Guide",
                 args![
@@ -1738,12 +1727,8 @@ fn game_guide_single_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 vec![Val::from(1), Val::from(73), Val::from(22), Val::from(1), Val::from(16724821)],
             )?;
             ctx.next()?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Game Guide",
                 args![
@@ -1792,8 +1777,8 @@ fn game_guide_single_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 vec![Val::from(1), Val::from(67), Val::from(45), Val::from(2), Val::from(13525760)],
             )?;
             ctx.next()?;
-            break 'b1;
         }
+        _ => {}
     }
     ctx.lines_as(
         "Game Guide",
@@ -3069,99 +3054,61 @@ fn ticket_helper_2_run(ctx: &Ctx, mut step: TicketHelper2Step, args: Vec<Val>) -
                                         )?;
                                     }
                                     l_m = Val::from(runtime::select_values(ctx, &[l_menu_s.clone()])?);
-                                    'b5: {
-                                        let subject5 = l_m.clone();
-                                        let mut matched5 = false;
-                                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                                            && !subject5.loosely_equals(&Val::from(2))
-                                            && !subject5.loosely_equals(&Val::from(3))
-                                            && !subject5.loosely_equals(&Val::from(4))
-                                            && !subject5.loosely_equals(&Val::from(5))
-                                            && !subject5.loosely_equals(&Val::from(6));
-                                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                            matched5 = true;
-                                        }
-                                        if matched5 {
-                                            let base = Val::from(0).number()?;
-                                            runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a friendly"), true);
-                                            runtime::local_set(
-                                                &mut l_string_s,
-                                                &Val::from(base + 1),
-                                                Val::from("Poring type monster"),
-                                                true,
-                                            );
-                                            break 'b5;
-                                        }
-                                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                            matched5 = true;
-                                        }
-                                        if matched5 {
-                                            let base = Val::from(0).number()?;
-                                            runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("an adorable"), true);
-                                            runtime::local_set(
-                                                &mut l_string_s,
-                                                &Val::from(base + 1),
-                                                Val::from("Lunatic type monster"),
-                                                true,
-                                            );
-                                            break 'b5;
-                                        }
-                                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                                            matched5 = true;
-                                        }
-                                        if matched5 {
-                                            let base = Val::from(0).number()?;
-                                            runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a darling"), true);
-                                            runtime::local_set(
-                                                &mut l_string_s,
-                                                &Val::from(base + 1),
-                                                Val::from("Savage Babe monster"),
-                                                true,
-                                            );
-                                            break 'b5;
-                                        }
-                                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                                            matched5 = true;
-                                        }
-                                        if matched5 {
-                                            let base = Val::from(0).number()?;
-                                            runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a gentle baby"), true);
-                                            runtime::local_set(
-                                                &mut l_string_s,
-                                                &Val::from(base + 1),
-                                                Val::from("Desert Wolf monster"),
-                                                true,
-                                            );
-                                            break 'b5;
-                                        }
-                                        if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                                            matched5 = true;
-                                        }
-                                        if matched5 {
-                                            let base = Val::from(0).number()?;
-                                            runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a small, yet"), true);
-                                            runtime::local_set(
-                                                &mut l_string_s,
-                                                &Val::from(base + 1),
-                                                Val::from("demonic, Deviruchi"),
-                                                true,
-                                            );
-                                            break 'b5;
-                                        }
-                                        if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                                            matched5 = true;
-                                        }
-                                        if matched5 {
-                                            let base = Val::from(0).number()?;
-                                            runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a naughty"), true);
-                                            runtime::local_set(
-                                                &mut l_string_s,
-                                                &Val::from(base + 1),
-                                                Val::from("Baphomet Jr. monster"),
-                                                true,
-                                            );
-                                            break 'b5;
-                                        }
+                                    let subject5 = l_m.clone();
+                                    if subject5 == 1 {
+                                        let base = Val::from(0).number()?;
+                                        runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a friendly"), true);
+                                        runtime::local_set(
+                                            &mut l_string_s,
+                                            &Val::from(base + 1),
+                                            Val::from("Poring type monster"),
+                                            true,
+                                        );
+                                    } else if subject5 == 2 {
+                                        let base = Val::from(0).number()?;
+                                        runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("an adorable"), true);
+                                        runtime::local_set(
+                                            &mut l_string_s,
+                                            &Val::from(base + 1),
+                                            Val::from("Lunatic type monster"),
+                                            true,
+                                        );
+                                    } else if subject5 == 3 {
+                                        let base = Val::from(0).number()?;
+                                        runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a darling"), true);
+                                        runtime::local_set(
+                                            &mut l_string_s,
+                                            &Val::from(base + 1),
+                                            Val::from("Savage Babe monster"),
+                                            true,
+                                        );
+                                    } else if subject5 == 4 {
+                                        let base = Val::from(0).number()?;
+                                        runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a gentle baby"), true);
+                                        runtime::local_set(
+                                            &mut l_string_s,
+                                            &Val::from(base + 1),
+                                            Val::from("Desert Wolf monster"),
+                                            true,
+                                        );
+                                    } else if subject5 == 5 {
+                                        let base = Val::from(0).number()?;
+                                        runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a small, yet"), true);
+                                        runtime::local_set(
+                                            &mut l_string_s,
+                                            &Val::from(base + 1),
+                                            Val::from("demonic, Deviruchi"),
+                                            true,
+                                        );
+                                    } else if subject5 == 6 {
+                                        let base = Val::from(0).number()?;
+                                        runtime::local_set(&mut l_string_s, &Val::from(base + 0), Val::from("a naughty"), true);
+                                        runtime::local_set(
+                                            &mut l_string_s,
+                                            &Val::from(base + 1),
+                                            Val::from("Baphomet Jr. monster"),
+                                            true,
+                                        );
                                     }
                                     ctx.lines_as(
                                         "Ticket Helper",
@@ -3393,18 +3340,11 @@ fn game_guide_double_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         args!["Welcome to the", "Monster Race Arena.", "How can I help you?"],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Monster Race Info:Wager Info:Ticket Redemption Info")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as(
                 "Game Guide",
                 args![
@@ -3467,12 +3407,8 @@ fn game_guide_double_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.next()?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Game Guide",
                 args![
@@ -3489,12 +3425,8 @@ fn game_guide_double_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 vec![Val::from(1), Val::from(73), Val::from(22), Val::from(1), Val::from(16724821)],
             )?;
             ctx.next()?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Game Guide",
                 args![
@@ -3543,8 +3475,8 @@ fn game_guide_double_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 vec![Val::from(1), Val::from(67), Val::from(45), Val::from(2), Val::from(13525760)],
             )?;
             ctx.next()?;
-            break 'b1;
         }
+        _ => {}
     }
     ctx.lines_as(
         "Game Guide",
@@ -4615,20 +4547,11 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                     ],
                                 )?;
                                 ctx.next()?;
-                                'b2: {
-                                    let subject2 = Val::from(runtime::select_values(
+                                match runtime::select_values(
                                         ctx,
                                         &[Val::from("Fire Property:Earth Property:Wind Property:Water Property")],
-                                    )?);
-                                    let mut matched2 = false;
-                                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                        && !subject2.loosely_equals(&Val::from(2))
-                                        && !subject2.loosely_equals(&Val::from(3))
-                                        && !subject2.loosely_equals(&Val::from(4));
-                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    )? {
+                                    1 => {
                                         ei_felle_repay01_run(
                                             ctx,
                                             EiFelleRepay01Step::SBonusReward,
@@ -4636,10 +4559,7 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                         )?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    2 => {
                                         ei_felle_repay01_run(
                                             ctx,
                                             EiFelleRepay01Step::SBonusReward,
@@ -4647,10 +4567,7 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                         )?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    3 => {
                                         ei_felle_repay01_run(
                                             ctx,
                                             EiFelleRepay01Step::SBonusReward,
@@ -4658,10 +4575,7 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                         )?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    4 => {
                                         ei_felle_repay01_run(
                                             ctx,
                                             EiFelleRepay01Step::SBonusReward,
@@ -4669,6 +4583,7 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                         )?;
                                         return Err(Stop::End);
                                     }
+                                    _ => {}
                                 }
                             }
                             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -4779,61 +4694,36 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                             ],
                         )?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "Glittering Jacket:Fire Property Armor:Earth Property Armor:Wind Property Armor:Water Property Armor:Cancel",
                                 )],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3))
-                                && !subject3.loosely_equals(&Val::from(4))
-                                && !subject3.loosely_equals(&Val::from(5))
-                                && !subject3.loosely_equals(&Val::from(6));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            )? {
+                            1 => {
                                 ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(500), Val::from(2319)])?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2345)])?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            3 => {
                                 ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2351)])?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            4 => {
                                 ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2349)])?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            5 => {
                                 ei_felle_repay01_run(ctx, EiFelleRepay01Step::SBonusReward, vec![Val::from(1000), Val::from(2347)])?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            6 => {
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     let base = Val::from(0).number()?;
@@ -5485,19 +5375,11 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                             ],
                         )?;
                         ctx.next()?;
-                        'b6: {
-                            let subject6 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("Take them all.:How about this much?:No, I changed my mind.")],
-                            )?);
-                            let mut matched6 = false;
-                            let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                && !subject6.loosely_equals(&Val::from(2))
-                                && !subject6.loosely_equals(&Val::from(3));
-                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Ei'felle",
                                     args![
@@ -5515,10 +5397,7 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
+                            2 => {
                                 ctx.lines_as(
                                     "Ei'felle",
                                     args![
@@ -5605,10 +5484,7 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                     return Err(Stop::End);
                                 }
                             }
-                            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                matched6 = true;
-                            }
-                            if matched6 {
+                            3 => {
                                 ctx.lines_as(
                                     "Ei'felle",
                                     args![
@@ -5622,6 +5498,7 @@ fn ei_felle_repay01_run(ctx: &Ctx, mut step: EiFelleRepay01Step, args: Vec<Val>)
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched5 && subject5.loosely_equals(&Val::from(4)) {
@@ -5900,109 +5777,59 @@ fn wayne_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             l_i = (l_i.clone() + Val::from(1));
         }
         l_m = (Val::from(runtime::select_values(ctx, &[l_menu_s.clone()])?).try_sub(Val::from(1))?);
-        'b2: {
-            let subject2 = l_m.clone();
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(0))
-                && !subject2.loosely_equals(&Val::from(1))
-                && !subject2.loosely_equals(&Val::from(2))
-                && !subject2.loosely_equals(&Val::from(3))
-                && !subject2.loosely_equals(&Val::from(4))
-                && !subject2.loosely_equals(&Val::from(5))
-                && !subject2.loosely_equals(&Val::from(6))
-                && !subject2.loosely_equals(&Val::from(7));
-            if !matched2 && subject2.loosely_equals(&Val::from(0)) {
-                matched2 = true;
-            }
-            if matched2 {
-                l_items_s = Val::from("2 Hinale Leaflets:2 Aloe Leaflets:1 Mastela Fruit:5 Witch Starsands:4 Condensed Red Potions");
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(520), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(2), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 2), Val::from(521), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 3), Val::from(2), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 4), Val::from(522), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 5), Val::from(1), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 6), Val::from(1061), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 7), Val::from(5), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 8), Val::from(545), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 9), Val::from(4), false);
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
-                l_items_s = Val::from("1 Royal Jelly:6 Holy Waters");
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(526), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 2), Val::from(523), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 3), Val::from(6), false);
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
-                l_items_s = Val::from("1 Cookie Bag:1 First Aid Kit");
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(12130), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 2), Val::from(12110), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 3), Val::from(1), false);
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                matched2 = true;
-            }
-            if matched2 {
-                l_items_s = Val::from("1 Gift Box");
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(644), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                matched2 = true;
-            }
-            if matched2 {
-                l_items_s = Val::from("1 Old Blue Box");
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(603), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                matched2 = true;
-            }
-            if matched2 {
-                l_items_s = Val::from("1 Taming Gift Set");
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(12105), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                matched2 = true;
-            }
-            if matched2 {
-                l_items_s = Val::from("1 Old Purple Box");
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(617), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(7)) {
-                matched2 = true;
-            }
-            if matched2 {
-                l_items_s = Val::from("1 Poring Box");
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(12109), false);
-                runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
-                break 'b2;
-            }
+        let subject2 = l_m.clone();
+        if subject2 == 0 {
+            l_items_s = Val::from("2 Hinale Leaflets:2 Aloe Leaflets:1 Mastela Fruit:5 Witch Starsands:4 Condensed Red Potions");
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(520), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(2), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 2), Val::from(521), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 3), Val::from(2), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 4), Val::from(522), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 5), Val::from(1), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 6), Val::from(1061), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 7), Val::from(5), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 8), Val::from(545), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 9), Val::from(4), false);
+        } else if subject2 == 1 {
+            l_items_s = Val::from("1 Royal Jelly:6 Holy Waters");
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(526), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 2), Val::from(523), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 3), Val::from(6), false);
+        } else if subject2 == 2 {
+            l_items_s = Val::from("1 Cookie Bag:1 First Aid Kit");
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(12130), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 2), Val::from(12110), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 3), Val::from(1), false);
+        } else if subject2 == 3 {
+            l_items_s = Val::from("1 Gift Box");
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(644), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
+        } else if subject2 == 4 {
+            l_items_s = Val::from("1 Old Blue Box");
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(603), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
+        } else if subject2 == 5 {
+            l_items_s = Val::from("1 Taming Gift Set");
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(12105), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
+        } else if subject2 == 6 {
+            l_items_s = Val::from("1 Old Purple Box");
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(617), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
+        } else if subject2 == 7 {
+            l_items_s = Val::from("1 Poring Box");
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_item_array, &Val::from(base + 0), Val::from(12109), false);
+            runtime::local_set(&mut l_item_array, &Val::from(base + 1), Val::from(1), false);
         }
         ctx.lines_as(
             "Wayne",
@@ -6415,49 +6242,27 @@ fn monster_race_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Monster Race Manager", args!["Incorrect password."])?;
     } else if l_i.clone() == 1 {
         ctx.mes("[Monster Race Manager]")?;
-        'b1: {
-            let subject1 = l_select.clone();
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.lines(args!["The Single Monster", "Race Entry NPC is ON."])?;
-                ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Ellebird#single::OnEnable")])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.lines(args!["The Dual Monster", "Race Entry NPC is ON."])?;
-                ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Erenes#double::OnEnable")])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.lines(args!["The Single Monster", "Race Entry NPC is OFF."])?;
-                ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Ellebird#single::OnDisable")])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.lines(args!["The Dual Monster", "Race Entry NPC is OFF."])?;
-                ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Erenes#double::OnDisable")])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        let subject1 = l_select.clone();
+        if subject1 == 1 {
+            ctx.lines(args!["The Single Monster", "Race Entry NPC is ON."])?;
+            ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Ellebird#single::OnEnable")])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 2 {
+            ctx.lines(args!["The Dual Monster", "Race Entry NPC is ON."])?;
+            ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Erenes#double::OnEnable")])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 3 {
+            ctx.lines(args!["The Single Monster", "Race Entry NPC is OFF."])?;
+            ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Ellebird#single::OnDisable")])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 4 {
+            ctx.lines(args!["The Dual Monster", "Race Entry NPC is OFF."])?;
+            ctx.call(Function::DoNpcEvent, vec![Val::from("Eckar Erenes#double::OnDisable")])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     ctx.close_window()?;

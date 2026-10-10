@@ -3080,66 +3080,46 @@ fn force_06ex_60_run(ctx: &Ctx, mut step: Force06ex60Step, args: Vec<Val>) -> Re
                 return Err(Stop::End);
             }
             Force06ex60Step::OnSubOn => {
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                Val::from("force_2-1"),
-                                ctx.call(Function::Rand, vec![Val::from(170), Val::from(177)])?,
-                                ctx.call(Function::Rand, vec![Val::from(70), Val::from(120)])?,
-                                Val::from("Sidewinder"),
-                                Val::from(1424),
-                                Val::from(1),
-                                Val::from("force_06ex#60::OnMyMobDead"),
-                            ],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                Val::from("force_2-1"),
-                                ctx.call(Function::Rand, vec![Val::from(170), Val::from(177)])?,
-                                ctx.call(Function::Rand, vec![Val::from(70), Val::from(120)])?,
-                                Val::from("Hermit Plant"),
-                                Val::from(1565),
-                                Val::from(1),
-                                Val::from("force_06ex#60::OnMyMobDead"),
-                            ],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                Val::from("force_2-1"),
-                                ctx.call(Function::Rand, vec![Val::from(170), Val::from(177)])?,
-                                ctx.call(Function::Rand, vec![Val::from(70), Val::from(120)])?,
-                                Val::from("Cruiser"),
-                                Val::from(1443),
-                                Val::from(1),
-                                Val::from("force_06ex#60::OnMyMobDead"),
-                            ],
-                        )?;
-                        break 'b1;
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                if subject1 == 1 {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            Val::from("force_2-1"),
+                            ctx.call(Function::Rand, vec![Val::from(170), Val::from(177)])?,
+                            ctx.call(Function::Rand, vec![Val::from(70), Val::from(120)])?,
+                            Val::from("Sidewinder"),
+                            Val::from(1424),
+                            Val::from(1),
+                            Val::from("force_06ex#60::OnMyMobDead"),
+                        ],
+                    )?;
+                } else if subject1 == 2 {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            Val::from("force_2-1"),
+                            ctx.call(Function::Rand, vec![Val::from(170), Val::from(177)])?,
+                            ctx.call(Function::Rand, vec![Val::from(70), Val::from(120)])?,
+                            Val::from("Hermit Plant"),
+                            Val::from(1565),
+                            Val::from(1),
+                            Val::from("force_06ex#60::OnMyMobDead"),
+                        ],
+                    )?;
+                } else if subject1 == 3 {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            Val::from("force_2-1"),
+                            ctx.call(Function::Rand, vec![Val::from(170), Val::from(177)])?,
+                            ctx.call(Function::Rand, vec![Val::from(70), Val::from(120)])?,
+                            Val::from("Cruiser"),
+                            Val::from(1443),
+                            Val::from(1),
+                            Val::from("force_06ex#60::OnMyMobDead"),
+                        ],
+                    )?;
                 }
                 return Err(Stop::End);
             }

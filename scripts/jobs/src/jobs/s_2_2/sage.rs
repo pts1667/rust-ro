@@ -74,21 +74,13 @@ fn dean_of_the_academy_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "So what kind of business brings you to me?"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "I would like to be a Sage.:Let me know about the Sage job change.:Nothing.",
                 )],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Kayron Grik",
                     args![
@@ -106,12 +98,8 @@ fn dean_of_the_academy_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "I believe they can explain in detail what you need to become a Sage."
                     ],
                 )?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Kayron Grik",
                     args![
@@ -151,12 +139,8 @@ fn dean_of_the_academy_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "A young Sage named Metheus Sylphe will accept your application."
                     ],
                 )?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as(
                     "Kayron Grik",
                     args![
@@ -173,6 +157,7 @@ fn dean_of_the_academy_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
             }
+            _ => {}
         }
         ctx.close_window()?;
         ctx.call(Function::Cutin, vec![Val::from("job_sage_kayron"), Val::from(255)])?;
@@ -460,19 +445,11 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Metheus Sylphe", args!["So, do you wish to apply immediately?"])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Yes, I do.:The fee is much too expensive.:I will come back later.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         if ctx.var("JobLevel").get()?.number()? < 40 {
                             ctx.lines_as(
                                 "Metheus Sylphe",
@@ -610,10 +587,7 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         if ctx.var("JobLevel").get()?.number()? < 40 {
                             ctx.lines_as("Metheus Sylphe", args!["Before we talk about the registration fee, it seems you haven't met the basic requirement yet, Mage job level 40.", "Please go study more, and then come back to enroll."])?;
                             ctx.close_window()?;
@@ -689,69 +663,50 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ],
                                 )?;
                                 ctx.next()?;
-                                'b3: {
-                                    let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                                    let mut matched3 = false;
-                                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                        && !subject3.loosely_equals(&Val::from(2))
-                                        && !subject3.loosely_equals(&Val::from(3));
-                                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        ctx.var("sage_q").set(Val::from(1))?;
-                                        ctx.call(Function::SetQuest, vec![Val::from(2043)])?;
-                                        ctx.lines_as(
-                                            "Metheus Sylphe",
-                                            args![
-                                                "Please gather the following items.",
-                                                "50 ^3355FFFeather of Birds^000000",
-                                                "50 ^3355FFFluff^000000",
-                                                "25 ^3355FFIron Ore^000000"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Metheus Sylphe", args!["If you bring those items, your tuition will be 30,000 zeny, in lieu of the original 70,000 zeny fee."])?;
-                                        break 'b3;
-                                    }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        ctx.var("sage_q").set(Val::from(2))?;
-                                        ctx.call(Function::SetQuest, vec![Val::from(2044)])?;
-                                        ctx.lines_as(
-                                            "Metheus Sylphe",
-                                            args![
-                                                "Please gather the following items.",
-                                                "50 ^3355FFClover^000000",
-                                                "50 ^3355FFFeather^000000",
-                                                "25 ^3355FFSquid Ink^000000"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Metheus Sylphe", args!["If you bring the aforementioned items, the tuition fee will be 30,000 zeny, rather than the original 70,000 zeny fee."])?;
-                                        break 'b3;
-                                    }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
-                                        ctx.var("sage_q").set(Val::from(3))?;
-                                        ctx.call(Function::SetQuest, vec![Val::from(2045)])?;
-                                        ctx.lines_as(
-                                            "Metheus Sylphe",
-                                            args![
-                                                "Please gather the following items.",
-                                                "50 ^3355FFFeather of Birds^000000",
-                                                "50 ^3355FFFluff^000000",
-                                                "50 ^3355FFClover^000000",
-                                                "50 ^3355FFFeather^000000"
-                                            ],
-                                        )?;
-                                        ctx.next()?;
-                                        ctx.lines_as("Metheus Sylphe", args!["If you bring those items, your tuition will only be 30,000 zeny, instead of the original 70,000 zeny fee."])?;
-                                    }
+                                let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                                if subject3 == 1 {
+                                    ctx.var("sage_q").set(Val::from(1))?;
+                                    ctx.call(Function::SetQuest, vec![Val::from(2043)])?;
+                                    ctx.lines_as(
+                                        "Metheus Sylphe",
+                                        args![
+                                            "Please gather the following items.",
+                                            "50 ^3355FFFeather of Birds^000000",
+                                            "50 ^3355FFFluff^000000",
+                                            "25 ^3355FFIron Ore^000000"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Metheus Sylphe", args!["If you bring those items, your tuition will be 30,000 zeny, in lieu of the original 70,000 zeny fee."])?;
+                                } else if subject3 == 2 {
+                                    ctx.var("sage_q").set(Val::from(2))?;
+                                    ctx.call(Function::SetQuest, vec![Val::from(2044)])?;
+                                    ctx.lines_as(
+                                        "Metheus Sylphe",
+                                        args![
+                                            "Please gather the following items.",
+                                            "50 ^3355FFClover^000000",
+                                            "50 ^3355FFFeather^000000",
+                                            "25 ^3355FFSquid Ink^000000"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Metheus Sylphe", args!["If you bring the aforementioned items, the tuition fee will be 30,000 zeny, rather than the original 70,000 zeny fee."])?;
+                                } else if subject3 == 3 {
+                                    ctx.var("sage_q").set(Val::from(3))?;
+                                    ctx.call(Function::SetQuest, vec![Val::from(2045)])?;
+                                    ctx.lines_as(
+                                        "Metheus Sylphe",
+                                        args![
+                                            "Please gather the following items.",
+                                            "50 ^3355FFFeather of Birds^000000",
+                                            "50 ^3355FFFluff^000000",
+                                            "50 ^3355FFClover^000000",
+                                            "50 ^3355FFFeather^000000"
+                                        ],
+                                    )?;
+                                    ctx.next()?;
+                                    ctx.lines_as("Metheus Sylphe", args!["If you bring those items, your tuition will only be 30,000 zeny, instead of the original 70,000 zeny fee."])?;
                                 }
                                 ctx.mes("I am sure it's a very reasonable option for you.")?;
                                 ctx.next()?;
@@ -775,10 +730,7 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as(
                             "Metheus Sylphe",
                             args!["Ah yes, take your time...", "Goodbye, and have a good day."],
@@ -786,6 +738,7 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(3)) {
@@ -826,56 +779,36 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.var("sage_q").set(Val::from(4))?;
             ctx.next()?;
         } else {
-            'b4: {
-                let subject4 = ctx.var("sage_q").get()?;
-                let mut matched4 = false;
-                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                    && !subject4.loosely_equals(&Val::from(2))
-                    && !subject4.loosely_equals(&Val::from(3));
-                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(916), false);
-                    runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(914), false);
-                    runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(1002), false);
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
-                    runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
-                    runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(25), false);
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(705), false);
-                    runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(949), false);
-                    runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(1024), false);
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
-                    runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
-                    runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(25), false);
-                    break 'b4;
-                }
-                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                    matched4 = true;
-                }
-                if matched4 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(916), false);
-                    runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(914), false);
-                    runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(705), false);
-                    runtime::local_set(&mut l_item, &Val::from(base + 3), Val::from(949), false);
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
-                    runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
-                    runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(50), false);
-                    runtime::local_set(&mut l_count, &Val::from(base + 3), Val::from(50), false);
-                    break 'b4;
-                }
+            let subject4 = ctx.var("sage_q").get()?;
+            if subject4 == 1 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(916), false);
+                runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(914), false);
+                runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(1002), false);
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
+                runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
+                runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(25), false);
+            } else if subject4 == 2 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(705), false);
+                runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(949), false);
+                runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(1024), false);
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
+                runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
+                runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(25), false);
+            } else if subject4 == 3 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_item, &Val::from(base + 0), Val::from(916), false);
+                runtime::local_set(&mut l_item, &Val::from(base + 1), Val::from(914), false);
+                runtime::local_set(&mut l_item, &Val::from(base + 2), Val::from(705), false);
+                runtime::local_set(&mut l_item, &Val::from(base + 3), Val::from(949), false);
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_count, &Val::from(base + 0), Val::from(50), false);
+                runtime::local_set(&mut l_count, &Val::from(base + 1), Val::from(50), false);
+                runtime::local_set(&mut l_count, &Val::from(base + 2), Val::from(50), false);
+                runtime::local_set(&mut l_count, &Val::from(base + 3), Val::from(50), false);
             }
             l_size = (Val::from(l_item.len() as i32).try_sub(Val::from(1))?);
             l_i = Val::from(0);
@@ -988,42 +921,22 @@ fn staff_of_the_academy_a_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         let choice = runtime::select_values(ctx, &[ctx.call(Function::StrCharInfo, vec![Val::from(0)])?])?;
         ctx.var("@menu").set(choice)?;
         ctx.mes("[Metheus Sylphe]")?;
-        'b7: {
-            let subject7 = l_sage_q_t.clone();
-            let mut matched7 = false;
-            let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                && !subject7.loosely_equals(&Val::from(2))
-                && !subject7.loosely_equals(&Val::from(3));
-            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                matched7 = true;
-            }
-            if matched7 {
-                ctx.lines(args![
-                    ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                        + Val::from(". It's a very nice name."))
-                ])?;
-                break 'b7;
-            }
-            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                matched7 = true;
-            }
-            if matched7 {
-                ctx.lines(args![
-                    ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                        + Val::from(". It sounds very sagacious."))
-                ])?;
-                break 'b7;
-            }
-            if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                matched7 = true;
-            }
-            if matched7 {
-                ctx.lines(args![
-                    ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                        + Val::from(". Interesting name."))
-                ])?;
-                break 'b7;
-            }
+        let subject7 = l_sage_q_t.clone();
+        if subject7 == 1 {
+            ctx.lines(args![
+                ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                    + Val::from(". It's a very nice name."))
+            ])?;
+        } else if subject7 == 2 {
+            ctx.lines(args![
+                ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                    + Val::from(". It sounds very sagacious."))
+            ])?;
+        } else if subject7 == 3 {
+            ctx.lines(args![
+                ((Val::from("Your name is ... ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                    + Val::from(". Interesting name."))
+            ])?;
         }
         ctx.next()?;
         ctx.lines_as(
@@ -1264,452 +1177,433 @@ fn written_test_professor_s_run(ctx: &Ctx, mut step: WrittenTestProfessorSStep, 
             }
             WrittenTestProfessorSStep::LAskQuestions => {
                 ctx.next()?;
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                if subject1 == 1 {
+                    ctx.mes("1. Choose an item that the Gift merchant in Prontera does not sell.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("China:Red Frame:Bouquet:Glass Bead")])?) == 3 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
                     }
-                    if matched1 {
-                        ctx.mes("1. Choose an item that the Gift merchant in Prontera does not sell.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("China:Red Frame:Bouquet:Glass Bead")])?) == 3 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("2. Choose a city where you cannot purchase a Stiletto.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Morocc:Geffen:Lutie")])?) == 1 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("3. Choose the closest city to Turtle Island.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Al De Baran:Alberta:Comodo:Izlude")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("4. Choose the monster that is a different type than the others.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Raggler:Pest:Frilldora:Aster")])?) == 4 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("5. Choose the monster that has a different attribute than the others.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Mantis:Metaller:Rocker:Horn")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("6. Choose the monster that is different sized than the others.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Raydric:Raydric Archer:Wanderer:Dark Frame")],
-                        )?) == 1
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("7. Choose the monster which doesn't drop 'Alcohol'.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Horong:Plankton:Poison Spore:Toad")])?) == 3 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("8. Choose the NPC that is irrelevant to the Knight job change quest.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Sir Siracuse:Thomas Servantes:Sir Windsor:Lady Amy")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("9. Choose the NPC that is not a citizen of Prontera.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Tono:Pina:YuPi:Hollgrehenn")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("10. Choose the right name for the Kafra lady who wears glasses.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Pavianne:Roxie:Leilah:Curly Sue")])?) == 3 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("11. How much SP is spent to use lvl 7 Thunderstorm?")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("49:59:69:74")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("12. Choose the right amount of damage reduction and SP consumption of the Energy Coat skill when the caster's remaining SP is 50%.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Damage -24% SP1.5%:Damage -24% SP2%:Damage -18% SP1.5%:Damage -18% SP2%")],
-                        )?) == 4
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("13. Choose the property that is irrelevant to 'Bolt' type skills for the Mage class.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Water:Earth:Fire:Wind")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("14. Choose the right chance and attack strength for lvl 7 Double Attack, the Thief skill.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("35% / 120%:35% / 140%:40% / 120%:40% / 140%")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("15. Choose the skill that is irrelevant to learning Magnus Exorcismus, the Priest skill.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Divine Protection:Heal:Ruwach:Aqua Benedicta")],
-                        )?) == 1
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("16. Choose the correct defense and ability of the Bunny Band.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("1 / LUK +2:1 / LUK +5:2 / LUK +2:2 / LUK +5")],
-                        )?) == 3
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("17. Choose the class that cannot equip Padded Armor.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Swordman:Merchant:Thief:Archer")])?) == 4 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("18. Choose the item that cures all abnormal status and restores full HP and SP at the same time.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Royal Jelly:Yggdrasil Seed:Yggdrasilberry:Mastella Fruit")],
-                        )?) == 3
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("19. Who rules the Rune-Midgarts kingdom right now?")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Tristun the 3rd:Tristram the 3rd:Tristar the 3rd:Trast the 3rd")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("20. Choose the god of Crusaders.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Odin:Loki:Thor:Venadin")])?) == 1 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        break 'b1;
+                    ctx.mes("2. Choose a city where you cannot purchase a Stiletto.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Morocc:Geffen:Lutie")])?) == 1 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
+                    ctx.mes("3. Choose the closest city to Turtle Island.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Al De Baran:Alberta:Comodo:Izlude")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
                     }
-                    if matched1 {
-                        ctx.mes("1. Choose the jewel that the Morocc Jewel Merchant does not sell.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Topaz:Garnet:Diamond:Sapphire")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("2. Choose the city where users cannot purchase Monster's Feed from an NPC.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Prontera:Morocc:Al De Baran:Alberta")],
-                        )?) == 3
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("3. Choose the closest city to the Maze.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Morocc:Geffen:Payon")])?) == 1 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("4. Choose the monster that is a different type than the others.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Muka:Drops:Plankton:Penomena")])?) == 4 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("5. Choose the monster with the different attribute.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Dokebi:Isis:Giearth:Deviruchi")])?) == 3 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("6. Choose the monster that is different in size.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Thiefbug (Aggressive):Horn:Metaller:Argos")],
-                        )?) == 4
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("7. Choose the monster which does not drop 'Yggdrasil Leaf'.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Marduk:Baphomet Jr.:Angeling:Wanderer")],
-                        )?) == 1
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("8. Choose the NPC that is irrelevant to the Priest job change quest.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Paul:Sir Windsor:Peter S. Alberto:Cecilia")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("9. Choose the NPC that is not a citizen of Morocc.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Syvia:Akira:Antonio:Dmitrii")])?) == 3 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("10. Choose the Kafra lady who has gorgeous blue hair.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Pavianne:Roxie:Leilah:Curly Sue")])?) == 1 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("11. Choose the skill that is irrelevant to learning Fire Wall, the Mage skill.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("lvl 4 Fire Bolt:lvl 4 Napalm Beat:lvl 5 Fire Ball:lvl 1 Sight")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("12. How much SP can be restored when learning SP recovery at lvl 6 (without being affected by INT)?")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("14:16:18:21")])?) == 3 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("13. How many INT points does a Mage receive as a bonus at job lvl 33?")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("7:6:5:4")])?) == 4 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes(
-                            "14. Choose the correct SP consumption and the skill duration for Improve Concentration lvl 5 (Archer skill).",
-                        )?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("45 / 80 sec:50 / 80 sec:45 / 90 sec:50 / 90 sec")],
-                        )?) == 1
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("15. Choose the skill that is irrelevant to learning Maximize Power, the Blacksmith skill.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Hilt Binding:Skin Tempering:Hammer Fall:Weapon Perfection")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("16. What is the correct defense rate and ability of Cute Ribbon?")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("0 / SP +20:0 / SP +30:1 / SP +20:1 / SP +30")],
-                        )?) == 3
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("17. Choose the class that cannot equip Saint Robe.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Swordman:Merchant:Thief:Acolyte")])?) == 3 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("18. Choose the abnormal status that cannot be cured by Green Potion.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Silence:Chaos:Blind:Curse")])?) == 4 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("19. Choose the correct name for the ancient kingdom that disappeared somewhere in Geffen.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Geffayon:Geffenia:Gefenn:Jaffen")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("20. Choose the correct name for the tree that has become the root of this world.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Yggdrasil:Iggdrassil:Mastella:Dead Branch")],
-                        )?) == 1
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        break 'b1;
+                    ctx.mes("4. Choose the monster that is a different type than the others.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Raggler:Pest:Frilldora:Aster")])?) == 4 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
+                    ctx.mes("5. Choose the monster that has a different attribute than the others.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Mantis:Metaller:Rocker:Horn")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
                     }
-                    if matched1 {
-                        ctx.mes("1. Choose the item that the Magical Tool merchant in Geffen does not sell.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Mantle:Wand:Circlet:Silver Robe")])?) == 1 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("2. Choose the city where users cannot purchase Blade from an NPC.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Izlude:Al De Baran:Payon")])?) == 3 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("3. Choose the closest city to Glast Heim.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Geffen:Morocc:Payon")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("4. Choose the monster that is a different type than the others.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Aster:Marc:Marse:Marin")])?) == 4 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("5. Choose the monster that has a different attribute.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Baby Desert Wolf:Smokie:Picky:Choco")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("6. Choose the monster that is different sized.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Drake:Wraith:Evil Druid:Khalitzburg")],
-                        )?) == 1
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("7. Choose the monster that does not drop 'Phracon'.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Pupa:Peco Peco Egg:Savage Bebe:Baby Desert Wolf")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("8. Choose the NPC that is irrelevant to the Blacksmith job change quest.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Altiregen:Geschupenschte:Barcadi:Baisulist")],
-                        )?) == 3
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("9. Choose the NPC that is not a citizen of Al De Baran.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("RS125:GOD-POING:Stromme:Chemirre")])?) == 2 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("10. Choose the Kafra lady who is the youngest among the staff.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Pavianne:Roxie:Leilah:Curly Sue")])?) == 4 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("11. Choose the correct SP consumption and the number of evasions when using Safety Wall lvl 6.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("SP 40, 6 times:SP 35, 6 times:SP 40, 7 times:SP 35, 7 times")],
-                        )?) == 3
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("12. Choose the correct amount of magic attack for Napalm Beat lvl 6.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("MATK * 1.2:MATK * 1.3:MATK * 1.4:MATK * 1.5")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("13. Choose the catalyst stone for Mage Solution no. 4 that is used for the Mage job change quest.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Blue Gemstone:Red Gemstone:Yellow Gemstone:1 carat Diamond")],
-                        )?) == 4
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("14. Choose the correct attack strength and SP consumption for Bash lvl 6, the Swordman skill.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("250% / 8:280% / 8:280% / 15:310% / 15")],
-                        )?) == 3
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("15. Choose the skill that is irrelevant to learning Claymore Trap, the Hunter skill.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Remove Trap:Land Mine:Ankle Snare:Flasher")],
-                        )?) == 1
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("16. Choose the correct defense and ability of Wedding Veil.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("0 / MDEF +3:0 / MDEF +5:1 / MDEF +3:1 / MDEF +5")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("17. Choose the class that cannot equip Coat.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(ctx, &[Val::from("Swordman:Merchant:Thief:Novice")])?) == 4 {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("18. Choose the item that is not an ingredient for Blue Dyestuffs.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Alcohol:Detrimindexta:Karvodailnirol:Blue Herb")],
-                        )?) == 3
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("19. When the world was created by the god Odin, what did he use for the material?")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from(
-                                "The heart of Ymir:The nail of Ymir:The tooth of Ymir:The memento of Ymir",
-                            )],
-                        )?) == 1
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
-                        ctx.mes("20. Choose the metal that has rumored to bring fortune and fame to a person with the destiny.")?;
-                        ctx.next()?;
-                        if Val::from(runtime::select_values(
-                            ctx,
-                            &[Val::from("Empelium Gold:Emperium:Emperor:Phracon")],
-                        )?) == 2
-                        {
-                            l_sage_t = (l_sage_t.clone() + Val::from(5));
-                        }
+                    ctx.mes("6. Choose the monster that is different sized than the others.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Raydric:Raydric Archer:Wanderer:Dark Frame")],
+                    )?) == 1
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("7. Choose the monster which doesn't drop 'Alcohol'.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Horong:Plankton:Poison Spore:Toad")])?) == 3 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("8. Choose the NPC that is irrelevant to the Knight job change quest.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Sir Siracuse:Thomas Servantes:Sir Windsor:Lady Amy")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("9. Choose the NPC that is not a citizen of Prontera.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Tono:Pina:YuPi:Hollgrehenn")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("10. Choose the right name for the Kafra lady who wears glasses.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Pavianne:Roxie:Leilah:Curly Sue")])?) == 3 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("11. How much SP is spent to use lvl 7 Thunderstorm?")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("49:59:69:74")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("12. Choose the right amount of damage reduction and SP consumption of the Energy Coat skill when the caster's remaining SP is 50%.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Damage -24% SP1.5%:Damage -24% SP2%:Damage -18% SP1.5%:Damage -18% SP2%")],
+                    )?) == 4
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("13. Choose the property that is irrelevant to 'Bolt' type skills for the Mage class.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Water:Earth:Fire:Wind")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("14. Choose the right chance and attack strength for lvl 7 Double Attack, the Thief skill.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("35% / 120%:35% / 140%:40% / 120%:40% / 140%")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("15. Choose the skill that is irrelevant to learning Magnus Exorcismus, the Priest skill.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Divine Protection:Heal:Ruwach:Aqua Benedicta")],
+                    )?) == 1
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("16. Choose the correct defense and ability of the Bunny Band.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("1 / LUK +2:1 / LUK +5:2 / LUK +2:2 / LUK +5")],
+                    )?) == 3
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("17. Choose the class that cannot equip Padded Armor.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Swordman:Merchant:Thief:Archer")])?) == 4 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("18. Choose the item that cures all abnormal status and restores full HP and SP at the same time.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Royal Jelly:Yggdrasil Seed:Yggdrasilberry:Mastella Fruit")],
+                    )?) == 3
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("19. Who rules the Rune-Midgarts kingdom right now?")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Tristun the 3rd:Tristram the 3rd:Tristar the 3rd:Trast the 3rd")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("20. Choose the god of Crusaders.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Odin:Loki:Thor:Venadin")])?) == 1 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                } else if subject1 == 2 {
+                    ctx.mes("1. Choose the jewel that the Morocc Jewel Merchant does not sell.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Topaz:Garnet:Diamond:Sapphire")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("2. Choose the city where users cannot purchase Monster's Feed from an NPC.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Prontera:Morocc:Al De Baran:Alberta")],
+                    )?) == 3
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("3. Choose the closest city to the Maze.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Morocc:Geffen:Payon")])?) == 1 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("4. Choose the monster that is a different type than the others.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Muka:Drops:Plankton:Penomena")])?) == 4 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("5. Choose the monster with the different attribute.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Dokebi:Isis:Giearth:Deviruchi")])?) == 3 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("6. Choose the monster that is different in size.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Thiefbug (Aggressive):Horn:Metaller:Argos")],
+                    )?) == 4
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("7. Choose the monster which does not drop 'Yggdrasil Leaf'.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Marduk:Baphomet Jr.:Angeling:Wanderer")],
+                    )?) == 1
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("8. Choose the NPC that is irrelevant to the Priest job change quest.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Paul:Sir Windsor:Peter S. Alberto:Cecilia")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("9. Choose the NPC that is not a citizen of Morocc.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Syvia:Akira:Antonio:Dmitrii")])?) == 3 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("10. Choose the Kafra lady who has gorgeous blue hair.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Pavianne:Roxie:Leilah:Curly Sue")])?) == 1 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("11. Choose the skill that is irrelevant to learning Fire Wall, the Mage skill.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("lvl 4 Fire Bolt:lvl 4 Napalm Beat:lvl 5 Fire Ball:lvl 1 Sight")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("12. How much SP can be restored when learning SP recovery at lvl 6 (without being affected by INT)?")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("14:16:18:21")])?) == 3 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("13. How many INT points does a Mage receive as a bonus at job lvl 33?")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("7:6:5:4")])?) == 4 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes(
+                        "14. Choose the correct SP consumption and the skill duration for Improve Concentration lvl 5 (Archer skill).",
+                    )?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("45 / 80 sec:50 / 80 sec:45 / 90 sec:50 / 90 sec")],
+                    )?) == 1
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("15. Choose the skill that is irrelevant to learning Maximize Power, the Blacksmith skill.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Hilt Binding:Skin Tempering:Hammer Fall:Weapon Perfection")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("16. What is the correct defense rate and ability of Cute Ribbon?")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("0 / SP +20:0 / SP +30:1 / SP +20:1 / SP +30")],
+                    )?) == 3
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("17. Choose the class that cannot equip Saint Robe.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Swordman:Merchant:Thief:Acolyte")])?) == 3 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("18. Choose the abnormal status that cannot be cured by Green Potion.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Silence:Chaos:Blind:Curse")])?) == 4 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("19. Choose the correct name for the ancient kingdom that disappeared somewhere in Geffen.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Geffayon:Geffenia:Gefenn:Jaffen")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("20. Choose the correct name for the tree that has become the root of this world.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Yggdrasil:Iggdrassil:Mastella:Dead Branch")],
+                    )?) == 1
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                } else if subject1 == 3 {
+                    ctx.mes("1. Choose the item that the Magical Tool merchant in Geffen does not sell.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Mantle:Wand:Circlet:Silver Robe")])?) == 1 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("2. Choose the city where users cannot purchase Blade from an NPC.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Izlude:Al De Baran:Payon")])?) == 3 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("3. Choose the closest city to Glast Heim.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Geffen:Morocc:Payon")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("4. Choose the monster that is a different type than the others.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Aster:Marc:Marse:Marin")])?) == 4 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("5. Choose the monster that has a different attribute.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Baby Desert Wolf:Smokie:Picky:Choco")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("6. Choose the monster that is different sized.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Drake:Wraith:Evil Druid:Khalitzburg")],
+                    )?) == 1
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("7. Choose the monster that does not drop 'Phracon'.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Pupa:Peco Peco Egg:Savage Bebe:Baby Desert Wolf")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("8. Choose the NPC that is irrelevant to the Blacksmith job change quest.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Altiregen:Geschupenschte:Barcadi:Baisulist")],
+                    )?) == 3
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("9. Choose the NPC that is not a citizen of Al De Baran.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("RS125:GOD-POING:Stromme:Chemirre")])?) == 2 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("10. Choose the Kafra lady who is the youngest among the staff.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Pavianne:Roxie:Leilah:Curly Sue")])?) == 4 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("11. Choose the correct SP consumption and the number of evasions when using Safety Wall lvl 6.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("SP 40, 6 times:SP 35, 6 times:SP 40, 7 times:SP 35, 7 times")],
+                    )?) == 3
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("12. Choose the correct amount of magic attack for Napalm Beat lvl 6.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("MATK * 1.2:MATK * 1.3:MATK * 1.4:MATK * 1.5")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("13. Choose the catalyst stone for Mage Solution no. 4 that is used for the Mage job change quest.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Blue Gemstone:Red Gemstone:Yellow Gemstone:1 carat Diamond")],
+                    )?) == 4
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("14. Choose the correct attack strength and SP consumption for Bash lvl 6, the Swordman skill.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("250% / 8:280% / 8:280% / 15:310% / 15")],
+                    )?) == 3
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("15. Choose the skill that is irrelevant to learning Claymore Trap, the Hunter skill.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Remove Trap:Land Mine:Ankle Snare:Flasher")],
+                    )?) == 1
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("16. Choose the correct defense and ability of Wedding Veil.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("0 / MDEF +3:0 / MDEF +5:1 / MDEF +3:1 / MDEF +5")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("17. Choose the class that cannot equip Coat.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(ctx, &[Val::from("Swordman:Merchant:Thief:Novice")])?) == 4 {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("18. Choose the item that is not an ingredient for Blue Dyestuffs.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Alcohol:Detrimindexta:Karvodailnirol:Blue Herb")],
+                    )?) == 3
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("19. When the world was created by the god Odin, what did he use for the material?")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from(
+                            "The heart of Ymir:The nail of Ymir:The tooth of Ymir:The memento of Ymir",
+                        )],
+                    )?) == 1
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
+                    }
+                    ctx.mes("20. Choose the metal that has rumored to bring fortune and fame to a person with the destiny.")?;
+                    ctx.next()?;
+                    if Val::from(runtime::select_values(
+                        ctx,
+                        &[Val::from("Empelium Gold:Emperium:Emperor:Phracon")],
+                    )?) == 2
+                    {
+                        l_sage_t = (l_sage_t.clone() + Val::from(5));
                     }
                 }
                 ctx.mes("[Claytos Verdo]")?;
@@ -1982,78 +1876,61 @@ fn practical_examination_p_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                         ctx.next()?;
                         ctx.lines_as("Hermes Tris", args!["Hmm, hmm... I see.", "Well... I think you're okay."])?;
                         ctx.next()?;
-                        'b1: {
-                            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                && !subject1.loosely_equals(&Val::from(2))
-                                && !subject1.loosely_equals(&Val::from(3));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.var("sage_q").set(Val::from(9))?;
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2046), Val::from(2047)])?;
-                                ctx.lines_as(
-                                    "Hermes Tris",
-                                    args![
-                                        "Now, you will study Yggdrasil.",
-                                        "Yggdrasil is the tree that was rumored to be the source of life for this world."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Hermes Tris", args!["That is a good subject which helps us to recognize changes in the world, as well as the direction of its improvement.", "Go ask for help from Professor Saphien. He's in the Lecture Room."])?;
-                                ctx.next()?;
-                                ctx.lines_as("Hermes Tris", args!["I wish you luck."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.var("sage_q").set(Val::from(11))?;
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2046), Val::from(2048)])?;
-                                ctx.lines_as("Hermes Tris", args!["Now, you will study monsters.", "The purpose of this study is to learn and understand more about creatures existing all over the continent."])?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Hermes Tris",
-                                    args![
-                                        "This is a good subject which will help you lead your life as a well-experienced Sage.",
-                                        "Go ask for help from Professor Lucius. He's in the Monster Museum."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Hermes Tris", args!["I wish you luck."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.var("sage_q").set(Val::from(13))?;
-                                ctx.call(Function::ChangeQuest, vec![Val::from(2046), Val::from(2049)])?;
-                                ctx.lines_as(
-                                    "Hermes Tris",
-                                    args![
-                                        "Now, you will study magic skills that have certain properties.",
-                                        "The purpose of this study is to better understand basic magic skills that we use in everyday life."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as(
-                                    "Hermes Tris",
-                                    args![
-                                        "That is a good subject which helps you to deeply understand of the truth of magic.",
-                                        "Go ask Professor Aebecee for help...He's in the Somatology Laboratory."
-                                    ],
-                                )?;
-                                ctx.next()?;
-                                ctx.lines_as("Hermes Tris", args!["I wish you luck."])?;
-                                ctx.close_window()?;
-                                return Err(Stop::End);
-                            }
+                        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                        if subject1 == 1 {
+                            ctx.var("sage_q").set(Val::from(9))?;
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2046), Val::from(2047)])?;
+                            ctx.lines_as(
+                                "Hermes Tris",
+                                args![
+                                    "Now, you will study Yggdrasil.",
+                                    "Yggdrasil is the tree that was rumored to be the source of life for this world."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Hermes Tris", args!["That is a good subject which helps us to recognize changes in the world, as well as the direction of its improvement.", "Go ask for help from Professor Saphien. He's in the Lecture Room."])?;
+                            ctx.next()?;
+                            ctx.lines_as("Hermes Tris", args!["I wish you luck."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if subject1 == 2 {
+                            ctx.var("sage_q").set(Val::from(11))?;
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2046), Val::from(2048)])?;
+                            ctx.lines_as("Hermes Tris", args!["Now, you will study monsters.", "The purpose of this study is to learn and understand more about creatures existing all over the continent."])?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Hermes Tris",
+                                args![
+                                    "This is a good subject which will help you lead your life as a well-experienced Sage.",
+                                    "Go ask for help from Professor Lucius. He's in the Monster Museum."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Hermes Tris", args!["I wish you luck."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
+                        } else if subject1 == 3 {
+                            ctx.var("sage_q").set(Val::from(13))?;
+                            ctx.call(Function::ChangeQuest, vec![Val::from(2046), Val::from(2049)])?;
+                            ctx.lines_as(
+                                "Hermes Tris",
+                                args![
+                                    "Now, you will study magic skills that have certain properties.",
+                                    "The purpose of this study is to better understand basic magic skills that we use in everyday life."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as(
+                                "Hermes Tris",
+                                args![
+                                    "That is a good subject which helps you to deeply understand of the truth of magic.",
+                                    "Go ask Professor Aebecee for help...He's in the Somatology Laboratory."
+                                ],
+                            )?;
+                            ctx.next()?;
+                            ctx.lines_as("Hermes Tris", args!["I wish you luck."])?;
+                            ctx.close_window()?;
+                            return Err(Stop::End);
                         }
                     } else if ctx.var("sage_q").get()? == 9 {
                         ctx.lines(args![
@@ -2187,34 +2064,20 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("Yes, I know very well.:No, I don't.")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as("Saphien Layless", args!["Okay then, what is Yggdrasil?", "Please answer me."])?;
                     ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "It's a name of a health item.:It's the source of life in the world.:Suckah, I lied.",
                             )],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        )? {
+                        1 => {
                             ctx.lines_as(
                                 "Saphien Layless",
                                 args![
@@ -2228,12 +2091,8 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "Saphien Layless",
                                 args!["Yggdrasil is the name of the tree that is the source of life in this world."],
                             )?;
-                            break 'b2;
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        2 => {
                             ctx.lines_as(
                                 "Saphien Layless",
                                 args![
@@ -2241,12 +2100,8 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     "is the name of the tree that has been the source of life in this world."
                                 ],
                             )?;
-                            break 'b2;
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        3 => {
                             ctx.lines_as(
                                 "Saphien Layless",
                                 args![
@@ -2255,16 +2110,12 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         + Val::from(", you just got - 10 points for lying and for being wrong."))
                                 ],
                             )?;
-                            break 'b2;
                         }
+                        _ => {}
                     }
                     ctx.next()?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as(
                         "Saphien Layless",
                         args![
@@ -2273,8 +2124,8 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ],
                     )?;
                     ctx.next()?;
-                    break 'b1;
                 }
+                _ => {}
             }
             ctx.lines_as(
                 "Saphien Layless",
@@ -2544,182 +2395,98 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ".....There is a ocean around the continent,",
                     "The ocean is coiled up by"
                 ])?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "A giant ash tree.:A giant snake Yormungandr.:A giant turtle and elephants.:A giant dragon.",
                         )],
-                    )?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3))
-                        && !subject3.loosely_equals(&Val::from(4));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    )? {
+                    1 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("A giant ash tree.")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.mes("A giant snake Yormungandr.")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("A giant turtle and elephants.")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    4 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("A giant dragon.")?;
-                        break 'b3;
                     }
+                    _ => {}
                 }
                 ctx.mes("The continent consists of three places such as,")?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Mt.Mjolnir, where spiders live,:Uranos, where titans live,:Utgard, where titans live,:Lutie, the winter land,",
                         )],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3))
-                        && !subject4.loosely_equals(&Val::from(4));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Mt.Mjolnir where spiders live,")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Uranos where titans live,")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.mes("Utgard where titans live,")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    4 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Lutie, the winter land,")?;
-                        break 'b4;
                     }
+                    _ => {}
                 }
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Midgard, where humans live,:Rune-Midgarts where humans live,:Tritonia, where mermaids live,:Morocc, the desert city,",
                         )],
-                    )?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                        && !subject5.loosely_equals(&Val::from(2))
-                        && !subject5.loosely_equals(&Val::from(3))
-                        && !subject5.loosely_equals(&Val::from(4));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    )? {
+                    1 => {
                         ctx.mes("Midgard, where humans live in,")?;
-                        break 'b5;
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    2 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Rune-Midgarts, where humans live,")?;
-                        break 'b5;
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    3 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Tritonia, where mermaids live,")?;
-                        break 'b5;
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    4 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Morocc, the desert city,")?;
-                        break 'b5;
                     }
+                    _ => {}
                 }
-                'b6: {
-                    let subject6 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Abguard, where gods live.:Asgard, where gods live.:Schwarzwald, where citizens live.:Prontera, the capital of Rune-Midgarts.",
                         )],
-                    )?);
-                    let mut matched6 = false;
-                    let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                        && !subject6.loosely_equals(&Val::from(2))
-                        && !subject6.loosely_equals(&Val::from(3))
-                        && !subject6.loosely_equals(&Val::from(4));
-                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    )? {
+                    1 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Abguard where gods live.")?;
-                        break 'b6;
                     }
-                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    2 => {
                         ctx.mes("Asgard, where gods live.")?;
-                        break 'b6;
                     }
-                    if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    3 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Schwarzwald, where citizens live.")?;
-                        break 'b6;
                     }
-                    if !matched6 && subject6.loosely_equals(&Val::from(4)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    4 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Prontera, the capital of Rune-Midgarts.")?;
-                        break 'b6;
                     }
+                    _ => {}
                 }
                 ctx.mes("The continent consists of the three places stated above.")?;
                 ctx.next()?;
@@ -2744,139 +2511,76 @@ fn history_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
                 ctx.lines(args![".....as we studied from the last class,", "Yggdrasil is..."])?;
-                'b7: {
-                    let subject7 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "A giant ash tree.:A fabulous Mastella tree.:A giant willow.:A giant dead branch.",
                         )],
-                    )?);
-                    let mut matched7 = false;
-                    let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                        && !subject7.loosely_equals(&Val::from(2))
-                        && !subject7.loosely_equals(&Val::from(3))
-                        && !subject7.loosely_equals(&Val::from(4));
-                    if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    )? {
+                    1 => {
                         ctx.mes("A giant ash tree.")?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    2 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("A fabulous Mastella tree.")?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    3 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("A giant willow.")?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    4 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("A giant dead branch.")?;
-                        break 'b7;
                     }
+                    _ => {}
                 }
                 ctx.mes("The root of Yggdrasil is divided into 3 parts. Those parts reach to 3 places...")?;
-                'b8: {
-                    let subject8 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Schwarzwald, Jotunnheim, Niflheim.:Midgard, Jotunnheim, Naffleheim.:Asgard, Jotunnheim, Naffleheim.:Asgard, Jotunnheim, Niflheim.",
                         )],
-                    )?);
-                    let mut matched8 = false;
-                    let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                        && !subject8.loosely_equals(&Val::from(2))
-                        && !subject8.loosely_equals(&Val::from(3))
-                        && !subject8.loosely_equals(&Val::from(4));
-                    if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    )? {
+                    1 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Schwarzwald, Jotunnheim, Niflheim.")?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    2 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Midgard, Jotunnheim, Naffleheim.")?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    3 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("Asgard, Jotunnheim, Naffleheim.")?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(4)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    4 => {
                         ctx.mes("Asgard, Jotunnheim, Niflheim.")?;
-                        break 'b8;
                     }
+                    _ => {}
                 }
                 ctx.mes("One who has a Seed of Yggdrasil,")?;
-                'b9: {
-                    let subject9 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "can be cured from all the abnormal statuses.:can restore full HP and SP at once.:can restore half of total HP and SP.:can be cured from Silence, Curse and Chaos.",
                         )],
-                    )?);
-                    let mut matched9 = false;
-                    let no_case9 = !subject9.loosely_equals(&Val::from(1))
-                        && !subject9.loosely_equals(&Val::from(2))
-                        && !subject9.loosely_equals(&Val::from(3))
-                        && !subject9.loosely_equals(&Val::from(4));
-                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    )? {
+                    1 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("can be cured from all the abnormal statuses.")?;
-                        break 'b9;
                     }
-                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    2 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("can restore full HP and SP at once.")?;
-                        break 'b9;
                     }
-                    if !matched9 && subject9.loosely_equals(&Val::from(3)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    3 => {
                         ctx.mes("can restore half of total HP and SP.")?;
-                        break 'b9;
                     }
-                    if !matched9 && subject9.loosely_equals(&Val::from(4)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    4 => {
                         l_w_point = (l_w_point.clone() + Val::from(1));
                         ctx.mes("can be cured from Silence, Curse and Chaos.")?;
-                        break 'b9;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 if l_w_point.clone().number()? > 0 {
@@ -3150,42 +2854,22 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         } else if (ctx.var("sage_q2").get()?.number()? >= 1 && ctx.var("sage_q2").get()?.number()? <= 3) {
-            'b1: {
-                let subject1 = ctx.var("sage_q2").get()?;
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(962), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(1052), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1023), false);
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(960), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(966), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1050), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(960), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(963), false);
-                    break 'b1;
-                }
+            let subject1 = ctx.var("sage_q2").get()?;
+            if subject1 == 1 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(962), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(1052), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1023), false);
+            } else if subject1 == 2 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(960), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(966), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
+            } else if subject1 == 3 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1050), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(960), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(963), false);
             }
             if ((ctx
                 .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
@@ -3213,22 +2897,13 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "They possess water property.:They are fishes.:They are aggressive.:Um...they monsters.",
                         )],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Lucius Celsus",
                             args![
@@ -3236,12 +2911,8 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "Most fish class monsters live underwater, so they are attributed with the water property."
                             ],
                         )?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "Lucius Celsus",
                             args![
@@ -3249,12 +2920,8 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "Most fish class monsters live underwater, so they are attributed with the water property."
                             ],
                         )?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.var("sage_m4").set(Val::from(4))?;
                         ctx.lines_as(
                             "Lucius Celsus",
@@ -3271,12 +2938,8 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "They are all fishes and possess water property."
                             ],
                         )?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.var("sage_m4").set(Val::from(4))?;
                         ctx.lines_as(
                             "Lucius Celsus",
@@ -3285,8 +2948,8 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "Sigh...they are all fishes and possess water property."
                             ],
                         )?;
-                        break 'b2;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 ctx.lines_as(
@@ -3297,35 +2960,18 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Lightening Bolt.:Fire Bolt.:Thunder Storm.:Frost Diver.")],
-                    )?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3))
-                        && !subject3.loosely_equals(&Val::from(4));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Lucius Celsus", args!["That's right, Lightening Bolt, which possesses the wind property, works best on water property monsters.", "Although you might want to be careful of monsters that recognize magic casting."])?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.var("sage_m4").set(Val::from(4))?;
                         ctx.lines_as("Lucius Celsus", args!["What? Fire Bolt! Fire cannot beat water, you imbecile!", "Most fishes are attributed with the water property. Therefore, they are weak to wind property magic spells. Don't you get it?"])?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         ctx.lines_as(
                             "Lucius Celsus",
                             args![
@@ -3333,16 +2979,12 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "However, you will be in trouble if you use the spell in a poorly chosen spot."
                             ],
                         )?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    4 => {
                         ctx.var("sage_m4").set(Val::from(4))?;
                         ctx.lines_as("Lucius Celsus", args!["I can't fathom such stupidity! This question asks you to choose a property that counters water! Don't you get it?", "Logically, any magic spell possessing the water property cannot overcome the water atrribute monsters!"])?;
-                        break 'b3;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 ctx.lines_as(
@@ -3358,88 +3000,63 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["Okay, let me teach you about insect monsters.", "Let's see... hmm... hmm..."],
                 )?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3))
-                        && !subject4.loosely_equals(&Val::from(4));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
+                let subject4 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
+                if subject4 == 1 {
+                    ctx.var("sage_q2").set(Val::from(4))?;
+                    if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2056)])?;
+                    } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2056)])?;
+                    } else {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2056)])?;
                     }
-                    if matched4 {
-                        ctx.var("sage_q2").set(Val::from(4))?;
-                        if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2056)])?;
-                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2056)])?;
-                        } else {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2056)])?;
-                        }
-                        ctx.lines(args![
-                            "5 ^3355FFCobweb^000000,",
-                            "5 ^3355FFShell^000000,",
-                            "5 ^3355FFInsect Feeler^000000."
-                        ])?;
-                        break 'b4;
+                    ctx.lines(args![
+                        "5 ^3355FFCobweb^000000,",
+                        "5 ^3355FFShell^000000,",
+                        "5 ^3355FFInsect Feeler^000000."
+                    ])?;
+                } else if subject4 == 2 {
+                    ctx.var("sage_q2").set(Val::from(5))?;
+                    if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2057)])?;
+                    } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2057)])?;
+                    } else {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2057)])?;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
+                    ctx.lines(args![
+                        "5 ^3355FFHorn^000000,",
+                        "5 ^3355FFSnail's Shell^000000,",
+                        "5 ^3355FFMoth Dust^000000."
+                    ])?;
+                } else if subject4 == 3 {
+                    ctx.var("sage_q2").set(Val::from(6))?;
+                    if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2058)])?;
+                    } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2058)])?;
+                    } else {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2058)])?;
                     }
-                    if matched4 {
-                        ctx.var("sage_q2").set(Val::from(5))?;
-                        if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2057)])?;
-                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2057)])?;
-                        } else {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2057)])?;
-                        }
-                        ctx.lines(args![
-                            "5 ^3355FFHorn^000000,",
-                            "5 ^3355FFSnail's Shell^000000,",
-                            "5 ^3355FFMoth Dust^000000."
-                        ])?;
-                        break 'b4;
+                    ctx.lines(args![
+                        "5 ^3355FFMantis Scythe^000000,",
+                        "5 ^3355FFWorm Peeling^000000,",
+                        "5 ^3355FFRainbow Shell^000000."
+                    ])?;
+                } else if subject4 == 4 {
+                    ctx.var("sage_q2").set(Val::from(7))?;
+                    if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2059)])?;
+                    } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2059)])?;
+                    } else {
+                        ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2059)])?;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.var("sage_q2").set(Val::from(6))?;
-                        if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2058)])?;
-                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2058)])?;
-                        } else {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2058)])?;
-                        }
-                        ctx.lines(args![
-                            "5 ^3355FFMantis Scythe^000000,",
-                            "5 ^3355FFWorm Peeling^000000,",
-                            "5 ^3355FFRainbow Shell^000000."
-                        ])?;
-                        break 'b4;
-                    }
-                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
-                        ctx.var("sage_q2").set(Val::from(7))?;
-                        if ctx.call(Function::CheckQuest, vec![Val::from(2053)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2053), Val::from(2059)])?;
-                        } else if ctx.call(Function::CheckQuest, vec![Val::from(2054)])? != -1 {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2054), Val::from(2059)])?;
-                        } else {
-                            ctx.call(Function::ChangeQuest, vec![Val::from(2055), Val::from(2059)])?;
-                        }
-                        ctx.lines(args![
-                            "5 ^3355FFCobweb^000000,",
-                            "5 ^3355FFMantis Scythe^000000,",
-                            "5 ^3355FFSolid Shell^000000."
-                        ])?;
-                    }
+                    ctx.lines(args![
+                        "5 ^3355FFCobweb^000000,",
+                        "5 ^3355FFMantis Scythe^000000,",
+                        "5 ^3355FFSolid Shell^000000."
+                    ])?;
                 }
                 ctx.next()?;
                 ctx.lines_as(
@@ -3471,53 +3088,27 @@ fn biology_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         } else if (ctx.var("sage_q2").get()?.number()? >= 4 && ctx.var("sage_q2").get()?.number()? <= 7) {
-            'b5: {
-                let subject5 = ctx.var("sage_q2").get()?;
-                let mut matched5 = false;
-                let no_case5 = !subject5.loosely_equals(&Val::from(4))
-                    && !subject5.loosely_equals(&Val::from(5))
-                    && !subject5.loosely_equals(&Val::from(6))
-                    && !subject5.loosely_equals(&Val::from(7));
-                if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1025), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(935), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(928), false);
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(947), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(946), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1057), false);
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1031), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(955), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1013), false);
-                    break 'b5;
-                }
-                if !matched5 && subject5.loosely_equals(&Val::from(7)) {
-                    matched5 = true;
-                }
-                if matched5 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1025), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(1031), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(943), false);
-                    break 'b5;
-                }
+            let subject5 = ctx.var("sage_q2").get()?;
+            if subject5 == 4 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1025), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(935), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(928), false);
+            } else if subject5 == 5 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(947), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(946), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1057), false);
+            } else if subject5 == 6 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1031), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(955), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(1013), false);
+            } else if subject5 == 7 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1025), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(1031), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(943), false);
             }
             if ((ctx
                 .call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?
@@ -4167,338 +3758,178 @@ fn physics_professor_sa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.mes(".................................")?;
                 ctx.next()?;
                 ctx.mes(".....Magic spells are varied into 4 elements such as")?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Water, Earth, Fire and Wind.:Earth, Water, Fire and Wind.:Water, Wind, Earth and Fire.",
                         )],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.mes("Water, Earth, Fire and Wind.")?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.mes("Earth, Water, Fire and Wind.")?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.mes("Water, Wind, Earth and Fire.")?;
-                        break 'b1;
                     }
+                    _ => {}
                 }
                 ctx.mes("Each property has an opposing property,")?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Magic with wind property is strong against water:Magic with water property is strong against fire:Magic with fire property is strong against earth",
                         )],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.mes("Magic with wind property is strong against water")?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.mes("Magic with water property is strong against fire")?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.mes("Magic with fire property is strong against earth")?;
-                        break 'b2;
                     }
+                    _ => {}
                 }
                 ctx.mes("Magic with earth property is strong against wind.")?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "However, that does not work on the opposite case :This theory works the same for earth property weapons:Elemental properties are varied by monster types",
                         )],
-                    )?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    )? {
+                    1 => {
                         ctx.mes("However, that does not work on the opposite case ")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.mes("This theory works the same for earth property weapons")?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         ctx.mes("Elemental properties are varied by monster types")?;
-                        break 'b3;
                     }
+                    _ => {}
                 }
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "You must be aware of the limit of your ability.:You must apply different types of property by the situation or place.:Red Potion is rumored to taste like strawberries.",
                         )],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.mes("You must be aware of the limit of your ability.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.mes("You must apply different types of property by the situation or place.")?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.mes("Red Potion is rumored to taste like strawberries.")?;
-                        break 'b4;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "The most adorable NPC is YuPi in Prontera:Red Potion is rumored to be made out of Porings:You never know the limits of magic",
                         )],
-                    )?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                        && !subject5.loosely_equals(&Val::from(2))
-                        && !subject5.loosely_equals(&Val::from(3));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    )? {
+                    1 => {
                         ctx.mes("The most adorable NPC is YuPi in Prontera")?;
-                        break 'b5;
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    2 => {
                         ctx.mes("Red Potion is rumored to be made out of Porings")?;
-                        break 'b5;
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    3 => {
                         ctx.mes("You never know the limits of magic")?;
-                        break 'b5;
                     }
+                    _ => {}
                 }
-                'b6: {
-                    let subject6 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Merchant Lady in Morocc is also as cute as YuPi.:Nobody knows why Red Potion tastes like strawberries.:It is not suggested to be too addicted to magic spells.",
                         )],
-                    )?);
-                    let mut matched6 = false;
-                    let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                        && !subject6.loosely_equals(&Val::from(2))
-                        && !subject6.loosely_equals(&Val::from(3));
-                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    )? {
+                    1 => {
                         ctx.mes("Merchant Lady in Morocc is also as cute as YuPi.")?;
-                        break 'b6;
                     }
-                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    2 => {
                         ctx.mes("Nobody knows why Red Potion tastes like strawberries.")?;
-                        break 'b6;
                     }
-                    if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    3 => {
                         ctx.mes("It is not suggested to be too addicted to magic spells.")?;
-                        break 'b6;
                     }
+                    _ => {}
                 }
-                'b7: {
-                    let subject7 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "If I had a Bunny Band,:If so, what about the taste of White Potion?:Only pertinent uses of magic, as well as rest",
                         )],
-                    )?);
-                    let mut matched7 = false;
-                    let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                        && !subject7.loosely_equals(&Val::from(2))
-                        && !subject7.loosely_equals(&Val::from(3));
-                    if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    )? {
+                    1 => {
                         ctx.mes("If I had a Bunny Band,")?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    2 => {
                         ctx.mes("If so, what about the taste of White Potion?")?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    3 => {
                         ctx.mes("Only pertinent uses of magic, as well as rest")?;
-                        break 'b7;
                     }
+                    _ => {}
                 }
-                'b8: {
-                    let subject8 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "I would want to give it to her as a present.:I can't even imagine the taste.:will guarantee you a safe battle.",
                         )],
-                    )?);
-                    let mut matched8 = false;
-                    let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                        && !subject8.loosely_equals(&Val::from(2))
-                        && !subject8.loosely_equals(&Val::from(3));
-                    if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    )? {
+                    1 => {
                         ctx.mes("I would want to give it to her as a present.")?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    2 => {
                         ctx.mes("I can't even imagine the taste.")?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    3 => {
                         ctx.mes("will guarantee you a safe battle.")?;
-                        break 'b8;
                     }
+                    _ => {}
                 }
-                'b9: {
-                    let subject9 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Although the Bunny Band best fits the Acolyte class:I love this thrilling feeling:Forming a party with people of different classes",
                         )],
-                    )?);
-                    let mut matched9 = false;
-                    let no_case9 = !subject9.loosely_equals(&Val::from(1))
-                        && !subject9.loosely_equals(&Val::from(2))
-                        && !subject9.loosely_equals(&Val::from(3));
-                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    )? {
+                    1 => {
                         ctx.mes("Although the Bunny Band best fits the Acolyte class")?;
-                        break 'b9;
                     }
-                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    2 => {
                         ctx.mes("I love this thrilling feeling")?;
-                        break 'b9;
                     }
-                    if !matched9 && subject9.loosely_equals(&Val::from(3)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    3 => {
                         ctx.mes("Forming a party with people of different classes")?;
-                        break 'b9;
                     }
+                    _ => {}
                 }
-                'b10: {
-                    let subject10 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "I still wonder if the Bunny Band would be perfect for GOD-POING.:I won't be able to drink it even if my HP is less than 1.:is considered the best way to ready for battle.",
                         )],
-                    )?);
-                    let mut matched10 = false;
-                    let no_case10 = !subject10.loosely_equals(&Val::from(1))
-                        && !subject10.loosely_equals(&Val::from(2))
-                        && !subject10.loosely_equals(&Val::from(3));
-                    if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                        matched10 = true;
-                    }
-                    if matched10 {
+                    )? {
+                    1 => {
                         ctx.mes("I still wonder if the Bunny Band would be perfect for GOD-POING.")?;
-                        break 'b10;
                     }
-                    if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                        matched10 = true;
-                    }
-                    if matched10 {
+                    2 => {
                         ctx.mes("I won't be able to drink it even if my HP is less than 1.")?;
-                        break 'b10;
                     }
-                    if !matched10 && subject10.loosely_equals(&Val::from(3)) {
-                        matched10 = true;
-                    }
-                    if matched10 {
+                    3 => {
                         ctx.mes("is considered the best way to ready for battle.")?;
-                        break 'b10;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 ctx.mes("..........")?;

@@ -316,24 +316,15 @@ fn dwarf_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Wait! I'm not ready yet.:Let's go!")])?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                        match runtime::select_values(ctx, &[Val::from("Wait! I'm not ready yet.:Let's go!")])? {
+                            1 => {
                                 ctx.var("$@gdeventv_a1").set(Val::from(0))?;
                                 ctx.var("$@gdevents_a$").set(Val::from(""))?;
                                 ctx.lines_as("Morestone", args!["Take your time, and find a place to gather your friends."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.lines_as(
                                     "Morestone",
                                     args![
@@ -350,6 +341,7 @@ fn dwarf_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.call(Function::Warp, vec![Val::from("arug_que01"), Val::from(103), Val::from(133)])?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     } else {
                         ctx.var("$@gdeventv_a1").set(Val::from(0))?;
@@ -390,27 +382,19 @@ fn dwarf_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Let's go.:No, thanks.")])?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                match runtime::select_values(ctx, &[Val::from("Let's go.:No, thanks.")])? {
+                    1 => {
                         ctx.lines_as("Morestone", args!["I hope you enjoy yourself, my friend."])?;
                         ctx.close_window()?;
                         ctx.call(Function::Warp, vec![Val::from("arug_que01"), Val::from(103), Val::from(133)])?;
                         return Err(Stop::End);
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.lines_as("Morestone", args!["If you need my assistance, just ask.", "Ah! Dont forget, I hate monsters! So I don't want to see them. It will be better if you ask for another favour."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.var("$@gdeventv_a1").set(Val::from(1))?;
@@ -507,25 +491,15 @@ fn dwarf_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ],
                             )?;
                             ctx.next()?;
-                            'b5: {
-                                let subject5 =
-                                    Val::from(runtime::select_values(ctx, &[Val::from("Wait! I'm not ready yet.:Let's go!")])?);
-                                let mut matched5 = false;
-                                let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                                if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
+                            match runtime::select_values(ctx, &[Val::from("Wait! I'm not ready yet.:Let's go!")])? {
+                                1 => {
                                     ctx.var("$@gdeventv_a1").set(Val::from(0))?;
                                     ctx.var("$@gdevents_a$").set(Val::from(""))?;
                                     ctx.lines_as("Morestone", args!["Take your time, and find a place to gather your friends."])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                    matched5 = true;
-                                }
-                                if matched5 {
+                                2 => {
                                     ctx.lines_as(
                                         "Morestone",
                                         args![
@@ -542,6 +516,7 @@ fn dwarf_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.call(Function::Warp, vec![Val::from("arug_que01"), Val::from(103), Val::from(133)])?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         } else {
                             ctx.var("$@gdeventv_a1").set(Val::from(0))?;
@@ -598,27 +573,19 @@ fn dwarf_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b6: {
-                    let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("Let's go.:No, thanks.")])?);
-                    let mut matched6 = false;
-                    let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                match runtime::select_values(ctx, &[Val::from("Let's go.:No, thanks.")])? {
+                    1 => {
                         ctx.lines_as("Morestone", args!["I hope you enjoy yourself, my friend."])?;
                         ctx.close_window()?;
                         ctx.call(Function::Warp, vec![Val::from("arug_que01"), Val::from(103), Val::from(133)])?;
                         return Err(Stop::End);
                     }
-                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    2 => {
                         ctx.lines_as("Morestone", args!["If you need my assistance, just ask.", "Ah! Dont forget, I hate monsters! So I don't want to see them. It will be better if you ask for another favour."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.var("$@gdeventv_a1").set(Val::from(1))?;
@@ -721,24 +688,15 @@ fn dwarf_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ],
                             )?;
                             ctx.next()?;
-                            'b8: {
-                                let subject8 = Val::from(runtime::select_values(ctx, &[Val::from("Wait! I'm not ready yet.:Let's go!")])?);
-                                let mut matched8 = false;
-                                let no_case8 = !subject8.loosely_equals(&Val::from(1)) && !subject8.loosely_equals(&Val::from(2));
-                                if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                                    matched8 = true;
-                                }
-                                if matched8 {
+                            match runtime::select_values(ctx, &[Val::from("Wait! I'm not ready yet.:Let's go!")])? {
+                                1 => {
                                     ctx.var("$@gdeventv_a1").set(Val::from(0))?;
                                     ctx.var("$@gdevents_a$").set(Val::from(""))?;
                                     ctx.lines_as("Morestone", args!["Take your time, and find a place to gather you friends."])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                                    matched8 = true;
-                                }
-                                if matched8 {
+                                2 => {
                                     ctx.lines_as(
                                         "Morestone",
                                         args![
@@ -755,6 +713,7 @@ fn dwarf_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.call(Function::Warp, vec![Val::from("arug_que01"), Val::from(103), Val::from(133)])?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         } else {
                             ctx.var("$@gdeventv_a1").set(Val::from(0))?;
@@ -908,14 +867,8 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("I need to check that.:No.")])?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                match runtime::select_values(ctx, &[Val::from("I need to check that.:No.")])? {
+                    1 => {
                         ctx.lines_as("Pierrot Pier", args!["Please give me the palm of your hand."])?;
                         ctx.call(
                             Function::MapAnnounce,
@@ -986,12 +939,8 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(
                             "Pierrot Pier",
                             args!["Hm? that's right.", "When is that person coming? I am very bored~!"],
@@ -999,6 +948,7 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
                 ctx.lines_as(
                     "Pierrot Pier",
@@ -1072,19 +1022,11 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["Alright, would you like to play the game Gergath has prepared for you?"],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Game instructions.:Skip instructions.:Refuse game.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Pierrot Pier",
                             args!["The game prepared by my master is very unique, yet simple and fun!"],
@@ -1137,45 +1079,28 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         ctx.call(Function::MapAnnounce, vec![Val::from("arug_que01"), Val::from("Pierrot Pier: The game instruction is just to find the treasure map within the time limit. ounds easy, right?"), ctx.constant("BC_MAP")?, Val::from("0x99CC00")])?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {}
+                    3 => {
                         ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
                         ctx.lines_as("Pierrot Pier", args!["Oh, you don't want to play?"])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
                 ctx.lines_as(
                     "Pierrot Pier",
                     args!["Okay, I'm ready to begin.", "Shall we start? Beep, beep?"],
                 )?;
                 ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Start.")])?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                match runtime::select_values(ctx, &[Val::from("No.:Start.")])? {
+                    1 => {
                         ctx.lines_as("Pierrot Pier", args!["Let me know when you are ready."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.lines_as("Pierrot Pier", args!["Alright! Let us begin!"])?;
                         ctx.next()?;
                         ctx.lines_as("Pierrot Pier", args!["Ladies, and gentlemen."])?;
@@ -1227,6 +1152,7 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
         } else {
@@ -1288,17 +1214,11 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.next()?;
                     ctx.lines_as("Pierrot Pier", args!["What did you think?"])?;
                     ctx.next()?;
-                    'b4: {
-                        let subject4 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("It was pretty hard.:I should've been successful...")],
-                        )?);
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        )? {
+                        1 => {
                             ctx.lines_as(
                                 "Pierrot Pier",
                                 args![
@@ -1307,16 +1227,12 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ],
                             )?;
                             ctx.next()?;
-                            break 'b4;
                         }
-                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        2 => {
                             ctx.lines_as("Pierrot Pier", args!["Aaah~! Time is gold.", "Precious time goes by so fast."])?;
                             ctx.next()?;
-                            break 'b4;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Pierrot Pier", args!["I, Pierrot Piere, am not a heartless clown! Beep beep."])?;
                     ctx.call(
@@ -1357,22 +1273,13 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ],
                     )?;
                     ctx.next()?;
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Start.")])?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                    match runtime::select_values(ctx, &[Val::from("No.:Start.")])? {
+                        1 => {
                             ctx.lines_as("Pierrot Pier", args!["Let me know when you are ready."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             ctx.lines_as("Pierrot Pier", args!["Alright! Let us begin!"])?;
                             ctx.next()?;
                             ctx.lines_as("Pierrot Pier", args!["Ladies, and gentlemen."])?;
@@ -1423,6 +1330,7 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else if ctx.var("$@gdeventv_a2").get()? == 3 {
                     l_que_2143 = ctx.call(Function::CheckQuest, vec![Val::from(2143)])?;
@@ -1588,14 +1496,8 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.next()?;
-            'b6: {
-                let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("I need to check that.:No.")])?);
-                let mut matched6 = false;
-                let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                    matched6 = true;
-                }
-                if matched6 {
+            match runtime::select_values(ctx, &[Val::from("I need to check that.:No.")])? {
+                1 => {
                     ctx.lines_as("Pierrot Pier", args!["Please give me the palm of your hand."])?;
                     ctx.call(
                         Function::MapAnnounce,
@@ -1666,12 +1568,8 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ],
                     )?;
                     ctx.next()?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                2 => {
                     ctx.lines_as(
                         "Pierrot Pier",
                         args!["Hm? that's right.", "When is that person coming? I am very bored~!"],
@@ -1679,6 +1577,7 @@ fn pierrot_pier_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
             ctx.lines_as(
@@ -2921,14 +2820,8 @@ fn event_controller_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
     } else {
         ctx.mes("How can I help you?")?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Reset.:No, thanks.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Reset.:No, thanks.")])? {
+            1 => {
                 ctx.mes("Completed.")?;
                 ctx.call(
                     Function::DoNpcEvent,
@@ -2945,14 +2838,12 @@ fn event_controller_aru_gd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.mes("Good bye~")?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     Ok(Val::from(0))

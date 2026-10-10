@@ -419,17 +419,11 @@ fn wizard_guildsman_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Give me some hints, please.:I want to try again on my own!")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             if ctx.call(Function::CountItem, vec![Val::from(531)])?.number()? > 0 {
                                 ctx.call(Function::DelItem, vec![Val::from(531), Val::from(1)])?;
                                 ctx.lines_as(
@@ -511,12 +505,8 @@ fn wizard_guildsman_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             } else {
                                 ctx.lines_as("Catherine", args!["Like I said, I'll think about it if you give me 1 Apple Juice.", "If not... Well, you can think about it on your own. Hey I don't make the rules here i just follow em! Can't argue with this one though. ~tehehehe"])?;
                             }
-                            break 'b1;
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(
                                 "Catherine",
                                 args![
@@ -525,6 +515,7 @@ fn wizard_guildsman_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ],
                             )?;
                         }
+                        _ => {}
                     }
                     ctx.next()?;
                     ctx.lines_as("Catherine", args!["Well then, see you soon! *crosses fingers* dont end up like the others before you! May God rest thier souls...huh? Oh nothing! ~Hehehehe", "Hurry, he's waiting for you!"])?;
@@ -871,289 +862,270 @@ fn gloomy_wizard_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.lines_as("Raulel", args!["Then let's begin the test!"])?;
             }
             ctx.next()?;
-            'b1: {
-                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
+            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+            if subject1 == 1 {
+                ctx.lines_as(
+                    "Raulel",
+                    args!["1. Which of the following is not necessary to learn Fire Wall?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Fire Bolt Lv 4:Fire Ball Lv 5:Sight Lv 1:Napalm Beat Lv 4")],
+                )?) == 4
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
                 }
-                if matched1 {
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["1. Which of the following is not necessary to learn Fire Wall?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Fire Bolt Lv 4:Fire Ball Lv 5:Sight Lv 1:Napalm Beat Lv 4")],
-                    )?) == 4
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["2. Regaurdless of it's previous attribute, What does the monster's attribute change to when you cast Frost Diver on it?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Water:Earth:Fire:Wind")])?) == 1 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["3. When you completely master Napalm Beat, what is the ratio of the increased MATK using that spell?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("1.6 times:1.7 times:2 times:20 times")],
-                    )?) == 2
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["4. What item do you need when casting Stone Curse?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Red Blood:Blue Gemstone:Yellow Gemstone:Red Gemstone")],
-                    )?) == 4
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["5. Which of the following is not required to master Safety Wall?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "Napalm Beat Lv 4:Soul Strike Lv 5:Increase SP Recovery Lv 6:Safety Wall Lv 7",
-                        )],
-                    )?) == 3
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["6. Without the INT bonus, what amount of SP is recovered every 10 seconds when you have learned Increase SP Recovery Lv 7?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("14:21:28:35")])?) == 2 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["7. Using Energy Coat, when you have 50% of your SP remaining, how much SP is used when hit, and what percentage is damage reduced by?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Damage 18% SP1.5%:Damage 18% SP2%:Damage 24% SP1.5%:Damage 24% SP2%")],
-                    )?) == 2
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["8. How much SP is consumed and how many times can you avoid attacks when using Safety Wall Lv 6?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("SP 40, 6 times:SP 35, 6 times:SP 40, 7 times:SP 35, 7 times")],
-                    )?) == 3
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["9. How much SP is needed when using Lv 10 Thunderstorm?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("84:74:64:54")])?) == 2 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["10. Which skill is most useful training in the Byalan Dungeon?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Lightning Bolt:Fire Bolt:Cold Bolt:Sight")],
-                    )?) == 1
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    break 'b1;
+                ctx.lines_as("Raulel", args!["2. Regaurdless of it's previous attribute, What does the monster's attribute change to when you cast Frost Diver on it?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Water:Earth:Fire:Wind")])?) == 1 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
+                ctx.lines_as(
+                    "Raulel",
+                    args!["3. When you completely master Napalm Beat, what is the ratio of the increased MATK using that spell?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("1.6 times:1.7 times:2 times:20 times")],
+                )?) == 2
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
                 }
-                if matched1 {
-                    ctx.lines_as("Raulel", args!["1. Which monster can you obtain a slotted Guard from?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Thief Bug:PecoPeco:Pupa:Kobold (Hammer)")],
-                    )?) == 3
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["2. Which of the following is the easiest monster for a low level Mage to hunt?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Flora:Giearth:Golem:Myst")])?) == 1 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["3. Which monster will not be affected by Stone Curse?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Elder Willow:Evil Druid:Magnolia:Marc")],
-                    )?) == 2
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["4. When attacking a Lv 3 water attribute monster with a wind attribute weapon, what is the damage percentage?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("125%:150%:175%:200%")])?) == 4 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["5. If a Baby Desert Wolf and a Familiar fought, which one would win?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Baby Desert Wolf:Familiar:Neither:I don't know")],
-                    )?) == 1
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["6. Which of the following cannot be a Cute Pet?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Poporing:Roda Frog:Smokie:Poison Spore")],
-                    )?) == 2
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["7. Choose the monster that is weak against a fire attribute attack."],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Dagger Goblin:Mace Goblin:Morningstar Goblin:Hammer Goblin")],
-                    )?) == 4
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["8. Which of the following has the highest defense?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Horn:Chonchon:Andre:Caramel")])?) == 4 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["9. Choose the monster that's of a different species."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Poring:Mastering:Ghostring:Spore")])?) == 3 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["10. Which of the following is not an Undead monster?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Drake:Megalodon:Deviace:Khalitzburg")],
-                    )?) == 3
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    break 'b1;
+                ctx.lines_as("Raulel", args!["4. What item do you need when casting Stone Curse?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Red Blood:Blue Gemstone:Yellow Gemstone:Red Gemstone")],
+                )?) == 4
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
+                ctx.lines_as(
+                    "Raulel",
+                    args!["5. Which of the following is not required to master Safety Wall?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Napalm Beat Lv 4:Soul Strike Lv 5:Increase SP Recovery Lv 6:Safety Wall Lv 7",
+                    )],
+                )?) == 3
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
                 }
-                if matched1 {
-                    ctx.lines_as("Raulel", args!["1. Which stat is the most important for a Mage?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("INT:AGI:DEX:VIT")])?) == 1 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["2. Which attribute does not have a 'Bolt' type attack?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Water:Earth:Fire:Wind")])?) == 2 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["3. Choose the one that does not relate to a Mage."])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "Weak physical strength.:Attacks at a distance.:Good at selling stuff.:Magic Defense is high.",
-                        )],
-                    )?) == 3
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["4. Which town is the home of Mages?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Morocc:Alberta:Geffen")])?) == 4 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["5. Which of the following cards has nothing to do with INT?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "Andre Egg Card:Soldier Andre Card:Baby Desert Wolf Card:Elder Willow Card",
-                        )],
-                    )?) == 2
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["6. What is the Mage good at compared to other job classes?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from(
-                            "Exceptional Vocal Ability:Exceptional Acting Ability:Exceptional Dance Skills:Exceptional Magic Skills",
-                        )],
-                    )?) == 4
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["7. What is the INT bonus at Job Lv 40 for a Mage?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(ctx, &[Val::from("8:7:6:5")])?) == 4 {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["8. Which item can a Mage not equip?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Knife:Boys Cap:Sandle:Eye of Dullahan")],
-                    )?) == 2
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as(
-                        "Raulel",
-                        args!["9. Which of the following is the catalyst when making the Mage test solution 3?"],
-                    )?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Blue Gemstone:Red Gemstone:Yellow Gemstone:Red Blood")],
-                    )?) == 1
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
-                    ctx.lines_as("Raulel", args!["10. Which card is irrelevant to magic?"])?;
-                    ctx.next()?;
-                    if Val::from(runtime::select_values(
-                        ctx,
-                        &[Val::from("Marduk Card:Magnolia Card:Willow Card:Maya Card")],
-                    )?) == 2
-                    {
-                        l_wizard_t = (l_wizard_t.clone() + Val::from(10));
-                    }
+                ctx.lines_as("Raulel", args!["6. Without the INT bonus, what amount of SP is recovered every 10 seconds when you have learned Increase SP Recovery Lv 7?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("14:21:28:35")])?) == 2 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["7. Using Energy Coat, when you have 50% of your SP remaining, how much SP is used when hit, and what percentage is damage reduced by?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Damage 18% SP1.5%:Damage 18% SP2%:Damage 24% SP1.5%:Damage 24% SP2%")],
+                )?) == 2
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Raulel",
+                    args!["8. How much SP is consumed and how many times can you avoid attacks when using Safety Wall Lv 6?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("SP 40, 6 times:SP 35, 6 times:SP 40, 7 times:SP 35, 7 times")],
+                )?) == 3
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["9. How much SP is needed when using Lv 10 Thunderstorm?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("84:74:64:54")])?) == 2 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Raulel",
+                    args!["10. Which skill is most useful training in the Byalan Dungeon?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Lightning Bolt:Fire Bolt:Cold Bolt:Sight")],
+                )?) == 1
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+            } else if subject1 == 2 {
+                ctx.lines_as("Raulel", args!["1. Which monster can you obtain a slotted Guard from?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Thief Bug:PecoPeco:Pupa:Kobold (Hammer)")],
+                )?) == 3
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Raulel",
+                    args!["2. Which of the following is the easiest monster for a low level Mage to hunt?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Flora:Giearth:Golem:Myst")])?) == 1 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["3. Which monster will not be affected by Stone Curse?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Elder Willow:Evil Druid:Magnolia:Marc")],
+                )?) == 2
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["4. When attacking a Lv 3 water attribute monster with a wind attribute weapon, what is the damage percentage?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("125%:150%:175%:200%")])?) == 4 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Raulel",
+                    args!["5. If a Baby Desert Wolf and a Familiar fought, which one would win?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Baby Desert Wolf:Familiar:Neither:I don't know")],
+                )?) == 1
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["6. Which of the following cannot be a Cute Pet?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Poporing:Roda Frog:Smokie:Poison Spore")],
+                )?) == 2
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Raulel",
+                    args!["7. Choose the monster that is weak against a fire attribute attack."],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Dagger Goblin:Mace Goblin:Morningstar Goblin:Hammer Goblin")],
+                )?) == 4
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["8. Which of the following has the highest defense?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Horn:Chonchon:Andre:Caramel")])?) == 4 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["9. Choose the monster that's of a different species."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Poring:Mastering:Ghostring:Spore")])?) == 3 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["10. Which of the following is not an Undead monster?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Drake:Megalodon:Deviace:Khalitzburg")],
+                )?) == 3
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+            } else if subject1 == 3 {
+                ctx.lines_as("Raulel", args!["1. Which stat is the most important for a Mage?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("INT:AGI:DEX:VIT")])?) == 1 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["2. Which attribute does not have a 'Bolt' type attack?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Water:Earth:Fire:Wind")])?) == 2 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["3. Choose the one that does not relate to a Mage."])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Weak physical strength.:Attacks at a distance.:Good at selling stuff.:Magic Defense is high.",
+                    )],
+                )?) == 3
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["4. Which town is the home of Mages?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Morocc:Alberta:Geffen")])?) == 4 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["5. Which of the following cards has nothing to do with INT?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Andre Egg Card:Soldier Andre Card:Baby Desert Wolf Card:Elder Willow Card",
+                    )],
+                )?) == 2
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["6. What is the Mage good at compared to other job classes?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from(
+                        "Exceptional Vocal Ability:Exceptional Acting Ability:Exceptional Dance Skills:Exceptional Magic Skills",
+                    )],
+                )?) == 4
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["7. What is the INT bonus at Job Lv 40 for a Mage?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(ctx, &[Val::from("8:7:6:5")])?) == 4 {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["8. Which item can a Mage not equip?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Knife:Boys Cap:Sandle:Eye of Dullahan")],
+                )?) == 2
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as(
+                    "Raulel",
+                    args!["9. Which of the following is the catalyst when making the Mage test solution 3?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Blue Gemstone:Red Gemstone:Yellow Gemstone:Red Blood")],
+                )?) == 1
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
+                }
+                ctx.lines_as("Raulel", args!["10. Which card is irrelevant to magic?"])?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Marduk Card:Magnolia Card:Willow Card:Maya Card")],
+                )?) == 2
+                {
+                    l_wizard_t = (l_wizard_t.clone() + Val::from(10));
                 }
             }
             ctx.mes("[Raulel]")?;
@@ -3743,14 +3715,8 @@ fn white_dog_wiz_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["Also, if you would like to know anything about the job change process, I can explain."],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from(".......:A Dog is talking to me...")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from(".......:A Dog is talking to me...")])? {
+            1 => {
                 ctx.lines_as(
                     "Dog",
                     args![
@@ -3781,12 +3747,8 @@ fn white_dog_wiz_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("job_wizard_maria01"), Val::from(2)])?;
                 ctx.lines_as("Maria", args!["Well...it doesn't concern you anyways.", "Now, where were we."])?;
                 ctx.next()?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.call(Function::Cutin, vec![Val::from("job_wizard_maria02"), Val::from(2)])?;
                 ctx.lines_as(
                     "Dog",
@@ -3818,8 +3780,8 @@ fn white_dog_wiz_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["...*BARK* *BARK* *BARK*... I'm upset, but whatever!! You seem busy so I'll just drop it."],
                 )?;
                 ctx.next()?;
-                break 'b1;
             }
+            _ => {}
         }
         ctx.call(Function::Cutin, vec![Val::from("job_wizard_maria01"), Val::from(2)])?;
         ctx.lines_as(
@@ -3835,19 +3797,11 @@ fn white_dog_wiz_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b2: {
-            let subject2 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Yes, please! I would like that.:No, it's ok.:A talking dog...")],
-            )?);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                && !subject2.loosely_equals(&Val::from(2))
-                && !subject2.loosely_equals(&Val::from(3));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
+            )? {
+            1 => {
                 ctx.call(Function::Cutin, vec![Val::from("job_wizard_maria01"), Val::from(2)])?;
                 ctx.lines_as("Maria", args!["OK, I will explain the process for you."])?;
                 ctx.next()?;
@@ -3910,19 +3864,13 @@ fn white_dog_wiz_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Warp, vec![Val::from("gef_dun00"), Val::from(116), Val::from(102)])?;
                 return Err(Stop::End);
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
+            2 => {
                 ctx.lines_as("Maria", args!["Really? Ok, then go apply and do your best."])?;
                 ctx.close_window()?;
                 ctx.call(Function::Cutin, vec![Val::from("job_wizard_maria01"), Val::from(255)])?;
                 return Err(Stop::End);
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                matched2 = true;
-            }
-            if matched2 {
+            3 => {
                 ctx.call(Function::Cutin, vec![Val::from("job_wizard_maria02"), Val::from(2)])?;
                 ctx.lines_as("Maria", args!["I'm not a DOG!! HOOOOWWWWWWLLLLLLL~"])?;
                 ctx.next()?;
@@ -3932,6 +3880,7 @@ fn white_dog_wiz_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Warp, vec![Val::from("gef_dun00"), Val::from(116), Val::from(102)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         if ctx.var("wiz_q").get()? == 1 {

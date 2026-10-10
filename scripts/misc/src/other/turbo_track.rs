@@ -1330,42 +1330,25 @@ fn logtrap_tt_main_run(ctx: &Ctx, mut step: LogtrapTtMainStep, args: Vec<Val>) -
                 continue 'machine;
             }
             LogtrapTtMainStep::OnTouch => {
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(72), Val::from(372)],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(72), Val::from(365)],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(72), Val::from(357)],
-                        )?;
-                        return Err(Stop::End);
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                if subject1 == 1 {
+                    ctx.call(
+                        Function::Warp,
+                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(72), Val::from(372)],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 2 {
+                    ctx.call(
+                        Function::Warp,
+                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(72), Val::from(365)],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 3 {
+                    ctx.call(
+                        Function::Warp,
+                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(72), Val::from(357)],
+                    )?;
+                    return Err(Stop::End);
                 }
                 return Ok(Val::from(0));
             }
@@ -1395,93 +1378,57 @@ fn sandtrap_tt_main_run(ctx: &Ctx, mut step: SandtrapTtMainStep, args: Vec<Val>)
                 continue 'machine;
             }
             SandtrapTtMainStep::OnTouch => {
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(9))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(4))
-                        && !subject1.loosely_equals(&Val::from(6))
-                        && !subject1.loosely_equals(&Val::from(8))
-                        && !subject1.loosely_equals(&Val::from(10));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(9)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::StartStatus,
-                            vec![ctx.constant("SC_CONFUSION")?, Val::from(8000), Val::from(0)],
-                        )?;
-                        ctx.call(
-                            Function::Emotion,
-                            vec![
-                                ctx.constant("ET_PROFUSELY_SWEAT")?,
-                                Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                            ],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::StartStatus,
-                            vec![ctx.constant("SC_STONE")?, Val::from(4000), Val::from(0)],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::StartStatus,
-                            vec![ctx.constant("SC_SLEEP")?, Val::from(4000), Val::from(0)],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::StartStatus,
-                            vec![ctx.constant("SC_FREEZE")?, Val::from(4000), Val::from(0)],
-                        )?;
-                        ctx.call(
-                            Function::Emotion,
-                            vec![
-                                ctx.constant("ET_PROFUSELY_SWEAT")?,
-                                Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
-                            ],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(8)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::StartStatus,
-                            vec![ctx.constant("SC_STUN")?, Val::from(4000), Val::from(0)],
-                        )?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(10)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::StartStatus,
-                            vec![ctx.constant("SC_CURSE")?, Val::from(80000), Val::from(0)],
-                        )?;
-                        return Err(Stop::End);
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
+                if subject1 == 1 || subject1 == 9 {
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_CONFUSION")?, Val::from(8000), Val::from(0)],
+                    )?;
+                    ctx.call(
+                        Function::Emotion,
+                        vec![
+                            ctx.constant("ET_PROFUSELY_SWEAT")?,
+                            Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                        ],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 2 {
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_STONE")?, Val::from(4000), Val::from(0)],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 4 {
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_SLEEP")?, Val::from(4000), Val::from(0)],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 6 {
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_FREEZE")?, Val::from(4000), Val::from(0)],
+                    )?;
+                    ctx.call(
+                        Function::Emotion,
+                        vec![
+                            ctx.constant("ET_PROFUSELY_SWEAT")?,
+                            Val::from(ctx.call(Function::GetCharacterId, vec![Val::from(0)])?.is_true()),
+                        ],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 8 {
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_STUN")?, Val::from(4000), Val::from(0)],
+                    )?;
+                    return Err(Stop::End);
+                } else if subject1 == 10 {
+                    ctx.call(
+                        Function::StartStatus,
+                        vec![ctx.constant("SC_CURSE")?, Val::from(80000), Val::from(0)],
+                    )?;
+                    return Err(Stop::End);
                 }
                 return Ok(Val::from(0));
             }
@@ -2186,42 +2133,25 @@ fn cos_tt_main_run(ctx: &Ctx, mut step: CosTtMainStep, args: Vec<Val>) -> Result
                                 Val::from("0x70DBDB"),
                             ],
                         )?;
-                        'b2: {
-                            let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(210), Val::from(369)],
-                                )?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(210), Val::from(361)],
-                                )?;
-                                return Err(Stop::End);
-                            }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(210), Val::from(354)],
-                                )?;
-                                return Err(Stop::End);
-                            }
+                        let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                        if subject2 == 1 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(210), Val::from(369)],
+                            )?;
+                            return Err(Stop::End);
+                        } else if subject2 == 2 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(210), Val::from(361)],
+                            )?;
+                            return Err(Stop::End);
+                        } else if subject2 == 3 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(210), Val::from(354)],
+                            )?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -2257,53 +2187,31 @@ fn cos_tt_main_run(ctx: &Ctx, mut step: CosTtMainStep, args: Vec<Val>) -> Result
                                 Val::from("0x70DBDB"),
                             ],
                         )?;
-                        'b3: {
-                            let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3))
-                                && !subject3.loosely_equals(&Val::from(4));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(46), Val::from(254)],
-                                )?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(76), Val::from(227)],
-                                )?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(42), Val::from(197)],
-                                )?;
-                                return Err(Stop::End);
-                            }
-                            if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(86), Val::from(220)],
-                                )?;
-                                return Err(Stop::End);
-                            }
+                        let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
+                        if subject3 == 1 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(46), Val::from(254)],
+                            )?;
+                            return Err(Stop::End);
+                        } else if subject3 == 2 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(76), Val::from(227)],
+                            )?;
+                            return Err(Stop::End);
+                        } else if subject3 == 3 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(42), Val::from(197)],
+                            )?;
+                            return Err(Stop::End);
+                        } else if subject3 == 4 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(86), Val::from(220)],
+                            )?;
+                            return Err(Stop::End);
                         }
                     }
                     if !matched1 && subject1.loosely_equals(&Val::from(5)) {
@@ -2360,42 +2268,25 @@ fn cos_tt_main_run(ctx: &Ctx, mut step: CosTtMainStep, args: Vec<Val>) -> Result
                                 Val::from("0x70DBDB"),
                             ],
                         )?;
-                        'b4: {
-                            let subject4 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                && !subject4.loosely_equals(&Val::from(2))
-                                && !subject4.loosely_equals(&Val::from(3));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(307), Val::from(52)],
-                                )?;
-                                return Err(Stop::End);
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(307), Val::from(46)],
-                                )?;
-                                return Err(Stop::End);
-                            }
-                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(307), Val::from(40)],
-                                )?;
-                                return Err(Stop::End);
-                            }
+                        let subject4 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                        if subject4 == 1 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(307), Val::from(52)],
+                            )?;
+                            return Err(Stop::End);
+                        } else if subject4 == 2 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(307), Val::from(46)],
+                            )?;
+                            return Err(Stop::End);
+                        } else if subject4 == 3 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(307), Val::from(40)],
+                            )?;
+                            return Err(Stop::End);
                         }
                     }
                 }
@@ -4936,70 +4827,32 @@ fn warp_tt_main_run(ctx: &Ctx, mut step: WarpTtMainStep, args: Vec<Val>) -> Resu
                 continue 'machine;
             }
             WarpTtMainStep::OnTouch => {
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(20)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4))
-                        && !subject1.loosely_equals(&Val::from(5));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(216), Val::from(378)],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(218), Val::from(360)],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(223), Val::from(361)],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(243), Val::from(342)],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Warp,
-                            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(247), Val::from(364)],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && no_case1 {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        break 'b1;
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(20)])?;
+                if subject1 == 1 {
+                    ctx.call(
+                        Function::Warp,
+                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(216), Val::from(378)],
+                    )?;
+                } else if subject1 == 2 {
+                    ctx.call(
+                        Function::Warp,
+                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(218), Val::from(360)],
+                    )?;
+                } else if subject1 == 3 {
+                    ctx.call(
+                        Function::Warp,
+                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(223), Val::from(361)],
+                    )?;
+                } else if subject1 == 4 {
+                    ctx.call(
+                        Function::Warp,
+                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(243), Val::from(342)],
+                    )?;
+                } else if subject1 == 5 {
+                    ctx.call(
+                        Function::Warp,
+                        vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(247), Val::from(364)],
+                    )?;
                 }
                 return Err(Stop::End);
             }
@@ -5132,81 +4985,37 @@ pub fn bing_2_tt_main(ctx: &Ctx) -> Script {
 }
 
 fn bing_2_tt_main_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4))
-            && !subject1.loosely_equals(&Val::from(5))
-            && !subject1.loosely_equals(&Val::from(6));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::Warp,
-                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(217), Val::from(232)],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::Warp,
-                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(233), Val::from(207)],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::Warp,
-                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(208), Val::from(219)],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::Warp,
-                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(219), Val::from(202)],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::Warp,
-                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(218), Val::from(228)],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::Warp,
-                vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(220), Val::from(195)],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            break 'b1;
-        }
+    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
+    if subject1 == 1 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(217), Val::from(232)],
+        )?;
+    } else if subject1 == 2 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(233), Val::from(207)],
+        )?;
+    } else if subject1 == 3 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(208), Val::from(219)],
+        )?;
+    } else if subject1 == 4 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(219), Val::from(202)],
+        )?;
+    } else if subject1 == 5 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(218), Val::from(228)],
+        )?;
+    } else if subject1 == 6 {
+        ctx.call(
+            Function::Warp,
+            vec![ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, Val::from(220), Val::from(195)],
+        )?;
     }
     return Err(Stop::End);
 }
@@ -5432,23 +5241,13 @@ fn turbo_track_guide_run(ctx: &Ctx, mut step: TurboTrackGuideStep, args: Vec<Val
                                         break 'l3;
                                     }
                                     'b3: {
-                                        'b4: {
-                                            let subject4 = Val::from(runtime::select_values(
+                                        match runtime::select_values(
                                                 ctx,
                                                 &[Val::from(
                                                     "Log Bridge and Cube Hills:Cursed Desert and Flasher Maze:Single Snail and Invisible Maze:Snake Dice and Small Cave:No, thanks.",
                                                 )],
-                                            )?);
-                                            let mut matched4 = false;
-                                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                                && !subject4.loosely_equals(&Val::from(2))
-                                                && !subject4.loosely_equals(&Val::from(3))
-                                                && !subject4.loosely_equals(&Val::from(4))
-                                                && !subject4.loosely_equals(&Val::from(5));
-                                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
+                                            )? {
+                                            1 => {
                                                 ctx.lines_as(
                                                     "Turbo Track Guide",
                                                     args![
@@ -5472,12 +5271,8 @@ fn turbo_track_guide_run(ctx: &Ctx, mut step: TurboTrackGuideStep, args: Vec<Val
                                                     ],
                                                 )?;
                                                 ctx.next()?;
-                                                break 'b4;
                                             }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
+                                            2 => {
                                                 ctx.lines_as(
                                                     "Turbo Track Guide",
                                                     args![
@@ -5491,12 +5286,8 @@ fn turbo_track_guide_run(ctx: &Ctx, mut step: TurboTrackGuideStep, args: Vec<Val
                                                 ctx.next()?;
                                                 ctx.lines_as("Turbo Track Guide", args!["The Flasher Maze", "is full of traps that will", "blind so you better be extra", "careful in navigating this maze. It might be wiser to try to slow down and avoid the traps..."])?;
                                                 ctx.next()?;
-                                                break 'b4;
                                             }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
+                                            3 => {
                                                 ctx.lines_as(
                                                     "Turbo Track Guide",
                                                     args![
@@ -5520,12 +5311,8 @@ fn turbo_track_guide_run(ctx: &Ctx, mut step: TurboTrackGuideStep, args: Vec<Val
                                                     ],
                                                 )?;
                                                 ctx.next()?;
-                                                break 'b4;
                                             }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
+                                            4 => {
                                                 ctx.lines_as(
                                                     "Turbo Track Guide",
                                                     args![
@@ -5547,12 +5334,8 @@ fn turbo_track_guide_run(ctx: &Ctx, mut step: TurboTrackGuideStep, args: Vec<Val
                                                     ],
                                                 )?;
                                                 ctx.next()?;
-                                                break 'b4;
                                             }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
+                                            5 => {
                                                 ctx.lines_as(
                                                     "Turbo Track Guide",
                                                     args!["I see.", "Okay then,", "best of luck to", "you in the races!"],
@@ -5560,6 +5343,7 @@ fn turbo_track_guide_run(ctx: &Ctx, mut step: TurboTrackGuideStep, args: Vec<Val
                                                 ctx.next()?;
                                                 l_exitloop = Val::from(0);
                                             }
+                                            _ => {}
                                         }
                                     }
                                 }
@@ -6215,25 +5999,13 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Free Ticket for Kafra Transportation:Level 5 Magic Scroll:Experience Points:3 Carat Diamond:Gift Box:Speed Potion:Cancel.",
                         )],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4))
-                        && !subject2.loosely_equals(&Val::from(5))
-                        && !subject2.loosely_equals(&Val::from(6))
-                        && !subject2.loosely_equals(&Val::from(7));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Item Exchange Helper",
                             args![
@@ -6298,101 +6070,52 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as("Item Exchange Helper", args!["Each Magic Scroll costs", "12 Turbo Track Points. Please", "select the Magic Scroll you would like to receive. Each scroll enables a one time use of a Level 5 spell or skill."])?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "Earth Spike:Cold Bolt:Fire Bolt:Lightning Bolt:Soul Strike:Fire Ball:Fire Wall:Frost Diver:Heal",
                                 )],
-                            )?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                && !subject3.loosely_equals(&Val::from(2))
-                                && !subject3.loosely_equals(&Val::from(3))
-                                && !subject3.loosely_equals(&Val::from(4))
-                                && !subject3.loosely_equals(&Val::from(5))
-                                && !subject3.loosely_equals(&Val::from(6))
-                                && !subject3.loosely_equals(&Val::from(7))
-                                && !subject3.loosely_equals(&Val::from(8))
-                                && !subject3.loosely_equals(&Val::from(9));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            )? {
+                            1 => {
                                 l_scroll = Val::from(687);
                                 l_name_s = Val::from("Earth Spike");
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 l_scroll = Val::from(689);
                                 l_name_s = Val::from("Cold Boltl");
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            3 => {
                                 l_scroll = Val::from(691);
                                 l_name_s = Val::from("Fire Bolt");
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            4 => {
                                 l_scroll = Val::from(693);
                                 l_name_s = Val::from("Lightning Bolt");
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            5 => {
                                 l_scroll = Val::from(695);
                                 l_name_s = Val::from("Soul Strike");
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            6 => {
                                 l_scroll = Val::from(697);
                                 l_name_s = Val::from("Fire Ball");
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(7)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            7 => {
                                 l_scroll = Val::from(699);
                                 l_name_s = Val::from("Fire Wall");
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(8)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            8 => {
                                 l_scroll = Val::from(12000);
                                 l_name_s = Val::from("Frost Diver");
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(9)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            9 => {
                                 l_scroll = Val::from(12002);
                                 l_name_s = Val::from("Heal");
-                                break 'b3;
                             }
+                            _ => {}
                         }
                         ctx.lines_as(
                             "Item Exchange Helper",
@@ -6456,10 +6179,7 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as(
                             "Item Exchange Helper",
                             args![
@@ -6514,10 +6234,7 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.lines_as(
                             "Item Exchange Helper",
                             args![
@@ -6582,10 +6299,7 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    5 => {
                         ctx.lines_as(
                             "Item Exchange Helper",
                             args![
@@ -6650,10 +6364,7 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    6 => {
                         ctx.lines_as(
                             "Item Exchange Helper",
                             args![
@@ -6718,10 +6429,7 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(7)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    7 => {
                         ctx.lines_as(
                             "Item Exchange Helper",
                             args!["This Item Exchange", "Service is brought", "to you by..."],
@@ -6741,6 +6449,7 @@ fn point_exchange_helper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
             if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -7297,14 +7006,8 @@ fn mountmanager_turbo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ])?;
     }
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:Cancel")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Yes:Cancel")])? {
+        1 => {
             if ctx.call(Function::GetSkillLv, vec![l_skill.clone()])? == 0 {
                 ctx.lines(args![
                     l_n_s.clone(),
@@ -7345,41 +7048,16 @@ fn mountmanager_turbo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(l_zeny.clone())?))?;
                     }
                 }
-                'b2: {
-                    let subject2 = l_i.clone();
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.call(Function::SetRiding, vec![])?;
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        break 'b2;
-                    }
-                }
+                let subject2 = l_i.clone();
+                if subject2 == 1 {
+                    ctx.call(Function::SetRiding, vec![])?;
+                } else if subject2 == 2 {} else if subject2 == 3 {}
                 ctx.lines(args![l_n_s.clone(), "Thank you for", "your patronage~"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines(args![
                 l_n_s.clone(),
                 "Are you going",
@@ -7390,6 +7068,7 @@ fn mountmanager_turbo_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }

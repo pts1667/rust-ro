@@ -243,42 +243,22 @@ fn senior_crusader_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         } else if (ctx.var("crus_q").get()?.number()? >= 1 && ctx.var("crus_q").get()?.number()? <= 3) {
             ctx.mes("Have you proven your determination with the task I have given you, or do you possess the items proving that you have received your calling?")?;
             ctx.next()?;
-            'b1: {
-                let subject1 = ctx.var("crus_q").get()?;
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    l_item1 = Val::from(957);
-                    l_item2 = Val::from(959);
-                    l_item3 = Val::from(1099);
-                    l_item4 = Val::from(901);
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    l_item1 = Val::from(932);
-                    l_item2 = Val::from(1043);
-                    l_item3 = Val::from(1098);
-                    l_item4 = Val::from(1094);
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    l_item1 = Val::from(958);
-                    l_item2 = Val::from(930);
-                    l_item3 = Val::from(1041);
-                    l_item4 = Val::from(1062);
-                    break 'b1;
-                }
+            let subject1 = ctx.var("crus_q").get()?;
+            if subject1 == 1 {
+                l_item1 = Val::from(957);
+                l_item2 = Val::from(959);
+                l_item3 = Val::from(1099);
+                l_item4 = Val::from(901);
+            } else if subject1 == 2 {
+                l_item1 = Val::from(932);
+                l_item2 = Val::from(1043);
+                l_item3 = Val::from(1098);
+                l_item4 = Val::from(1094);
+            } else if subject1 == 3 {
+                l_item1 = Val::from(958);
+                l_item2 = Val::from(930);
+                l_item3 = Val::from(1041);
+                l_item4 = Val::from(1062);
             }
             if (((ctx.call(Function::CountItem, vec![l_item1.clone()])?.number()? > 9
                 && ctx.call(Function::CountItem, vec![l_item2.clone()])?.number()? > 9)

@@ -37,21 +37,13 @@ fn chivalry_captain_knt_run(ctx: &Ctx, mut step: ChivalryCaptainKntStep, args: V
                     } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
                         ctx.lines(args!["Welcome,", "this is the", "Prontera Chivalry.", "What brings you here?"])?;
                         ctx.next()?;
-                        'b1: {
-                            let subject1 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "I want to change my job to Swordman.:I want to change my job to a Knight.:Just visiting.",
                                 )],
-                            )?);
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                && !subject1.loosely_equals(&Val::from(2))
-                                && !subject1.loosely_equals(&Val::from(3));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Captain Herman",
                                     args![
@@ -72,10 +64,7 @@ fn chivalry_captain_knt_run(ctx: &Ctx, mut step: ChivalryCaptainKntStep, args: V
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            2 => {
                                 ctx.lines_as(
                                     "Captain Herman",
                                     args![
@@ -88,14 +77,12 @@ fn chivalry_captain_knt_run(ctx: &Ctx, mut step: ChivalryCaptainKntStep, args: V
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            3 => {
                                 ctx.lines_as("Captain Herman", args!["Aha~", "You must have lots of free time. Why don't you go hunt some monsters instead of wandering about aimlessly?"])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     } else {
                         ctx.mes("Welcome. We, the proud Knights of the Prontera Chivalry, will give our lives for king and country! Please enjoy your stay.")?;
@@ -728,50 +715,37 @@ fn sir_andrew_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             )?;
             ctx.next()?;
             ctx.mes("[Sir Andrew]")?;
-            'b1: {
-                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])?;
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1040), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(7006), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(931), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(1057), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(903), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(1028), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(2), false);
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    let base = Val::from(0).number()?;
-                    runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1042), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1032), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(966), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(7031), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(946), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
-                    runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(3), false);
-                    break 'b1;
-                }
+            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])?;
+            if subject1 == 1 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1040), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(7006), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(931), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(1057), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(903), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(1028), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(2), false);
+            } else if subject1 == 2 {
+                let base = Val::from(0).number()?;
+                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1042), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1032), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(966), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(7031), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(946), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
+                runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(3), false);
             }
             ctx.var("knight_q").set(runtime::local_get(&l_items, &Val::from(12), false))?;
             if ctx.var("knight_q").get()? == 2 {
@@ -825,50 +799,37 @@ fn sir_andrew_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "Let's check and see..."
         ])?;
         ctx.next()?;
-        'b2: {
-            let subject2 = ctx.var("knight_q").get()?;
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(2)) && !subject2.loosely_equals(&Val::from(3));
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1040), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(7006), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(931), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(1057), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(903), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(1028), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(0), false);
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                matched2 = true;
-            }
-            if matched2 {
-                let base = Val::from(0).number()?;
-                runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1042), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1032), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(966), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(7031), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(946), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
-                runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(0), false);
-                break 'b2;
-            }
+        let subject2 = ctx.var("knight_q").get()?;
+        if subject2 == 2 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1040), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(7006), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(931), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(1057), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(903), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(1028), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(0), false);
+        } else if subject2 == 3 {
+            let base = Val::from(0).number()?;
+            runtime::local_set(&mut l_items, &Val::from(base + 0), Val::from(1042), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 1), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 2), Val::from(950), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 3), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 4), Val::from(1032), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 5), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 6), Val::from(966), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 7), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 8), Val::from(7031), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 9), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 10), Val::from(946), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 11), Val::from(5), false);
+            runtime::local_set(&mut l_items, &Val::from(base + 12), Val::from(0), false);
         }
         if (((((runtime::op(
             &ctx.call(Function::CountItem, vec![runtime::local_get(&l_items, &Val::from(0), false)])?,
@@ -1363,81 +1324,52 @@ fn sir_siracuse_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["What should you do when you run into a Novice asking for help in town?"],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Tell the Novice of a reasonable hunting area.:Let the Novice fight while you take the damage.:Give the Novice a bunch of Zeny and items.",
                     )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as("Sir Siracuse", args!["Of course, even a Novice needs to learn how to be independent. Giving good guidance to Novices is one of the best things we can do."])?;
                     ctx.next()?;
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.var("knight_q").set(Val::from(5))?;
                     ctx.lines_as("Sir Siracuse", args!["You have the wrong idea. Do you really believe that is helping the Novice? Give a man a fish, he will eat for a day. Teach him to fish, he will eat for a lifetime!"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.var("knight_q").set(Val::from(5))?;
                     ctx.lines_as("Sir Siracuse", args!["Do you really believe that this will truly help the poor Novice? It's generous but, they will not know the true value of zeny and items until they earn it themselves."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             ctx.lines_as(
                 "Sir Siracuse",
                 args!["Alright...", "Now, how should", "you act within", "a party?"],
             )?;
             ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Protect everyone in the front of the battle.:Gather monsters and destroy them at once.:Get as many items possible, at all cost.",
                     )],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                )? {
+                1 => {
                     ctx.lines_as("Sir Siracuse", args!["That's it! Our strength and attacks are very important in a party. All Knights should engage in a battle with that mindset."])?;
                     ctx.next()?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                2 => {
                     ctx.var("knight_q").set(Val::from(5))?;
                     ctx.lines_as("Sir Siracuse", args!["Are you crazy? Don't you realize the flaw in that kind of thinking? You can't control large mobs. What if they kill you? Who will protect the innocent?"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                3 => {
                     ctx.var("knight_q").set(Val::from(5))?;
                     ctx.lines_as(
                         "Sir Siracuse",
@@ -1449,22 +1381,15 @@ fn sir_siracuse_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             ctx.lines_as(
                 "Sir Siracuse",
                 args!["Lastly...", "what's the most", "important value", "a Knight must have?"],
             )?;
             ctx.next()?;
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Honor:Wealth:Status")])?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                    && !subject3.loosely_equals(&Val::from(2))
-                    && !subject3.loosely_equals(&Val::from(3));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
+            match runtime::select_values(ctx, &[Val::from("Honor:Wealth:Status")])? {
+                1 => {
                     ctx.lines_as(
                         "Sir Siracuse",
                         args![
@@ -1472,26 +1397,20 @@ fn sir_siracuse_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ],
                     )?;
                     ctx.next()?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                2 => {
                     ctx.var("knight_q").set(Val::from(5))?;
                     ctx.lines_as("Sir Siracuse", args!["You're scum! You strive to become a Knight for personal wealth? Get lost! We will not accept someone like you in our Chivalry!"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                3 => {
                     ctx.var("knight_q").set(Val::from(5))?;
                     ctx.lines_as("Sir Siracuse", args!["So you're trying to become famous through the Chivalry? That's pathetic. We won't accept someone like you in our Chivalry!"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             ctx.var("knight_q").set(Val::from(6))?;
             ctx.call(Function::ChangeQuest, vec![Val::from(9003), Val::from(9004)])?;
@@ -1678,57 +1597,41 @@ fn knight_windsor_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     }
     ctx.next()?;
     ctx.lines_as("Sir Windsor", args!["...", "......"])?;
-    'b1: {
-        let subject1 = l_i.clone();
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["...You fight monsters."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["...Kill them all."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["..."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["...Three stages.", "Beat them all."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["......3 minutes", "for each stage."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args![".........."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["...Go in the", "waiting room."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["...Then it", "will begin."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["..."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["...You have to wait", "if someone is testing."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["...You can go in", "after that person."])?;
-            ctx.next()?;
-            ctx.lines_as("Sir Windsor", args!["..."])?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.close_window()?;
-            ctx.call(Function::Warp, vec![Val::from("prt_in"), Val::from(80), Val::from(100)])?;
-            return Err(Stop::End);
-        }
+    let subject1 = l_i.clone();
+    if subject1 == 1 {
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["...You fight monsters."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["...Kill them all."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["..."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["...Three stages.", "Beat them all."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["......3 minutes", "for each stage."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args![".........."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if subject1 == 2 {
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["...Go in the", "waiting room."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["...Then it", "will begin."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["..."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["...You have to wait", "if someone is testing."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["...You can go in", "after that person."])?;
+        ctx.next()?;
+        ctx.lines_as("Sir Windsor", args!["..."])?;
+        ctx.close_window()?;
+        return Err(Stop::End);
+    } else if subject1 == 3 {
+        ctx.close_window()?;
+        ctx.call(Function::Warp, vec![Val::from("prt_in"), Val::from(80), Val::from(100)])?;
+        return Err(Stop::End);
     }
     Ok(Val::from(0))
 }
@@ -3455,19 +3358,11 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["Yes...", "^3355FFClaymore^000000!", "Every Knight", "would want one!"],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("About ^3355FFClaymore^000000:Buy Claymore:End Conversation")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as("Sir Gray", args!["Claymore, one of the best among the famous swords you can attain in Rune-Midgarts' Prontera!! Its value is priceless when considered by a Knight."])?;
                     ctx.next()?;
                     ctx.lines_as("Sir Gray", args!["Now, the Prontera Chivalry is making these fabulous Claymores. For Knights, they are only ^3355FF74,000^000000 Zeny."])?;
@@ -3476,10 +3371,7 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? < 1800 {
                         ctx.lines_as("Sir Gray", args!["Oh no...", "It seems that you are carrying too many things. You don't have enough space for a heavy Claymore in your inventory."])?;
                         ctx.next()?;
@@ -3539,14 +3431,12 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.lines_as("Sir Gray", args!["Any Knight should be able to wield a Claymore as if it were an extension of their body. I used to look forward to brandishing my Claymore in battle..."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else if ctx.var("BaseClass").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
             ctx.lines(args!["Believe it", "or not, I was", "once a Novice", "as well."])?;
@@ -3612,21 +3502,13 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-        'b2: {
-            let subject2 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "To become stronger...:To help my guild...:Because I'm unsatisfied with myself right now...",
                 )],
-            )?);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                && !subject2.loosely_equals(&Val::from(2))
-                && !subject2.loosely_equals(&Val::from(3));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Sir Gray",
                     args![
@@ -3638,36 +3520,20 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Sir Gray", args!["Is it to show off to others? To attain fame? Or do you have a diferent reason? What do you think is so good about gaining strength as a Knight?"])?;
                 ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Gain wealth and fame.:I can protect myself.:I can protect others.")],
-                    )?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    )? {
+                    1 => {
                         l_knight_t = (l_knight_t.clone() + Val::from(10));
                         ctx.lines_as("Sir Gray", args!["Of course, wealth and fame have their place in the world. But we as Knights must live for higher virtues."])?;
                         ctx.next()?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.lines_as("Sir Gray", args!["Good thinking. You must first be able to protect yourself in order to protect others. To this end, you must constantly train, and never give in to laziness."])?;
                         ctx.next()?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         ctx.lines_as(
                             "Sir Gray",
                             args![
@@ -3677,36 +3543,24 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Sir Gray", args!["Sadly, there are a few Knights who shame us by forgetting the ideals that should be basic to Knighthood..."])?;
                         ctx.next()?;
-                        break 'b3;
                     }
+                    _ => {}
                 }
-                break 'b2;
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
+            2 => {
                 ctx.lines_as("Sir Gray", args!["Ah, to help your guild, or maybe even your party. Our wise and benevolent King Tristram the 3rd gave us these golden words..."])?;
                 ctx.next()?;
                 ctx.lines_as("Sir Gray", args!["^8B7500Beyond the calm river, lies a dangerous waterfall. Therefore, you must always be prepared for everything...^000000"])?;
                 ctx.next()?;
                 ctx.lines_as("Sir Gray", args!["So how do you", "think you can", "help your guild?"])?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "My guild needs me.:I can help gather funds for my guild.:I can protect my guild members.",
                         )],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Sir Gray",
                             args![
@@ -3715,24 +3569,16 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         l_knight_t = (l_knight_t.clone() + Val::from(10));
                         ctx.lines_as(
                             "Sir Gray",
                             args!["Of course wealth is important.", "But we Knights must live for higher virtues."],
                         )?;
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.lines_as(
                             "Sir Gray",
                             args![
@@ -3742,15 +3588,11 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Sir Gray", args!["Sadly, there are a few Knights who shame us by forgetting the ideals that should be basic to Knighthood..."])?;
                         ctx.next()?;
-                        break 'b4;
                     }
+                    _ => {}
                 }
-                break 'b2;
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                matched2 = true;
-            }
-            if matched2 {
+            3 => {
                 l_knight_t = (l_knight_t.clone() + Val::from(5));
                 ctx.lines_as(
                     "Sir Gray",
@@ -3769,42 +3611,26 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["So...", "What part of yourself", "are you not satisfied", "with right now?"],
                 )?;
                 ctx.next()?;
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Skills.:Goal.:Appearance.")])?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                        && !subject5.loosely_equals(&Val::from(2))
-                        && !subject5.loosely_equals(&Val::from(3));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                match runtime::select_values(ctx, &[Val::from("Skills.:Goal.:Appearance.")])? {
+                    1 => {
                         l_knight_t = (l_knight_t.clone() + Val::from(5));
                         ctx.lines_as("Sir Gray", args!["Skill is something you gain with experience as a Knight. It cannot be your highest goal. Otherwise, you'll never be satisfied as a Knight."])?;
                         ctx.next()?;
-                        break 'b5;
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    2 => {
                         l_knight_t = (l_knight_t.clone().try_sub(Val::from(5))?);
                         ctx.lines_as("Sir Gray", args!["I see...", "Always having a goal is very important. You may be full of ideas upon becoming a Knight, but that may change with time."])?;
                         ctx.next()?;
-                        break 'b5;
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    3 => {
                         l_knight_t = (l_knight_t.clone() + Val::from(5));
                         ctx.lines_as("Sir Gray", args!["Oh no...", "What you see isn't what really counts. A Swordman may be stronger than a Knight, and even Knight may grow weak if he becomes lazy."])?;
                         ctx.next()?;
-                        break 'b5;
                     }
+                    _ => {}
                 }
-                break 'b2;
             }
+            _ => {}
         }
         ctx.lines_as(
             "Sir Gray",
@@ -3827,38 +3653,22 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["If you become a Knight right away, what are you going to do first?"],
         )?;
         ctx.next()?;
-        'b6: {
-            let subject6 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "I am going to go straight to battle.:There are those waiting for me.:I will learn more about Knights.",
                 )],
-            )?);
-            let mut matched6 = false;
-            let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                && !subject6.loosely_equals(&Val::from(2))
-                && !subject6.loosely_equals(&Val::from(3));
-            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                matched6 = true;
-            }
-            if matched6 {
+            )? {
+            1 => {
                 ctx.lines_as("Sir Gray", args!["Battle...?", "And then?"])?;
                 ctx.next()?;
-                'b7: {
-                    let subject7 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "I will grow within a short period of time.:I would like to test my ability as a Knight.:I would like to go to more challenging places.",
                         )],
-                    )?);
-                    let mut matched7 = false;
-                    let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                        && !subject7.loosely_equals(&Val::from(2))
-                        && !subject7.loosely_equals(&Val::from(3));
-                    if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    )? {
+                    1 => {
                         l_knight_t = (l_knight_t.clone() + Val::from(10));
                         ctx.lines_as(
                             "Sir Gray",
@@ -3868,20 +3678,12 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    2 => {
                         ctx.lines_as("Sir Gray", args!["Testing yourself is a good thing. It's okay to be happy about how you change, but don't forget about the true qualities of being a Knight."])?;
                         ctx.next()?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    3 => {
                         ctx.lines_as(
                             "Sir Gray",
                             args![
@@ -3890,49 +3692,29 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b7;
                     }
+                    _ => {}
                 }
-                break 'b6;
             }
-            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                matched6 = true;
-            }
-            if matched6 {
+            2 => {
                 ctx.lines_as("Sir Gray", args!["Who is", "waiting for you?"])?;
                 ctx.next()?;
-                'b8: {
-                    let subject8 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("My friends.:My Guild members.:My Lover.")],
-                    )?);
-                    let mut matched8 = false;
-                    let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                        && !subject8.loosely_equals(&Val::from(2))
-                        && !subject8.loosely_equals(&Val::from(3));
-                    if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Sir Gray", args!["I see, they would share in the joy of your achievements. Don't ever lose your kind heart, and always give help to your friends."])?;
                         ctx.next()?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    2 => {
                         ctx.lines_as(
                             "Sir Gray",
                             args!["Those who would share in your happiness and hardship. As a Knight, you must always protect them."],
                         )?;
                         ctx.next()?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    3 => {
                         ctx.lines_as(
                             "Sir Gray",
                             args![
@@ -3956,32 +3738,20 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Also...", "Love them forever.", "Sincere affection", "is hard to find."],
                         )?;
                         ctx.next()?;
-                        break 'b8;
                     }
+                    _ => {}
                 }
-                break 'b6;
             }
-            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                matched6 = true;
-            }
-            if matched6 {
+            3 => {
                 ctx.lines_as("Sir Gray", args!["Good attitude...", "What do you plan", "on learning?"])?;
                 ctx.next()?;
-                'b9: {
-                    let subject9 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Comfortable places for Knights to go...:The different paths of a Knight...:Ways to get more money as a Knight...",
                         )],
-                    )?);
-                    let mut matched9 = false;
-                    let no_case9 = !subject9.loosely_equals(&Val::from(1))
-                        && !subject9.loosely_equals(&Val::from(2))
-                        && !subject9.loosely_equals(&Val::from(3));
-                    if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    )? {
+                    1 => {
                         l_knight_t = (l_knight_t.clone() + Val::from(5));
                         ctx.lines_as(
                             "Sir Gray",
@@ -3991,28 +3761,20 @@ fn sir_gray_knt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b9;
                     }
-                    if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    2 => {
                         ctx.lines_as("Sir Gray", args!["There are many similar Knights outside in the world. Think of them as your seniors and ask many questions."])?;
                         ctx.next()?;
-                        break 'b9;
                     }
-                    if !matched9 && subject9.loosely_equals(&Val::from(3)) {
-                        matched9 = true;
-                    }
-                    if matched9 {
+                    3 => {
                         l_knight_t = (l_knight_t.clone() + Val::from(15));
                         ctx.lines_as("Sir Gray", args!["Oh no. Do you hold wealth as a priority of being a Knight? We're not meant to be that way. Come again when you have thought", "more about it..."])?;
                         ctx.next()?;
-                        break 'b9;
                     }
+                    _ => {}
                 }
-                break 'b6;
             }
+            _ => {}
         }
         ctx.lines_as(
             "Sir Gray",

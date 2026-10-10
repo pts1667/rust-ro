@@ -20,6462 +20,5884 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     l_level = runtime::arg(&args, 0, Val::from(0));
     l_map_s = runtime::arg(&args, 1, Val::from(0));
     l_label_s = runtime::arg(&args, 2, Val::from(0));
-    'b1: {
-        let subject1 = l_level.clone();
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4))
-            && !subject1.loosely_equals(&Val::from(5))
-            && !subject1.loosely_equals(&Val::from(6))
-            && !subject1.loosely_equals(&Val::from(7))
-            && !subject1.loosely_equals(&Val::from(8))
-            && !subject1.loosely_equals(&Val::from(9))
-            && !subject1.loosely_equals(&Val::from(10))
-            && !subject1.loosely_equals(&Val::from(11))
-            && !subject1.loosely_equals(&Val::from(12))
-            && !subject1.loosely_equals(&Val::from(13))
-            && !subject1.loosely_equals(&Val::from(14))
-            && !subject1.loosely_equals(&Val::from(15))
-            && !subject1.loosely_equals(&Val::from(16))
-            && !subject1.loosely_equals(&Val::from(17))
-            && !subject1.loosely_equals(&Val::from(18))
-            && !subject1.loosely_equals(&Val::from(19))
-            && !subject1.loosely_equals(&Val::from(20))
-            && !subject1.loosely_equals(&Val::from(21))
-            && !subject1.loosely_equals(&Val::from(22))
-            && !subject1.loosely_equals(&Val::from(23))
-            && !subject1.loosely_equals(&Val::from(24))
-            && !subject1.loosely_equals(&Val::from(25))
-            && !subject1.loosely_equals(&Val::from(26))
-            && !subject1.loosely_equals(&Val::from(27))
-            && !subject1.loosely_equals(&Val::from(28))
-            && !subject1.loosely_equals(&Val::from(29))
-            && !subject1.loosely_equals(&Val::from(30))
-            && !subject1.loosely_equals(&Val::from(31))
-            && !subject1.loosely_equals(&Val::from(32))
-            && !subject1.loosely_equals(&Val::from(33))
-            && !subject1.loosely_equals(&Val::from(34))
-            && !subject1.loosely_equals(&Val::from(35))
-            && !subject1.loosely_equals(&Val::from(36))
-            && !subject1.loosely_equals(&Val::from(37))
-            && !subject1.loosely_equals(&Val::from(38))
-            && !subject1.loosely_equals(&Val::from(39))
-            && !subject1.loosely_equals(&Val::from(40))
-            && !subject1.loosely_equals(&Val::from(41))
-            && !subject1.loosely_equals(&Val::from(42))
-            && !subject1.loosely_equals(&Val::from(43))
-            && !subject1.loosely_equals(&Val::from(44))
-            && !subject1.loosely_equals(&Val::from(45))
-            && !subject1.loosely_equals(&Val::from(46))
-            && !subject1.loosely_equals(&Val::from(47))
-            && !subject1.loosely_equals(&Val::from(48))
-            && !subject1.loosely_equals(&Val::from(49))
-            && !subject1.loosely_equals(&Val::from(50))
-            && !subject1.loosely_equals(&Val::from(51))
-            && !subject1.loosely_equals(&Val::from(52))
-            && !subject1.loosely_equals(&Val::from(53))
-            && !subject1.loosely_equals(&Val::from(54))
-            && !subject1.loosely_equals(&Val::from(55))
-            && !subject1.loosely_equals(&Val::from(56))
-            && !subject1.loosely_equals(&Val::from(57))
-            && !subject1.loosely_equals(&Val::from(58))
-            && !subject1.loosely_equals(&Val::from(59))
-            && !subject1.loosely_equals(&Val::from(60))
-            && !subject1.loosely_equals(&Val::from(61))
-            && !subject1.loosely_equals(&Val::from(62))
-            && !subject1.loosely_equals(&Val::from(63))
-            && !subject1.loosely_equals(&Val::from(64))
-            && !subject1.loosely_equals(&Val::from(65))
-            && !subject1.loosely_equals(&Val::from(66))
-            && !subject1.loosely_equals(&Val::from(67))
-            && !subject1.loosely_equals(&Val::from(68))
-            && !subject1.loosely_equals(&Val::from(69))
-            && !subject1.loosely_equals(&Val::from(70))
-            && !subject1.loosely_equals(&Val::from(71))
-            && !subject1.loosely_equals(&Val::from(72))
-            && !subject1.loosely_equals(&Val::from(73))
-            && !subject1.loosely_equals(&Val::from(74))
-            && !subject1.loosely_equals(&Val::from(75))
-            && !subject1.loosely_equals(&Val::from(76))
-            && !subject1.loosely_equals(&Val::from(77))
-            && !subject1.loosely_equals(&Val::from(78))
-            && !subject1.loosely_equals(&Val::from(79))
-            && !subject1.loosely_equals(&Val::from(80))
-            && !subject1.loosely_equals(&Val::from(81))
-            && !subject1.loosely_equals(&Val::from(82))
-            && !subject1.loosely_equals(&Val::from(83))
-            && !subject1.loosely_equals(&Val::from(84))
-            && !subject1.loosely_equals(&Val::from(85))
-            && !subject1.loosely_equals(&Val::from(86))
-            && !subject1.loosely_equals(&Val::from(87))
-            && !subject1.loosely_equals(&Val::from(88))
-            && !subject1.loosely_equals(&Val::from(89))
-            && !subject1.loosely_equals(&Val::from(90))
-            && !subject1.loosely_equals(&Val::from(91))
-            && !subject1.loosely_equals(&Val::from(92))
-            && !subject1.loosely_equals(&Val::from(93))
-            && !subject1.loosely_equals(&Val::from(94))
-            && !subject1.loosely_equals(&Val::from(95))
-            && !subject1.loosely_equals(&Val::from(96))
-            && !subject1.loosely_equals(&Val::from(97))
-            && !subject1.loosely_equals(&Val::from(98))
-            && !subject1.loosely_equals(&Val::from(99));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(7),
-                    Val::from(351),
-                    Val::from(17),
-                    Val::from(387),
-                    Val::from("Metaling"),
-                    Val::from(1613),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(7),
-                    Val::from(351),
-                    Val::from(17),
-                    Val::from(387),
-                    Val::from("Marin"),
-                    Val::from(1242),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(7),
-                    Val::from(351),
-                    Val::from(17),
-                    Val::from(387),
-                    Val::from("Poporing"),
-                    Val::from(1031),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(7),
-                    Val::from(351),
-                    Val::from(17),
-                    Val::from(387),
-                    Val::from("Drops"),
-                    Val::from(1113),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(7),
-                    Val::from(351),
-                    Val::from(17),
-                    Val::from(387),
-                    Val::from("Mastering"),
-                    Val::from(1090),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(7),
-                    Val::from(351),
-                    Val::from(17),
-                    Val::from(387),
-                    Val::from("Poring"),
-                    Val::from(1002),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Desert Wolf"),
-                    Val::from(1106),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Vagabond Wolf"),
-                    Val::from(1092),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Baby Desert Wolf"),
-                    Val::from(1107),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Archer Skeleton"),
-                    Val::from(1016),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Skel Worker"),
-                    Val::from(1169),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Soldier Skeleton"),
-                    Val::from(1028),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Orc Skeleton"),
-                    Val::from(1152),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Pirate Skeleton"),
-                    Val::from(1071),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Skeleton"),
-                    Val::from(1076),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Argiope"),
-                    Val::from(1099),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Mantis"),
-                    Val::from(1139),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Argos"),
-                    Val::from(1100),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Vocal"),
-                    Val::from(1088),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Rocker"),
-                    Val::from(1052),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Hornet"),
-                    Val::from(1004),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Golden Thief Bug"),
-                    Val::from(1086),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Thief Bug Male"),
-                    Val::from(1054),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Thief Bug Female"),
-                    Val::from(1053),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Thief Bug"),
-                    Val::from(1051),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Thief Bug Egg"),
-                    Val::from(1048),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Dragon Egg"),
-                    Val::from(1721),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Thief Bug Egg"),
-                    Val::from(1048),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Ant Egg"),
-                    Val::from(1097),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Pupa"),
-                    Val::from(1008),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(7)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Explosion"),
-                    Val::from(1383),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Drainliar"),
-                    Val::from(1111),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Anopheles"),
-                    Val::from(1627),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Farmiliar"),
-                    Val::from(1005),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(8)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Firelock Soldier"),
-                    Val::from(1403),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Cruiser"),
-                    Val::from(1248),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(9)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Obsidian"),
-                    Val::from(1615),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Golem"),
-                    Val::from(1040),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Stapo"),
-                    Val::from(1784),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(10)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Mistress"),
-                    Val::from(1059),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Giant Hornet"),
-                    Val::from(1303),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Hornet"),
-                    Val::from(1004),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(11)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Dryad"),
-                    Val::from(1493),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Parasite"),
-                    Val::from(1500),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Hermit Plant"),
-                    Val::from(1413),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Rafflesia"),
-                    Val::from(1162),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(12)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Demon Pungus"),
-                    Val::from(1378),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Punk"),
-                    Val::from(1199),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(13)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Yao Yun"),
-                    Val::from(1512),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Bongunn"),
-                    Val::from(1188),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Munak"),
-                    Val::from(1026),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(14)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("High Orc"),
-                    Val::from(1213),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Orc Archer"),
-                    Val::from(1189),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Orc Lady"),
-                    Val::from(1273),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Orc Warrior"),
-                    Val::from(1023),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Orc Baby"),
-                    Val::from(1686),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(15)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Maya"),
-                    Val::from(1147),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Phreeoni"),
-                    Val::from(1159),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Deniro"),
-                    Val::from(1105),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Pierre"),
-                    Val::from(1160),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Andre"),
-                    Val::from(1095),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Ant Egg"),
-                    Val::from(1097),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(16)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Raydric Archer"),
-                    Val::from(1276),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Orc Archer"),
-                    Val::from(1189),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Gargoyle"),
-                    Val::from(1253),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Archer Skeleton"),
-                    Val::from(1016),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(17)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Merman"),
-                    Val::from(1264),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Baphomet Jr."),
-                    Val::from(1101),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Strouf"),
-                    Val::from(1065),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Hill Wind"),
-                    Val::from(1629),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(18)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Cramp"),
-                    Val::from(1209),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Tarou"),
-                    Val::from(1175),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(19)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Deviace"),
-                    Val::from(1108),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Megalodon"),
-                    Val::from(1064),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Swordfish"),
-                    Val::from(1069),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Phen"),
-                    Val::from(1158),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(20)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Drake"),
-                    Val::from(1112),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Pirate Skeleton"),
-                    Val::from(1071),
-                    Val::from(50),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(21)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Plasma"),
-                    Val::from(1693),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Plasma"),
-                    Val::from(1696),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Plasma"),
-                    Val::from(1695),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Plasma"),
-                    Val::from(1697),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Plasma"),
-                    Val::from(1694),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(22)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Muscipular"),
-                    Val::from(1780),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Drosera"),
-                    Val::from(1781),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Flora"),
-                    Val::from(1118),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Hydra"),
-                    Val::from(1068),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Mandragora"),
-                    Val::from(1020),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Rafflesia"),
-                    Val::from(1162),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(23)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Penomena"),
-                    Val::from(1216),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Obeaune"),
-                    Val::from(1044),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Marse"),
-                    Val::from(1144),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Swordfish"),
-                    Val::from(1069),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Hydra"),
-                    Val::from(1068),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(24)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Joker"),
-                    Val::from(1131),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Carat"),
-                    Val::from(1267),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Jakk"),
-                    Val::from(1130),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(25)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Cat o' Nine Tails"),
-                    Val::from(1307),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Moonlight"),
-                    Val::from(1150),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Nine Tail"),
-                    Val::from(1180),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(26)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Gibbet"),
-                    Val::from(1503),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Enchanted Peach Tree"),
-                    Val::from(1410),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Wooden Golem"),
-                    Val::from(1497),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Stone Shooter"),
-                    Val::from(1495),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Elder Willow"),
-                    Val::from(1033),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(27)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Goblin Archer"),
-                    Val::from(1258),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Goblin"),
-                    Val::from(1122),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Goblin"),
-                    Val::from(1123),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Goblin"),
-                    Val::from(1124),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Goblin"),
-                    Val::from(1125),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Goblin"),
-                    Val::from(1126),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(28)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Arclouse"),
-                    Val::from(1194),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Neraid"),
-                    Val::from(1255),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Pest"),
-                    Val::from(1256),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Kukre"),
-                    Val::from(1070),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(29)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Dark Frame"),
-                    Val::from(1260),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("The Paper"),
-                    Val::from(1375),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Hylozoist"),
-                    Val::from(1510),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Quve"),
-                    Val::from(1508),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Lude"),
-                    Val::from(1509),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Whisper"),
-                    Val::from(1179),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(30)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("White Lady"),
-                    Val::from(1630),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Evil Nymph"),
-                    Val::from(1416),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(31)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Gig"),
-                    Val::from(1387),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Iron Fist"),
-                    Val::from(1212),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Argiope"),
-                    Val::from(1099),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Scorpion"),
-                    Val::from(1001),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(32)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Goblin Leader"),
-                    Val::from(1299),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Goblin Archer"),
-                    Val::from(1258),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Goblin"),
-                    Val::from(1122),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Goblin"),
-                    Val::from(1123),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Goblin"),
-                    Val::from(1124),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Goblin"),
-                    Val::from(1125),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Goblin"),
-                    Val::from(1126),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(33)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Kobold Leader"),
-                    Val::from(1296),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Kobold"),
-                    Val::from(1133),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Kobold Archer"),
-                    Val::from(1282),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Kobold"),
-                    Val::from(1134),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Kobold"),
-                    Val::from(1135),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(34)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Flame Skull"),
-                    Val::from(1869),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Whisper"),
-                    Val::from(1179),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Giant Whisper"),
-                    Val::from(1186),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(35)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Turtle General"),
-                    Val::from(1312),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Freezer"),
-                    Val::from(1319),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Solider"),
-                    Val::from(1316),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Heater"),
-                    Val::from(1318),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Permeter"),
-                    Val::from(1314),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(36)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Anolian"),
-                    Val::from(1206),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Grove"),
-                    Val::from(1687),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Alligator"),
-                    Val::from(1271),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(37)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Clock Tower Manager"),
-                    Val::from(1270),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Clock"),
-                    Val::from(1269),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Alarm"),
-                    Val::from(1193),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(38)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Death Word"),
-                    Val::from(1698),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Rideword"),
-                    Val::from(1195),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(39)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Evil Nymph"),
-                    Val::from(1416),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Mao Gui"),
-                    Val::from(1513),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Taoist Hermit"),
-                    Val::from(1412),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Zhu Po Long"),
-                    Val::from(1514),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Jin Guai"),
-                    Val::from(1517),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(40)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Samurai Specter"),
-                    Val::from(1492),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Shinobi"),
-                    Val::from(1401),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Tengu"),
-                    Val::from(1405),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Firelock Soldier"),
-                    Val::from(1403),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Miyabi Doll"),
-                    Val::from(1404),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Karakasa"),
-                    Val::from(1400),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(41)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Kraben"),
-                    Val::from(1587),
-                    Val::from(50),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(42)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Sleeper"),
-                    Val::from(1386),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Sting"),
-                    Val::from(1207),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Mi Gao"),
-                    Val::from(1516),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Sandman"),
-                    Val::from(1165),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Hode"),
-                    Val::from(1127),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(43)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Medusa"),
-                    Val::from(1148),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Sidewinder"),
-                    Val::from(1037),
-                    Val::from(40),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Anacondaq"),
-                    Val::from(1030),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Boa"),
-                    Val::from(1025),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(44)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Hatii Baby"),
-                    Val::from(1515),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Baphomet Jr."),
-                    Val::from(1101),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Orc Baby"),
-                    Val::from(1686),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Baby Desert Wolf"),
-                    Val::from(1107),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Savage Babe"),
-                    Val::from(1167),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(45)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Osiris"),
-                    Val::from(1038),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Ancient Mummy"),
-                    Val::from(1297),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Verit"),
-                    Val::from(1032),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Mummy"),
-                    Val::from(1041),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(46)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Seeker"),
-                    Val::from(1774),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Beholder"),
-                    Val::from(1633),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(47)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Deleter"),
-                    Val::from(1384),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Deleter"),
-                    Val::from(1385),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Petite"),
-                    Val::from(1156),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Petite"),
-                    Val::from(1155),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(48)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Ancient Worm"),
-                    Val::from(1305),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Ancient Mummy"),
-                    Val::from(1297),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Ancient Mimic"),
-                    Val::from(1699),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(49)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Grizzly"),
-                    Val::from(1381),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Leib Olmai"),
-                    Val::from(1306),
-                    Val::from(7),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Zipper Bear"),
-                    Val::from(1417),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Sasquatch"),
-                    Val::from(1243),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Bigfoot"),
-                    Val::from(1060),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(50)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Pharaoh"),
-                    Val::from(1157),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Amon Ra"),
-                    Val::from(1511),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Anubis"),
-                    Val::from(1098),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Marduk"),
-                    Val::from(1140),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Matyr"),
-                    Val::from(1146),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(51)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Mini Demon"),
-                    Val::from(1292),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Diabolic"),
-                    Val::from(1382),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Deviruchi"),
-                    Val::from(1109),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(52)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Harpy"),
-                    Val::from(1376),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Grand Peco"),
-                    Val::from(1369),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Bloody Butterfly"),
-                    Val::from(1408),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Gargoyle"),
-                    Val::from(1253),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Hill Wind"),
-                    Val::from(1680),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Hill Wind"),
-                    Val::from(1629),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(53)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Assaulter"),
-                    Val::from(1315),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Shinobi"),
-                    Val::from(1401),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(54)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Chepet"),
-                    Val::from(1250),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Marionette"),
-                    Val::from(1143),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Miyabi Doll"),
-                    Val::from(1404),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(55)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Medusa"),
-                    Val::from(1148),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Evil Snake Lord"),
-                    Val::from(1418),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Isis"),
-                    Val::from(1029),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Sidewinder"),
-                    Val::from(1037),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(56)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Freezer"),
-                    Val::from(1319),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Hatii Baby"),
-                    Val::from(1515),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Ice Titan"),
-                    Val::from(1777),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Snowier"),
-                    Val::from(1775),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Gazeti"),
-                    Val::from(1778),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(57)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Arc Angeling"),
-                    Val::from(1388),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Deviling"),
-                    Val::from(1582),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Angeling"),
-                    Val::from(1096),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Ghostring"),
-                    Val::from(1120),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Mastering"),
-                    Val::from(1090),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Metaling"),
-                    Val::from(1613),
-                    Val::from(25),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Marin"),
-                    Val::from(1242),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Poporing"),
-                    Val::from(1031),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Drops"),
-                    Val::from(1113),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(58)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Phendark"),
-                    Val::from(1202),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Rybio"),
-                    Val::from(1201),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Zombie Prisoner"),
-                    Val::from(1197),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Skeleton Prisoner"),
-                    Val::from(1196),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Injustice"),
-                    Val::from(1257),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(59)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Ancient Mimic"),
-                    Val::from(1699),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Mimic"),
-                    Val::from(1191),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Mystcase"),
-                    Val::from(1249),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(60)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Egnigem Cenia"),
-                    Val::from(1658),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Doppelganger"),
-                    Val::from(1046),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Armeyer Dinze"),
-                    Val::from(1654),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Wickebine Tres"),
-                    Val::from(1653),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Laurell Winder"),
-                    Val::from(1657),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Kavach Icarus"),
-                    Val::from(1656),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Errende Ebecee"),
-                    Val::from(1655),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Egnigem Cenia"),
-                    Val::from(1652),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(61)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Agav"),
-                    Val::from(1769),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Echio"),
-                    Val::from(1770),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Isilla"),
-                    Val::from(1772),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Mobster"),
-                    Val::from(1313),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Pasana"),
-                    Val::from(1154),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Vanberk"),
-                    Val::from(1771),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(62)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Wanderer"),
-                    Val::from(1208),
-                    Val::from(35),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(63)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Ragged Zombie"),
-                    Val::from(1865),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Zombie Master"),
-                    Val::from(1298),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Zombie Prisoner"),
-                    Val::from(1197),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Orc Zombie"),
-                    Val::from(1153),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Zombie"),
-                    Val::from(1015),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(64)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Ungoliant"),
-                    Val::from(1618),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Ancient Worm"),
-                    Val::from(1305),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Caterpillar"),
-                    Val::from(1300),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Creamy Fear"),
-                    Val::from(1293),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Killer Mantis"),
-                    Val::from(1294),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Giant Hornet"),
-                    Val::from(1303),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(65)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Atroce"),
-                    Val::from(1785),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Galion"),
-                    Val::from(1783),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(66)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Incubus"),
-                    Val::from(1374),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Aliot"),
-                    Val::from(1736),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Injustice"),
-                    Val::from(1257),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(67)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Acidus"),
-                    Val::from(1716),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Acidus"),
-                    Val::from(1713),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Deleter"),
-                    Val::from(1384),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Mutant Dragonoid"),
-                    Val::from(1262),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Petite"),
-                    Val::from(1156),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(68)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Lava Golem"),
-                    Val::from(1366),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Stalactic Golem"),
-                    Val::from(1278),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Ice Titan"),
-                    Val::from(1777),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Wooden Golem"),
-                    Val::from(1497),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Golem"),
-                    Val::from(1040),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(69)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Dame of Sentinel"),
-                    Val::from(1700),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Mistress of Shelter"),
-                    Val::from(1701),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Baroness of Retribution"),
-                    Val::from(1702),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Lady Solace"),
-                    Val::from(1703),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("False Angel"),
-                    Val::from(1371),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(70)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Orc Hero"),
-                    Val::from(1087),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Orc Lord"),
-                    Val::from(1190),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Orc Baby"),
-                    Val::from(1686),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(71)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Succubus"),
-                    Val::from(1370),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Nightmare Terror"),
-                    Val::from(1379),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Incubus"),
-                    Val::from(1374),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Nightmare"),
-                    Val::from(1061),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(72)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Margaretha Sorin"),
-                    Val::from(1637),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Permeter"),
-                    Val::from(1314),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Errende Ebecee"),
-                    Val::from(1655),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Enchanted Peach Tree"),
-                    Val::from(1410),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(73)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Succubus"),
-                    Val::from(1370),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Loli Ruri"),
-                    Val::from(1505),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Aliza"),
-                    Val::from(1737),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Zealotus"),
-                    Val::from(1200),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Alice"),
-                    Val::from(1275),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Green Maiden"),
-                    Val::from(1519),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(74)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Dimik"),
-                    Val::from(1671),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Dimik"),
-                    Val::from(1673),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Dimik"),
-                    Val::from(1672),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Venatu"),
-                    Val::from(1677),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Dimik"),
-                    Val::from(1670),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Archdam"),
-                    Val::from(1668),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Venatu"),
-                    Val::from(1678),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Venatu"),
-                    Val::from(1679),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(9),
-                    Val::from(277),
-                    Val::from(45),
-                    Val::from("Venatu"),
-                    Val::from(1676),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(75)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Baphomet"),
-                    Val::from(1039),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Dark Lord"),
-                    Val::from(1272),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Baphomet Jr."),
-                    Val::from(1101),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(9),
-                    Val::from(362),
-                    Val::from(45),
-                    Val::from("Dark Illusion"),
-                    Val::from(1302),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(76)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Abysmal Knight"),
-                    Val::from(1219),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Nightmare Terror"),
-                    Val::from(1379),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(351),
-                    Val::from(19),
-                    Val::from(387),
-                    Val::from("Nightmare"),
-                    Val::from(1061),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(77)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Banshee"),
-                    Val::from(1867),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Wraith Dead"),
-                    Val::from(1291),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Evil Druid"),
-                    Val::from(1117),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Wraith"),
-                    Val::from(1192),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(351),
-                    Val::from(103),
-                    Val::from(387),
-                    Val::from("Wind Ghost"),
-                    Val::from(1263),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(78)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Sword Master"),
-                    Val::from(1829),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Bloody Knight"),
-                    Val::from(1268),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Abysmal Knight"),
-                    Val::from(1219),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Dullahan"),
-                    Val::from(1504),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(351),
-                    Val::from(191),
-                    Val::from(387),
-                    Val::from("Raydric"),
-                    Val::from(1163),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(79)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Hydro"),
-                    Val::from(1720),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Ferus"),
-                    Val::from(1714),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Ferus"),
-                    Val::from(1717),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Deleter"),
-                    Val::from(1385),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(351),
-                    Val::from(277),
-                    Val::from(387),
-                    Val::from("Petite"),
-                    Val::from(1155),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(80)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Falling Bishop"),
-                    Val::from(1871),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(351),
-                    Val::from(362),
-                    Val::from(387),
-                    Val::from("Necromancer"),
-                    Val::from(1870),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(81)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Mysteltainn"),
-                    Val::from(1203),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Ogretooth"),
-                    Val::from(1204),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(267),
-                    Val::from(19),
-                    Val::from(303),
-                    Val::from("Executioner"),
-                    Val::from(1205),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(82)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Bloody Knight"),
-                    Val::from(1268),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Agav"),
-                    Val::from(1769),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Bloody Murderer"),
-                    Val::from(1507),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Skogul"),
-                    Val::from(1752),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(267),
-                    Val::from(103),
-                    Val::from(303),
-                    Val::from("Injustice"),
-                    Val::from(1257),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(83)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Skeggiold"),
-                    Val::from(1754),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Dark Illusion"),
-                    Val::from(1302),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Gryphon"),
-                    Val::from(1259),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(267),
-                    Val::from(191),
-                    Val::from(303),
-                    Val::from("Chimera"),
-                    Val::from(1283),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(84)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Succubus"),
-                    Val::from(1370),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Dark Illusion"),
-                    Val::from(1302),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Owl Duke"),
-                    Val::from(1320),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Owl Baron"),
-                    Val::from(1295),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(267),
-                    Val::from(277),
-                    Val::from(303),
-                    Val::from("Incubus"),
-                    Val::from(1374),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(85)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(267),
-                    Val::from(362),
-                    Val::from(303),
-                    Val::from("Ifrit"),
-                    Val::from(1832),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(86)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Hydro"),
-                    Val::from(1720),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Gryphon"),
-                    Val::from(1259),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Chimera"),
-                    Val::from(1283),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(180),
-                    Val::from(19),
-                    Val::from(216),
-                    Val::from("Majoruros"),
-                    Val::from(1310),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(87)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Salamander"),
-                    Val::from(1831),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Kasa"),
-                    Val::from(1833),
-                    Val::from(20),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Lava Golem"),
-                    Val::from(1366),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(180),
-                    Val::from(103),
-                    Val::from(216),
-                    Val::from("Gajomart"),
-                    Val::from(1309),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(88)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Necromancer"),
-                    Val::from(1870),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Anubis"),
-                    Val::from(1098),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Wraith Dead"),
-                    Val::from(1291),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Ancient Mummy"),
-                    Val::from(1297),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(180),
-                    Val::from(191),
-                    Val::from(216),
-                    Val::from("Khalitzburg"),
-                    Val::from(1132),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(89)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Odium of Thanatos"),
-                    Val::from(1704),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Despero of Thanatos"),
-                    Val::from(1705),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Maero of Thanatos"),
-                    Val::from(1706),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(180),
-                    Val::from(277),
-                    Val::from(216),
-                    Val::from("Dolor of Thanatos"),
-                    Val::from(1707),
-                    Val::from(6),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(90)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Valkyrie Randgris"),
-                    Val::from(1751),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Baroness of Retribution"),
-                    Val::from(1702),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("Lady Solace"),
-                    Val::from(1703),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(180),
-                    Val::from(362),
-                    Val::from(216),
-                    Val::from("False Angel"),
-                    Val::from(1371),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(91)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Cecil Damon"),
-                    Val::from(1638),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Bow Master"),
-                    Val::from(1830),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(96),
-                    Val::from(19),
-                    Val::from(132),
-                    Val::from("Kavach Icarus"),
-                    Val::from(1656),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(92)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Kathryne Keyron"),
-                    Val::from(1639),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Elder"),
-                    Val::from(1377),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Laurell Weinder"),
-                    Val::from(1657),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Wind Ghost"),
-                    Val::from(1263),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(96),
-                    Val::from(103),
-                    Val::from(132),
-                    Val::from("Marduk"),
-                    Val::from(1140),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(93)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Seyren Windsor"),
-                    Val::from(1634),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Bloody Knight"),
-                    Val::from(1268),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Abysmal Knight"),
-                    Val::from(1219),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(96),
-                    Val::from(191),
-                    Val::from(132),
-                    Val::from("Wanderer"),
-                    Val::from(1208),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(94)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Sword Master"),
-                    Val::from(1829),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(267),
-                    Val::from(96),
-                    Val::from(277),
-                    Val::from(132),
-                    Val::from("Bow Master"),
-                    Val::from(1830),
-                    Val::from(15),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(95)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Beelzebub"),
-                    Val::from(1873),
-                    Val::from(1),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Hunter Fly"),
-                    Val::from(1035),
-                    Val::from(30),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Steel Chonchon"),
-                    Val::from(1042),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Dragon FLy"),
-                    Val::from(1091),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(352),
-                    Val::from(96),
-                    Val::from(362),
-                    Val::from(132),
-                    Val::from("Chonchon"),
-                    Val::from(1011),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(96)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Valkyrie"),
-                    Val::from(1765),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Skeggiold"),
-                    Val::from(1755),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(9),
-                    Val::from(9),
-                    Val::from(19),
-                    Val::from(45),
-                    Val::from("Skeggiold"),
-                    Val::from(1754),
-                    Val::from(10),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(97)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Incarnation of Morocc"),
-                    Val::from(1918),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Incarnation of Morocc"),
-                    Val::from(1919),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Incarnation of Morocc"),
-                    Val::from(1920),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(93),
-                    Val::from(9),
-                    Val::from(103),
-                    Val::from(45),
-                    Val::from("Incarnation of Morocc"),
-                    Val::from(1921),
-                    Val::from(5),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(98)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Kathryne Keyron"),
-                    Val::from(1639),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Seyren Windsor"),
-                    Val::from(1634),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Margaretha Sorin"),
-                    Val::from(1637),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Eremes Guile"),
-                    Val::from(1635),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Howard Alt-Eisen"),
-                    Val::from(1636),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            ctx.call(
-                Function::AreaMonster,
-                vec![
-                    l_map_s.clone(),
-                    Val::from(181),
-                    Val::from(9),
-                    Val::from(191),
-                    Val::from(45),
-                    Val::from("Cecil Damon"),
-                    Val::from(1638),
-                    Val::from(2),
-                    l_label_s.clone(),
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(99)) {
-            matched1 = true;
-        }
-        if matched1 {
-            l_i = Val::from(1);
-            'l2: loop {
-                if !(l_i.clone().number()? <= 7) {
-                    break 'l2;
-                }
-                'b2: {
-                    l_mob_ran = ctx.call(Function::Rand, vec![Val::from(1), Val::from(30)])?;
-                    if l_mob_ran.clone() == 1 {
+    let subject1 = l_level.clone();
+    if subject1 == 1 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(7),
+                Val::from(351),
+                Val::from(17),
+                Val::from(387),
+                Val::from("Metaling"),
+                Val::from(1613),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(7),
+                Val::from(351),
+                Val::from(17),
+                Val::from(387),
+                Val::from("Marin"),
+                Val::from(1242),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(7),
+                Val::from(351),
+                Val::from(17),
+                Val::from(387),
+                Val::from("Poporing"),
+                Val::from(1031),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(7),
+                Val::from(351),
+                Val::from(17),
+                Val::from(387),
+                Val::from("Drops"),
+                Val::from(1113),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(7),
+                Val::from(351),
+                Val::from(17),
+                Val::from(387),
+                Val::from("Mastering"),
+                Val::from(1090),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(7),
+                Val::from(351),
+                Val::from(17),
+                Val::from(387),
+                Val::from("Poring"),
+                Val::from(1002),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 2 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Desert Wolf"),
+                Val::from(1106),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Vagabond Wolf"),
+                Val::from(1092),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Baby Desert Wolf"),
+                Val::from(1107),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 3 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Archer Skeleton"),
+                Val::from(1016),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Skel Worker"),
+                Val::from(1169),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Soldier Skeleton"),
+                Val::from(1028),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Orc Skeleton"),
+                Val::from(1152),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Pirate Skeleton"),
+                Val::from(1071),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Skeleton"),
+                Val::from(1076),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 4 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Argiope"),
+                Val::from(1099),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Mantis"),
+                Val::from(1139),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Argos"),
+                Val::from(1100),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Vocal"),
+                Val::from(1088),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Rocker"),
+                Val::from(1052),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Hornet"),
+                Val::from(1004),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 5 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Golden Thief Bug"),
+                Val::from(1086),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Thief Bug Male"),
+                Val::from(1054),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Thief Bug Female"),
+                Val::from(1053),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Thief Bug"),
+                Val::from(1051),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Thief Bug Egg"),
+                Val::from(1048),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 6 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Dragon Egg"),
+                Val::from(1721),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Thief Bug Egg"),
+                Val::from(1048),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Ant Egg"),
+                Val::from(1097),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Pupa"),
+                Val::from(1008),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 7 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Explosion"),
+                Val::from(1383),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Drainliar"),
+                Val::from(1111),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Anopheles"),
+                Val::from(1627),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Farmiliar"),
+                Val::from(1005),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 8 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Firelock Soldier"),
+                Val::from(1403),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Cruiser"),
+                Val::from(1248),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 9 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Obsidian"),
+                Val::from(1615),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Golem"),
+                Val::from(1040),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Stapo"),
+                Val::from(1784),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 10 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Mistress"),
+                Val::from(1059),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Giant Hornet"),
+                Val::from(1303),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Hornet"),
+                Val::from(1004),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 11 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Dryad"),
+                Val::from(1493),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Parasite"),
+                Val::from(1500),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Hermit Plant"),
+                Val::from(1413),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Rafflesia"),
+                Val::from(1162),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 12 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Demon Pungus"),
+                Val::from(1378),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Punk"),
+                Val::from(1199),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 13 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Yao Yun"),
+                Val::from(1512),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Bongunn"),
+                Val::from(1188),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Munak"),
+                Val::from(1026),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 14 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("High Orc"),
+                Val::from(1213),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Orc Archer"),
+                Val::from(1189),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Orc Lady"),
+                Val::from(1273),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Orc Warrior"),
+                Val::from(1023),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Orc Baby"),
+                Val::from(1686),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 15 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Maya"),
+                Val::from(1147),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Phreeoni"),
+                Val::from(1159),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Deniro"),
+                Val::from(1105),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Pierre"),
+                Val::from(1160),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Andre"),
+                Val::from(1095),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Ant Egg"),
+                Val::from(1097),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 16 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Raydric Archer"),
+                Val::from(1276),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Orc Archer"),
+                Val::from(1189),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Gargoyle"),
+                Val::from(1253),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Archer Skeleton"),
+                Val::from(1016),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 17 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Merman"),
+                Val::from(1264),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Baphomet Jr."),
+                Val::from(1101),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Strouf"),
+                Val::from(1065),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Hill Wind"),
+                Val::from(1629),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 18 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Cramp"),
+                Val::from(1209),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Tarou"),
+                Val::from(1175),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 19 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Deviace"),
+                Val::from(1108),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Megalodon"),
+                Val::from(1064),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Swordfish"),
+                Val::from(1069),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Phen"),
+                Val::from(1158),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 20 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Drake"),
+                Val::from(1112),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Pirate Skeleton"),
+                Val::from(1071),
+                Val::from(50),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 21 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Plasma"),
+                Val::from(1693),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Plasma"),
+                Val::from(1696),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Plasma"),
+                Val::from(1695),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Plasma"),
+                Val::from(1697),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Plasma"),
+                Val::from(1694),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 22 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Muscipular"),
+                Val::from(1780),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Drosera"),
+                Val::from(1781),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Flora"),
+                Val::from(1118),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Hydra"),
+                Val::from(1068),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Mandragora"),
+                Val::from(1020),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Rafflesia"),
+                Val::from(1162),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 23 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Penomena"),
+                Val::from(1216),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Obeaune"),
+                Val::from(1044),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Marse"),
+                Val::from(1144),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Swordfish"),
+                Val::from(1069),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Hydra"),
+                Val::from(1068),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 24 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Joker"),
+                Val::from(1131),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Carat"),
+                Val::from(1267),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Jakk"),
+                Val::from(1130),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 25 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Cat o' Nine Tails"),
+                Val::from(1307),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Moonlight"),
+                Val::from(1150),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Nine Tail"),
+                Val::from(1180),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 26 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Gibbet"),
+                Val::from(1503),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Enchanted Peach Tree"),
+                Val::from(1410),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Wooden Golem"),
+                Val::from(1497),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Stone Shooter"),
+                Val::from(1495),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Elder Willow"),
+                Val::from(1033),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 27 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Goblin Archer"),
+                Val::from(1258),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Goblin"),
+                Val::from(1122),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Goblin"),
+                Val::from(1123),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Goblin"),
+                Val::from(1124),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Goblin"),
+                Val::from(1125),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Goblin"),
+                Val::from(1126),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 28 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Arclouse"),
+                Val::from(1194),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Neraid"),
+                Val::from(1255),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Pest"),
+                Val::from(1256),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Kukre"),
+                Val::from(1070),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 29 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Dark Frame"),
+                Val::from(1260),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("The Paper"),
+                Val::from(1375),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Hylozoist"),
+                Val::from(1510),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Quve"),
+                Val::from(1508),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Lude"),
+                Val::from(1509),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Whisper"),
+                Val::from(1179),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 30 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("White Lady"),
+                Val::from(1630),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Evil Nymph"),
+                Val::from(1416),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 31 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Gig"),
+                Val::from(1387),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Iron Fist"),
+                Val::from(1212),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Argiope"),
+                Val::from(1099),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Scorpion"),
+                Val::from(1001),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 32 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Goblin Leader"),
+                Val::from(1299),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Goblin Archer"),
+                Val::from(1258),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Goblin"),
+                Val::from(1122),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Goblin"),
+                Val::from(1123),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Goblin"),
+                Val::from(1124),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Goblin"),
+                Val::from(1125),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Goblin"),
+                Val::from(1126),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 33 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Kobold Leader"),
+                Val::from(1296),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Kobold"),
+                Val::from(1133),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Kobold Archer"),
+                Val::from(1282),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Kobold"),
+                Val::from(1134),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Kobold"),
+                Val::from(1135),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 34 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Flame Skull"),
+                Val::from(1869),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Whisper"),
+                Val::from(1179),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Giant Whisper"),
+                Val::from(1186),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 35 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Turtle General"),
+                Val::from(1312),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Freezer"),
+                Val::from(1319),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Solider"),
+                Val::from(1316),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Heater"),
+                Val::from(1318),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Permeter"),
+                Val::from(1314),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 36 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Anolian"),
+                Val::from(1206),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Grove"),
+                Val::from(1687),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Alligator"),
+                Val::from(1271),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 37 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Clock Tower Manager"),
+                Val::from(1270),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Clock"),
+                Val::from(1269),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Alarm"),
+                Val::from(1193),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 38 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Death Word"),
+                Val::from(1698),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Rideword"),
+                Val::from(1195),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 39 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Evil Nymph"),
+                Val::from(1416),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Mao Gui"),
+                Val::from(1513),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Taoist Hermit"),
+                Val::from(1412),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Zhu Po Long"),
+                Val::from(1514),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Jin Guai"),
+                Val::from(1517),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 40 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Samurai Specter"),
+                Val::from(1492),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Shinobi"),
+                Val::from(1401),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Tengu"),
+                Val::from(1405),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Firelock Soldier"),
+                Val::from(1403),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Miyabi Doll"),
+                Val::from(1404),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Karakasa"),
+                Val::from(1400),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 41 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Kraben"),
+                Val::from(1587),
+                Val::from(50),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 42 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Sleeper"),
+                Val::from(1386),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Sting"),
+                Val::from(1207),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Mi Gao"),
+                Val::from(1516),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Sandman"),
+                Val::from(1165),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Hode"),
+                Val::from(1127),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 43 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Medusa"),
+                Val::from(1148),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Sidewinder"),
+                Val::from(1037),
+                Val::from(40),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Anacondaq"),
+                Val::from(1030),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Boa"),
+                Val::from(1025),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 44 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Hatii Baby"),
+                Val::from(1515),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Baphomet Jr."),
+                Val::from(1101),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Orc Baby"),
+                Val::from(1686),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Baby Desert Wolf"),
+                Val::from(1107),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Savage Babe"),
+                Val::from(1167),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 45 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Osiris"),
+                Val::from(1038),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Ancient Mummy"),
+                Val::from(1297),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Verit"),
+                Val::from(1032),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Mummy"),
+                Val::from(1041),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 46 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Seeker"),
+                Val::from(1774),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Beholder"),
+                Val::from(1633),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 47 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Deleter"),
+                Val::from(1384),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Deleter"),
+                Val::from(1385),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Petite"),
+                Val::from(1156),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Petite"),
+                Val::from(1155),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 48 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Ancient Worm"),
+                Val::from(1305),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Ancient Mummy"),
+                Val::from(1297),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Ancient Mimic"),
+                Val::from(1699),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 49 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Grizzly"),
+                Val::from(1381),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Leib Olmai"),
+                Val::from(1306),
+                Val::from(7),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Zipper Bear"),
+                Val::from(1417),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Sasquatch"),
+                Val::from(1243),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Bigfoot"),
+                Val::from(1060),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 50 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Pharaoh"),
+                Val::from(1157),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Amon Ra"),
+                Val::from(1511),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Anubis"),
+                Val::from(1098),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Marduk"),
+                Val::from(1140),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Matyr"),
+                Val::from(1146),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 51 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Mini Demon"),
+                Val::from(1292),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Diabolic"),
+                Val::from(1382),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Deviruchi"),
+                Val::from(1109),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 52 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Harpy"),
+                Val::from(1376),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Grand Peco"),
+                Val::from(1369),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Bloody Butterfly"),
+                Val::from(1408),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Gargoyle"),
+                Val::from(1253),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Hill Wind"),
+                Val::from(1680),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Hill Wind"),
+                Val::from(1629),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 53 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Assaulter"),
+                Val::from(1315),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Shinobi"),
+                Val::from(1401),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 54 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Chepet"),
+                Val::from(1250),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Marionette"),
+                Val::from(1143),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Miyabi Doll"),
+                Val::from(1404),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 55 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Medusa"),
+                Val::from(1148),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Evil Snake Lord"),
+                Val::from(1418),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Isis"),
+                Val::from(1029),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Sidewinder"),
+                Val::from(1037),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 56 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Freezer"),
+                Val::from(1319),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Hatii Baby"),
+                Val::from(1515),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Ice Titan"),
+                Val::from(1777),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Snowier"),
+                Val::from(1775),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Gazeti"),
+                Val::from(1778),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 57 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Arc Angeling"),
+                Val::from(1388),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Deviling"),
+                Val::from(1582),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Angeling"),
+                Val::from(1096),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Ghostring"),
+                Val::from(1120),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Mastering"),
+                Val::from(1090),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Metaling"),
+                Val::from(1613),
+                Val::from(25),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Marin"),
+                Val::from(1242),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Poporing"),
+                Val::from(1031),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Drops"),
+                Val::from(1113),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 58 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Phendark"),
+                Val::from(1202),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Rybio"),
+                Val::from(1201),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Zombie Prisoner"),
+                Val::from(1197),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Skeleton Prisoner"),
+                Val::from(1196),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Injustice"),
+                Val::from(1257),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 59 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Ancient Mimic"),
+                Val::from(1699),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Mimic"),
+                Val::from(1191),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Mystcase"),
+                Val::from(1249),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 60 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Egnigem Cenia"),
+                Val::from(1658),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Doppelganger"),
+                Val::from(1046),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Armeyer Dinze"),
+                Val::from(1654),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Wickebine Tres"),
+                Val::from(1653),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Laurell Winder"),
+                Val::from(1657),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Kavach Icarus"),
+                Val::from(1656),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Errende Ebecee"),
+                Val::from(1655),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Egnigem Cenia"),
+                Val::from(1652),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 61 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Agav"),
+                Val::from(1769),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Echio"),
+                Val::from(1770),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Isilla"),
+                Val::from(1772),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Mobster"),
+                Val::from(1313),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Pasana"),
+                Val::from(1154),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Vanberk"),
+                Val::from(1771),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 62 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Wanderer"),
+                Val::from(1208),
+                Val::from(35),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 63 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Ragged Zombie"),
+                Val::from(1865),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Zombie Master"),
+                Val::from(1298),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Zombie Prisoner"),
+                Val::from(1197),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Orc Zombie"),
+                Val::from(1153),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Zombie"),
+                Val::from(1015),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 64 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Ungoliant"),
+                Val::from(1618),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Ancient Worm"),
+                Val::from(1305),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Caterpillar"),
+                Val::from(1300),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Creamy Fear"),
+                Val::from(1293),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Killer Mantis"),
+                Val::from(1294),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Giant Hornet"),
+                Val::from(1303),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 65 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Atroce"),
+                Val::from(1785),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Galion"),
+                Val::from(1783),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 66 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Incubus"),
+                Val::from(1374),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Aliot"),
+                Val::from(1736),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Injustice"),
+                Val::from(1257),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 67 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Acidus"),
+                Val::from(1716),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Acidus"),
+                Val::from(1713),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Deleter"),
+                Val::from(1384),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Mutant Dragonoid"),
+                Val::from(1262),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Petite"),
+                Val::from(1156),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 68 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Lava Golem"),
+                Val::from(1366),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Stalactic Golem"),
+                Val::from(1278),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Ice Titan"),
+                Val::from(1777),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Wooden Golem"),
+                Val::from(1497),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Golem"),
+                Val::from(1040),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 69 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Dame of Sentinel"),
+                Val::from(1700),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Mistress of Shelter"),
+                Val::from(1701),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Baroness of Retribution"),
+                Val::from(1702),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Lady Solace"),
+                Val::from(1703),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("False Angel"),
+                Val::from(1371),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 70 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Orc Hero"),
+                Val::from(1087),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Orc Lord"),
+                Val::from(1190),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Orc Baby"),
+                Val::from(1686),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 71 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Succubus"),
+                Val::from(1370),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Nightmare Terror"),
+                Val::from(1379),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Incubus"),
+                Val::from(1374),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Nightmare"),
+                Val::from(1061),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 72 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Margaretha Sorin"),
+                Val::from(1637),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Permeter"),
+                Val::from(1314),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Errende Ebecee"),
+                Val::from(1655),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Enchanted Peach Tree"),
+                Val::from(1410),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 73 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Succubus"),
+                Val::from(1370),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Loli Ruri"),
+                Val::from(1505),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Aliza"),
+                Val::from(1737),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Zealotus"),
+                Val::from(1200),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Alice"),
+                Val::from(1275),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Green Maiden"),
+                Val::from(1519),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 74 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Dimik"),
+                Val::from(1671),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Dimik"),
+                Val::from(1673),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Dimik"),
+                Val::from(1672),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Venatu"),
+                Val::from(1677),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Dimik"),
+                Val::from(1670),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Archdam"),
+                Val::from(1668),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Venatu"),
+                Val::from(1678),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Venatu"),
+                Val::from(1679),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(9),
+                Val::from(277),
+                Val::from(45),
+                Val::from("Venatu"),
+                Val::from(1676),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 75 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Baphomet"),
+                Val::from(1039),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Dark Lord"),
+                Val::from(1272),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Baphomet Jr."),
+                Val::from(1101),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(9),
+                Val::from(362),
+                Val::from(45),
+                Val::from("Dark Illusion"),
+                Val::from(1302),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 76 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Abysmal Knight"),
+                Val::from(1219),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Nightmare Terror"),
+                Val::from(1379),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(351),
+                Val::from(19),
+                Val::from(387),
+                Val::from("Nightmare"),
+                Val::from(1061),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 77 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Banshee"),
+                Val::from(1867),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Wraith Dead"),
+                Val::from(1291),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Evil Druid"),
+                Val::from(1117),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Wraith"),
+                Val::from(1192),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(351),
+                Val::from(103),
+                Val::from(387),
+                Val::from("Wind Ghost"),
+                Val::from(1263),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 78 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Sword Master"),
+                Val::from(1829),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Bloody Knight"),
+                Val::from(1268),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Abysmal Knight"),
+                Val::from(1219),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Dullahan"),
+                Val::from(1504),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(351),
+                Val::from(191),
+                Val::from(387),
+                Val::from("Raydric"),
+                Val::from(1163),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 79 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Hydro"),
+                Val::from(1720),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Ferus"),
+                Val::from(1714),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Ferus"),
+                Val::from(1717),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Deleter"),
+                Val::from(1385),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(351),
+                Val::from(277),
+                Val::from(387),
+                Val::from("Petite"),
+                Val::from(1155),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 80 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Falling Bishop"),
+                Val::from(1871),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(351),
+                Val::from(362),
+                Val::from(387),
+                Val::from("Necromancer"),
+                Val::from(1870),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 81 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Mysteltainn"),
+                Val::from(1203),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Ogretooth"),
+                Val::from(1204),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(267),
+                Val::from(19),
+                Val::from(303),
+                Val::from("Executioner"),
+                Val::from(1205),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 82 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Bloody Knight"),
+                Val::from(1268),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Agav"),
+                Val::from(1769),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Bloody Murderer"),
+                Val::from(1507),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Skogul"),
+                Val::from(1752),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(267),
+                Val::from(103),
+                Val::from(303),
+                Val::from("Injustice"),
+                Val::from(1257),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 83 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Skeggiold"),
+                Val::from(1754),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Dark Illusion"),
+                Val::from(1302),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Gryphon"),
+                Val::from(1259),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(267),
+                Val::from(191),
+                Val::from(303),
+                Val::from("Chimera"),
+                Val::from(1283),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 84 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Succubus"),
+                Val::from(1370),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Dark Illusion"),
+                Val::from(1302),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Owl Duke"),
+                Val::from(1320),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Owl Baron"),
+                Val::from(1295),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(267),
+                Val::from(277),
+                Val::from(303),
+                Val::from("Incubus"),
+                Val::from(1374),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 85 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(267),
+                Val::from(362),
+                Val::from(303),
+                Val::from("Ifrit"),
+                Val::from(1832),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 86 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Hydro"),
+                Val::from(1720),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Gryphon"),
+                Val::from(1259),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Chimera"),
+                Val::from(1283),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(180),
+                Val::from(19),
+                Val::from(216),
+                Val::from("Majoruros"),
+                Val::from(1310),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 87 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Salamander"),
+                Val::from(1831),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Kasa"),
+                Val::from(1833),
+                Val::from(20),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Lava Golem"),
+                Val::from(1366),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(180),
+                Val::from(103),
+                Val::from(216),
+                Val::from("Gajomart"),
+                Val::from(1309),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 88 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Necromancer"),
+                Val::from(1870),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Anubis"),
+                Val::from(1098),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Wraith Dead"),
+                Val::from(1291),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Ancient Mummy"),
+                Val::from(1297),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(180),
+                Val::from(191),
+                Val::from(216),
+                Val::from("Khalitzburg"),
+                Val::from(1132),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 89 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Odium of Thanatos"),
+                Val::from(1704),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Despero of Thanatos"),
+                Val::from(1705),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Maero of Thanatos"),
+                Val::from(1706),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(180),
+                Val::from(277),
+                Val::from(216),
+                Val::from("Dolor of Thanatos"),
+                Val::from(1707),
+                Val::from(6),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 90 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Valkyrie Randgris"),
+                Val::from(1751),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Baroness of Retribution"),
+                Val::from(1702),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("Lady Solace"),
+                Val::from(1703),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(180),
+                Val::from(362),
+                Val::from(216),
+                Val::from("False Angel"),
+                Val::from(1371),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 91 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Cecil Damon"),
+                Val::from(1638),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Bow Master"),
+                Val::from(1830),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(96),
+                Val::from(19),
+                Val::from(132),
+                Val::from("Kavach Icarus"),
+                Val::from(1656),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 92 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Kathryne Keyron"),
+                Val::from(1639),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Elder"),
+                Val::from(1377),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Laurell Weinder"),
+                Val::from(1657),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Wind Ghost"),
+                Val::from(1263),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(96),
+                Val::from(103),
+                Val::from(132),
+                Val::from("Marduk"),
+                Val::from(1140),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 93 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Seyren Windsor"),
+                Val::from(1634),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Bloody Knight"),
+                Val::from(1268),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Abysmal Knight"),
+                Val::from(1219),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(96),
+                Val::from(191),
+                Val::from(132),
+                Val::from("Wanderer"),
+                Val::from(1208),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 94 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Sword Master"),
+                Val::from(1829),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(267),
+                Val::from(96),
+                Val::from(277),
+                Val::from(132),
+                Val::from("Bow Master"),
+                Val::from(1830),
+                Val::from(15),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 95 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Beelzebub"),
+                Val::from(1873),
+                Val::from(1),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Hunter Fly"),
+                Val::from(1035),
+                Val::from(30),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Steel Chonchon"),
+                Val::from(1042),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Dragon FLy"),
+                Val::from(1091),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(352),
+                Val::from(96),
+                Val::from(362),
+                Val::from(132),
+                Val::from("Chonchon"),
+                Val::from(1011),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 96 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Valkyrie"),
+                Val::from(1765),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Skeggiold"),
+                Val::from(1755),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(9),
+                Val::from(9),
+                Val::from(19),
+                Val::from(45),
+                Val::from("Skeggiold"),
+                Val::from(1754),
+                Val::from(10),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 97 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Incarnation of Morocc"),
+                Val::from(1918),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Incarnation of Morocc"),
+                Val::from(1919),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Incarnation of Morocc"),
+                Val::from(1920),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(93),
+                Val::from(9),
+                Val::from(103),
+                Val::from(45),
+                Val::from("Incarnation of Morocc"),
+                Val::from(1921),
+                Val::from(5),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 98 {
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Kathryne Keyron"),
+                Val::from(1639),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Seyren Windsor"),
+                Val::from(1634),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Margaretha Sorin"),
+                Val::from(1637),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Eremes Guile"),
+                Val::from(1635),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Howard Alt-Eisen"),
+                Val::from(1636),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+        ctx.call(
+            Function::AreaMonster,
+            vec![
+                l_map_s.clone(),
+                Val::from(181),
+                Val::from(9),
+                Val::from(191),
+                Val::from(45),
+                Val::from("Cecil Damon"),
+                Val::from(1638),
+                Val::from(2),
+                l_label_s.clone(),
+            ],
+        )?;
+    } else if subject1 == 99 {
+        l_i = Val::from(1);
+        'l2: loop {
+            if !(l_i.clone().number()? <= 7) {
+                break 'l2;
+            }
+            'b2: {
+                l_mob_ran = ctx.call(Function::Rand, vec![Val::from(1), Val::from(30)])?;
+                if l_mob_ran.clone() == 1 {
+                    ctx.call(
+                        Function::AreaMonster,
+                        vec![
+                            l_map_s.clone(),
+                            Val::from(267),
+                            Val::from(9),
+                            Val::from(277),
+                            Val::from(45),
+                            Val::from("Kathryne Keyron"),
+                            Val::from(1639),
+                            Val::from(2),
+                            l_label_s.clone(),
+                        ],
+                    )?;
+                } else {
+                    if l_mob_ran.clone() == 2 {
                         ctx.call(
                             Function::AreaMonster,
                             vec![
@@ -6484,14 +5906,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 Val::from(9),
                                 Val::from(277),
                                 Val::from(45),
-                                Val::from("Kathryne Keyron"),
-                                Val::from(1639),
+                                Val::from("Seyren Windsor"),
+                                Val::from(1634),
                                 Val::from(2),
                                 l_label_s.clone(),
                             ],
                         )?;
                     } else {
-                        if l_mob_ran.clone() == 2 {
+                        if l_mob_ran.clone() == 3 {
                             ctx.call(
                                 Function::AreaMonster,
                                 vec![
@@ -6500,14 +5922,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     Val::from(9),
                                     Val::from(277),
                                     Val::from(45),
-                                    Val::from("Seyren Windsor"),
-                                    Val::from(1634),
+                                    Val::from("Margaretha Sorin"),
+                                    Val::from(1637),
                                     Val::from(2),
                                     l_label_s.clone(),
                                 ],
                             )?;
                         } else {
-                            if l_mob_ran.clone() == 3 {
+                            if l_mob_ran.clone() == 4 {
                                 ctx.call(
                                     Function::AreaMonster,
                                     vec![
@@ -6516,14 +5938,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         Val::from(9),
                                         Val::from(277),
                                         Val::from(45),
-                                        Val::from("Margaretha Sorin"),
-                                        Val::from(1637),
+                                        Val::from("Eremes Guile"),
+                                        Val::from(1635),
                                         Val::from(2),
                                         l_label_s.clone(),
                                     ],
                                 )?;
                             } else {
-                                if l_mob_ran.clone() == 4 {
+                                if l_mob_ran.clone() == 5 {
                                     ctx.call(
                                         Function::AreaMonster,
                                         vec![
@@ -6532,14 +5954,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             Val::from(9),
                                             Val::from(277),
                                             Val::from(45),
-                                            Val::from("Eremes Guile"),
-                                            Val::from(1635),
+                                            Val::from("Howard Alt-Eisen"),
+                                            Val::from(1636),
                                             Val::from(2),
                                             l_label_s.clone(),
                                         ],
                                     )?;
                                 } else {
-                                    if l_mob_ran.clone() == 5 {
+                                    if l_mob_ran.clone() == 6 {
                                         ctx.call(
                                             Function::AreaMonster,
                                             vec![
@@ -6548,14 +5970,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 Val::from(9),
                                                 Val::from(277),
                                                 Val::from(45),
-                                                Val::from("Howard Alt-Eisen"),
-                                                Val::from(1636),
+                                                Val::from("Cecil Damon"),
+                                                Val::from(1638),
                                                 Val::from(2),
                                                 l_label_s.clone(),
                                             ],
                                         )?;
                                     } else {
-                                        if l_mob_ran.clone() == 6 {
+                                        if l_mob_ran.clone() == 7 {
                                             ctx.call(
                                                 Function::AreaMonster,
                                                 vec![
@@ -6564,14 +5986,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     Val::from(9),
                                                     Val::from(277),
                                                     Val::from(45),
-                                                    Val::from("Cecil Damon"),
-                                                    Val::from(1638),
-                                                    Val::from(2),
+                                                    Val::from("Incarnation of Morocc"),
+                                                    Val::from(1918),
+                                                    Val::from(5),
                                                     l_label_s.clone(),
                                                 ],
                                             )?;
                                         } else {
-                                            if l_mob_ran.clone() == 7 {
+                                            if l_mob_ran.clone() == 8 {
                                                 ctx.call(
                                                     Function::AreaMonster,
                                                     vec![
@@ -6581,13 +6003,13 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         Val::from(277),
                                                         Val::from(45),
                                                         Val::from("Incarnation of Morocc"),
-                                                        Val::from(1918),
+                                                        Val::from(1919),
                                                         Val::from(5),
                                                         l_label_s.clone(),
                                                     ],
                                                 )?;
                                             } else {
-                                                if l_mob_ran.clone() == 8 {
+                                                if l_mob_ran.clone() == 9 {
                                                     ctx.call(
                                                         Function::AreaMonster,
                                                         vec![
@@ -6597,13 +6019,13 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             Val::from(277),
                                                             Val::from(45),
                                                             Val::from("Incarnation of Morocc"),
-                                                            Val::from(1919),
+                                                            Val::from(1920),
                                                             Val::from(5),
                                                             l_label_s.clone(),
                                                         ],
                                                     )?;
                                                 } else {
-                                                    if l_mob_ran.clone() == 9 {
+                                                    if l_mob_ran.clone() == 10 {
                                                         ctx.call(
                                                             Function::AreaMonster,
                                                             vec![
@@ -6613,13 +6035,13 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                 Val::from(277),
                                                                 Val::from(45),
                                                                 Val::from("Incarnation of Morocc"),
-                                                                Val::from(1920),
+                                                                Val::from(1921),
                                                                 Val::from(5),
                                                                 l_label_s.clone(),
                                                             ],
                                                         )?;
                                                     } else {
-                                                        if l_mob_ran.clone() == 10 {
+                                                        if l_mob_ran.clone() == 11 {
                                                             ctx.call(
                                                                 Function::AreaMonster,
                                                                 vec![
@@ -6628,14 +6050,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     Val::from(9),
                                                                     Val::from(277),
                                                                     Val::from(45),
-                                                                    Val::from("Incarnation of Morocc"),
-                                                                    Val::from(1921),
+                                                                    Val::from("Valkyrie"),
+                                                                    Val::from(1765),
                                                                     Val::from(5),
                                                                     l_label_s.clone(),
                                                                 ],
                                                             )?;
                                                         } else {
-                                                            if l_mob_ran.clone() == 11 {
+                                                            if l_mob_ran.clone() == 12 {
                                                                 ctx.call(
                                                                     Function::AreaMonster,
                                                                     vec![
@@ -6644,14 +6066,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                         Val::from(9),
                                                                         Val::from(277),
                                                                         Val::from(45),
-                                                                        Val::from("Valkyrie"),
-                                                                        Val::from(1765),
-                                                                        Val::from(5),
+                                                                        Val::from("Skeggiold"),
+                                                                        Val::from(1755),
+                                                                        Val::from(10),
                                                                         l_label_s.clone(),
                                                                     ],
                                                                 )?;
                                                             } else {
-                                                                if l_mob_ran.clone() == 12 {
+                                                                if l_mob_ran.clone() == 13 {
                                                                     ctx.call(
                                                                         Function::AreaMonster,
                                                                         vec![
@@ -6661,13 +6083,13 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                             Val::from(277),
                                                                             Val::from(45),
                                                                             Val::from("Skeggiold"),
-                                                                            Val::from(1755),
+                                                                            Val::from(1754),
                                                                             Val::from(10),
                                                                             l_label_s.clone(),
                                                                         ],
                                                                     )?;
                                                                 } else {
-                                                                    if l_mob_ran.clone() == 13 {
+                                                                    if l_mob_ran.clone() == 14 {
                                                                         ctx.call(
                                                                             Function::AreaMonster,
                                                                             vec![
@@ -6676,14 +6098,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                 Val::from(9),
                                                                                 Val::from(277),
                                                                                 Val::from(45),
-                                                                                Val::from("Skeggiold"),
-                                                                                Val::from(1754),
-                                                                                Val::from(10),
+                                                                                Val::from("Seyren Windsor"),
+                                                                                Val::from(1634),
+                                                                                Val::from(15),
                                                                                 l_label_s.clone(),
                                                                             ],
                                                                         )?;
                                                                     } else {
-                                                                        if l_mob_ran.clone() == 14 {
+                                                                        if l_mob_ran.clone() == 15 {
                                                                             ctx.call(
                                                                                 Function::AreaMonster,
                                                                                 vec![
@@ -6692,14 +6114,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                     Val::from(9),
                                                                                     Val::from(277),
                                                                                     Val::from(45),
-                                                                                    Val::from("Seyren Windsor"),
-                                                                                    Val::from(1634),
-                                                                                    Val::from(15),
+                                                                                    Val::from("Bloody Knight"),
+                                                                                    Val::from(1268),
+                                                                                    Val::from(10),
                                                                                     l_label_s.clone(),
                                                                                 ],
                                                                             )?;
                                                                         } else {
-                                                                            if l_mob_ran.clone() == 15 {
+                                                                            if l_mob_ran.clone() == 16 {
                                                                                 ctx.call(
                                                                                     Function::AreaMonster,
                                                                                     vec![
@@ -6708,14 +6130,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                         Val::from(9),
                                                                                         Val::from(277),
                                                                                         Val::from(45),
-                                                                                        Val::from("Bloody Knight"),
-                                                                                        Val::from(1268),
+                                                                                        Val::from("Abysmal Knight"),
+                                                                                        Val::from(1219),
                                                                                         Val::from(10),
                                                                                         l_label_s.clone(),
                                                                                     ],
                                                                                 )?;
                                                                             } else {
-                                                                                if l_mob_ran.clone() == 16 {
+                                                                                if l_mob_ran.clone() == 17 {
                                                                                     ctx.call(
                                                                                         Function::AreaMonster,
                                                                                         vec![
@@ -6724,14 +6146,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                             Val::from(9),
                                                                                             Val::from(277),
                                                                                             Val::from(45),
-                                                                                            Val::from("Abysmal Knight"),
-                                                                                            Val::from(1219),
+                                                                                            Val::from("Wanderer"),
+                                                                                            Val::from(1208),
                                                                                             Val::from(10),
                                                                                             l_label_s.clone(),
                                                                                         ],
                                                                                     )?;
                                                                                 } else {
-                                                                                    if l_mob_ran.clone() == 17 {
+                                                                                    if l_mob_ran.clone() == 18 {
                                                                                         ctx.call(
                                                                                             Function::AreaMonster,
                                                                                             vec![
@@ -6740,14 +6162,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                                 Val::from(9),
                                                                                                 Val::from(277),
                                                                                                 Val::from(45),
-                                                                                                Val::from("Wanderer"),
-                                                                                                Val::from(1208),
-                                                                                                Val::from(10),
+                                                                                                Val::from("Sword Master"),
+                                                                                                Val::from(1829),
+                                                                                                Val::from(15),
                                                                                                 l_label_s.clone(),
                                                                                             ],
                                                                                         )?;
                                                                                     } else {
-                                                                                        if l_mob_ran.clone() == 18 {
+                                                                                        if l_mob_ran.clone() == 19 {
                                                                                             ctx.call(
                                                                                                 Function::AreaMonster,
                                                                                                 vec![
@@ -6756,14 +6178,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                                     Val::from(9),
                                                                                                     Val::from(277),
                                                                                                     Val::from(45),
-                                                                                                    Val::from("Sword Master"),
-                                                                                                    Val::from(1829),
+                                                                                                    Val::from("Bow Master"),
+                                                                                                    Val::from(1830),
                                                                                                     Val::from(15),
                                                                                                     l_label_s.clone(),
                                                                                                 ],
                                                                                             )?;
                                                                                         } else {
-                                                                                            if l_mob_ran.clone() == 19 {
+                                                                                            if l_mob_ran.clone() == 20 {
                                                                                                 ctx.call(
                                                                                                     Function::AreaMonster,
                                                                                                     vec![
@@ -6772,14 +6194,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                                         Val::from(9),
                                                                                                         Val::from(277),
                                                                                                         Val::from(45),
-                                                                                                        Val::from("Bow Master"),
-                                                                                                        Val::from(1830),
+                                                                                                        Val::from("Kathryne Keyron"),
+                                                                                                        Val::from(1639),
                                                                                                         Val::from(15),
                                                                                                         l_label_s.clone(),
                                                                                                     ],
                                                                                                 )?;
                                                                                             } else {
-                                                                                                if l_mob_ran.clone() == 20 {
+                                                                                                if l_mob_ran.clone() == 21 {
                                                                                                     ctx.call(
                                                                                                         Function::AreaMonster,
                                                                                                         vec![
@@ -6788,14 +6210,14 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                                             Val::from(9),
                                                                                                             Val::from(277),
                                                                                                             Val::from(45),
-                                                                                                            Val::from("Kathryne Keyron"),
-                                                                                                            Val::from(1639),
-                                                                                                            Val::from(15),
+                                                                                                            Val::from("Elder"),
+                                                                                                            Val::from(1377),
+                                                                                                            Val::from(10),
                                                                                                             l_label_s.clone(),
                                                                                                         ],
                                                                                                     )?;
                                                                                                 } else {
-                                                                                                    if l_mob_ran.clone() == 21 {
+                                                                                                    if l_mob_ran.clone() == 22 {
                                                                                                         ctx.call(
                                                                                                             Function::AreaMonster,
                                                                                                             vec![
@@ -6804,14 +6226,16 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                                                 Val::from(9),
                                                                                                                 Val::from(277),
                                                                                                                 Val::from(45),
-                                                                                                                Val::from("Elder"),
-                                                                                                                Val::from(1377),
+                                                                                                                Val::from(
+                                                                                                                    "Laurell Weinder",
+                                                                                                                ),
+                                                                                                                Val::from(1657),
                                                                                                                 Val::from(10),
                                                                                                                 l_label_s.clone(),
                                                                                                             ],
                                                                                                         )?;
                                                                                                     } else {
-                                                                                                        if l_mob_ran.clone() == 22 {
+                                                                                                        if l_mob_ran.clone() == 23 {
                                                                                                             ctx.call(
                                                                                                                 Function::AreaMonster,
                                                                                                                 vec![
@@ -6821,58 +6245,39 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                                                     Val::from(277),
                                                                                                                     Val::from(45),
                                                                                                                     Val::from(
-                                                                                                                        "Laurell Weinder",
+                                                                                                                        "Wind Ghost",
                                                                                                                     ),
-                                                                                                                    Val::from(1657),
+                                                                                                                    Val::from(1263),
                                                                                                                     Val::from(10),
                                                                                                                     l_label_s.clone(),
                                                                                                                 ],
                                                                                                             )?;
                                                                                                         } else {
-                                                                                                            if l_mob_ran.clone() == 23 {
-                                                                                                                ctx.call(
-                                                                                                                    Function::AreaMonster,
-                                                                                                                    vec![
-                                                                                                                        l_map_s.clone(),
-                                                                                                                        Val::from(267),
-                                                                                                                        Val::from(9),
-                                                                                                                        Val::from(277),
-                                                                                                                        Val::from(45),
-                                                                                                                        Val::from(
-                                                                                                                            "Wind Ghost",
-                                                                                                                        ),
-                                                                                                                        Val::from(1263),
-                                                                                                                        Val::from(10),
-                                                                                                                        l_label_s.clone(),
-                                                                                                                    ],
-                                                                                                                )?;
+                                                                                                            if l_mob_ran.clone() == 24 {
+                                                                                                                ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Marduk"), Val::from(1140), Val::from(10), l_label_s.clone()])?;
                                                                                                             } else {
-                                                                                                                if l_mob_ran.clone() == 24 {
-                                                                                                                    ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Marduk"), Val::from(1140), Val::from(10), l_label_s.clone()])?;
+                                                                                                                if l_mob_ran.clone()
+                                                                                                                    == 25
+                                                                                                                {
+                                                                                                                    ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Cecil Damon"), Val::from(1638), Val::from(10), l_label_s.clone()])?;
+                                                                                                                } else if l_mob_ran.clone()
+                                                                                                                    == 26
+                                                                                                                {
+                                                                                                                    ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Bow Master"), Val::from(1830), Val::from(10), l_label_s.clone()])?;
+                                                                                                                } else if l_mob_ran
+                                                                                                                    .clone()
+                                                                                                                    == 27
+                                                                                                                {
+                                                                                                                    ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Kavach Icarus"), Val::from(1656), Val::from(30), l_label_s.clone()])?;
+                                                                                                                } else if l_mob_ran
+                                                                                                                    .clone()
+                                                                                                                    == 28
+                                                                                                                {
+                                                                                                                    ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Baroness of Retribution"), Val::from(1702), Val::from(10), l_label_s.clone()])?;
+                                                                                                                } else if l_mob_ran.clone() == 29 {
+                                                                                                                    ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Lady Solace"), Val::from(1703), Val::from(10), l_label_s.clone()])?;
                                                                                                                 } else {
-                                                                                                                    if l_mob_ran.clone()
-                                                                                                                        == 25
-                                                                                                                    {
-                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Cecil Damon"), Val::from(1638), Val::from(10), l_label_s.clone()])?;
-                                                                                                                    } else if l_mob_ran.clone()
-                                                                                                                        == 26
-                                                                                                                    {
-                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Bow Master"), Val::from(1830), Val::from(10), l_label_s.clone()])?;
-                                                                                                                    } else if l_mob_ran
-                                                                                                                        .clone()
-                                                                                                                        == 27
-                                                                                                                    {
-                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Kavach Icarus"), Val::from(1656), Val::from(30), l_label_s.clone()])?;
-                                                                                                                    } else if l_mob_ran
-                                                                                                                        .clone()
-                                                                                                                        == 28
-                                                                                                                    {
-                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Baroness of Retribution"), Val::from(1702), Val::from(10), l_label_s.clone()])?;
-                                                                                                                    } else if l_mob_ran.clone() == 29 {
-                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("Lady Solace"), Val::from(1703), Val::from(10), l_label_s.clone()])?;
-                                                                                                                    } else {
-                                                                                                                        ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("False Angel"), Val::from(1371), Val::from(10), l_label_s.clone()])?;
-                                                                                                                    }
+                                                                                                                    ctx.call(Function::AreaMonster, vec![l_map_s.clone(), Val::from(267), Val::from(9), Val::from(277), Val::from(45), Val::from("False Angel"), Val::from(1371), Val::from(10), l_label_s.clone()])?;
                                                                                                                 }
                                                                                                             }
                                                                                                         }
@@ -6898,9 +6303,8 @@ pub fn f_tower_monster(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         }
                     }
                 }
-                l_i = (l_i.clone() + Val::from(1));
             }
-            break 'b1;
+            l_i = (l_i.clone() + Val::from(1));
         }
     }
     return Ok(Val::from(0));
@@ -6911,769 +6315,197 @@ pub fn f_tower_warp(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     let mut l_map_s = Val::from("");
     l_level = runtime::arg(&args, 0, Val::from(0));
     l_map_s = runtime::arg(&args, 1, Val::from(0));
-    'b1: {
-        let subject1 = l_level.clone();
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4))
-            && !subject1.loosely_equals(&Val::from(5))
-            && !subject1.loosely_equals(&Val::from(6))
-            && !subject1.loosely_equals(&Val::from(7))
-            && !subject1.loosely_equals(&Val::from(8))
-            && !subject1.loosely_equals(&Val::from(9))
-            && !subject1.loosely_equals(&Val::from(10))
-            && !subject1.loosely_equals(&Val::from(11))
-            && !subject1.loosely_equals(&Val::from(12))
-            && !subject1.loosely_equals(&Val::from(13))
-            && !subject1.loosely_equals(&Val::from(14))
-            && !subject1.loosely_equals(&Val::from(15))
-            && !subject1.loosely_equals(&Val::from(16))
-            && !subject1.loosely_equals(&Val::from(17))
-            && !subject1.loosely_equals(&Val::from(18))
-            && !subject1.loosely_equals(&Val::from(19))
-            && !subject1.loosely_equals(&Val::from(20))
-            && !subject1.loosely_equals(&Val::from(21))
-            && !subject1.loosely_equals(&Val::from(22))
-            && !subject1.loosely_equals(&Val::from(23))
-            && !subject1.loosely_equals(&Val::from(24))
-            && !subject1.loosely_equals(&Val::from(25))
-            && !subject1.loosely_equals(&Val::from(27))
-            && !subject1.loosely_equals(&Val::from(28))
-            && !subject1.loosely_equals(&Val::from(29))
-            && !subject1.loosely_equals(&Val::from(30))
-            && !subject1.loosely_equals(&Val::from(31))
-            && !subject1.loosely_equals(&Val::from(32))
-            && !subject1.loosely_equals(&Val::from(33))
-            && !subject1.loosely_equals(&Val::from(34))
-            && !subject1.loosely_equals(&Val::from(35))
-            && !subject1.loosely_equals(&Val::from(36))
-            && !subject1.loosely_equals(&Val::from(37))
-            && !subject1.loosely_equals(&Val::from(38))
-            && !subject1.loosely_equals(&Val::from(39))
-            && !subject1.loosely_equals(&Val::from(40))
-            && !subject1.loosely_equals(&Val::from(41))
-            && !subject1.loosely_equals(&Val::from(42))
-            && !subject1.loosely_equals(&Val::from(43))
-            && !subject1.loosely_equals(&Val::from(44))
-            && !subject1.loosely_equals(&Val::from(45))
-            && !subject1.loosely_equals(&Val::from(46))
-            && !subject1.loosely_equals(&Val::from(47))
-            && !subject1.loosely_equals(&Val::from(48))
-            && !subject1.loosely_equals(&Val::from(49))
-            && !subject1.loosely_equals(&Val::from(50))
-            && !subject1.loosely_equals(&Val::from(52))
-            && !subject1.loosely_equals(&Val::from(53))
-            && !subject1.loosely_equals(&Val::from(54))
-            && !subject1.loosely_equals(&Val::from(55))
-            && !subject1.loosely_equals(&Val::from(56))
-            && !subject1.loosely_equals(&Val::from(57))
-            && !subject1.loosely_equals(&Val::from(58))
-            && !subject1.loosely_equals(&Val::from(59))
-            && !subject1.loosely_equals(&Val::from(60))
-            && !subject1.loosely_equals(&Val::from(61))
-            && !subject1.loosely_equals(&Val::from(62))
-            && !subject1.loosely_equals(&Val::from(63))
-            && !subject1.loosely_equals(&Val::from(64))
-            && !subject1.loosely_equals(&Val::from(65))
-            && !subject1.loosely_equals(&Val::from(66))
-            && !subject1.loosely_equals(&Val::from(67))
-            && !subject1.loosely_equals(&Val::from(68))
-            && !subject1.loosely_equals(&Val::from(69))
-            && !subject1.loosely_equals(&Val::from(70))
-            && !subject1.loosely_equals(&Val::from(71))
-            && !subject1.loosely_equals(&Val::from(72))
-            && !subject1.loosely_equals(&Val::from(73))
-            && !subject1.loosely_equals(&Val::from(74))
-            && !subject1.loosely_equals(&Val::from(75))
-            && !subject1.loosely_equals(&Val::from(77))
-            && !subject1.loosely_equals(&Val::from(78))
-            && !subject1.loosely_equals(&Val::from(79))
-            && !subject1.loosely_equals(&Val::from(80))
-            && !subject1.loosely_equals(&Val::from(81))
-            && !subject1.loosely_equals(&Val::from(82))
-            && !subject1.loosely_equals(&Val::from(83))
-            && !subject1.loosely_equals(&Val::from(84))
-            && !subject1.loosely_equals(&Val::from(85))
-            && !subject1.loosely_equals(&Val::from(86))
-            && !subject1.loosely_equals(&Val::from(87))
-            && !subject1.loosely_equals(&Val::from(88))
-            && !subject1.loosely_equals(&Val::from(89))
-            && !subject1.loosely_equals(&Val::from(90))
-            && !subject1.loosely_equals(&Val::from(91))
-            && !subject1.loosely_equals(&Val::from(92))
-            && !subject1.loosely_equals(&Val::from(93))
-            && !subject1.loosely_equals(&Val::from(94))
-            && !subject1.loosely_equals(&Val::from(95))
-            && !subject1.loosely_equals(&Val::from(96))
-            && !subject1.loosely_equals(&Val::from(97))
-            && !subject1.loosely_equals(&Val::from(98))
-            && !subject1.loosely_equals(&Val::from(99));
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(7)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(8)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(9)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(10)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(11)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(12)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(13)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(14)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(15)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(16)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(17)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(18)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(19)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(20)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(21)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(22)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(23)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(24)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(25)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(27)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(28)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(29)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(30)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(31)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(32)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(33)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(34)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(35)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(36)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(37)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(38)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(39)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(40)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(41)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(42)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(43)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(44)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(45)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(46)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(47)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(48)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(49)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(50)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(52)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(53)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(54)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(55)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(56)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(57)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(58)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(59)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(60)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(61)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(62)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(63)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(64)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(65)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(66)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(67)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(68)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(69)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(70)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(71)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(72)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(73)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(74)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(75)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(77)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(78)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(79)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(80)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(354)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(81)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(82)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(83)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(84)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(85)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(270)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(86)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(87)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(88)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(89)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(90)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(183)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(91)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(92)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(93)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(94)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(95)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(99)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(96)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(97)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(98)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(12)])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(99)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(309), Val::from(12)])?;
-            break 'b1;
-        }
+    let subject1 = l_level.clone();
+    if subject1 == 2 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(354)])?;
+    } else if subject1 == 3 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(354)])?;
+    } else if subject1 == 4 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(354)])?;
+    } else if subject1 == 5 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(354)])?;
+    } else if subject1 == 6 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(270)])?;
+    } else if subject1 == 7 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(270)])?;
+    } else if subject1 == 8 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(270)])?;
+    } else if subject1 == 9 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(270)])?;
+    } else if subject1 == 10 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(270)])?;
+    } else if subject1 == 11 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(183)])?;
+    } else if subject1 == 12 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(183)])?;
+    } else if subject1 == 13 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(183)])?;
+    } else if subject1 == 14 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(183)])?;
+    } else if subject1 == 15 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(183)])?;
+    } else if subject1 == 16 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(99)])?;
+    } else if subject1 == 17 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(99)])?;
+    } else if subject1 == 18 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(99)])?;
+    } else if subject1 == 19 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(99)])?;
+    } else if subject1 == 20 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(99)])?;
+    } else if subject1 == 21 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(12)])?;
+    } else if subject1 == 22 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(12)])?;
+    } else if subject1 == 23 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(12)])?;
+    } else if subject1 == 24 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(12)])?;
+    } else if subject1 == 25 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(12)])?;
+    } else if subject1 == 27 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(354)])?;
+    } else if subject1 == 28 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(354)])?;
+    } else if subject1 == 29 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(354)])?;
+    } else if subject1 == 30 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(354)])?;
+    } else if subject1 == 31 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(270)])?;
+    } else if subject1 == 32 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(270)])?;
+    } else if subject1 == 33 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(270)])?;
+    } else if subject1 == 34 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(270)])?;
+    } else if subject1 == 35 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(270)])?;
+    } else if subject1 == 36 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(183)])?;
+    } else if subject1 == 37 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(183)])?;
+    } else if subject1 == 38 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(183)])?;
+    } else if subject1 == 39 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(183)])?;
+    } else if subject1 == 40 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(183)])?;
+    } else if subject1 == 41 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(99)])?;
+    } else if subject1 == 42 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(99)])?;
+    } else if subject1 == 43 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(99)])?;
+    } else if subject1 == 44 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(99)])?;
+    } else if subject1 == 45 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(99)])?;
+    } else if subject1 == 46 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(12)])?;
+    } else if subject1 == 47 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(12)])?;
+    } else if subject1 == 48 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(12)])?;
+    } else if subject1 == 49 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(12)])?;
+    } else if subject1 == 50 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(12)])?;
+    } else if subject1 == 52 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(354)])?;
+    } else if subject1 == 53 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(354)])?;
+    } else if subject1 == 54 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(354)])?;
+    } else if subject1 == 55 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(354)])?;
+    } else if subject1 == 56 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(270)])?;
+    } else if subject1 == 57 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(270)])?;
+    } else if subject1 == 58 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(270)])?;
+    } else if subject1 == 59 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(270)])?;
+    } else if subject1 == 60 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(270)])?;
+    } else if subject1 == 61 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(183)])?;
+    } else if subject1 == 62 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(183)])?;
+    } else if subject1 == 63 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(183)])?;
+    } else if subject1 == 64 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(183)])?;
+    } else if subject1 == 65 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(183)])?;
+    } else if subject1 == 66 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(99)])?;
+    } else if subject1 == 67 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(99)])?;
+    } else if subject1 == 68 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(99)])?;
+    } else if subject1 == 69 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(99)])?;
+    } else if subject1 == 70 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(99)])?;
+    } else if subject1 == 71 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(12)])?;
+    } else if subject1 == 72 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(12)])?;
+    } else if subject1 == 73 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(12)])?;
+    } else if subject1 == 74 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(12)])?;
+    } else if subject1 == 75 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(12)])?;
+    } else if subject1 == 77 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(354)])?;
+    } else if subject1 == 78 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(354)])?;
+    } else if subject1 == 79 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(354)])?;
+    } else if subject1 == 80 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(354)])?;
+    } else if subject1 == 81 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(270)])?;
+    } else if subject1 == 82 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(270)])?;
+    } else if subject1 == 83 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(270)])?;
+    } else if subject1 == 84 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(270)])?;
+    } else if subject1 == 85 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(270)])?;
+    } else if subject1 == 86 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(183)])?;
+    } else if subject1 == 87 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(183)])?;
+    } else if subject1 == 88 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(183)])?;
+    } else if subject1 == 89 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(183)])?;
+    } else if subject1 == 90 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(183)])?;
+    } else if subject1 == 91 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(99)])?;
+    } else if subject1 == 92 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(99)])?;
+    } else if subject1 == 93 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(99)])?;
+    } else if subject1 == 94 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(310), Val::from(99)])?;
+    } else if subject1 == 95 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(395), Val::from(99)])?;
+    } else if subject1 == 96 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(52), Val::from(12)])?;
+    } else if subject1 == 97 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(136), Val::from(12)])?;
+    } else if subject1 == 98 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(224), Val::from(12)])?;
+    } else if subject1 == 99 {
+        ctx.call(Function::Warp, vec![l_map_s.clone(), Val::from(309), Val::from(12)])?;
     }
     return Ok(Val::from(0));
 }

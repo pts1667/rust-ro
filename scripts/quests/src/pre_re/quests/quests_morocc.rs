@@ -21,17 +21,11 @@ fn messenger_prince1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Messenger", args!["Oh, I don't want you to panic too much... Hmm... what I want to say is, Tristan the third, the ruler of Rune-Midgarts..."])?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Passed away?:Came for a celebration again?")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
                         ctx.lines_as(
                             "Messenger",
@@ -48,10 +42,7 @@ fn messenger_prince1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as("Messenger", args!["..."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -81,6 +72,7 @@ fn messenger_prince1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as("Messenger", args!["It might have brought national disorder, but people are all wary about the rebirth of the devil. We are in the perfect times to process this issue without making any additional fuss."])?;
@@ -241,26 +233,17 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("nk_prince").get()?.number()? < 2 {
         ctx.lines_as("Inspector", args!["What's wrong with you?", "This is not an open area!"])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Alright, Alright.:The Messenger directed me here.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as("Inspector", args!["If you know it, why are you here? Get out of here!"])?;
                 ctx.close_window()?;
                 ctx.call(Function::Warp, vec![Val::from("prontera"), Val::from(155), Val::from(353)])?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 if ctx.var("nk_prince").get()? == 0 {
                     ctx.lines_as("Inspector", args!["I don't think", "that he is an experienced appraiser..."])?;
                     ctx.close_window()?;
@@ -300,423 +283,231 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ],
                     )?;
                     ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "Strength and characteristics of the monster.:Efficiency of the hunt.:What we can get from the hunt.",
                             )],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        )? {
+                        1 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b2;
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        2 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b2;
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        3 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b2;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Inspector", args!["What if we lose a party member", "during battle?"])?;
                     ctx.next()?;
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "Keep fighting until we can do it.:Find a new place and try differently.:Stop hunting and replenish.",
                             )],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        )? {
+                        1 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b3;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Inspector", args!["What you get as a result of the hunt..."])?;
                     ctx.next()?;
-                    'b4: {
-                        let subject4 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "Share it as agreed prior.:I don't want to care for sharing.:Give it to the member that needs it.",
                             )],
-                        )?);
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                            && !subject4.loosely_equals(&Val::from(2))
-                            && !subject4.loosely_equals(&Val::from(3));
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        )? {
+                        1 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b4;
                         }
-                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        2 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b4;
                         }
-                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        3 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b4;
                         }
+                        _ => {}
                     }
                     ctx.lines_as(
                         "Inspector",
                         args!["What type of job class member", "has to be cured while the enemy still lives?"],
                     )?;
                     ctx.next()?;
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Priest, healer class.:Hunter, damage dealer.:Lord Knight, tanker.")],
-                        )?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        )? {
+                        1 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        3 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b5;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Inspector", args!["Whom do you want to befriend the most?"])?;
                     ctx.next()?;
-                    'b6: {
-                        let subject6 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("A strong person.:An experienced person.:A kind person.")],
-                        )?);
-                        let mut matched6 = false;
-                        let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                            && !subject6.loosely_equals(&Val::from(2))
-                            && !subject6.loosely_equals(&Val::from(3));
-                        if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                            matched6 = true;
-                        }
-                        if matched6 {
+                        )? {
+                        1 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b6;
                         }
-                        if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                            matched6 = true;
-                        }
-                        if matched6 {
+                        2 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b6;
                         }
-                        if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                            matched6 = true;
-                        }
-                        if matched6 {
+                        3 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b6;
                         }
+                        _ => {}
                     }
                     ctx.lines_as(
                         "Inspector",
                         args!["What was your ability that helped", "you the most during your training?"],
                     )?;
                     ctx.next()?;
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "Relationships with people.:Plenty of information gathering.:Discernment and driving force.",
                             )],
-                        )?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        )? {
+                        1 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        2 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        3 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b7;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Inspector", args!["How do you give encouragement to others, usually?"])?;
                     ctx.next()?;
-                    'b8: {
-                        let subject8 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "Refer to a past failure.:Hesitating is the worst thing.:You are not alone.",
                             )],
-                        )?);
-                        let mut matched8 = false;
-                        let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                            && !subject8.loosely_equals(&Val::from(2))
-                            && !subject8.loosely_equals(&Val::from(3));
-                        if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
+                        )? {
+                        1 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b8;
                         }
-                        if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
+                        2 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b8;
                         }
-                        if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                            matched8 = true;
-                        }
-                        if matched8 {
+                        3 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b8;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Inspector", args!["What is an ultimate virtue", "in your life?"])?;
                     ctx.next()?;
-                    'b9: {
-                        let subject9 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Growth of oneself.:World peace.:The pursuit of truth.")],
-                        )?);
-                        let mut matched9 = false;
-                        let no_case9 = !subject9.loosely_equals(&Val::from(1))
-                            && !subject9.loosely_equals(&Val::from(2))
-                            && !subject9.loosely_equals(&Val::from(3));
-                        if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
+                        )? {
+                        1 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b9;
                         }
-                        if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
+                        2 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b9;
                         }
-                        if !matched9 && subject9.loosely_equals(&Val::from(3)) {
-                            matched9 = true;
-                        }
-                        if matched9 {
+                        3 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b9;
                         }
+                        _ => {}
                     }
                     ctx.lines_as(
                         "Inspector",
                         args!["What would you want to keep", "the most if you were on a ", "deserted island?"],
                     )?;
                     ctx.next()?;
-                    'b10: {
-                        let subject10 = Val::from(runtime::select_values(ctx, &[Val::from("Map:Flint:Weapon")])?);
-                        let mut matched10 = false;
-                        let no_case10 = !subject10.loosely_equals(&Val::from(1))
-                            && !subject10.loosely_equals(&Val::from(2))
-                            && !subject10.loosely_equals(&Val::from(3));
-                        if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                            matched10 = true;
-                        }
-                        if matched10 {
+                    match runtime::select_values(ctx, &[Val::from("Map:Flint:Weapon")])? {
+                        1 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b10;
                         }
-                        if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                            matched10 = true;
-                        }
-                        if matched10 {
+                        2 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b10;
                         }
-                        if !matched10 && subject10.loosely_equals(&Val::from(3)) {
-                            matched10 = true;
-                        }
-                        if matched10 {
+                        3 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b10;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Inspector", args!["What type of story do you like the most?"])?;
                     ctx.next()?;
-                    'b11: {
-                        let subject11 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Love story.:Heroic epic.:Religious tale.")],
-                        )?);
-                        let mut matched11 = false;
-                        let no_case11 = !subject11.loosely_equals(&Val::from(1))
-                            && !subject11.loosely_equals(&Val::from(2))
-                            && !subject11.loosely_equals(&Val::from(3));
-                        if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                            matched11 = true;
-                        }
-                        if matched11 {
+                        )? {
+                        1 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b11;
                         }
-                        if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                            matched11 = true;
-                        }
-                        if matched11 {
+                        2 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b11;
                         }
-                        if !matched11 && subject11.loosely_equals(&Val::from(3)) {
-                            matched11 = true;
-                        }
-                        if matched11 {
+                        3 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b11;
                         }
+                        _ => {}
                     }
                     ctx.lines_as(
                         "Inspector",
                         args!["You've come to engage the", "new monster in a new area.", "What do you do?"],
                     )?;
                     ctx.next()?;
-                    'b12: {
-                        let subject12 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Attack first.:Observe from a distance.:Flee away.")],
-                        )?);
-                        let mut matched12 = false;
-                        let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                            && !subject12.loosely_equals(&Val::from(2))
-                            && !subject12.loosely_equals(&Val::from(3));
-                        if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                            matched12 = true;
-                        }
-                        if matched12 {
+                        )? {
+                        1 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b12;
                         }
-                        if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                            matched12 = true;
-                        }
-                        if matched12 {
+                        2 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b12;
                         }
-                        if !matched12 && subject12.loosely_equals(&Val::from(3)) {
-                            matched12 = true;
-                        }
-                        if matched12 {
+                        3 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b12;
                         }
+                        _ => {}
                     }
                     ctx.lines_as(
                         "Inspector",
                         args!["What has to be done first when", "ruling the Rune-Midgarts kingdom?"],
                     )?;
                     ctx.next()?;
-                    'b13: {
-                        let subject13 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "Dominate countries by reinforcing militia.:Advancement of economy and technology.:Keep public security firm.",
                             )],
-                        )?);
-                        let mut matched13 = false;
-                        let no_case13 = !subject13.loosely_equals(&Val::from(1))
-                            && !subject13.loosely_equals(&Val::from(2))
-                            && !subject13.loosely_equals(&Val::from(3));
-                        if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                            matched13 = true;
-                        }
-                        if matched13 {
+                        )? {
+                        1 => {
                             l_brave = (l_brave.clone() + Val::from(10));
-                            break 'b13;
                         }
-                        if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                            matched13 = true;
-                        }
-                        if matched13 {
+                        2 => {
                             l_int = (l_int.clone() + Val::from(10));
-                            break 'b13;
                         }
-                        if !matched13 && subject13.loosely_equals(&Val::from(3)) {
-                            matched13 = true;
-                        }
-                        if matched13 {
+                        3 => {
                             l_solid = (l_solid.clone() + Val::from(10));
-                            break 'b13;
                         }
+                        _ => {}
                     }
                     ctx.lines_as("Inspector", args!["Your humanity test is done.", "You have been living..."])?;
                     ctx.next()?;
@@ -847,6 +638,7 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
+            _ => {}
         }
     } else {
         if ctx.var("nk_prince").get()? == 2 {
@@ -900,423 +692,231 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b14: {
-                    let subject14 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Strength and characteristics of the monster.:Efficiency of the hunt.:What we can get from the hunt.",
                         )],
-                    )?);
-                    let mut matched14 = false;
-                    let no_case14 = !subject14.loosely_equals(&Val::from(1))
-                        && !subject14.loosely_equals(&Val::from(2))
-                        && !subject14.loosely_equals(&Val::from(3));
-                    if !matched14 && subject14.loosely_equals(&Val::from(1)) {
-                        matched14 = true;
-                    }
-                    if matched14 {
+                    )? {
+                    1 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b14;
                     }
-                    if !matched14 && subject14.loosely_equals(&Val::from(2)) {
-                        matched14 = true;
-                    }
-                    if matched14 {
+                    2 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b14;
                     }
-                    if !matched14 && subject14.loosely_equals(&Val::from(3)) {
-                        matched14 = true;
-                    }
-                    if matched14 {
+                    3 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b14;
                     }
+                    _ => {}
                 }
                 ctx.lines_as("Inspector", args!["What if we lose a party member", "during battle?"])?;
                 ctx.next()?;
-                'b15: {
-                    let subject15 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Keep fighting until we can do it.:Find a new place and try differently.:Stop hunting and replenish.",
                         )],
-                    )?);
-                    let mut matched15 = false;
-                    let no_case15 = !subject15.loosely_equals(&Val::from(1))
-                        && !subject15.loosely_equals(&Val::from(2))
-                        && !subject15.loosely_equals(&Val::from(3));
-                    if !matched15 && subject15.loosely_equals(&Val::from(1)) {
-                        matched15 = true;
-                    }
-                    if matched15 {
+                    )? {
+                    1 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b15;
                     }
-                    if !matched15 && subject15.loosely_equals(&Val::from(2)) {
-                        matched15 = true;
-                    }
-                    if matched15 {
+                    2 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b15;
                     }
-                    if !matched15 && subject15.loosely_equals(&Val::from(3)) {
-                        matched15 = true;
-                    }
-                    if matched15 {
+                    3 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b15;
                     }
+                    _ => {}
                 }
                 ctx.lines_as("Inspector", args!["What you get as a result of the hunt..."])?;
                 ctx.next()?;
-                'b16: {
-                    let subject16 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Share it as agreed prior.:I don't want to care for sharing.:Give it to the member that needs it.",
                         )],
-                    )?);
-                    let mut matched16 = false;
-                    let no_case16 = !subject16.loosely_equals(&Val::from(1))
-                        && !subject16.loosely_equals(&Val::from(2))
-                        && !subject16.loosely_equals(&Val::from(3));
-                    if !matched16 && subject16.loosely_equals(&Val::from(1)) {
-                        matched16 = true;
-                    }
-                    if matched16 {
+                    )? {
+                    1 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b16;
                     }
-                    if !matched16 && subject16.loosely_equals(&Val::from(2)) {
-                        matched16 = true;
-                    }
-                    if matched16 {
+                    2 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b16;
                     }
-                    if !matched16 && subject16.loosely_equals(&Val::from(3)) {
-                        matched16 = true;
-                    }
-                    if matched16 {
+                    3 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b16;
                     }
+                    _ => {}
                 }
                 ctx.lines_as(
                     "Inspector",
                     args!["What type of job class member", "has to be cured while the enemy still lives?"],
                 )?;
                 ctx.next()?;
-                'b17: {
-                    let subject17 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Priest, healer class.:Hunter, damage dealer.:Lord Knight, tanker.")],
-                    )?);
-                    let mut matched17 = false;
-                    let no_case17 = !subject17.loosely_equals(&Val::from(1))
-                        && !subject17.loosely_equals(&Val::from(2))
-                        && !subject17.loosely_equals(&Val::from(3));
-                    if !matched17 && subject17.loosely_equals(&Val::from(1)) {
-                        matched17 = true;
-                    }
-                    if matched17 {
+                    )? {
+                    1 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b17;
                     }
-                    if !matched17 && subject17.loosely_equals(&Val::from(2)) {
-                        matched17 = true;
-                    }
-                    if matched17 {
+                    2 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b17;
                     }
-                    if !matched17 && subject17.loosely_equals(&Val::from(3)) {
-                        matched17 = true;
-                    }
-                    if matched17 {
+                    3 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b17;
                     }
+                    _ => {}
                 }
                 ctx.lines_as("Inspector", args!["Whom do you want to befriend the most?"])?;
                 ctx.next()?;
-                'b18: {
-                    let subject18 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("A strong person.:An experienced person.:A kind person.")],
-                    )?);
-                    let mut matched18 = false;
-                    let no_case18 = !subject18.loosely_equals(&Val::from(1))
-                        && !subject18.loosely_equals(&Val::from(2))
-                        && !subject18.loosely_equals(&Val::from(3));
-                    if !matched18 && subject18.loosely_equals(&Val::from(1)) {
-                        matched18 = true;
-                    }
-                    if matched18 {
+                    )? {
+                    1 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b18;
                     }
-                    if !matched18 && subject18.loosely_equals(&Val::from(2)) {
-                        matched18 = true;
-                    }
-                    if matched18 {
+                    2 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b18;
                     }
-                    if !matched18 && subject18.loosely_equals(&Val::from(3)) {
-                        matched18 = true;
-                    }
-                    if matched18 {
+                    3 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b18;
                     }
+                    _ => {}
                 }
                 ctx.lines_as(
                     "Inspector",
                     args!["What was your ability that helped", "you the most during your training?"],
                 )?;
                 ctx.next()?;
-                'b19: {
-                    let subject19 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Relationships with people.:Plenty of information gathering.:Discernment and driving force.",
                         )],
-                    )?);
-                    let mut matched19 = false;
-                    let no_case19 = !subject19.loosely_equals(&Val::from(1))
-                        && !subject19.loosely_equals(&Val::from(2))
-                        && !subject19.loosely_equals(&Val::from(3));
-                    if !matched19 && subject19.loosely_equals(&Val::from(1)) {
-                        matched19 = true;
-                    }
-                    if matched19 {
+                    )? {
+                    1 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b19;
                     }
-                    if !matched19 && subject19.loosely_equals(&Val::from(2)) {
-                        matched19 = true;
-                    }
-                    if matched19 {
+                    2 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b19;
                     }
-                    if !matched19 && subject19.loosely_equals(&Val::from(3)) {
-                        matched19 = true;
-                    }
-                    if matched19 {
+                    3 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b19;
                     }
+                    _ => {}
                 }
                 ctx.lines_as("Inspector", args!["How do you give encouragement to others, usually?"])?;
                 ctx.next()?;
-                'b20: {
-                    let subject20 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Refer to a past failure.:Hesitating is the worst thing.:You are not alone.",
                         )],
-                    )?);
-                    let mut matched20 = false;
-                    let no_case20 = !subject20.loosely_equals(&Val::from(1))
-                        && !subject20.loosely_equals(&Val::from(2))
-                        && !subject20.loosely_equals(&Val::from(3));
-                    if !matched20 && subject20.loosely_equals(&Val::from(1)) {
-                        matched20 = true;
-                    }
-                    if matched20 {
+                    )? {
+                    1 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b20;
                     }
-                    if !matched20 && subject20.loosely_equals(&Val::from(2)) {
-                        matched20 = true;
-                    }
-                    if matched20 {
+                    2 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b20;
                     }
-                    if !matched20 && subject20.loosely_equals(&Val::from(3)) {
-                        matched20 = true;
-                    }
-                    if matched20 {
+                    3 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b20;
                     }
+                    _ => {}
                 }
                 ctx.lines_as("Inspector", args!["What is an ultimate virtue", "in your life?"])?;
                 ctx.next()?;
-                'b21: {
-                    let subject21 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Growth of oneself.:World peace.:The pursuit of truth.")],
-                    )?);
-                    let mut matched21 = false;
-                    let no_case21 = !subject21.loosely_equals(&Val::from(1))
-                        && !subject21.loosely_equals(&Val::from(2))
-                        && !subject21.loosely_equals(&Val::from(3));
-                    if !matched21 && subject21.loosely_equals(&Val::from(1)) {
-                        matched21 = true;
-                    }
-                    if matched21 {
+                    )? {
+                    1 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b21;
                     }
-                    if !matched21 && subject21.loosely_equals(&Val::from(2)) {
-                        matched21 = true;
-                    }
-                    if matched21 {
+                    2 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b21;
                     }
-                    if !matched21 && subject21.loosely_equals(&Val::from(3)) {
-                        matched21 = true;
-                    }
-                    if matched21 {
+                    3 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b21;
                     }
+                    _ => {}
                 }
                 ctx.lines_as(
                     "Inspector",
                     args!["What would you want to keep", "the most if you were on a ", "deserted island?"],
                 )?;
                 ctx.next()?;
-                'b22: {
-                    let subject22 = Val::from(runtime::select_values(ctx, &[Val::from("Map:Flint:Weapon")])?);
-                    let mut matched22 = false;
-                    let no_case22 = !subject22.loosely_equals(&Val::from(1))
-                        && !subject22.loosely_equals(&Val::from(2))
-                        && !subject22.loosely_equals(&Val::from(3));
-                    if !matched22 && subject22.loosely_equals(&Val::from(1)) {
-                        matched22 = true;
-                    }
-                    if matched22 {
+                match runtime::select_values(ctx, &[Val::from("Map:Flint:Weapon")])? {
+                    1 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b22;
                     }
-                    if !matched22 && subject22.loosely_equals(&Val::from(2)) {
-                        matched22 = true;
-                    }
-                    if matched22 {
+                    2 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b22;
                     }
-                    if !matched22 && subject22.loosely_equals(&Val::from(3)) {
-                        matched22 = true;
-                    }
-                    if matched22 {
+                    3 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b22;
                     }
+                    _ => {}
                 }
                 ctx.lines_as("Inspector", args!["What type of story do you like the most?"])?;
                 ctx.next()?;
-                'b23: {
-                    let subject23 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Love story.:Heroic epic.:Religious tale.")],
-                    )?);
-                    let mut matched23 = false;
-                    let no_case23 = !subject23.loosely_equals(&Val::from(1))
-                        && !subject23.loosely_equals(&Val::from(2))
-                        && !subject23.loosely_equals(&Val::from(3));
-                    if !matched23 && subject23.loosely_equals(&Val::from(1)) {
-                        matched23 = true;
-                    }
-                    if matched23 {
+                    )? {
+                    1 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b23;
                     }
-                    if !matched23 && subject23.loosely_equals(&Val::from(2)) {
-                        matched23 = true;
-                    }
-                    if matched23 {
+                    2 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b23;
                     }
-                    if !matched23 && subject23.loosely_equals(&Val::from(3)) {
-                        matched23 = true;
-                    }
-                    if matched23 {
+                    3 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b23;
                     }
+                    _ => {}
                 }
                 ctx.lines_as(
                     "Inspector",
                     args!["You've come to engage the", "new monster in a new area.", "What do you do?"],
                 )?;
                 ctx.next()?;
-                'b24: {
-                    let subject24 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Attack first.:Observe from a distance.:Flee away.")],
-                    )?);
-                    let mut matched24 = false;
-                    let no_case24 = !subject24.loosely_equals(&Val::from(1))
-                        && !subject24.loosely_equals(&Val::from(2))
-                        && !subject24.loosely_equals(&Val::from(3));
-                    if !matched24 && subject24.loosely_equals(&Val::from(1)) {
-                        matched24 = true;
-                    }
-                    if matched24 {
+                    )? {
+                    1 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b24;
                     }
-                    if !matched24 && subject24.loosely_equals(&Val::from(2)) {
-                        matched24 = true;
-                    }
-                    if matched24 {
+                    2 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b24;
                     }
-                    if !matched24 && subject24.loosely_equals(&Val::from(3)) {
-                        matched24 = true;
-                    }
-                    if matched24 {
+                    3 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b24;
                     }
+                    _ => {}
                 }
                 ctx.lines_as(
                     "Inspector",
                     args!["What has to be done first when", "ruling the Rune-Midgarts kingdom?"],
                 )?;
                 ctx.next()?;
-                'b25: {
-                    let subject25 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Dominate countries by reinforcing militia.:Advancement of economy and technology.:Keep public security firm.",
                         )],
-                    )?);
-                    let mut matched25 = false;
-                    let no_case25 = !subject25.loosely_equals(&Val::from(1))
-                        && !subject25.loosely_equals(&Val::from(2))
-                        && !subject25.loosely_equals(&Val::from(3));
-                    if !matched25 && subject25.loosely_equals(&Val::from(1)) {
-                        matched25 = true;
-                    }
-                    if matched25 {
+                    )? {
+                    1 => {
                         l_brave = (l_brave.clone() + Val::from(10));
-                        break 'b25;
                     }
-                    if !matched25 && subject25.loosely_equals(&Val::from(2)) {
-                        matched25 = true;
-                    }
-                    if matched25 {
+                    2 => {
                         l_int = (l_int.clone() + Val::from(10));
-                        break 'b25;
                     }
-                    if !matched25 && subject25.loosely_equals(&Val::from(3)) {
-                        matched25 = true;
-                    }
-                    if matched25 {
+                    3 => {
                         l_solid = (l_solid.clone() + Val::from(10));
-                        break 'b25;
                     }
+                    _ => {}
                 }
                 ctx.lines_as("Inspector", args!["Your humanity test is done.", "You have been living..."])?;
                 ctx.next()?;
@@ -1426,22 +1026,13 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             break 'l26;
                         }
                         'b26: {
-                            'b27: {
-                                let subject27 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from(
                                         "What should I do, exactly?:The King died because of his illness?:Is my mission confidential??:I have no more questions.",
                                     )],
-                                )?);
-                                let mut matched27 = false;
-                                let no_case27 = !subject27.loosely_equals(&Val::from(1))
-                                    && !subject27.loosely_equals(&Val::from(2))
-                                    && !subject27.loosely_equals(&Val::from(3))
-                                    && !subject27.loosely_equals(&Val::from(4));
-                                if !matched27 && subject27.loosely_equals(&Val::from(1)) {
-                                    matched27 = true;
-                                }
-                                if matched27 {
+                                )? {
+                                1 => {
                                     ctx.lines_as("Inspector", args!["We have seven candidates from seven families. One per each family. The candidates are all in the same place, where I will introduce them to you."])?;
                                     ctx.next()?;
                                     ctx.lines_as("Inspector", args!["You have to meet the candidates one by one, and ask some questions about their quality; or observe their actions, then come back to me and explain all that you observed in detail."])?;
@@ -1458,32 +1049,20 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.lines_as("Inspector", args!["So this time, the Court decided to change its ways, giving the opportunity to appraise the candidates to famous and devoted adventurers like yourself. That's why you are here."])?;
                                     ctx.next()?;
                                     l_prince = Val::from(1);
-                                    break 'b27;
                                 }
-                                if !matched27 && subject27.loosely_equals(&Val::from(2)) {
-                                    matched27 = true;
-                                }
-                                if matched27 {
+                                2 => {
                                     ctx.lines_as("Inspector", args!["How absurd that you ask that!! I already told you clearly that King Tristan died of illness, didn't I?"])?;
                                     ctx.next()?;
                                     ctx.lines_as("Inspector", args!["Don't you have anything else to be curious about?"])?;
                                     ctx.next()?;
-                                    break 'b27;
                                 }
-                                if !matched27 && subject27.loosely_equals(&Val::from(3)) {
-                                    matched27 = true;
-                                }
-                                if matched27 {
+                                3 => {
                                     ctx.lines_as("Inspector", args!["Sure...", "It's natural to announce the death of the King. But the atmosphere of the nation is not ripe for it. This is our only alternative for now."])?;
                                     ctx.next()?;
                                     ctx.lines_as("Inspector", args!["Princes cannot go outside on their own will. People cannot go to the place where the princes are."])?;
                                     ctx.next()?;
-                                    break 'b27;
                                 }
-                                if !matched27 && subject27.loosely_equals(&Val::from(4)) {
-                                    matched27 = true;
-                                }
-                                if matched27 {
+                                4 => {
                                     if l_prince.clone() == 1 {
                                         ctx.lines_as(
                                             "Inspector",
@@ -1519,8 +1098,8 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.lines_as("Inspector", args!["If you are not motivated to do it, I will find another adventurer. You can go back to your business, if you want to."])?;
                                         ctx.next()?;
                                     }
-                                    break 'b27;
                                 }
+                                _ => {}
                             }
                         }
                     }
@@ -1592,14 +1171,8 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             return Err(Stop::End);
                         }
                         ctx.next()?;
-                        'b28: {
-                            let subject28 = Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?);
-                            let mut matched28 = false;
-                            let no_case28 = !subject28.loosely_equals(&Val::from(1)) && !subject28.loosely_equals(&Val::from(2));
-                            if !matched28 && subject28.loosely_equals(&Val::from(1)) {
-                                matched28 = true;
-                            }
-                            if matched28 {
+                        match runtime::select_values(ctx, &[Val::from("Yes.:No.")])? {
+                            1 => {
                                 l_prin1 = ctx.call(Function::CheckQuest, vec![Val::from(10005)])?;
                                 l_prin2 = ctx.call(Function::CheckQuest, vec![Val::from(10006)])?;
                                 l_prin3 = ctx.call(Function::CheckQuest, vec![Val::from(10007)])?;
@@ -1621,10 +1194,7 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched28 && subject28.loosely_equals(&Val::from(2)) {
-                                matched28 = true;
-                            }
-                            if matched28 {
+                            2 => {
                                 l_prin1 = ctx.call(Function::CheckQuest, vec![Val::from(10005)])?;
                                 l_prin2 = ctx.call(Function::CheckQuest, vec![Val::from(10006)])?;
                                 l_prin3 = ctx.call(Function::CheckQuest, vec![Val::from(10007)])?;
@@ -1646,6 +1216,7 @@ fn inspector_prince_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
@@ -1778,17 +1349,11 @@ fn servant_hans_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         ctx.lines_as("Hans", args!["What can I do for you?"])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Prince Erich told me to meet you.:Nothing much.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as("Hans", args!["Did Prince Erich...?"])?;
                 ctx.next()?;
                 let choice = runtime::select_values(ctx, &[Val::from("I want to listen to a story of him.")])?;
@@ -1826,10 +1391,7 @@ fn servant_hans_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as("Hans", args!["Did you meet the other princes?"])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -1839,6 +1401,7 @@ fn servant_hans_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.lines_as("Hans", args!["Hello?", "Are you the new adventurer appraiser??"])?;
@@ -1920,22 +1483,13 @@ fn prince_urgen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 break 'l1;
             }
             'b1: {
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "I want to know your background.:Let me know your view of the nation.:What are your hobbies or tastes?:Let me leave.",
                         )],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Urugen", args!["My dashing face from", "childhood brought envy and jealousy from men, and endless proposals from women. I felt sick with it, so I came to be away from people."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -1949,23 +1503,15 @@ fn prince_urgen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         l_p_a = Val::from(1);
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as("Urugen", args!["People should do what they are supposed to do. That's the source of drive for a nation. For me, my existence will be enough, for the nation."])?;
                         ctx.next()?;
                         ctx.lines_as("Urugen", args!["The presence of such a gorgeous king like me will be the light for people and the hope and reason for their lives."])?;
                         l_p_b = Val::from(1);
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as(
                             "Urugen",
                             args!["For sure, taking care of my body. Humans should pursue beauty. It's quite natural, isn't it?"],
@@ -1974,12 +1520,8 @@ fn prince_urgen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.lines_as("Urugen", args!["In every case, there is an exception, like you in this court. Can you stand away from me a bit more? Because of your odor, I can hardly breathe."])?;
                         l_p_c = Val::from(1);
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.lines_as("Urugen", args!["Your spirit must be so strong. Looking over my beauty so long a time, you haven't lost your spirit yet."])?;
                         if ((l_p_a.clone() + l_p_b.clone()) + l_p_c.clone()) == 3 {
                             ctx.call(Function::CompleteQuest, vec![Val::from(10009)])?;
@@ -2002,6 +1544,7 @@ fn prince_urgen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
         }
@@ -2060,22 +1603,13 @@ fn prince_helmut_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         ctx.mes("-What subject should I start with?-")?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "Your background...:Your ambition...:Your view of the nation...:I want to meet others first.",
                 )],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as("Helmut", args!["I don't know how others react but, I feel very uptight with your question. I shouldn't, but, I don't have a different view!"])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -2130,10 +1664,7 @@ fn prince_helmut_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as("Helmut", args!["I don't know how others react but, I feel very uptight with your question. I shouldn't, but, I don't have a different view!"])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -2188,10 +1719,7 @@ fn prince_helmut_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as("Helmut", args!["I don't know how others react but, I feel very uptight with your question. I shouldn't, but, I don't have a different view!"])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -2246,10 +1774,7 @@ fn prince_helmut_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
+            4 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["No, Prince,", "I will be back later."],
@@ -2267,6 +1792,7 @@ fn prince_helmut_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     Ok(Val::from(0))
@@ -2371,66 +1897,58 @@ fn prince_poe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.lines_as("Poe", args!["Yes, now choose one", "from higher and lower.", "Just one."])?;
                 ctx.next()?;
                 'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Higher:Lower")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as("Poe", args!["Hmm... higher?...", "I now pick a card!"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Poe", args![((Val::from("It is...") + l_card.clone()) + Val::from("!!"))])?;
-                        ctx.next()?;
-                        if l_card.clone().number()? > 7 {
-                            l_wincount = (l_wincount.clone() + Val::from(1));
-                            ctx.lines_as("Poe", args!["Whooah, you gave the right answer!"])?;
-                            if l_wincount.clone() == 2 {
-                                ctx.mes("You won 2 times in a row right?...")?;
-                                ctx.next()?;
-                                break 'b2;
-                            } else {
-                                ctx.mes("But you just gave the correct answer 1 time, as of yet.")?;
-                                ctx.next()?;
-                            }
-                        } else if l_card.clone() == 7 {
-                            ctx.lines_as("Poe", args!["This game is a draw.", "Do better next time."])?;
+                    match runtime::select_values(ctx, &[Val::from("Higher:Lower")])? {
+                        1 => {
+                            ctx.lines_as("Poe", args!["Hmm... higher?...", "I now pick a card!"])?;
                             ctx.next()?;
-                        } else {
-                            ctx.lines_as("Poe", args!["Wrong...", "Visit Hollgrehenn and ask him to refine your luck."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines_as("Poe", args!["Eh, lower?...", "Look at my card!"])?;
-                        ctx.next()?;
-                        ctx.lines_as("Poe", args![((Val::from("It is...") + l_card.clone()) + Val::from("!!"))])?;
-                        ctx.next()?;
-                        if l_card.clone().number()? < 7 {
-                            l_wincount = (l_wincount.clone() + Val::from(1));
-                            ctx.lines_as("Poe", args!["Whooah, you gave the right answer!"])?;
-                            if l_wincount.clone() == 2 {
-                                ctx.mes("You won 2 times in a row right?...")?;
-                                ctx.next()?;
-                                break 'b2;
-                            } else {
-                                ctx.mes("But you just gave the correct answer 1 time, as of yet.")?;
-                                ctx.next()?;
-                            }
-                        } else if l_card.clone() == 7 {
-                            ctx.lines_as("Poe", args!["This game is a draw.", "Do better next time."])?;
+                            ctx.lines_as("Poe", args![((Val::from("It is...") + l_card.clone()) + Val::from("!!"))])?;
                             ctx.next()?;
-                        } else {
-                            ctx.lines_as("Poe", args!["Wrong...", "Visit Hollgrehenn and ask him to refine your luck."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
+                            if l_card.clone().number()? > 7 {
+                                l_wincount = (l_wincount.clone() + Val::from(1));
+                                ctx.lines_as("Poe", args!["Whooah, you gave the right answer!"])?;
+                                if l_wincount.clone() == 2 {
+                                    ctx.mes("You won 2 times in a row right?...")?;
+                                    ctx.next()?;
+                                    break 'b2;
+                                } else {
+                                    ctx.mes("But you just gave the correct answer 1 time, as of yet.")?;
+                                    ctx.next()?;
+                                }
+                            } else if l_card.clone() == 7 {
+                                ctx.lines_as("Poe", args!["This game is a draw.", "Do better next time."])?;
+                                ctx.next()?;
+                            } else {
+                                ctx.lines_as("Poe", args!["Wrong...", "Visit Hollgrehenn and ask him to refine your luck."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
                         }
-                        break 'b2;
+                        2 => {
+                            ctx.lines_as("Poe", args!["Eh, lower?...", "Look at my card!"])?;
+                            ctx.next()?;
+                            ctx.lines_as("Poe", args![((Val::from("It is...") + l_card.clone()) + Val::from("!!"))])?;
+                            ctx.next()?;
+                            if l_card.clone().number()? < 7 {
+                                l_wincount = (l_wincount.clone() + Val::from(1));
+                                ctx.lines_as("Poe", args!["Whooah, you gave the right answer!"])?;
+                                if l_wincount.clone() == 2 {
+                                    ctx.mes("You won 2 times in a row right?...")?;
+                                    ctx.next()?;
+                                    break 'b2;
+                                } else {
+                                    ctx.mes("But you just gave the correct answer 1 time, as of yet.")?;
+                                    ctx.next()?;
+                                }
+                            } else if l_card.clone() == 7 {
+                                ctx.lines_as("Poe", args!["This game is a draw.", "Do better next time."])?;
+                                ctx.next()?;
+                            } else {
+                                ctx.lines_as("Poe", args!["Wrong...", "Visit Hollgrehenn and ask him to refine your luck."])?;
+                                ctx.close_window()?;
+                                return Err(Stop::End);
+                            }
+                        }
+                        _ => {}
                     }
                 }
             }
@@ -2451,22 +1969,13 @@ fn prince_poe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 break 'l3;
             }
             'b3: {
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Your background story...:Your view of the nation...:Hobbies and interests...:I will come by later.",
                         )],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3))
-                        && !subject4.loosely_equals(&Val::from(4));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Poe",
                             args![
@@ -2495,12 +2004,8 @@ fn prince_poe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.lines_as("Poe", args!["Hey it's cool, huh?", "We have same tastes, haven't we?"])?;
                         l_p_a = Val::from(1);
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.lines_as(
                             "Poe",
                             args![
@@ -2529,12 +2034,8 @@ fn prince_poe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         l_p_b = Val::from(1);
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.lines_as("Poe", args!["Experiencing anything new!", "I don't care what it is!"])?;
                         ctx.next()?;
                         ctx.lines_as("Poe", args!["If our time is the exploring age, I possibly am the captain of an exploring group! Unexplored, pathfinding, investigating... Those are my middle names. How about you??"])?;
@@ -2542,12 +2043,8 @@ fn prince_poe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.lines_as("Poe", args!["But many say, about my character, that I am addicted to gambling. I am just full of a challenging spirit and I like raking in money! I am a free-spirited normal man."])?;
                         l_p_c = Val::from(1);
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    4 => {
                         ctx.lines_as(
                             "Poe",
                             args!["Alright,", "let's meet next at some more exciting and dangerous spot."],
@@ -2572,6 +2069,7 @@ fn prince_poe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
         }
@@ -2595,17 +2093,11 @@ fn prince_peter_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if ctx.var("nk_prince").get()?.number()? > 6 {
         ctx.lines_as("Peter", args!["Appraiser.", "Have you met the little girl in Aldebaran?"])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Yes, I saw her for you.:No, I don't want to.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 if (ctx.call(Function::CheckQuest, vec![Val::from(10014)])? == 0
                     || ctx.call(Function::CheckQuest, vec![Val::from(10014)])? == 1)
                 {
@@ -2629,10 +2121,7 @@ fn prince_peter_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 if (ctx.call(Function::CheckQuest, vec![Val::from(10014)])? == 0
                     || ctx.call(Function::CheckQuest, vec![Val::from(10014)])? == 1)
                 {
@@ -2664,6 +2153,7 @@ fn prince_peter_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     if ctx.call(Function::CheckQuest, vec![Val::from(10019)])? == 2 {
@@ -2714,22 +2204,13 @@ fn prince_peter_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 break 'l2;
             }
             'b2: {
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Your background story...:Your view of the nation...:Hobbies and interests...:I will come by later.",
                         )],
-                    )?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3))
-                        && !subject3.loosely_equals(&Val::from(4));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Peter", args!["My family was not that influential. My childhood was not that abundant; I had to seek jobs and make money from part-time jobs."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -2739,30 +2220,18 @@ fn prince_peter_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Peter", args!["Was it enough for your question?"])?;
                         ctx.next()?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.lines_as("Peter", args!["I guess the important thing is if people fulfill themselves in their field, then only supplements of support is needed from the nation's side.", "What I want to say, in short, is the nation does not reign. People need to keep peace with people."])?;
                         ctx.next()?;
                         ctx.lines_as("Peter", args!["Accordingly, I will take benefits away from the difference of classes. It is not an equality issue, but for the ascension of national power."])?;
                         ctx.next()?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         ctx.lines_as("Peter", args!["I only like reading books as a hobby. I think men should go forward; they need to have a striving attitude."])?;
                         ctx.next()?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    4 => {
                         ctx.lines_as("Peter", args!["Ah, is that it?"])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -2790,17 +2259,11 @@ fn prince_peter_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         ctx.call(Function::CompleteQuest, vec![Val::from(10008)])?;
                         ctx.next()?;
-                        'b4: {
-                            let subject4 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("Okay, no problem.:Please ask it of another.")],
-                            )?);
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
+                            )? {
+                            1 => {
                                 ctx.lines_as("Peter", args!["Yeah, thank you very much.", "Please take care."])?;
                                 ctx.call(Function::GetItem, vec![Val::from(744), Val::from(1)])?;
                                 ctx.call(Function::SetQuest, vec![Val::from(10013)])?;
@@ -2822,10 +2285,7 @@ fn prince_peter_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
+                            2 => {
                                 ctx.lines_as("Peter", args!["I understand you...", "I know you have your", "own business."])?;
                                 ctx.call(Function::SetQuest, vec![Val::from(10013)])?;
                                 l_prin1 = ctx.call(Function::CheckQuest, vec![Val::from(10005)])?;
@@ -2846,8 +2306,10 @@ fn prince_peter_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
+                    _ => {}
                 }
             }
         }
@@ -3037,17 +2499,11 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         } else if ctx.var("nkprince_eisen").get()? == 8 {
                             ctx.lines_as("Ahrum", args!["You come here so often.", "I know you are a faithful person, engaged in a very important issue for the kingdom, but you come here more than is necessary..."])?;
                             ctx.next()?;
-                            'b1: {
-                                let subject1 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("I have something...:Is that so? Then, see you later.")],
-                                )?);
-                                let mut matched1 = false;
-                                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
+                                )? {
+                                1 => {
                                     ctx.lines_as(
                                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                         args!["I saw a person from the Walter family."],
@@ -3075,14 +2531,12 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.call(Function::Warp, vec![Val::from("prt_castle"), Val::from(318), Val::from(273)])?;
                                     return Err(Stop::End);
                                 }
-                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
+                                2 => {
                                     ctx.lines_as("Ahrum", args!["Okay, good riddance."])?;
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         } else if (((ctx.var("nkprince_eisen").get()? == 9 || ctx.var("nkprince_eisen").get()? == 10)
                             || ctx.var("nkprince_eisen").get()? == 11)
@@ -3197,29 +2651,18 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.next()?;
                             ctx.lines_as("Ahrum", args!["If you react wrongfully to this incident, my death will be worthless...kuk... Do you understand?"])?;
                             ctx.next()?;
-                            'b2: {
-                                let subject2 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("... Okay I will follow your will...:......")],
-                                )?);
-                                let mut matched2 = false;
-                                let no_case2 =
-                                    !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                )? {
+                                1 => {
                                     ctx.lines_as(
                                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                         args!["... Okay, I will follow your will. Don't worry..."],
                                     )?;
                                     ctx.next()?;
-                                    break 'b2;
                                 }
-                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                2 => {
                                     ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["......"])?;
                                     ctx.next()?;
                                     ctx.lines_as(
@@ -3227,8 +2670,8 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         args!["Ignorance... is positive... It means... My bid... is successful..."],
                                     )?;
                                     ctx.next()?;
-                                    break 'b2;
                                 }
+                                _ => {}
                             }
                             ctx.lines_as(
                                 "Ahrum",
@@ -3288,22 +2731,13 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["I'd like to ask about..."],
                 )?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Your background story...:Your view of the nation...:Your hobbies or interests...:Never mind, I'll come by later.",
                         )],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3))
-                        && !subject4.loosely_equals(&Val::from(4));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Ahrum",
                             args!["You aren't just trying to dissolve your curiosity about the king's family, are you?"],
@@ -3346,12 +2780,8 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Ahrum", args!["The Walter family itself has high distinction and fame, but I will make the name shine further, and others will be proud of me."])?;
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.lines_as(
                             "Ahrum",
                             args![
@@ -3403,12 +2833,8 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["Hmm, I was too talkative.", "I apologize for my redundant words, hahaha."],
                         )?;
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.lines_as(
                             "Ahrum",
                             args![
@@ -3432,12 +2858,8 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Ahrum", args!["It's very hard for me to do that."])?;
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    4 => {
                         ctx.lines_as("Ahrum", args!["Okay...", "as you please."])?;
                         if ctx.var("nkprince_eisen").get()? == 2 {
                             ctx.var("nkprince_eisen").set(Val::from(3))?;
@@ -3462,6 +2884,7 @@ fn prince_eisen_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
         }
@@ -3624,22 +3047,13 @@ fn prince_ern_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             'b1: {
                 ctx.mes("-Well, what questions.-")?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "backgroud first.:I want to know your spirit of nationalism.: Your habbit and tastes.:I will be back.",
                         )],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Ernst", args!["Since I was young, I have grown up with a royal education. I haven't quarreled with others seriously, but I was not very polite either."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -3654,12 +3068,8 @@ fn prince_ern_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.lines_as("Ernst", args!["I think that is a great ability, and I should learn it. But, it is not only about results, but also a courtesy matter. We should keep something that we have to do."])?;
                         ctx.next()?;
                         ctx.lines_as("Ernst", args!["For me, the process was more important than the result. Now, I take them as equal virtue. I didn't take results significantly. Ahrum taught me, who used to consider the result as nothing."])?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as("Ernst", args!["The spirit of nationalism when I become King?"])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -3676,12 +3086,8 @@ fn prince_ern_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["It is my fortune that I got many masters beside Ahrum. It is also good for my country."],
                         )?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as(
                             "Ernst",
                             args!["II don't have special habits. I am just willing to learn and read books."],
@@ -3703,12 +3109,8 @@ fn prince_ern_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Ernst", args!["Hmm...is that enough?"])?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.lines_as("Ernst", args!["Yes, then, see you later."])?;
                         if ctx.var("nkprince_eisen").get()? == 1 {
                             ctx.var("nkprince_eisen").set(Val::from(3))?;
@@ -3733,6 +3135,7 @@ fn prince_ern_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
         }
@@ -4186,28 +3589,18 @@ fn prince_another_ern1_run(ctx: &Ctx, mut step: PrinceAnotherErn1Step, args: Vec
                         args!["If you react wrongfully to this incident, my death will be worthless...kuk... Do you understand?"],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("... Okay I will follow your will...:......")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.lines_as(
                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                 args!["... Okay, I will follow your will. Don't worry..."],
                             )?;
                             ctx.next()?;
-                            break 'b1;
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["......"])?;
                             ctx.next()?;
                             ctx.lines_as(
@@ -4215,8 +3608,8 @@ fn prince_another_ern1_run(ctx: &Ctx, mut step: PrinceAnotherErn1Step, args: Vec
                                 args!["Ignorance... is positive... It means... My bid... is successful..."],
                             )?;
                             ctx.next()?;
-                            break 'b1;
                         }
+                        _ => {}
                     }
                     ctx.lines_as(
                         "Ahrum",

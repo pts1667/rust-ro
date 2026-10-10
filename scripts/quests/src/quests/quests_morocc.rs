@@ -16,17 +16,11 @@ fn william_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.next()?;
     ctx.lines_as("William", args!["My family, the MacMillan Clan, has been producing Professional Traffic Signal Posts for more than 250 years. Nowadays, we are booking Special Orders for our unique ornament, ^3355FFStop Post^000000."])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Could I order one ^3355FFStop Post^000000?:Nah...")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as("William", args!["This unique ornament, ^3355FFStop Post^000000, is a traffic signal on the road, and doubles as a hair ornament! This, we solemnly promise on the strength of a 100-year guarantee."])?;
             ctx.next()?;
             ctx.lines_as("William", args!["To produce a ^3355FFStop Post^000000, we need ^3355FF91100 Zeny^000000, ^3355FF50 Trunk^000000 and ^3355FF1 Black Dyestuffs^000000."])?;
@@ -61,10 +55,7 @@ fn william_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "William",
                 args!["Anyway, thank you for coming by 'MacMillan's Workshop.' But think about buying something next time, will ya?"],
@@ -72,6 +63,7 @@ fn william_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -89,18 +81,11 @@ fn alchemist_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("What is that?:Manufacture:Ignore him")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as("Marius", args!["Hmm~!", "Well, the official name for them is ^3355FFBinoculars^000000! An optical device that works like a pair of field glasses, they're designed for simultaneous use by both eyes!"])?;
             ctx.next()?;
             ctx.lines_as("Marius", args!["They're made up of two small telescopes joined with a single focusing device. You can arrange the lenses to produce stereoscopic vision."])?;
@@ -127,10 +112,7 @@ fn alchemist_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             if ((ctx.call(Function::CountItem, vec![Val::from(2243)])?.number()? > 0
                 && ctx.call(Function::CountItem, vec![Val::from(999)])?.number()? > 99)
                 && ctx.var("Zeny").get()?.number()? > 49999)
@@ -171,10 +153,7 @@ fn alchemist_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Marius",
                 args![
@@ -185,6 +164,7 @@ fn alchemist_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -314,24 +294,15 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                         ],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Cancel Conversation:Ask What Happened")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(
                                 "Continental Guard",
                                 args![
@@ -345,24 +316,15 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                             ctx.next()?;
                             ctx.lines_as("Continental Guard", args!["If you'd like to know more information, I suggest that you speak to the Continental Guard in charge of the accident site in Morocc Village."])?;
                             ctx.next()?;
-                            'b2: {
-                                let subject2 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("End Conversation:Ask About Guard's Location")],
-                                )?);
-                                let mut matched2 = false;
-                                let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                )? {
+                                1 => {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                2 => {
                                     ctx.lines_as(
                                         "Continental Guard",
                                         args!["The guard that you want to talk to is at a camp built in the center of Morocc Village."],
@@ -370,22 +332,13 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                                     ctx.next()?;
                                     ctx.lines_as("Continental Guard", args!["If you'd like, I can send you there directly."])?;
                                     ctx.next()?;
-                                    'b3: {
-                                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No, thanks.:Please do.")])?);
-                                        let mut matched3 = false;
-                                        let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
+                                    match runtime::select_values(ctx, &[Val::from("No, thanks.:Please do.")])? {
+                                        1 => {
                                             ctx.lines_as("Continental Guard", args!["I see. Well then, for your safety, please leave this dangerous area as soon as possible."])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                            matched3 = true;
-                                        }
-                                        if matched3 {
+                                        2 => {
                                             ctx.lines_as(
                                                 "Continental Guard",
                                                 args!["Great. I'll send you to Morocc Village's accident site shortly."],
@@ -394,10 +347,13 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                                             ctx.call(Function::Warp, vec![Val::from("morocc"), Val::from(160), Val::from(61)])?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 }
+                                _ => {}
                             }
                         }
+                        _ => {}
                     }
                 } else if (ctx.var("rebirth_moc_edq").get()?.number()? > 3 && ctx.var("rebirth_moc_edq").get()?.number()? < 8) {
                     ctx.lines_as(
@@ -408,28 +364,17 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                         ],
                     )?;
                     ctx.next()?;
-                    'b4: {
-                        let subject4 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "Cancel Conversation:Enter the Field to Investigate:Move to Morocc's Accident Site",
                             )],
-                        )?);
-                        let mut matched4 = false;
-                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                            && !subject4.loosely_equals(&Val::from(2))
-                            && !subject4.loosely_equals(&Val::from(3));
-                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        )? {
+                        1 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        2 => {
                             if ctx.var("$@re_moc").get()?.number()? < 3 {
                                 runtime::party_members(ctx, ctx.call(Function::GetCharacterId, vec![Val::from(1)])?, Val::from(1))?;
                                 l_partymembercount = ctx.var("$@partymembercount").get()?;
@@ -491,10 +436,7 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                                 return Err(Stop::End);
                             }
                         }
-                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                            matched4 = true;
-                        }
-                        if matched4 {
+                        3 => {
                             ctx.lines_as(
                                 "Continental Guard",
                                 args!["Great. I'll send you to Morocc Village's accident site shortly."],
@@ -503,6 +445,7 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                             ctx.call(Function::Warp, vec![Val::from("morocc"), Val::from(160), Val::from(61)])?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else if ctx.var("rebirth_moc_edq").get()? == 8 {
                     ctx.lines_as("Continental Guard", args!["Ah, you're an adventurer working for the Continental Guard. Nice to meet you. Feel free to ask me if you need my assistance."])?;
@@ -530,22 +473,13 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                         }
                         l_i = (l_i.clone() + Val::from(1));
                     }
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "Enter the First Field to Investigate:Enter the Second Field to Investigate:Return to Morocc's Accident Site:Cancel Conversation",
                             )],
-                        )?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3))
-                            && !subject7.loosely_equals(&Val::from(4));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        )? {
+                        1 => {
                             if (l_onlinemembers.clone().number()? > 1
                                 && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
                             {
@@ -576,10 +510,7 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                                 return Err(Stop::End);
                             }
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        2 => {
                             if (l_onlinemembers.clone().number()? > 1
                                 && ctx.call(Function::CountItem, vec![Val::from(7826)])?.number()? > 0)
                             {
@@ -610,10 +541,7 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                                 return Err(Stop::End);
                             }
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        3 => {
                             ctx.lines_as(
                                 "Continental Guard",
                                 args!["Great. I'll send you to Morocc Village's accident site shortly."],
@@ -622,13 +550,11 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                             ctx.call(Function::Warp, vec![Val::from("morocc"), Val::from(160), Val::from(61)])?;
                             return Err(Stop::End);
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else {
                     return Err(Stop::End);
@@ -829,21 +755,13 @@ fn continental_official_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["Welcome to the Morocc Subjugation Information Center. How may I help you?"],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "What is this place for?:I'm here to volunteer.:Tell me about the village situation.",
                 )],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as("Continental Guard Official", args!["I'm stationed here to assist adventurers who wish to volunteer and help the Continental Guard fight Satan Morocc."])?;
                 ctx.next()?;
                 ctx.lines_as("Continental Guard Official", args!["I am sure you are already aware that Satan Morocc's revival threatens the peace of the Rune-Midgarts kingdom, and if Satan Morocc is allowed to roam free, it will devour the entire world."])?;
@@ -854,10 +772,7 @@ fn continental_official_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 if ctx.var("BaseLevel").get()?.number()? > 79 {
                     ctx.lines_as(
                         "Continental Guard Official",
@@ -893,10 +808,7 @@ fn continental_official_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as("Continental Guard Official", args!["As you can see, the situation can't be worse. The village and the surrounding area were irreparably damaged by Satan Morocc's resurrection."])?;
                 ctx.next()?;
                 ctx.lines_as("Continental Guard Official", args!["Since the kingdom has dispatched Continental Guard Messengers everywhere, many able adventurers have flocked to this place, but... I'm afraid they still might not be enough to defeat the demon."])?;
@@ -908,6 +820,7 @@ fn continental_official_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.lines_as(
@@ -995,70 +908,42 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Chief Balrog", args!["I'm sorry, but inexperienced adventurers would just get in our way. I hope you understand. If you really want to help us, then please focus on your training for now."])?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("End Conversation:Ask Again")])?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                        match runtime::select_values(ctx, &[Val::from("End Conversation:Ask Again")])? {
+                            1 => {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.lines_as("Chief Balrog", args!["Look, I understand your enthusiasm, but you're mistaken if you think you can help us. I don't have time to fully explain the danger that we're all facing."])?;
                                 ctx.next()?;
                                 ctx.lines_as("Chief Balrog", args!["Satan Morocc is nothing like the monsters you may have encountered. At best you'll throw your life away, but there's the chance that you might get one of my men killed by your mistakes and incompetence. I can't have that!"])?;
                                 ctx.next()?;
                                 ctx.lines_as("Chief Balrog", args!["Please understand that this is for your own good. Fight some Porings or whatever else might be a good match for your level."])?;
                                 ctx.next()?;
-                                'b3: {
-                                    let subject3 = Val::from(runtime::select_values(
+                                match runtime::select_values(
                                         ctx,
                                         &[Val::from("End Conversation:You've just got to let me join!")],
-                                    )?);
-                                    let mut matched3 = false;
-                                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
+                                    )? {
+                                    1 => {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
+                                    2 => {
                                         ctx.lines_as("Chief Balrog", args!["Sigh... Why are you so persistent? Can't you understand that no means no? Let me say this one more time."])?;
                                         ctx.next()?;
                                         ctx.lines_as("Chief Balrog", args!["We're too busy fighting Satan Morocc to watch after rookies like you. You'd just be throwing your life away."])?;
                                         ctx.next()?;
                                         ctx.lines_as("Chief Balrog", args!["Stop bothering me. You'd be nothing but a burden."])?;
                                         ctx.next()?;
-                                        'b4: {
-                                            let subject4 = Val::from(runtime::select_values(
+                                        match runtime::select_values(
                                                 ctx,
                                                 &[Val::from("Give Up:Give me a chance to prove myself!")],
-                                            )?);
-                                            let mut matched4 = false;
-                                            let no_case4 =
-                                                !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
+                                            )? {
+                                            1 => {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                matched4 = true;
-                                            }
-                                            if matched4 {
+                                            2 => {
                                                 ctx.lines_as("Chief Balrog", args!["Huh? You want a chance to prove yourself?"])?;
                                                 ctx.next()?;
                                                 ctx.lines_as(
@@ -1076,38 +961,32 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.next()?;
                                                 ctx.lines_as("Chief Balrog", args!["I happened to hear that the monsters in the Lava Dungeon have everlasting flame which would solve our bonfire problems. I want you to gather those flames for us."])?;
                                                 ctx.next()?;
-                                                'b5: {
-                                                    let subject5 = Val::from(runtime::select_values(
+                                                match runtime::select_values(
                                                         ctx,
                                                         &[Val::from("That's too hard! Let me think about it!:No problem.")],
-                                                    )?);
-                                                    let mut matched5 = false;
-                                                    let no_case5 =
-                                                        !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                                                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                                        matched5 = true;
-                                                    }
-                                                    if matched5 {
+                                                    )? {
+                                                    1 => {
                                                         ctx.lines_as("Chief Balrog", args!["Hmpf, I was right. I knew you wouldn't be able to handle such a simple task. I shouldn't have wasted my time with you."])?;
                                                         ctx.close_window()?;
                                                         return Err(Stop::End);
                                                     }
-                                                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                                        matched5 = true;
-                                                    }
-                                                    if matched5 {
+                                                    2 => {
                                                         ctx.lines_as("Chief Balrog", args!["Excellent! Bring back ^0000FF30 Live Coals^000000. I'll be waiting for your return."])?;
                                                         ctx.var("rebirth_moc_edq").set(Val::from(2))?;
                                                         ctx.call(Function::ChangeQuest, vec![Val::from(3050), Val::from(3051)])?;
                                                         ctx.close_window()?;
                                                         return Err(Stop::End);
                                                     }
+                                                    _ => {}
                                                 }
                                             }
+                                            _ => {}
                                         }
                                     }
+                                    _ => {}
                                 }
                             }
+                            _ => {}
                         }
                     } else {
                         ctx.lines_as(
@@ -1180,27 +1059,18 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.next()?;
                     ctx.lines_as("Chief Balrog", args!["Now, I remember hearing that the monsters in the Ice Cave to the north have frozen hearts. Those hearts might be able to relieve those soldiers from the heat."])?;
                     ctx.next()?;
-                    'b6: {
-                        let subject6 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("That's too hard!:No problem. How many do you want?")],
-                        )?);
-                        let mut matched6 = false;
-                        let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                        if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                            matched6 = true;
-                        }
-                        if matched6 {
+                        )? {
+                        1 => {
                             ctx.lines_as("Chief Balrog", args!["I knew that'd be too tough for you. I'm glad you finally realized your limits before it was too late. It takes wisdom to recognize your weakness."])?;
                             ctx.next()?;
                             ctx.lines_as("Chief Balrog", args!["You'd better pack up and return where you came from. You want to be far away from here when Satan Morocc attacks."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                            matched6 = true;
-                        }
-                        if matched6 {
+                        2 => {
                             ctx.lines_as("Chief Balrog", args!["Huh?! Are you sure you can bring those? Hmm..."])?;
                             ctx.next()?;
                             ctx.lines_as(
@@ -1218,6 +1088,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else {
                     ctx.lines_as(
@@ -1281,14 +1152,8 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["I guess you'd benefit from a full situational briefing. Shall I brief you now?"],
                         )?;
                         ctx.next()?;
-                        'b7: {
-                            let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
-                            let mut matched7 = false;
-                            let no_case7 = !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
+                        match runtime::select_values(ctx, &[Val::from("Yes:No")])? {
+                            1 => {
                                 ctx.lines_as("Chief Balrog", args!["I'm going to tell you some basic information about fighting Satan Morocc as a member of the Continental Guard."])?;
                                 ctx.next()?;
                                 ctx.lines_as(
@@ -1314,14 +1179,12 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                matched7 = true;
-                            }
-                            if matched7 {
+                            2 => {
                                 ctx.lines_as("Chief Balrog", args!["I see. Keep up your good work in fighting Satan Morocc. Don't forget that the future of the continent is in our hands."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     } else if ctx.var("rebirth_moc_edq").get()? == 5 {
                         ctx.lines_as("Chief Balrog", args!["Wah... What? Did you really defeat Satan Morocc?"])?;
@@ -1382,15 +1245,8 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.next()?;
                                     ctx.lines_as("Chief Balrog", args!["Do you really want the Seal of Continental Guard?"])?;
                                     ctx.next()?;
-                                    'b9: {
-                                        let subject9 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                        let mut matched9 = false;
-                                        let no_case9 =
-                                            !subject9.loosely_equals(&Val::from(1)) && !subject9.loosely_equals(&Val::from(2));
-                                        if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                                            matched9 = true;
-                                        }
-                                        if matched9 {
+                                    match runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])? {
+                                        1 => {
                                             ctx.lines_as("Chief Balrog", args!["Great, then I'll reward you with the Seal of Continental Guard. Congratulations."])?;
                                             ctx.next()?;
                                             ctx.call(Function::GetItem, vec![Val::from(2730), Val::from(1)])?;
@@ -1409,10 +1265,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                                            matched9 = true;
-                                        }
-                                        if matched9 {
+                                        2 => {
                                             ctx.lines_as(
                                                 "Chief Balrog",
                                                 args!["No problem. Take your time to think, and then speak to me again."],
@@ -1420,6 +1273,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 }
                                 if !matched8 && subject8.loosely_equals(&Val::from(2)) {
@@ -1435,15 +1289,8 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.next()?;
                                     ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Charm Stone?"])?;
                                     ctx.next()?;
-                                    'b10: {
-                                        let subject10 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                        let mut matched10 = false;
-                                        let no_case10 =
-                                            !subject10.loosely_equals(&Val::from(1)) && !subject10.loosely_equals(&Val::from(2));
-                                        if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                                            matched10 = true;
-                                        }
-                                        if matched10 {
+                                    match runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])? {
+                                        1 => {
                                             ctx.lines_as(
                                                 "Chief Balrog",
                                                 args!["Great, then I'll reward you with a Morocc Charm Stone. Congratulations."],
@@ -1465,10 +1312,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                                            matched10 = true;
-                                        }
-                                        if matched10 {
+                                        2 => {
                                             ctx.lines_as(
                                                 "Chief Balrog",
                                                 args!["No problem. Take your time to think, and then speak to me again."],
@@ -1476,6 +1320,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 }
                                 if !matched8 && subject8.loosely_equals(&Val::from(3)) {
@@ -1488,15 +1333,8 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.next()?;
                                     ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Ring?"])?;
                                     ctx.next()?;
-                                    'b11: {
-                                        let subject11 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                        let mut matched11 = false;
-                                        let no_case11 =
-                                            !subject11.loosely_equals(&Val::from(1)) && !subject11.loosely_equals(&Val::from(2));
-                                        if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                                            matched11 = true;
-                                        }
-                                        if matched11 {
+                                    match runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])? {
+                                        1 => {
                                             ctx.lines_as(
                                                 "Chief Balrog",
                                                 args!["Great, then I'll reward you with a Morocc Ring. Congratulations."],
@@ -1518,10 +1356,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                                            matched11 = true;
-                                        }
-                                        if matched11 {
+                                        2 => {
                                             ctx.lines_as(
                                                 "Chief Balrog",
                                                 args!["No problem. Take your time to think about it, and then speak to me again."],
@@ -1529,6 +1364,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 }
                             }
@@ -1567,15 +1403,8 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.next()?;
                                 ctx.lines_as("Chief Balrog", args!["Do you really want the Seal of Continental Guard?"])?;
                                 ctx.next()?;
-                                'b13: {
-                                    let subject13 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                    let mut matched13 = false;
-                                    let no_case13 =
-                                        !subject13.loosely_equals(&Val::from(1)) && !subject13.loosely_equals(&Val::from(2));
-                                    if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                                        matched13 = true;
-                                    }
-                                    if matched13 {
+                                match runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])? {
+                                    1 => {
                                         ctx.lines_as("Chief Balrog", args!["Great, then I'll reward you with the Seal of Continental Guard. Congratulations."])?;
                                         ctx.next()?;
                                         ctx.call(Function::GetItem, vec![Val::from(2730), Val::from(1)])?;
@@ -1594,10 +1423,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                                        matched13 = true;
-                                    }
-                                    if matched13 {
+                                    2 => {
                                         ctx.lines_as(
                                             "Chief Balrog",
                                             args!["No problem. Take your time to think, and then speak to me again."],
@@ -1605,6 +1431,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
+                                    _ => {}
                                 }
                             }
                             if !matched12 && subject12.loosely_equals(&Val::from(2)) {
@@ -1620,15 +1447,8 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.next()?;
                                 ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Charm Stone?"])?;
                                 ctx.next()?;
-                                'b14: {
-                                    let subject14 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                    let mut matched14 = false;
-                                    let no_case14 =
-                                        !subject14.loosely_equals(&Val::from(1)) && !subject14.loosely_equals(&Val::from(2));
-                                    if !matched14 && subject14.loosely_equals(&Val::from(1)) {
-                                        matched14 = true;
-                                    }
-                                    if matched14 {
+                                match runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])? {
+                                    1 => {
                                         ctx.lines_as(
                                             "Chief Balrog",
                                             args!["Great, then I'll reward you with a Morocc Charm Stone. Congratulations."],
@@ -1650,10 +1470,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched14 && subject14.loosely_equals(&Val::from(2)) {
-                                        matched14 = true;
-                                    }
-                                    if matched14 {
+                                    2 => {
                                         ctx.lines_as(
                                             "Chief Balrog",
                                             args!["No problem. Take your time to think, and then speak to me again."],
@@ -1661,6 +1478,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
+                                    _ => {}
                                 }
                             }
                             if !matched12 && subject12.loosely_equals(&Val::from(3)) {
@@ -1673,15 +1491,8 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.next()?;
                                 ctx.lines_as("Chief Balrog", args!["Do you really want a Morocc Ring?"])?;
                                 ctx.next()?;
-                                'b15: {
-                                    let subject15 = Val::from(runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])?);
-                                    let mut matched15 = false;
-                                    let no_case15 =
-                                        !subject15.loosely_equals(&Val::from(1)) && !subject15.loosely_equals(&Val::from(2));
-                                    if !matched15 && subject15.loosely_equals(&Val::from(1)) {
-                                        matched15 = true;
-                                    }
-                                    if matched15 {
+                                match runtime::select_values(ctx, &[Val::from("1. Yes.:2. No.")])? {
+                                    1 => {
                                         ctx.lines_as(
                                             "Chief Balrog",
                                             args!["Great, then I'll reward you with a Morocc Ring. Congratulations."],
@@ -1703,10 +1514,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched15 && subject15.loosely_equals(&Val::from(2)) {
-                                        matched15 = true;
-                                    }
-                                    if matched15 {
+                                    2 => {
                                         ctx.lines_as(
                                             "Chief Balrog",
                                             args!["No problem. Take your time to think about it, and then speak to me again."],
@@ -1714,6 +1522,7 @@ fn chief_balrog_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
+                                    _ => {}
                                 }
                             }
                         }
@@ -2167,22 +1976,13 @@ fn morocc_globalvar_admin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.next()?;
         ctx.lines_as("Helper", args!["What do you want?"])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Cancel.:Reset")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Cancel.:Reset")])? {
+            1 => {
                 ctx.lines_as("Helper", args!["Alright."])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 if ctx.call(Function::StrNpcInfo, vec![Val::from(4)])? == "sec_in02" {
                     ctx.mes("You can reset at moc_fild21 5 5.")?;
                 } else {
@@ -2204,6 +2004,7 @@ fn morocc_globalvar_admin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     Ok(Val::from(0))
@@ -2359,14 +2160,8 @@ fn book_touching_man_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     }
                     ctx.mes("^660000What do you want to do?^000000")?;
                     ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Help him:Don't help him")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                    match runtime::select_values(ctx, &[Val::from("Help him:Don't help him")])? {
+                        1 => {
                             ctx.lines_as("Benjamin", args!["Wow, are you really going to help me?"])?;
                             ctx.next()?;
                             ctx.lines_as("Benjamin", args!["Thank you so much! Then remember this title: 'The Crow of the Fate' written by 'Oliver Hilpert.' I'm sure you can find it in Prontera Library.", "Hehehe, Mammi! I'm almost there!"])?;
@@ -2375,10 +2170,7 @@ fn book_touching_man_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        2 => {
                             ctx.lines_as(
                                 "Benjamin",
                                 args!["What, don't you know how to check out a book from a library? Oh, my..."],
@@ -2386,6 +2178,7 @@ fn book_touching_man_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
                 if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -2475,22 +2268,12 @@ fn book_touching_man_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
             ctx.next()?;
             ctx.mes("^660000He is staring at you arrogantly. Obviously, he doesn't care if you like the book or not.^000000")?;
             ctx.next()?;
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("I'll take it.:No, thanks.")])?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
+            match runtime::select_values(ctx, &[Val::from("I'll take it.:No, thanks.")])? {
+                1 => {
                     ctx.mes("'^660000Well, if it's for free, and there's no harm keeping it.'^000000")?;
                     ctx.next()?;
-                    break 'b3;
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                2 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["No, thanks. I'm not interested in her as much as you."],
@@ -2498,8 +2281,8 @@ fn book_touching_man_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     ctx.next()?;
                     ctx.mes("...^660000Was what you were about to say, but you could not refuse his offer. Looking at his fanatical eyes, burning with love for her, even Odin could not refuse...^000000")?;
                     ctx.next()?;
-                    break 'b3;
                 }
+                _ => {}
             }
             ctx.lines(args![
                 "^660000Quickly blinking his eyes, he made you take Mammi's picture book in your arms",
@@ -2559,14 +2342,8 @@ fn book_touching_man_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     args!["Oh, my god!", "These will surely help me get closer to Mammi!", "Give them to me!"],
                 )?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Give:Don't Give")])?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                match runtime::select_values(ctx, &[Val::from("Give:Don't Give")])? {
+                    1 => {
                         ctx.lines_as(
                             "Benjamin",
                             args![
@@ -2590,14 +2367,12 @@ fn book_touching_man_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.lines_as("Benjamin", args!["Huh? What, are you kidding me?"])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as("Benjamin", args!["Oh... Mammi... Oh..."])?;
@@ -2638,17 +2413,11 @@ fn library_curator_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     } else if ctx.var("barmunt_crow").get()? == 1 {
         ctx.lines_as("Curator Guys", args!["Our library's Monster Encyclopedia has every monster in the Rune-Midgarts Kingdom categorized by dungeon, to help our readers find them easily.", "We also have many essential books for adventurers. Why don't you take a look?"])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Search books.:Look around the library.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Curator Guys",
                     args![
@@ -2658,19 +2427,11 @@ fn library_curator_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Say the title.:Say the author.:Search by keyword.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Curator Guys",
                             args!["Oh, do you know the title?", "Sure, now what's the name?"],
@@ -2689,12 +2450,8 @@ fn library_curator_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "Curator Guys",
                             args!["Oh, do you know the author?", "Sure, now what's the name?"],
@@ -2713,12 +2470,8 @@ fn library_curator_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as(
                             "Curator Guys",
                             args![
@@ -2744,8 +2497,8 @@ fn library_curator_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        break 'b2;
                     }
+                    _ => {}
                 }
                 ctx.call(Function::Emotion, vec![ctx.constant("ET_AHA")?])?;
                 ctx.lines_as("Curator Guys", args!["Oh, right! I think I know the book:"])?;
@@ -2778,10 +2531,7 @@ fn library_curator_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Curator Guys",
                     args![
@@ -2792,6 +2542,7 @@ fn library_curator_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else if ctx.var("barmunt_crow").get()? == 2 {
         ctx.lines_as("Curator Guys", args!["^3131FFThe Crow of the Fate^000000 was sold out even before we got a hold of one copy. You won't be able to find the book anywhere in the Rune-Midgarts Kingdom.", "If you really want to read the book, you should try Juno Library."])?;
@@ -3617,14 +3368,8 @@ fn suspicious_man_oliver_h_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
             args!["Did you change your mind about selling Lady Mammi's picture book to me?"],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Yes:No")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Yes:No")])? {
+            1 => {
                 ctx.call(Function::Cutin, vec![Val::from("oliver_smile"), Val::from(2)])?;
                 ctx.lines_as("Oliver Hilpert", args!["Wow, thanks!"])?;
                 ctx.next()?;
@@ -3633,18 +3378,15 @@ fn suspicious_man_oliver_h_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     args!["Umm... I haven't received my publishing advance yet, but do you mind taking this instead?"],
                 )?;
                 ctx.next()?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as("Oliver Hilpert", args!["Okay... I see..."])?;
                 ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
                 ctx.close_window()?;
                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
         ctx.lines_as("Oliver Hilpert", args!["I haven't had a chance to open it, but my publisher said it has something very rare inside. I hope that it's enough to pay you for your book."])?;
         ctx.next()?;
@@ -3793,17 +3535,11 @@ fn suspicious_man_oliver_h_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
             args!["What if it was all caused by that crow feather? What if...?"],
         )?;
         ctx.next()?;
-        'b2: {
-            let subject2 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("It was cursed by the pebble.:The crow has something to do with Oliver.")],
-            )?);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args![
@@ -3820,12 +3556,8 @@ fn suspicious_man_oliver_h_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     ],
                 )?;
                 ctx.next()?;
-                break 'b2;
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["I remember Mr. Zid saying Eva had left a black feather behind her."],
@@ -3851,8 +3583,8 @@ fn suspicious_man_oliver_h_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                     args!["..................", "I guess it's a stupid idea."],
                 )?;
                 ctx.next()?;
-                break 'b2;
             }
+            _ => {}
         }
         ctx.lines_as(
             ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
@@ -4079,14 +3811,8 @@ fn worn_out_book_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Sell:Don't Sell")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Sell:Don't Sell")])? {
+            1 => {
                 ctx.lines_as("Oliver Hilpert", args!["Wow, thanks!"])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -4094,12 +3820,8 @@ fn worn_out_book_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["Umm... I haven't received my publishing advance yet, but do you mind taking this instead?"],
                 )?;
                 ctx.next()?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as("Oliver Hilpert", args!["Okay... I see..."])?;
                 ctx.call(Function::Emotion, vec![ctx.constant("ET_CRY")?])?;
                 ctx.var("barmunt_crow").set(Val::from(13))?;
@@ -4107,6 +3829,7 @@ fn worn_out_book_garas_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
         ctx.lines_as("Oliver Hilpert", args!["I haven't had a chance to open it, but my publisher said it has something very rare inside. I hope that it's enough to pay you for your book."])?;
         ctx.next()?;
@@ -4675,23 +4398,14 @@ fn cave_settler_g1_run(ctx: &Ctx, mut step: CaveSettlerG1Step, args: Vec<Val>) -
                 if ctx.var("barmunt_crow").get()? == 8 {
                     ctx.lines_as("Cave Settler", args!["No outsiders are allowed beyond this point."])?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Step back.:No, listen to me!")])?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                    match runtime::select_values(ctx, &[Val::from("Step back.:No, listen to me!")])? {
+                        1 => {
                             ctx.lines_as("Cave Settler", args!["Hah, I knew you would be scared of me!"])?;
                             ctx.close_window()?;
                             ctx.call(Function::Warp, vec![Val::from("cave"), Val::from(81), Val::from(92)])?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(
                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                 args![
@@ -4754,6 +4468,7 @@ fn cave_settler_g1_run(ctx: &Ctx, mut step: CaveSettlerG1Step, args: Vec<Val>) -
                                 return Err(Stop::End);
                             }
                         }
+                        _ => {}
                     }
                 } else if ctx.var("barmunt_crow").get()?.number()? < 8 {
                     ctx.lines_as("Cave Settler", args!["No outsiders are allowed beyond this point."])?;
@@ -4780,23 +4495,14 @@ fn cave_settler_g1_run(ctx: &Ctx, mut step: CaveSettlerG1Step, args: Vec<Val>) -
                 if ctx.var("barmunt_crow").get()? == 8 {
                     ctx.lines_as("Cave Settler", args!["No outsiders are allowed beyond this point."])?;
                     ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Step back.:No, listen to me!")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                    match runtime::select_values(ctx, &[Val::from("Step back.:No, listen to me!")])? {
+                        1 => {
                             ctx.lines_as("Cave Settler", args!["Hah, I knew you would be scared of me!"])?;
                             ctx.close_window()?;
                             ctx.call(Function::Warp, vec![Val::from("cave"), Val::from(81), Val::from(92)])?;
                             return Err(Stop::End);
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        2 => {
                             ctx.lines_as(
                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                 args![
@@ -4859,6 +4565,7 @@ fn cave_settler_g1_run(ctx: &Ctx, mut step: CaveSettlerG1Step, args: Vec<Val>) -
                                 return Err(Stop::End);
                             }
                         }
+                        _ => {}
                     }
                 } else if ctx.var("barmunt_crow").get()?.number()? < 8 {
                     ctx.lines_as("Cave Settler", args!["No outsiders are allowed beyond this point."])?;
@@ -4974,32 +4681,19 @@ fn monsterous_man_zid_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["My name is Zid. Tell me what you want from me. I want to know more about this book."],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("About the Cave Village:About Himself:About Eva:End Conversation")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Zid", args!["Did you notice that our villagers look different?"])?;
                         ctx.next()?;
                         ctx.lines_as("Zid", args!["Human curiosity has led to great achievements and contributions, but there is a point where knowledge may be too much to handle.", "Everyone in this village is a runaway... We are victims of what happens when people play God, seek out forbidden knowledge, and toy with life."])?;
                         ctx.next()?;
                         ctx.lines_as("Zid", args!["We have no choice but hide here because they are too powerful for us to speak out against... And we know that isn't right."])?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as("Zid", args!["I was a normal man once, but poverty made me lose my pride, self-esteem, and identity.", "I was sick and tired of worrying about food everyday, and I volunteered to be a test subject in some experiment.", "I no longer had to worry about starving, but my life as a 'human' ended that day."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -5010,12 +4704,8 @@ fn monsterous_man_zid_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as(
                             "Zid",
                             args![
@@ -5060,15 +4750,11 @@ fn monsterous_man_zid_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Zid", args!["I don't know why, but... I believe Eva no longer exists..."])?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         l_exitloop = Val::from(1);
-                        break 'b2;
                     }
+                    _ => {}
                 }
                 if l_exitloop.clone().is_true() {
                     break 'l1;

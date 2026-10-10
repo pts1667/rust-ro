@@ -124,14 +124,8 @@ fn guide_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Sure let's go there.:No.")])?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                        match runtime::select_values(ctx, &[Val::from("Sure let's go there.:No.")])? {
+                            1 => {
                                 if ctx.call(Function::CountItem, vec![Val::from(7839)])?.is_true() {
                                     ctx.call(
                                         Function::DelItem,
@@ -146,10 +140,7 @@ fn guide_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 )?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.lines_as(
                                     "Guide",
                                     args![
@@ -160,6 +151,7 @@ fn guide_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     } else {
                         ctx.lines_as(
@@ -191,14 +183,8 @@ fn guide_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         {
             ctx.lines_as("Guide", args!["... OK...", "Good luck."])?;
             ctx.next()?;
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Enter now.:No.")])?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
+            match runtime::select_values(ctx, &[Val::from("Enter now.:No.")])? {
+                1 => {
                     if ctx.call(Function::CountItem, vec![Val::from(7839)])?.number()? > 0 {
                         ctx.call(
                             Function::DelItem,
@@ -213,14 +199,12 @@ fn guide_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     )?;
                     return Err(Stop::End);
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                2 => {
                     ctx.lines_as("Guide", args!["Really?", "Sorry to hear that."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else if runtime::getd(
             ctx,
@@ -393,14 +377,8 @@ fn wish_maiden_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     args!["Are you ready to endure the trials to get the Goddess' glory?"],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes, I am:Sorry, I'll try later")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                match runtime::select_values(ctx, &[Val::from("Yes, I am:Sorry, I'll try later")])? {
+                    1 => {
                         ctx.call(Function::Cutin, vec![Val::from("wish_maiden12"), Val::from(1)])?;
                         ctx.lines_as(
                             "Wish Maiden",
@@ -439,14 +417,8 @@ fn wish_maiden_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             args!["I will open the gate of Okolnir if your members are ready."],
                         )?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("We are ready.:We need more time.")])?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                        match runtime::select_values(ctx, &[Val::from("We are ready.:We need more time.")])? {
+                            1 => {
                                 l_saram = ctx.call(Function::GetMapUsers, vec![(Val::from("que_q") + l_sub_s.clone())])?;
                                 if (l_saram.clone().number()? > 15 && l_saram.clone().number()? < 21) {
                                     ctx.call(Function::Cutin, vec![Val::from("wish_maiden12"), Val::from(1)])?;
@@ -532,12 +504,8 @@ fn wish_maiden_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     )?;
                                     ctx.close_window()?;
                                 }
-                                break 'b3;
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 ctx.call(Function::Cutin, vec![Val::from("wish_maiden13"), Val::from(1)])?;
                                 ctx.lines_as(
                                     "Wish Maiden",
@@ -549,13 +517,10 @@ fn wish_maiden_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 )?;
                                 ctx.close_window()?;
                             }
+                            _ => {}
                         }
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.call(Function::Cutin, vec![Val::from("wish_maiden32"), Val::from(1)])?;
                         ctx.lines_as("Wish Maiden", args!["... Are you afraid of", "the trials facing you?", "...."])?;
                         ctx.next()?;
@@ -570,6 +535,7 @@ fn wish_maiden_gq_main_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         ctx.close_window()?;
                     }
+                    _ => {}
                 }
             } else {
                 ctx.call(Function::Cutin, vec![Val::from("wish_maiden11"), Val::from(1)])?;
@@ -742,69 +708,36 @@ fn gate01_gq_main_run(ctx: &Ctx, mut step: Gate01GqMainStep, args: Vec<Val>) -> 
                         ],
                     )?) {
                         l_point = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
-                        'b1: {
-                            let subject1 = l_point.clone();
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                && !subject1.loosely_equals(&Val::from(2))
-                                && !subject1.loosely_equals(&Val::from(3))
-                                && !subject1.loosely_equals(&Val::from(4))
-                                && !subject1.loosely_equals(&Val::from(5));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(72), Val::from(271)],
-                                )?;
-                                break 'b1;
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(45), Val::from(243)],
-                                )?;
-                                break 'b1;
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(102), Val::from(248)],
-                                )?;
-                                break 'b1;
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(102), Val::from(300)],
-                                )?;
-                                break 'b1;
-                            }
-                            if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
-                                ctx.call(
-                                    Function::Warp,
-                                    vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(46), Val::from(300)],
-                                )?;
-                                break 'b1;
-                            }
+                        let subject1 = l_point.clone();
+                        if subject1 == 1 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(72), Val::from(271)],
+                            )?;
+                        } else if subject1 == 2 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(45), Val::from(243)],
+                            )?;
+                        } else if subject1 == 3 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(102), Val::from(248)],
+                            )?;
+                        } else if subject1 == 4 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(102), Val::from(300)],
+                            )?;
+                        } else if subject1 == 5 {
+                            ctx.call(
+                                Function::Warp,
+                                vec![(Val::from("que_q") + l_sub_s.clone()), Val::from(46), Val::from(300)],
+                            )?;
                         }
                         return Err(Stop::End);
                     }
-                    'b2: {
-                        let subject2 = runtime::getd(
+                    let subject2 = runtime::getd(
                             ctx,
                             &((Val::from("$@gqse_") + l_sub_s.clone()) + Val::from("_miro")),
                             &[
@@ -815,267 +748,146 @@ fn gate01_gq_main_run(ctx: &Ctx, mut step: Gate01GqMainStep, args: Vec<Val>) -> 
                                 (".@sub$", runtime::Local::Scalar(&l_sub_s)),
                             ],
                         )?;
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(0))
-                            && !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3))
-                            && !subject2.loosely_equals(&Val::from(4))
-                            && !subject2.loosely_equals(&Val::from(5))
-                            && !subject2.loosely_equals(&Val::from(6))
-                            && !subject2.loosely_equals(&Val::from(7))
-                            && !subject2.loosely_equals(&Val::from(8))
-                            && !subject2.loosely_equals(&Val::from(9))
-                            && !subject2.loosely_equals(&Val::from(10))
-                            && !subject2.loosely_equals(&Val::from(11))
-                            && !subject2.loosely_equals(&Val::from(12))
-                            && !subject2.loosely_equals(&Val::from(13))
-                            && !subject2.loosely_equals(&Val::from(14))
-                            && !subject2.loosely_equals(&Val::from(15))
-                            && !subject2.loosely_equals(&Val::from(16))
-                            && !subject2.loosely_equals(&Val::from(17))
-                            && !subject2.loosely_equals(&Val::from(18))
-                            && !subject2.loosely_equals(&Val::from(19));
-                        if !matched2 && subject2.loosely_equals(&Val::from(0)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(77), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(271), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(72), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(271), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(1), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(63), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(278), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(63), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(282), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(2), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(63), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(294), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(59), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(294), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(3), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(50), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(300), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(46), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(300), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(4), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(51), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(280), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(51), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(285), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(5), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(51), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(258), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(51), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(262), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(6), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(49), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(243), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(45), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(243), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(7), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(7)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(86), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(249), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(82), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(249), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(8), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(8)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(102), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(243), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(102), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(248), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(9), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(9)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(90), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(256), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(90), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(260), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(10), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(10)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(90), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(283), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(90), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(280), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(11), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(11)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(102), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(295), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(102), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(300), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(12), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(12)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(96), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(285), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(96), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(290), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(13), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(13)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(63), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(278), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(63), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(282), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(14), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(14)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(65), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(243), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(61), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(243), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(15), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(15)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(73), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(249), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(70), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(249), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(16), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(16)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(102), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(275), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(102), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(282), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(17), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(17)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(70), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(300), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(66), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(300), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(18), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(18)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(57), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(255), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(57), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(258), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(19), false);
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(19)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(84), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(277), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(84), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(280), false);
-                            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(20), false);
-                            break 'b2;
-                        }
+                    if subject2 == 0 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(77), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(271), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(72), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(271), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(1), false);
+                    } else if subject2 == 1 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(63), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(278), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(63), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(282), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(2), false);
+                    } else if subject2 == 2 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(63), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(294), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(59), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(294), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(3), false);
+                    } else if subject2 == 3 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(50), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(300), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(46), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(300), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(4), false);
+                    } else if subject2 == 4 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(51), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(280), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(51), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(285), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(5), false);
+                    } else if subject2 == 5 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(51), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(258), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(51), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(262), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(6), false);
+                    } else if subject2 == 6 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(49), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(243), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(45), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(243), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(7), false);
+                    } else if subject2 == 7 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(86), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(249), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(82), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(249), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(8), false);
+                    } else if subject2 == 8 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(102), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(243), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(102), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(248), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(9), false);
+                    } else if subject2 == 9 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(90), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(256), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(90), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(260), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(10), false);
+                    } else if subject2 == 10 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(90), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(283), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(90), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(280), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(11), false);
+                    } else if subject2 == 11 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(102), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(295), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(102), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(300), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(12), false);
+                    } else if subject2 == 12 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(96), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(285), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(96), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(290), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(13), false);
+                    } else if subject2 == 13 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(63), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(278), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(63), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(282), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(14), false);
+                    } else if subject2 == 14 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(65), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(243), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(61), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(243), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(15), false);
+                    } else if subject2 == 15 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(73), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(249), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(70), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(249), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(16), false);
+                    } else if subject2 == 16 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(102), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(275), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(102), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(282), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(17), false);
+                    } else if subject2 == 17 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(70), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(300), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(66), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(300), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(18), false);
+                    } else if subject2 == 18 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(57), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(255), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(57), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(258), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(19), false);
+                    } else if subject2 == 19 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(84), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(277), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(84), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(280), false);
+                        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(20), false);
                     }
                     gate01_gq_main_run(
                         ctx,
@@ -1116,64 +928,21 @@ fn gate01_gq_main_run(ctx: &Ctx, mut step: Gate01GqMainStep, args: Vec<Val>) -> 
                 continue 'machine;
             }
             Gate01GqMainStep::SMonster => {
-                'b3: {
-                    let subject3 = ctx.var("BaseClass").get()?;
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3))
-                        && !subject3.loosely_equals(&Val::from(4))
-                        && !subject3.loosely_equals(&Val::from(5))
-                        && !subject3.loosely_equals(&Val::from(6));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        l_m = Val::from(1652);
-                        break 'b3;
-                    }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        l_m = Val::from(1663);
-                        break 'b3;
-                    }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        l_m = Val::from(1662);
-                        break 'b3;
-                    }
-                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        l_m = Val::from(1661);
-                        break 'b3;
-                    }
-                    if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        l_m = Val::from(1660);
-                        break 'b3;
-                    }
-                    if !matched3 && subject3.loosely_equals(&Val::from(6)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        l_m = Val::from(1659);
-                        break 'b3;
-                    }
-                    if !matched3 && no_case3 {
-                        matched3 = true;
-                    }
-                    if matched3 {
-                        l_m = Val::from(1652);
-                        break 'b3;
-                    }
+                let subject3 = ctx.var("BaseClass").get()?;
+                if subject3 == 1 {
+                    l_m = Val::from(1652);
+                } else if subject3 == 2 {
+                    l_m = Val::from(1663);
+                } else if subject3 == 3 {
+                    l_m = Val::from(1662);
+                } else if subject3 == 4 {
+                    l_m = Val::from(1661);
+                } else if subject3 == 5 {
+                    l_m = Val::from(1660);
+                } else if subject3 == 6 {
+                    l_m = Val::from(1659);
+                } else {
+                    l_m = Val::from(1652);
                 }
                 ctx.call(
                     Function::Monster,
@@ -4165,8 +3934,7 @@ fn getspells_main_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         Function::StartStatus,
         vec![ctx.constant("SC_STONE")?, Val::from(300000), Val::from(0), Val::from(10000)],
     )?;
-    'b1: {
-        let subject1 = runtime::getd(
+    let subject1 = runtime::getd(
             ctx,
             &((Val::from("$@gqse_") + l_sub_s.clone()) + Val::from("_gd")),
             &[
@@ -4174,117 +3942,80 @@ fn getspells_main_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 (".@sub$", runtime::Local::Scalar(&l_sub_s)),
             ],
         )?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(0))
-            && !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4))
-            && !subject1.loosely_equals(&Val::from(5));
-        if !matched1 && subject1.loosely_equals(&Val::from(0)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("103"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("153"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("1"), true);
-            runtime::local_set(
-                &mut l_n_s,
-                &Val::from(base + 3),
-                Val::from("Piamette : One white bird has dropped with its wing pierced by an arrow."),
-                true,
-            );
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("102"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("135"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("2"), true);
-            runtime::local_set(
-                &mut l_n_s,
-                &Val::from(base + 3),
-                Val::from("Piamette : One bird is caught in a snare, and dropped into a lake."),
-                true,
-            );
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("113"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("111"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("3"), true);
-            runtime::local_set(
-                &mut l_n_s,
-                &Val::from(base + 3),
-                Val::from("Piamette : One bird has died trapped in it's cage."),
-                true,
-            );
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("161"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("105"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("4"), true);
-            runtime::local_set(
-                &mut l_n_s,
-                &Val::from(base + 3),
-                Val::from("Piamette : One bird was poisoned to death."),
-                true,
-            );
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("168"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("135"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("5"), true);
-            runtime::local_set(
-                &mut l_n_s,
-                &Val::from(base + 3),
-                Val::from("Piamette : One bird vomited blood while singing seven days and seven nights."),
-                true,
-            );
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("150"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("159"), true);
-            runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("6"), true);
-            runtime::local_set(
-                &mut l_n_s,
-                &Val::from(base + 3),
-                Val::from("Piamette : The last one broke her neck wriggling to get out of from it's eggshell!"),
-                true,
-            );
-            ctx.call(
-                Function::DoNpcEvent,
-                vec![((Val::from("#gdtimer02_") + l_sub_s.clone()) + Val::from("::OnEnable"))],
-            )?;
-            ctx.call(
-                Function::DoNpcEvent,
-                vec![((Val::from("#gdtimer01_") + l_sub_s.clone()) + Val::from("::OnStop"))],
-            )?;
-            break 'b1;
-        }
+    if subject1 == 0 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("103"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("153"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("1"), true);
+        runtime::local_set(
+            &mut l_n_s,
+            &Val::from(base + 3),
+            Val::from("Piamette : One white bird has dropped with its wing pierced by an arrow."),
+            true,
+        );
+    } else if subject1 == 1 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("102"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("135"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("2"), true);
+        runtime::local_set(
+            &mut l_n_s,
+            &Val::from(base + 3),
+            Val::from("Piamette : One bird is caught in a snare, and dropped into a lake."),
+            true,
+        );
+    } else if subject1 == 2 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("113"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("111"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("3"), true);
+        runtime::local_set(
+            &mut l_n_s,
+            &Val::from(base + 3),
+            Val::from("Piamette : One bird has died trapped in it's cage."),
+            true,
+        );
+    } else if subject1 == 3 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("161"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("105"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("4"), true);
+        runtime::local_set(
+            &mut l_n_s,
+            &Val::from(base + 3),
+            Val::from("Piamette : One bird was poisoned to death."),
+            true,
+        );
+    } else if subject1 == 4 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("168"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("135"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("5"), true);
+        runtime::local_set(
+            &mut l_n_s,
+            &Val::from(base + 3),
+            Val::from("Piamette : One bird vomited blood while singing seven days and seven nights."),
+            true,
+        );
+    } else if subject1 == 5 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n_s, &Val::from(base + 0), Val::from("150"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 1), Val::from("159"), true);
+        runtime::local_set(&mut l_n_s, &Val::from(base + 2), Val::from("6"), true);
+        runtime::local_set(
+            &mut l_n_s,
+            &Val::from(base + 3),
+            Val::from("Piamette : The last one broke her neck wriggling to get out of from it's eggshell!"),
+            true,
+        );
+        ctx.call(
+            Function::DoNpcEvent,
+            vec![((Val::from("#gdtimer02_") + l_sub_s.clone()) + Val::from("::OnEnable"))],
+        )?;
+        ctx.call(
+            Function::DoNpcEvent,
+            vec![((Val::from("#gdtimer01_") + l_sub_s.clone()) + Val::from("::OnStop"))],
+        )?;
     }
     ctx.call(Function::DisableNpc, vec![(Val::from("#getspell01_") + l_sub_s.clone())])?;
     ctx.call(
@@ -6180,65 +5911,39 @@ fn guard_of_shadow_main_all_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Va
         Function::DisableNpc,
         vec![(((Val::from("Guard of Shadow#") + l_sub_s.clone()) + Val::from("_0")) + l_in.clone())],
     )?;
-    'b1: {
-        let subject1 = l_in.clone();
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(234), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(284), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(235), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(285), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(236), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(286), false);
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(223), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(289), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(224), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(290), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(225), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(291), false);
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(235), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(295), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(236), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(296), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(237), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(297), false);
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(224), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(302), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(225), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(303), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(226), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(304), false);
-            break 'b1;
-        }
+    let subject1 = l_in.clone();
+    if subject1 == 1 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(234), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(284), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(235), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(285), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(236), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(286), false);
+    } else if subject1 == 2 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(223), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(289), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(224), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(290), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(225), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(291), false);
+    } else if subject1 == 3 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(235), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(295), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(236), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(296), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(237), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(297), false);
+    } else if subject1 == 4 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(224), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(302), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(225), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(303), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(226), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(304), false);
     }
     l_i = Val::from(0);
     'l2: loop {
@@ -6512,36 +6217,23 @@ fn temple_keeper_main_all_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val,
         Function::DisableNpc,
         vec![(((Val::from("Temple Keeper#") + l_sub_s.clone()) + Val::from("_ac0")) + l_in.clone())],
     )?;
-    'b1: {
-        let subject1 = l_in.clone();
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(246), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(330), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(247), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(330), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(248), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(330), false);
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            let base = Val::from(0).number()?;
-            runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(254), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(330), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(255), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(330), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(256), false);
-            runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(330), false);
-            break 'b1;
-        }
+    let subject1 = l_in.clone();
+    if subject1 == 1 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(246), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(330), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(247), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(330), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(248), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(330), false);
+    } else if subject1 == 2 {
+        let base = Val::from(0).number()?;
+        runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(254), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(330), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 2), Val::from(255), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 3), Val::from(330), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 4), Val::from(256), false);
+        runtime::local_set(&mut l_n, &Val::from(base + 5), Val::from(330), false);
     }
     l_i = Val::from(0);
     'l2: loop {
@@ -7141,94 +6833,30 @@ fn to_agit_main_gate_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop
         &(runtime::strlen(&ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?).try_sub(Val::from(1))?),
     )?;
     if runtime::compare(&ctx.call(Function::StrNpcInfo, vec![Val::from(4)])?, &Val::from("aru")).is_true() {
-        'b1: {
-            let subject1 = l_i.clone();
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4))
-                && !subject1.loosely_equals(&Val::from(5));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::Warp, vec![Val::from("arug_cas01"), Val::from(157), Val::from(369)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::Warp, vec![Val::from("arug_cas02"), Val::from(349), Val::from(355)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::Warp, vec![Val::from("arug_cas03"), Val::from(321), Val::from(153)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::Warp, vec![Val::from("arug_cas04"), Val::from(321), Val::from(153)])?;
-                break 'b1;
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::Warp, vec![Val::from("arug_cas05"), Val::from(321), Val::from(153)])?;
-                break 'b1;
-            }
+        let subject1 = l_i.clone();
+        if subject1 == 1 {
+            ctx.call(Function::Warp, vec![Val::from("arug_cas01"), Val::from(157), Val::from(369)])?;
+        } else if subject1 == 2 {
+            ctx.call(Function::Warp, vec![Val::from("arug_cas02"), Val::from(349), Val::from(355)])?;
+        } else if subject1 == 3 {
+            ctx.call(Function::Warp, vec![Val::from("arug_cas03"), Val::from(321), Val::from(153)])?;
+        } else if subject1 == 4 {
+            ctx.call(Function::Warp, vec![Val::from("arug_cas04"), Val::from(321), Val::from(153)])?;
+        } else if subject1 == 5 {
+            ctx.call(Function::Warp, vec![Val::from("arug_cas05"), Val::from(321), Val::from(153)])?;
         }
     } else {
-        'b2: {
-            let subject2 = l_i.clone();
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                && !subject2.loosely_equals(&Val::from(2))
-                && !subject2.loosely_equals(&Val::from(3))
-                && !subject2.loosely_equals(&Val::from(4))
-                && !subject2.loosely_equals(&Val::from(5));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.call(Function::Warp, vec![Val::from("schg_cas01"), Val::from(369), Val::from(306)])?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.call(Function::Warp, vec![Val::from("schg_cas02"), Val::from(177), Val::from(355)])?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.call(Function::Warp, vec![Val::from("schg_cas03"), Val::from(81), Val::from(95)])?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.call(Function::Warp, vec![Val::from("schg_cas04"), Val::from(369), Val::from(306)])?;
-                break 'b2;
-            }
-            if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                matched2 = true;
-            }
-            if matched2 {
-                ctx.call(Function::Warp, vec![Val::from("schg_cas05"), Val::from(369), Val::from(306)])?;
-                break 'b2;
-            }
+        let subject2 = l_i.clone();
+        if subject2 == 1 {
+            ctx.call(Function::Warp, vec![Val::from("schg_cas01"), Val::from(369), Val::from(306)])?;
+        } else if subject2 == 2 {
+            ctx.call(Function::Warp, vec![Val::from("schg_cas02"), Val::from(177), Val::from(355)])?;
+        } else if subject2 == 3 {
+            ctx.call(Function::Warp, vec![Val::from("schg_cas03"), Val::from(81), Val::from(95)])?;
+        } else if subject2 == 4 {
+            ctx.call(Function::Warp, vec![Val::from("schg_cas04"), Val::from(369), Val::from(306)])?;
+        } else if subject2 == 5 {
+            ctx.call(Function::Warp, vec![Val::from("schg_cas05"), Val::from(369), Val::from(306)])?;
         }
     }
     return Err(Stop::End);

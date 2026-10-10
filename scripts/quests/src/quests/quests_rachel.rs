@@ -50,14 +50,8 @@ fn vincent_ra_in01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("I'm too busy.:Sure, why not?")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("I'm too busy.:Sure, why not?")])? {
+            1 => {
                 ctx.lines_as(
                     "Vincent",
                     args![
@@ -72,10 +66,7 @@ fn vincent_ra_in01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Vincent",
                     args![
@@ -126,6 +117,7 @@ fn vincent_ra_in01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         if (ctx.var("lost_boy").get()?.number()? >= 1 && ctx.var("lost_boy").get()?.number()? < 4) {
@@ -2285,19 +2277,11 @@ fn katinshuell_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         ],
                                                     )?;
                                                     ctx.next()?;
-                                                    'b2: {
-                                                        let subject2 = Val::from(runtime::select_values(
+                                                    match runtime::select_values(
                                                             ctx,
                                                             &[Val::from("Mr. Shendar's House:Freya's Spring:Recent Break-up")],
-                                                        )?);
-                                                        let mut matched2 = false;
-                                                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                                            && !subject2.loosely_equals(&Val::from(2))
-                                                            && !subject2.loosely_equals(&Val::from(3));
-                                                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                                            matched2 = true;
-                                                        }
-                                                        if matched2 {
+                                                        )? {
+                                                        1 => {
                                                             ctx.lines_as(
                                                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                                                 args![
@@ -2330,10 +2314,7 @@ fn katinshuell_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             ctx.close_window()?;
                                                             return Err(Stop::End);
                                                         }
-                                                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                                            matched2 = true;
-                                                        }
-                                                        if matched2 {
+                                                        2 => {
                                                             ctx.lines_as(
                                                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                                                 args![
@@ -2358,10 +2339,7 @@ fn katinshuell_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             ctx.close_window()?;
                                                             return Err(Stop::End);
                                                         }
-                                                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                                            matched2 = true;
-                                                        }
-                                                        if matched2 {
+                                                        3 => {
                                                             ctx.lines_as(
                                                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                                                 args![
@@ -2383,18 +2361,11 @@ fn katinshuell_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     + Val::from("]"))
                                                             ])?;
                                                             ctx.next()?;
-                                                            'b3: {
-                                                                let subject3 = Val::from(runtime::select_values(
+                                                            match runtime::select_values(
                                                                     ctx,
                                                                     &[Val::from("Mr. Shendar's house:Freya's Spring")],
-                                                                )?);
-                                                                let mut matched3 = false;
-                                                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                                                    && !subject3.loosely_equals(&Val::from(2));
-                                                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                                                    matched3 = true;
-                                                                }
-                                                                if matched3 {
+                                                                )? {
+                                                                1 => {
                                                                     ctx.lines_as(
                                                                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                                                         args![
@@ -2427,10 +2398,7 @@ fn katinshuell_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     ctx.close_window()?;
                                                                     return Err(Stop::End);
                                                                 }
-                                                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                                                    matched3 = true;
-                                                                }
-                                                                if matched3 {
+                                                                2 => {
                                                                     ctx.lines_as(
                                                                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                                                         args![
@@ -2474,8 +2442,10 @@ fn katinshuell_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     ctx.close_window()?;
                                                                     return Err(Stop::End);
                                                                 }
+                                                                _ => {}
                                                             }
                                                         }
+                                                        _ => {}
                                                     }
                                                 }
                                                 if !matched1 && subject1.loosely_equals(&Val::from(3)) {
@@ -6125,43 +6095,22 @@ fn nemma_ra_temple_run(ctx: &Ctx, mut step: NemmaRaTempleStep, args: Vec<Val>) -
                             ],
                         )?;
                         ctx.next()?;
-                        'b1: {
-                            let subject1 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "50,000z - 1 Lottery Ticket:100,000z - 2 Lottery Ticket:150,000z - 3 Lottery Ticket:Cancel",
                                 )],
-                            )?);
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                && !subject1.loosely_equals(&Val::from(2))
-                                && !subject1.loosely_equals(&Val::from(3))
-                                && !subject1.loosely_equals(&Val::from(4));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            )? {
+                            1 => {
                                 nemma_ra_temple_run(ctx, NemmaRaTempleStep::SDonate, vec![Val::from(1), Val::from("50,000")])?;
-                                break 'b1;
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            2 => {
                                 nemma_ra_temple_run(ctx, NemmaRaTempleStep::SDonate, vec![Val::from(2), Val::from("100,000")])?;
-                                break 'b1;
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            3 => {
                                 nemma_ra_temple_run(ctx, NemmaRaTempleStep::SDonate, vec![Val::from(3), Val::from("150,000")])?;
-                                break 'b1;
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            4 => {
                                 ctx.call(Function::Cutin, vec![Val::from("ra_nemma02"), Val::from(2)])?;
                                 ctx.lines_as(
                                     "Priestess Nemma",
@@ -6173,8 +6122,8 @@ fn nemma_ra_temple_run(ctx: &Ctx, mut step: NemmaRaTempleStep, args: Vec<Val>) -
                                         "protecting you, wherever you go~"
                                     ],
                                 )?;
-                                break 'b1;
                             }
+                            _ => {}
                         }
                         ctx.close_window()?;
                         ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
@@ -6192,22 +6141,13 @@ fn nemma_ra_temple_run(ctx: &Ctx, mut step: NemmaRaTempleStep, args: Vec<Val>) -
                             ],
                         )?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "I've come to donate again.:Just sight-seeing.:I came to attend the service.:I just wanted to see you again.",
                                 )],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3))
-                                && !subject2.loosely_equals(&Val::from(4));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Priestess Nemma",
                                     args![
@@ -6220,43 +6160,22 @@ fn nemma_ra_temple_run(ctx: &Ctx, mut step: NemmaRaTempleStep, args: Vec<Val>) -
                                     ],
                                 )?;
                                 ctx.next()?;
-                                'b3: {
-                                    let subject3 = Val::from(runtime::select_values(
+                                match runtime::select_values(
                                         ctx,
                                         &[Val::from(
                                             "50,000z - 1 Lottery Ticket:100,000z - 2 Lottery Ticket:150,000z - 3 Lottery Ticket:Cancel",
                                         )],
-                                    )?);
-                                    let mut matched3 = false;
-                                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                        && !subject3.loosely_equals(&Val::from(2))
-                                        && !subject3.loosely_equals(&Val::from(3))
-                                        && !subject3.loosely_equals(&Val::from(4));
-                                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
+                                    )? {
+                                    1 => {
                                         nemma_ra_temple_run(ctx, NemmaRaTempleStep::SDonate, vec![Val::from(1), Val::from("50,000")])?;
-                                        break 'b3;
                                     }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
+                                    2 => {
                                         nemma_ra_temple_run(ctx, NemmaRaTempleStep::SDonate, vec![Val::from(2), Val::from("100,000")])?;
-                                        break 'b3;
                                     }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
+                                    3 => {
                                         nemma_ra_temple_run(ctx, NemmaRaTempleStep::SDonate, vec![Val::from(3), Val::from("150,000")])?;
-                                        break 'b3;
                                     }
-                                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                        matched3 = true;
-                                    }
-                                    if matched3 {
+                                    4 => {
                                         ctx.call(Function::Cutin, vec![Val::from("ra_nemma02"), Val::from(2)])?;
                                         ctx.lines_as(
                                             "Priestess Nemma",
@@ -6268,17 +6187,14 @@ fn nemma_ra_temple_run(ctx: &Ctx, mut step: NemmaRaTempleStep, args: Vec<Val>) -
                                                 "protecting you, wherever you go~"
                                             ],
                                         )?;
-                                        break 'b3;
                                     }
+                                    _ => {}
                                 }
                                 ctx.close_window()?;
                                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.lines_as(
                                     "Priestess Nemma",
                                     args![
@@ -6300,12 +6216,8 @@ fn nemma_ra_temple_run(ctx: &Ctx, mut step: NemmaRaTempleStep, args: Vec<Val>) -
                                         "you out. See you later!"
                                     ],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            3 => {
                                 ctx.lines_as(
                                     "Priestess Nemma",
                                     args![
@@ -6316,15 +6228,11 @@ fn nemma_ra_temple_run(ctx: &Ctx, mut step: NemmaRaTempleStep, args: Vec<Val>) -
                                         "get from goddess Freya~"
                                     ],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            4 => {
                                 ctx.lines_as("Priestess Nemma", args!["Oh, how sweet of you~"])?;
-                                break 'b2;
                             }
+                            _ => {}
                         }
                         ctx.close_window()?;
                         ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
@@ -6746,40 +6654,18 @@ fn kid_candy_addict_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.lines_as("Kid", args!["Oh hey, do", "you like candy?"])?;
         if ctx.var("ra_tem_q").get()? == 1 {
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("Not at all.:Yeah.:Sure, I love the stuff~:Not much.")],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3))
-                    && !subject1.loosely_equals(&Val::from(4));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as("Kid", args!["Hmpf! Okay."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {}
+                3 => {}
+                4 => {
                     ctx.lines_as(
                         "Kid",
                         args!["Oh. It's 'cause you're", "a grown-up. Why don't", "you like candies, anyway?"],
@@ -6789,6 +6675,7 @@ fn kid_candy_addict_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             if ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])? != 2 {
                 ctx.lines_as("Kid", args!["Oh yeah...?"])?;
@@ -6937,21 +6824,11 @@ fn kid_candy_addict_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("No, thanks.:What's that?")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                match runtime::select_values(ctx, &[Val::from("No, thanks.:What's that?")])? {
+                    1 => {
                         ctx.lines_as("Kid", args!["Please~"])?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "Kid",
                             args![
@@ -6986,8 +6863,8 @@ fn kid_candy_addict_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ],
                         )?;
                         ctx.var("ra_tem_q").set(Val::from(2))?;
-                        break 'b2;
                     }
+                    _ => {}
                 }
             }
         }
@@ -7430,20 +7307,11 @@ pub fn nemma01_ontouch(ctx: &Ctx) -> Script {
 fn quest_temple_exit_ra_tem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.mes("^3355FFThe gate is closed.^000000")?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Push Gate:Examine Gate:Kick Gate:Smash Gate with Weapon")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines(args!["^3355FFYou push the gate", "with all of your might..."])?;
             if ctx.var("ra_tem_q").get()? == 9 {
                 ctx.close_window()?;
@@ -7452,12 +7320,8 @@ fn quest_temple_exit_ra_tem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 return Err(Stop::End);
             }
             ctx.mes("But it won't even budge.^000000")?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines(args![
                 "^3355FFThere's some strange",
                 "machinery installed on",
@@ -7466,12 +7330,8 @@ fn quest_temple_exit_ra_tem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 "a card or permit. The lights",
                 "are on, so it must be working.^000000"
             ])?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.mes("^3355FFYou angrily kick the gate...")?;
             if ctx.var("ra_tem_q").get()? == 9 {
                 ctx.close_window()?;
@@ -7485,12 +7345,8 @@ fn quest_temple_exit_ra_tem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 "gate refuses to open for you.",
                 "Oh, and your foot hurts too.^000000."
             ])?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
+        4 => {
             ctx.lines(args![
                 "^3355FFWait! That's not",
                 "a good idea. You can't",
@@ -7498,8 +7354,8 @@ fn quest_temple_exit_ra_tem_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 "a holy place: heroes don't",
                 "specialize in desecration.^000000"
             ])?;
-            break 'b1;
         }
+        _ => {}
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -8286,18 +8142,11 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                         ],
                                                     )?;
                                                     ctx.next()?;
-                                                    'b1: {
-                                                        let subject1 = Val::from(runtime::select_values(
+                                                    match runtime::select_values(
                                                             ctx,
                                                             &[Val::from("I just wanted to say hi.:Ask About Veins Incident")],
-                                                        )?);
-                                                        let mut matched1 = false;
-                                                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                                            && !subject1.loosely_equals(&Val::from(2));
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
+                                                        )? {
+                                                        1 => {
                                                             ctx.lines_as(
                                                                 "High Priest Zhed",
                                                                 args![
@@ -8320,12 +8169,8 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                                     "are willing to act."
                                                                 ],
                                                             )?;
-                                                            break 'b1;
                                                         }
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
+                                                        2 => {
                                                             ctx.lines_as(
                                                                 "High Priest Zhed",
                                                                 args![
@@ -8384,8 +8229,8 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                                 "High Priest Zhed",
                                                                 args!["If you do decide to", "visit Niren, please", "send her my regards."],
                                                             )?;
-                                                            break 'b1;
                                                         }
+                                                        _ => {}
                                                     }
                                                 } else {
                                                     if ctx.var("aru_vol").get()? == 0 {
@@ -8754,21 +8599,13 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                         {
                                                             ctx.lines_as("High Priest Zhed", args!["Hmm..."])?;
                                                             ctx.next()?;
-                                                            'b2: {
-                                                                let subject2 = Val::from(runtime::select_values(
+                                                            match runtime::select_values(
                                                                     ctx,
                                                                     &[Val::from(
                                                                         "How to Sneak into the Camp :The Moderates:The Hard-Liners",
                                                                     )],
-                                                                )?);
-                                                                let mut matched2 = false;
-                                                                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                                                    && !subject2.loosely_equals(&Val::from(2))
-                                                                    && !subject2.loosely_equals(&Val::from(3));
-                                                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                                                    matched2 = true;
-                                                                }
-                                                                if matched2 {
+                                                                )? {
+                                                                1 => {
                                                                     ctx.lines_as(
                                                                         "High Priest Zhed",
                                                                         args![
@@ -8780,12 +8617,8 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                                             "something out together."
                                                                         ],
                                                                     )?;
-                                                                    break 'b2;
                                                                 }
-                                                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                                                    matched2 = true;
-                                                                }
-                                                                if matched2 {
+                                                                2 => {
                                                                     ctx.lines_as(
                                                                         "High Priest Zhed",
                                                                         args![
@@ -8833,12 +8666,8 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                                             "really use his help now."
                                                                         ],
                                                                     )?;
-                                                                    break 'b2;
                                                                 }
-                                                                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                                                    matched2 = true;
-                                                                }
-                                                                if matched2 {
+                                                                3 => {
                                                                     ctx.lines_as(
                                                                         "High Priest Zhed",
                                                                         args![
@@ -8891,8 +8720,8 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                                             "that he sees as beneath him."
                                                                         ],
                                                                     )?;
-                                                                    break 'b2;
                                                                 }
+                                                                _ => {}
                                                             }
                                                             ctx.close_window()?;
                                                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
@@ -9431,22 +9260,11 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                                                             ],
                                                                                         )?;
                                                                                         ctx.next()?;
-                                                                                        'b3: {
-                                                                                            let subject3 =
-                                                                                                Val::from(runtime::select_values(
+                                                                                        match runtime::select_values(
                                                                                                     ctx,
                                                                                                     &[Val::from("Truth:Lies")],
-                                                                                                )?);
-                                                                                            let mut matched3 = false;
-                                                                                            let no_case3 = !subject3
-                                                                                                .loosely_equals(&Val::from(1))
-                                                                                                && !subject3.loosely_equals(&Val::from(2));
-                                                                                            if !matched3
-                                                                                                && subject3.loosely_equals(&Val::from(1))
-                                                                                            {
-                                                                                                matched3 = true;
-                                                                                            }
-                                                                                            if matched3 {
+                                                                                                )? {
+                                                                                            1 => {
                                                                                                 ctx.lines_as(
                                                                                                     "High Priest Zhed",
                                                                                                     args![
@@ -9458,14 +9276,8 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                                                                     ],
                                                                                                 )?;
                                                                                                 ctx.next()?;
-                                                                                                break 'b3;
                                                                                             }
-                                                                                            if !matched3
-                                                                                                && subject3.loosely_equals(&Val::from(2))
-                                                                                            {
-                                                                                                matched3 = true;
-                                                                                            }
-                                                                                            if matched3 {
+                                                                                            2 => {
                                                                                                 ctx.lines_as(
                                                                                                     "High Priest Zhed",
                                                                                                     args![
@@ -9478,8 +9290,8 @@ fn high_priest_zhed_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> 
                                                                                                     ],
                                                                                                 )?;
                                                                                                 ctx.next()?;
-                                                                                                break 'b3;
                                                                                             }
+                                                                                            _ => {}
                                                                                         }
                                                                                         ctx.lines_as(
                                                                                             "High Priest Zhed",
@@ -9933,19 +9745,11 @@ fn panno_rachel_run(ctx: &Ctx, mut step: PannoRachelStep, args: Vec<Val>) -> Res
                         args!["Greetings.", "May Freya fill", "your days with joy.", "Laughter. And prosperity."],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Redeem Lottery Tickets:Temple Information:Hey, what's happening?")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.call(Function::Cutin, vec![Val::from("ra_fano03"), Val::from(2)])?;
                             ctx.lines_as(
                                 "Priestess Panno",
@@ -9978,10 +9782,7 @@ fn panno_rachel_run(ctx: &Ctx, mut step: PannoRachelStep, args: Vec<Val>) -> Res
                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.call(Function::Cutin, vec![Val::from("ra_fano01"), Val::from(2)])?;
                             ctx.lines_as(
                                 "Priestess Panno",
@@ -10031,10 +9832,7 @@ fn panno_rachel_run(ctx: &Ctx, mut step: PannoRachelStep, args: Vec<Val>) -> Res
                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        3 => {
                             ctx.lines_as(
                                 "Priestess Panno",
                                 args!["......................", "No chit-chat", "inside the temple."],
@@ -10043,23 +9841,16 @@ fn panno_rachel_run(ctx: &Ctx, mut step: PannoRachelStep, args: Vec<Val>) -> Res
                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else if ctx.var("ra_tem_q").get()? == 10 {
                     ctx.lines_as("Priestess Panno", args!["Good day."])?;
                     ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Redeem Lottery Tickets:Temple Information:Hey, did you open the gate?")],
-                        )?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        )? {
+                        1 => {
                             ctx.call(Function::Cutin, vec![Val::from("ra_fano01"), Val::from(2)])?;
                             ctx.lines_as(
                                 "Priestess Panno",
@@ -10103,10 +9894,7 @@ fn panno_rachel_run(ctx: &Ctx, mut step: PannoRachelStep, args: Vec<Val>) -> Res
                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                             return Err(Stop::End);
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        2 => {
                             ctx.call(Function::Cutin, vec![Val::from("ra_fano01"), Val::from(2)])?;
                             ctx.lines_as(
                                 "Priestess Panno",
@@ -10156,10 +9944,7 @@ fn panno_rachel_run(ctx: &Ctx, mut step: PannoRachelStep, args: Vec<Val>) -> Res
                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                             return Err(Stop::End);
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        3 => {
                             ctx.call(Function::Cutin, vec![Val::from("ra_fano02"), Val::from(2)])?;
                             ctx.lines_as("Priestess Panno", args!["Gate...?"])?;
                             ctx.next()?;
@@ -10222,6 +10007,7 @@ fn panno_rachel_run(ctx: &Ctx, mut step: PannoRachelStep, args: Vec<Val>) -> Res
                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else if ctx.var("ra_tem_q").get()? == 11 {
                     ctx.lines_as(
@@ -10927,17 +10713,11 @@ fn pope_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Aren't you lonely?:Do you ever take a break?")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Pope",
                     args![
@@ -10979,10 +10759,7 @@ fn pope_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Pope",
                     args![
@@ -10997,6 +10774,7 @@ fn pope_rachel_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else if ctx.var("aru_em").get()? == 16 {
         ctx.lines_as(

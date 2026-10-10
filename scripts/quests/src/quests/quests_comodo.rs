@@ -72,22 +72,13 @@ fn hair_ornament_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Yes.")])?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                match runtime::select_values(ctx, &[Val::from("No.:Yes.")])? {
+                    1 => {
                         ctx.lines_as("Hair Ornament Girl", args!["Ah, alright. I guess you should put all your other things into Kafra Storage first. Okay then, see you soon.", "See you soon~"])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.mes("^3355FFSwish swish snip snip^000000")?;
                         ctx.next()?;
                         ctx.call(Function::DelItem, vec![Val::from(2608), Val::from(1)])?;
@@ -100,6 +91,7 @@ fn hair_ornament_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as(
@@ -153,22 +145,13 @@ fn hair_ornament_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Yes.")])?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                match runtime::select_values(ctx, &[Val::from("No.:Yes.")])? {
+                    1 => {
                         ctx.lines_as("Hair Ornament Girl", args!["Ah, alright. I guess you should put all your other things into Kafra Storage first. Okay then, see you soon."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.mes("^3355FFSwish swish snip snip^000000")?;
                         ctx.next()?;
                         ctx.call(Function::DelItem, vec![Val::from(2233), Val::from(1)])?;
@@ -181,6 +164,7 @@ fn hair_ornament_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as(
@@ -222,22 +206,13 @@ fn hair_ornament_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Hair Ornament Girl", args!["You want me to make it now?"])?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Yes.")])?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                match runtime::select_values(ctx, &[Val::from("No.:Yes.")])? {
+                    1 => {
                         ctx.lines_as("Hair Ornament Girl", args!["See you later then~"])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.mes("^3355FFSwish swish snip snip^000000")?;
                         ctx.next()?;
                         ctx.call(Function::DelItem, vec![Val::from(1099), Val::from(1500)])?;
@@ -246,6 +221,7 @@ fn hair_ornament_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as(
@@ -300,22 +276,13 @@ fn hair_ornament_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Yes.")])?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                match runtime::select_values(ctx, &[Val::from("No.:Yes.")])? {
+                    1 => {
                         ctx.lines_as("Hair Ornament Girl", args!["Ah, alright. I guess you should put all your other things into Kafra Storage first. Okay then, see you soon."])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    2 => {
                         ctx.mes("^3355FFSwish swish snip snip^000000")?;
                         ctx.next()?;
                         ctx.call(Function::DelItem, vec![Val::from(2211), Val::from(1)])?;
@@ -326,6 +293,7 @@ fn hair_ornament_girl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as(
@@ -398,29 +366,19 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Isac Mari", args!["It's better to keep only the items used to make the Mine Hat in your inventory. Did you check? If so, let's get started."])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Give me a minute~!:Let's make the Mine Hat.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Isac Mari",
                             args!["Alright. Please check your items again. It's much better to be safe than sorry."],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines(args!["^3355FF*Thook Thook*", "*Pop!*^000000"])?;
                         ctx.next()?;
                         ctx.lines_as("Isac Mari", args!["Whew! This is pretty hard!"])?;
@@ -437,6 +395,7 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as("Isac Mari", args!["I hear Mine Helmets are used in the mines near Geffen. As you know, it's not possible to work without light, even though it attracts monsters in the caves."])?;
@@ -477,17 +436,11 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Isac Mari", args!["It's better to keep only the items used to make the Parcel Hat in your inventory. Did you check? If so, let's get started."])?;
                 ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Give me a minute~!:Let's make the Parcel Hat.")],
-                    )?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Isac Mari",
                             args!["Alright. Please check your items again. It's much better to be safe than sorry."],
@@ -495,10 +448,7 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.lines(args!["^3355FF*Thook Thook*", "*Pop!*^000000"])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -517,6 +467,7 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as(
@@ -572,17 +523,11 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Isac Mari", args!["It's better to keep only the items used to make the Grief for Greed in your inventory. Did you check? If so, let's get started."])?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Give me a minute~!:Let's make the Grief for Greed.")],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Isac Mari",
                             args!["Alright. Please check your items again. It's much better to be safe than sorry."],
@@ -590,10 +535,7 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.lines(args!["^3355FF*Thook Thook*", "*Pop!*^000000"])?;
                         ctx.next()?;
                         ctx.lines_as("Isac Mari", args!["Whew! This is pretty hard!"])?;
@@ -611,6 +553,7 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as(
@@ -666,17 +609,11 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Isac Mari", args!["It's better to keep only the items used to make the Opera Mask in your inventory. Did you check? If so, let's get started."])?;
                 ctx.next()?;
-                'b5: {
-                    let subject5 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Give me a minute~!:Let's make the Opera Masque.")],
-                    )?);
-                    let mut matched5 = false;
-                    let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                    if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Isac Mari",
                             args!["Alright. Please check your items again. It's much better to be safe than sorry."],
@@ -684,10 +621,7 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                        matched5 = true;
-                    }
-                    if matched5 {
+                    2 => {
                         ctx.lines(args!["^3355FF*Thook Thook*", "*Pop!*^000000"])?;
                         ctx.next()?;
                         ctx.lines_as("Isac Mari", args!["Whew! This is pretty hard!"])?;
@@ -702,6 +636,7 @@ fn traveler_head_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             } else {
                 ctx.lines_as(
@@ -746,264 +681,233 @@ pub fn traveler_head(ctx: &Ctx) -> Script {
 }
 
 fn campground_boy_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(0))
-            && !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(0)) {
-            matched1 = true;
-        }
-        if matched1 {
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 0 {
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Bread, fruits, vegetables...",
+                "Bleh. All that other food is",
+                "nothing compared to the ",
+                "hearty flavor of meat. Yeap,",
+                "BBQ camping in Comodo is",
+                "heaven to a meat lover like me~"
+            ],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("BBQ Camping...?:Cancel")])?) == 1 {
             ctx.lines_as(
                 "Rochito",
                 args![
-                    "Bread, fruits, vegetables...",
-                    "Bleh. All that other food is",
-                    "nothing compared to the ",
-                    "hearty flavor of meat. Yeap,",
-                    "BBQ camping in Comodo is",
-                    "heaven to a meat lover like me~"
-                ],
-            )?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("BBQ Camping...?:Cancel")])?) == 1 {
-                ctx.lines_as(
-                    "Rochito",
-                    args![
-                        "Yeah man... You can eat",
-                        "Komodoru meat all day when",
-                        "you go BBQ camping. Komodoru",
-                        "is an animal native to Comodo",
-                        "and every part of it is delicious. Every. Single. Morsel."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rochito",
-                    args![
-                        "What makes this meat even",
-                        "more delicious is the special",
-                        "Koserahserah seasoning they",
-                        "use. That stuff is almost...",
-                        "addictive. Without it, we",
-                        "can't start our barbeque!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rochito",
-                    args![
-                        "If we settled on anything",
-                        "less than the very best BBQ,",
-                        "then our comrades that died",
-                        "to help ^FF0000banish that witch^000000 would",
-                        "surely be ashamed of us!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rochito",
-                    args![
-                        "Say, would you do us a favor?",
-                        "The Chief of Comodo was going",
-                        "to bring the Koserahserah and",
-                        "join us for our barbeque, but",
-                        "we're guessing he's got to",
-                        "cancel because of his duties."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rochito",
-                    args![
-                        "Let's see, our Chief lives to",
-                        "the west of these campgrounds.",
-                        "Would you visit him and see",
-                        "what's taking him so long",
-                        "to get over here?"
-                    ],
-                )?;
-                ctx.var("dmdswrd_q").set(Val::from(1))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Rochito",
-                args![
-                    "You know, people gather",
-                    "on these campgrounds in",
-                    "memory and respect of those",
-                    "that have fallen in battle",
-                    "against the witch of Comodo."
+                    "Yeah man... You can eat",
+                    "Komodoru meat all day when",
+                    "you go BBQ camping. Komodoru",
+                    "is an animal native to Comodo",
+                    "and every part of it is delicious. Every. Single. Morsel."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Rochito",
                 args![
-                    "Long before Comodo was",
-                    "built inside this huge cave,",
-                    "this witch used to live in here. A lot of people died trying to",
-                    "get rid of her, but there're rumors that she's still around..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rochito",
-                args![
-                    "Komodoru meat is especially",
-                    "great when it's seasoned with",
-                    "Koserahserah. That flavoring",
-                    "is one of Comodo's claims to",
-                    "fame! You should try some~"
+                    "What makes this meat even",
+                    "more delicious is the special",
+                    "Koserahserah seasoning they",
+                    "use. That stuff is almost...",
+                    "addictive. Without it, we",
+                    "can't start our barbeque!"
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Rochito",
                 args![
-                    "Speaking of which, our Chief",
-                    "still hasn't come and brought",
-                    "the Koserahserah! Would you",
-                    "see what's taking him so long?",
-                    "His house is located west of",
-                    "these campgrounds."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rochito",
-                args![
-                    "Oh, hey, you're back.",
-                    "Did you speak to our",
-                    "Chief? Don't tell me",
-                    "he had to cancel--we've",
-                    "been planning this outing",
-                    "with him for a quite a while..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFYou give Rochito the",
-                "Koserahserah seasoning,",
-                "and explain why the Chief",
-                "cannot attend the barbeque.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rochito",
-                args![
-                    "Awww, nuts. I guess he's",
-                    "got responsbilities, but it's",
-                    "still a little disappointing.",
-                    "He's a buddy, after all. Well,",
-                    "at least he was kind enough",
-                    "to send the Koserahserah."
+                    "If we settled on anything",
+                    "less than the very best BBQ,",
+                    "then our comrades that died",
+                    "to help ^FF0000banish that witch^000000 would",
+                    "surely be ashamed of us!"
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Rochito",
                 args![
-                    "It's really too bad that",
-                    "he can't join us. Ah, I've got",
-                    "an idea! Would you please bring",
-                    "this bottle to Tausupa, er, our",
-                    "Chief? It's Mureuchieligu, a",
-                    "special vintage wine~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFYou've received a bottle",
-                "of Mureuchieligu wine to",
-                "deliver to the Comodo Chief.^000000"
-            ])?;
-            ctx.var("dmdswrd_q").set(Val::from(3))?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rochito",
-                args![
-                    "I know that I should be",
-                    "delivering that bottle of",
-                    "wine to the Chief myself,",
-                    "but I've got to tend to this",
-                    "barbeque. I hope you ",
-                    "understand..."
+                    "Say, would you do us a favor?",
+                    "The Chief of Comodo was going",
+                    "to bring the Koserahserah and",
+                    "join us for our barbeque, but",
+                    "we're guessing he's got to",
+                    "cancel because of his duties."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Rochito",
                 args![
-                    "Anyway, you'd be doing",
-                    "me a huge favor if you",
-                    "spoke to the Chief, and gave",
-                    "him my thanks, along with",
-                    "that bottle of Mureuchieligu."
+                    "Let's see, our Chief lives to",
+                    "the west of these campgrounds.",
+                    "Would you visit him and see",
+                    "what's taking him so long",
+                    "to get over here?"
                 ],
             )?;
-            break 'b1;
+            ctx.var("dmdswrd_q").set(Val::from(1))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rochito",
-                args![
-                    "Oh, hey there~",
-                    "Thanks for helping us",
-                    "out earlier. I wish the",
-                    "Chief would join us in our",
-                    "barbeque, but I understand",
-                    "that he has to protect Comodo."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rochito",
-                args![
-                    "Hey, you know what?",
-                    "I can't exactly repay you",
-                    "with, you know, actual stuff,",
-                    "but I can give you a hot tip.",
-                    "There's some guy at the local",
-                    "Pub with some precious info."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rochito",
-                args![
-                    "Yeah, supposedly, this",
-                    "guy knows more about the",
-                    "cave that Comodo was built",
-                    "in... Anyway, I really get the",
-                    "feeling that it just might",
-                    "lead to something, you know?"
-                ],
-            )?;
-            break 'b1;
-        }
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "You know, people gather",
+                "on these campgrounds in",
+                "memory and respect of those",
+                "that have fallen in battle",
+                "against the witch of Comodo."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Long before Comodo was",
+                "built inside this huge cave,",
+                "this witch used to live in here. A lot of people died trying to",
+                "get rid of her, but there're rumors that she's still around..."
+            ],
+        )?;
+    } else if subject1 == 1 {
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Komodoru meat is especially",
+                "great when it's seasoned with",
+                "Koserahserah. That flavoring",
+                "is one of Comodo's claims to",
+                "fame! You should try some~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Speaking of which, our Chief",
+                "still hasn't come and brought",
+                "the Koserahserah! Would you",
+                "see what's taking him so long?",
+                "His house is located west of",
+                "these campgrounds."
+            ],
+        )?;
+    } else if subject1 == 2 {
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Oh, hey, you're back.",
+                "Did you speak to our",
+                "Chief? Don't tell me",
+                "he had to cancel--we've",
+                "been planning this outing",
+                "with him for a quite a while..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou give Rochito the",
+            "Koserahserah seasoning,",
+            "and explain why the Chief",
+            "cannot attend the barbeque.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Awww, nuts. I guess he's",
+                "got responsbilities, but it's",
+                "still a little disappointing.",
+                "He's a buddy, after all. Well,",
+                "at least he was kind enough",
+                "to send the Koserahserah."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "It's really too bad that",
+                "he can't join us. Ah, I've got",
+                "an idea! Would you please bring",
+                "this bottle to Tausupa, er, our",
+                "Chief? It's Mureuchieligu, a",
+                "special vintage wine~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou've received a bottle",
+            "of Mureuchieligu wine to",
+            "deliver to the Comodo Chief.^000000"
+        ])?;
+        ctx.var("dmdswrd_q").set(Val::from(3))?;
+    } else if subject1 == 3 {
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "I know that I should be",
+                "delivering that bottle of",
+                "wine to the Chief myself,",
+                "but I've got to tend to this",
+                "barbeque. I hope you ",
+                "understand..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Anyway, you'd be doing",
+                "me a huge favor if you",
+                "spoke to the Chief, and gave",
+                "him my thanks, along with",
+                "that bottle of Mureuchieligu."
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Oh, hey there~",
+                "Thanks for helping us",
+                "out earlier. I wish the",
+                "Chief would join us in our",
+                "barbeque, but I understand",
+                "that he has to protect Comodo."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Hey, you know what?",
+                "I can't exactly repay you",
+                "with, you know, actual stuff,",
+                "but I can give you a hot tip.",
+                "There's some guy at the local",
+                "Pub with some precious info."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rochito",
+            args![
+                "Yeah, supposedly, this",
+                "guy knows more about the",
+                "cave that Comodo was built",
+                "in... Anyway, I really get the",
+                "feeling that it just might",
+                "lead to something, you know?"
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -1014,184 +918,149 @@ pub fn campground_boy_cmd(ctx: &Ctx) -> Script {
 }
 
 fn camping_youth_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(0))
-            && !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4));
-        if !matched1 && subject1.loosely_equals(&Val::from(0)) {
-            matched1 = true;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 0 || subject1 == 1 {
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "Oh man...",
+                "I'm so excited!",
+                "My buddies and I've",
+                "been planning to get",
+                "together for this barbeque",
+                "for such a long time~"
+            ],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(ctx, &[Val::from("Buddies...?:Cancel")])?) == 1 {
             ctx.lines_as(
                 "Rockha",
                 args![
-                    "Oh man...",
-                    "I'm so excited!",
-                    "My buddies and I've",
-                    "been planning to get",
-                    "together for this barbeque",
-                    "for such a long time~"
-                ],
-            )?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(ctx, &[Val::from("Buddies...?:Cancel")])?) == 1 {
-                ctx.lines_as(
-                    "Rockha",
-                    args![
-                        "Yeah, some of us know",
-                        "each other when we fought",
-                        "together in the War of the",
-                        "Witch. In fact, one of them",
-                        "is the Chief of this village!",
-                        "Huh, why isn't he here yet?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rockha",
-                    args![
-                        "Anyway, even though",
-                        "our stations in life have",
-                        "changed, thankfully we're",
-                        "still friends. It's kinda weird, though, being on a first name",
-                        "basis with a village chief."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Rockha",
-                    args![
-                        "Makes me feel...",
-                        "Important. I'm hobnobbing",
-                        "with a major political figure,",
-                        "after all. Amazing where your",
-                        "friends can end up in life..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Rockha",
-                args![
-                    "I've almost forgotten",
-                    "how much I love hanging",
-                    "out with these guys. We",
-                    "should have barbeques",
-                    "together all the time~"
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rockha",
-                args![
-                    "Wha--? Tausupa can't come,",
-                    "but he still sent us all of this Koserahserah? What a guy...",
-                    "I guess... That gives us",
-                    "a reason to hold another",
-                    "barbeque here soon, right?"
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rockha",
-                args![
-                    "Hey, when you deliver",
-                    "that wine to Tausupa, the",
-                    "Village Chief, would you let",
-                    "him know that we miss the guy?",
-                    "He may be busy, but he'll always be our irreplaceable buddy."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rockha",
-                args![
-                    "Oh hey, you spoke",
-                    "to Tausupa? Ah, it's",
-                    "too bad that he's busy,",
-                    "but it's great to hear that",
-                    "he'll enjoy our gift. Okay~",
-                    "I believe it's time to eat!"
+                    "Yeah, some of us know",
+                    "each other when we fought",
+                    "together in the War of the",
+                    "Witch. In fact, one of them",
+                    "is the Chief of this village!",
+                    "Huh, why isn't he here yet?"
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Rockha",
                 args![
-                    "But before that, let's",
-                    "make a toast... to Tausupa!",
-                    "Guardian of Comodo, and",
-                    "one of the best friends that",
-                    "a guy can have! Cheers!",
-                    "Hahahaha hahahaha~!"
-                ],
-            )?;
-            ctx.var("dmdswrd_q").set(Val::from(5))?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rockha",
-                args![
-                    "Ahh, you know what would",
-                    "make this meal perfect?",
-                    "Some of that legendary",
-                    "^3355FFComodo Cheese^000000 that I heard",
-                    "about from ^3355FFToruna^000000. Sure, it",
-                    "might not exist, but still...!"
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rockha",
-                args![
-                    "You know, you're a really",
-                    "chill person. Thanks for",
-                    "helping us keep in touch",
-                    "with our old friend, the",
-                    "Village Chief. Man, being",
-                    "responsible must be rough..."
+                    "Anyway, even though",
+                    "our stations in life have",
+                    "changed, thankfully we're",
+                    "still friends. It's kinda weird, though, being on a first name",
+                    "basis with a village chief."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Rockha",
                 args![
-                    "There's two things that",
-                    "would make our barbeque",
-                    "absolutely perfect--having",
-                    "the Village Chief here, and",
-                    "some of that legendary Comodo Cheese that ^3355FFToruna^000000 told me about."
+                    "Makes me feel...",
+                    "Important. I'm hobnobbing",
+                    "with a major political figure,",
+                    "after all. Amazing where your",
+                    "friends can end up in life..."
                 ],
             )?;
-            break 'b1;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "I've almost forgotten",
+                "how much I love hanging",
+                "out with these guys. We",
+                "should have barbeques",
+                "together all the time~"
+            ],
+        )?;
+    } else if subject1 == 2 {
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "Wha--? Tausupa can't come,",
+                "but he still sent us all of this Koserahserah? What a guy...",
+                "I guess... That gives us",
+                "a reason to hold another",
+                "barbeque here soon, right?"
+            ],
+        )?;
+    } else if subject1 == 3 {
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "Hey, when you deliver",
+                "that wine to Tausupa, the",
+                "Village Chief, would you let",
+                "him know that we miss the guy?",
+                "He may be busy, but he'll always be our irreplaceable buddy."
+            ],
+        )?;
+    } else if subject1 == 4 {
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "Oh hey, you spoke",
+                "to Tausupa? Ah, it's",
+                "too bad that he's busy,",
+                "but it's great to hear that",
+                "he'll enjoy our gift. Okay~",
+                "I believe it's time to eat!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "But before that, let's",
+                "make a toast... to Tausupa!",
+                "Guardian of Comodo, and",
+                "one of the best friends that",
+                "a guy can have! Cheers!",
+                "Hahahaha hahahaha~!"
+            ],
+        )?;
+        ctx.var("dmdswrd_q").set(Val::from(5))?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "Ahh, you know what would",
+                "make this meal perfect?",
+                "Some of that legendary",
+                "^3355FFComodo Cheese^000000 that I heard",
+                "about from ^3355FFToruna^000000. Sure, it",
+                "might not exist, but still...!"
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "You know, you're a really",
+                "chill person. Thanks for",
+                "helping us keep in touch",
+                "with our old friend, the",
+                "Village Chief. Man, being",
+                "responsible must be rough..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rockha",
+            args![
+                "There's two things that",
+                "would make our barbeque",
+                "absolutely perfect--having",
+                "the Village Chief here, and",
+                "some of that legendary Comodo Cheese that ^3355FFToruna^000000 told me about."
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -1308,92 +1177,65 @@ pub fn camping_maiden_cmd(ctx: &Ctx) -> Script {
 }
 
 fn campground_lad_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(0))
-            && !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(0)) {
-            matched1 = true;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rotute",
-                args![
-                    "Years ago, there was a huge",
-                    "quest to retrieve 4 rare swords",
-                    "of incredible power, supposedly",
-                    "the strongest swords ever made!",
-                    "But you know, there's a strange",
-                    "rumor about a secret 5th sword."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rotute",
-                args![
-                    "This 5th sword is supposed",
-                    "to be hidden near Glastheim.",
-                    "If it does exist, it might have",
-                    "the power to change the world!",
-                    "Isn't that freakin' scary?"
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rotute",
-                args![
-                    "Hey, isn't that Koserahserah?",
-                    "That's the best seasoning that",
-                    "you can have for meat dishes!",
-                    "Oh, you got that from the Chief",
-                    "to give to Rochito? Wow, they",
-                    "must be really good friends..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rotute",
-                args![
-                    "Hello, thanks for helping",
-                    "out Rockha, Rochito and",
-                    "Emralhandas. They've known",
-                    "me since I was born, so it's",
-                    "like they're family to me."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rotute",
-                args![
-                    "One of the reasons that",
-                    "they brought me here to",
-                    "Comodo was so that I could",
-                    "finally meet Tausupa. But...",
-                    "I guess he's too busy now.",
-                    "Still, I like this place!"
-                ],
-            )?;
-            break 'b1;
-        }
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 0 || subject1 == 1 {
+        ctx.lines_as(
+            "Rotute",
+            args![
+                "Years ago, there was a huge",
+                "quest to retrieve 4 rare swords",
+                "of incredible power, supposedly",
+                "the strongest swords ever made!",
+                "But you know, there's a strange",
+                "rumor about a secret 5th sword."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rotute",
+            args![
+                "This 5th sword is supposed",
+                "to be hidden near Glastheim.",
+                "If it does exist, it might have",
+                "the power to change the world!",
+                "Isn't that freakin' scary?"
+            ],
+        )?;
+    } else if subject1 == 2 || subject1 == 3 {
+        ctx.lines_as(
+            "Rotute",
+            args![
+                "Hey, isn't that Koserahserah?",
+                "That's the best seasoning that",
+                "you can have for meat dishes!",
+                "Oh, you got that from the Chief",
+                "to give to Rochito? Wow, they",
+                "must be really good friends..."
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Rotute",
+            args![
+                "Hello, thanks for helping",
+                "out Rockha, Rochito and",
+                "Emralhandas. They've known",
+                "me since I was born, so it's",
+                "like they're family to me."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rotute",
+            args![
+                "One of the reasons that",
+                "they brought me here to",
+                "Comodo was so that I could",
+                "finally meet Tausupa. But...",
+                "I guess he's too busy now.",
+                "Still, I like this place!"
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -1570,245 +1412,191 @@ fn chief_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.close_window()?;
         return Err(Stop::End);
     }
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(3)) && !subject1.loosely_equals(&Val::from(4));
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Tausupa",
-                args![
-                    "Oh, how are my friends",
-                    "doing? I really wish that",
-                    "I could have delivered that",
-                    "Koserahserah personally,",
-                    "but I can't shirk my duties as",
-                    "Village Chief and protector."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFYou give Tausupa the",
-                "Meruchieligu wine that",
-                "Rochito asked you to deliver.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Tausupa",
-                args![
-                    "Ah... How very kind of",
-                    "them! They really sent me",
-                    "this wine? I'm truly touched...",
-                    "Rockha must have chosen",
-                    "this--I'll be sure to enjoy it."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Tausupa",
-                args![
-                    "Would you please express my",
-                    "thanks to my friends, ^3355FFRochito^000000,",
-                    "and ^3355FFRockha^000000? It's been far too",
-                    "long since I've seen them, but",
-                    "I hope that I get a chance to",
-                    "visit them someday soon."
-                ],
-            )?;
-            ctx.var("dmdswrd_q").set(Val::from(4))?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Tausupa",
-                args![
-                    "Would you please express my",
-                    "thanks to my friends, ^3355FFRochito^000000,",
-                    "and ^3355FFRockha^000000? It's been far too",
-                    "long since I've seen them, but",
-                    "I hope that I get a chance to",
-                    "visit them someday soon."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Tausupa",
-                args![
-                    "Greetings, adventurer,",
-                    "I am Tausupa, the Chief of",
-                    "Comodo, a city famous for its beauty and nightlife. I hope you",
-                    "enjoy your stay, whether you are seeking excitement or relaxation~"
-                ],
-            )?;
-            ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
-                    ctx,
-                    &[Val::from("About Casino:About Banished Witch:Cancel")],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 3 {
+        ctx.lines_as(
+            "Tausupa",
+            args![
+                "Oh, how are my friends",
+                "doing? I really wish that",
+                "I could have delivered that",
+                "Koserahserah personally,",
+                "but I can't shirk my duties as",
+                "Village Chief and protector."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou give Tausupa the",
+            "Meruchieligu wine that",
+            "Rochito asked you to deliver.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Tausupa",
+            args![
+                "Ah... How very kind of",
+                "them! They really sent me",
+                "this wine? I'm truly touched...",
+                "Rockha must have chosen",
+                "this--I'll be sure to enjoy it."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Tausupa",
+            args![
+                "Would you please express my",
+                "thanks to my friends, ^3355FFRochito^000000,",
+                "and ^3355FFRockha^000000? It's been far too",
+                "long since I've seen them, but",
+                "I hope that I get a chance to",
+                "visit them someday soon."
+            ],
+        )?;
+        ctx.var("dmdswrd_q").set(Val::from(4))?;
+    } else if subject1 == 4 {
+        ctx.lines_as(
+            "Tausupa",
+            args![
+                "Would you please express my",
+                "thanks to my friends, ^3355FFRochito^000000,",
+                "and ^3355FFRockha^000000? It's been far too",
+                "long since I've seen them, but",
+                "I hope that I get a chance to",
+                "visit them someday soon."
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Tausupa",
+            args![
+                "Greetings, adventurer,",
+                "I am Tausupa, the Chief of",
+                "Comodo, a city famous for its beauty and nightlife. I hope you",
+                "enjoy your stay, whether you are seeking excitement or relaxation~"
+            ],
+        )?;
+        ctx.next()?;
+        match runtime::select_values(
+                ctx,
+                &[Val::from("About Casino:About Banished Witch:Cancel")],
+            )? {
+            1 => {
+                ctx.lines_as(
+                    "Tausupa",
+                    args![
+                        "Ah yes, Comodo is world",
+                        "famous for its Casino. There",
+                        "are many games that you can",
+                        "enjoy, but you'll need to use",
+                        "the Casino's special Eulwo currency and conversion system..."
+                    ],
+                )?;
+            }
+            2 => {
+                let subject3 = ctx.var("dmdswrd_q").get()?;
+                if subject3 == 0 {
                     ctx.lines_as(
                         "Tausupa",
                         args![
-                            "Ah yes, Comodo is world",
-                            "famous for its Casino. There",
-                            "are many games that you can",
-                            "enjoy, but you'll need to use",
-                            "the Casino's special Eulwo currency and conversion system..."
+                            "Banished witch...?",
+                            "Ah ha ha, do not worry,",
+                            "my friend, that is merely",
+                            "a very old tale. Not worth",
+                            "your concern at all..."
                         ],
                     )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    'b3: {
-                        let subject3 = ctx.var("dmdswrd_q").get()?;
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(0))
-                            && !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2));
-                        if !matched3 && subject3.loosely_equals(&Val::from(0)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Tausupa",
-                                args![
-                                    "Banished witch...?",
-                                    "Ah ha ha, do not worry,",
-                                    "my friend, that is merely",
-                                    "a very old tale. Not worth",
-                                    "your concern at all..."
-                                ],
-                            )?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Tausupa",
-                                args![
-                                    "Ah, judging from the scent",
-                                    "of BBQ meat on your clothes,",
-                                    "I'm guessing that you ran into",
-                                    "Rochito in the campgrounds, ",
-                                    "right? He must have told you that old story about the witch..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Tausupa",
-                                args![
-                                    "I'd like nothing better",
-                                    "than to join them, but I must",
-                                    "stay here. The witch does exist, and one my jobs is to make sure",
-                                    "that she does not revive by using my sword's power to suppress her."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Tausupa",
-                                args![
-                                    "Although I planned to see",
-                                    "them today, my duties must",
-                                    "take priority. Would you please",
-                                    "take this seasoning to Rochito",
-                                    "and let him know that I can't",
-                                    "come, and that I'm sorry...?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFYou have received",
-                                "the Koserahserah",
-                                "seasoning from the Chief.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Tausupa",
-                                args![
-                                    "Thank you so much...",
-                                    "I understand that my",
-                                    "friends cannot begin the",
-                                    "barbeque without Comodo's",
-                                    "world famous seasoning..."
-                                ],
-                            )?;
-                            ctx.var("dmdswrd_q").set(Val::from(2))?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Tausupa",
-                                args![
-                                    "Please take this special",
-                                    "Koserserah seasoning to",
-                                    "my friend ^3355FFRochito^000000 at the",
-                                    "barbeque campground. Thanks",
-                                    "again for your help, adventurer."
-                                ],
-                            )?;
-                            break 'b3;
-                        }
-                    }
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                } else if subject3 == 1 {
                     ctx.lines_as(
                         "Tausupa",
                         args![
-                            "Maybe you can't tell because",
-                            "of the way the light reflects,",
-                            "but Comodo is actually built",
-                            "inside a huge cave, giving the",
-                            "illusion of an eternal night.",
-                            "It's quite beautiful, really..."
+                            "Ah, judging from the scent",
+                            "of BBQ meat on your clothes,",
+                            "I'm guessing that you ran into",
+                            "Rochito in the campgrounds, ",
+                            "right? He must have told you that old story about the witch..."
                         ],
                     )?;
                     ctx.next()?;
                     ctx.lines_as(
                         "Tausupa",
                         args![
-                            "People come from all over",
-                            "the world to experience the",
-                            "excitement and beauty of",
-                            "our unique little village.",
-                            "We've become quite",
-                            "the tourist attraction~"
+                            "I'd like nothing better",
+                            "than to join them, but I must",
+                            "stay here. The witch does exist, and one my jobs is to make sure",
+                            "that she does not revive by using my sword's power to suppress her."
                         ],
                     )?;
-                    break 'b2;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Tausupa",
+                        args![
+                            "Although I planned to see",
+                            "them today, my duties must",
+                            "take priority. Would you please",
+                            "take this seasoning to Rochito",
+                            "and let him know that I can't",
+                            "come, and that I'm sorry...?"
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFYou have received",
+                        "the Koserahserah",
+                        "seasoning from the Chief.^000000"
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Tausupa",
+                        args![
+                            "Thank you so much...",
+                            "I understand that my",
+                            "friends cannot begin the",
+                            "barbeque without Comodo's",
+                            "world famous seasoning..."
+                        ],
+                    )?;
+                    ctx.var("dmdswrd_q").set(Val::from(2))?;
+                } else if subject3 == 2 {
+                    ctx.lines_as(
+                        "Tausupa",
+                        args![
+                            "Please take this special",
+                            "Koserserah seasoning to",
+                            "my friend ^3355FFRochito^000000 at the",
+                            "barbeque campground. Thanks",
+                            "again for your help, adventurer."
+                        ],
+                    )?;
                 }
             }
-            break 'b1;
+            3 => {
+                ctx.lines_as(
+                    "Tausupa",
+                    args![
+                        "Maybe you can't tell because",
+                        "of the way the light reflects,",
+                        "but Comodo is actually built",
+                        "inside a huge cave, giving the",
+                        "illusion of an eternal night.",
+                        "It's quite beautiful, really..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Tausupa",
+                    args![
+                        "People come from all over",
+                        "the world to experience the",
+                        "excitement and beauty of",
+                        "our unique little village.",
+                        "We've become quite",
+                        "the tourist attraction~"
+                    ],
+                )?;
+            }
+            _ => {}
         }
     }
     ctx.close_window()?;
@@ -1831,18 +1619,11 @@ fn toruna_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("This cave is huge!:This place sure is strange...:Cancel")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as(
                 "Toruna",
                 args![
@@ -1889,153 +1670,127 @@ fn toruna_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "amazing? You've got to agree..."
                 ],
             )?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
-            'b2: {
-                let subject2 = ctx.var("dmdswrd_q").get()?;
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(5)) && !subject2.loosely_equals(&Val::from(6));
-                if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "Yes, that is rather",
-                            "peculiar. What's also",
-                            "strange is this rumor I've",
-                            "been hearing about. Now, are you familiar with Comodo Cheese?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "It's this urban legend",
-                            "about this magnificent cheese",
-                            "that you can only find in Comodo. Now, not too many people believe",
-                            "it. I mean, you need goats or cows",
-                            "in order to make any cheese."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "However, there's this",
-                            "strange man that insists",
-                            "on its existence. The locals",
-                            "here chalk him up to be some",
-                            "sort of common loon, but who",
-                            "knows? Maybe it does exist..."
-                        ],
-                    )?;
-                    ctx.var("dmdswrd_q").set(Val::from(6))?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "Well, you can decide for",
-                            "yourself whether he's off",
-                            "his rocker. The last time",
-                            "I saw him, he was in the",
-                            "Comodo Bar, so you can",
-                            "probably find him there."
-                        ],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "Well, I like to think of",
-                            "Comodo as unique. What's",
-                            "really strange are some of",
-                            "the locals in this area. I've",
-                            "already told you about the",
-                            "man in the Comodo Bar, yes?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "He keeps insisting",
-                            "that there is a special",
-                            "kind of cheese in Comodo",
-                            "that you cannot get anywhere",
-                            "else. It sounds crazy, but his",
-                            "claim may be worth verifying..."
-                        ],
-                    )?;
-                    break 'b2;
-                }
-                if !matched2 && no_case2 {
-                    matched2 = true;
-                }
-                if matched2 {
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "Ah, did you know that",
-                            "before it was an exotic",
-                            "village of excitement and",
-                            "leisure, Comodo was once",
-                            "a haven for evil creatures, ruled by a witch named Meropusum?"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "This witch lay dormant for",
-                            "years until she was awoken",
-                            "somehow years ago. She was",
-                            "a huge threat to the people, but then she was finally defeated",
-                            "in the famous War of the Witch."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "One of the heroes of that",
-                            "war became the current Chief",
-                            "of this village, and it was",
-                            "through his leadership that",
-                            "Comodo grew into a thriving",
-                            "tourist attraction."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Toruna",
-                        args![
-                            "However, the threat of",
-                            "Meropusum still exists,",
-                            "so I would be careful when",
-                            "exploring the uninhabited",
-                            "areas of the Comodo region."
-                        ],
-                    )?;
-                    break 'b2;
-                }
+        2 => {
+            let subject2 = ctx.var("dmdswrd_q").get()?;
+            if subject2 == 5 {
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "Yes, that is rather",
+                        "peculiar. What's also",
+                        "strange is this rumor I've",
+                        "been hearing about. Now, are you familiar with Comodo Cheese?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "It's this urban legend",
+                        "about this magnificent cheese",
+                        "that you can only find in Comodo. Now, not too many people believe",
+                        "it. I mean, you need goats or cows",
+                        "in order to make any cheese."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "However, there's this",
+                        "strange man that insists",
+                        "on its existence. The locals",
+                        "here chalk him up to be some",
+                        "sort of common loon, but who",
+                        "knows? Maybe it does exist..."
+                    ],
+                )?;
+                ctx.var("dmdswrd_q").set(Val::from(6))?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "Well, you can decide for",
+                        "yourself whether he's off",
+                        "his rocker. The last time",
+                        "I saw him, he was in the",
+                        "Comodo Bar, so you can",
+                        "probably find him there."
+                    ],
+                )?;
+            } else if subject2 == 6 {
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "Well, I like to think of",
+                        "Comodo as unique. What's",
+                        "really strange are some of",
+                        "the locals in this area. I've",
+                        "already told you about the",
+                        "man in the Comodo Bar, yes?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "He keeps insisting",
+                        "that there is a special",
+                        "kind of cheese in Comodo",
+                        "that you cannot get anywhere",
+                        "else. It sounds crazy, but his",
+                        "claim may be worth verifying..."
+                    ],
+                )?;
+            } else {
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "Ah, did you know that",
+                        "before it was an exotic",
+                        "village of excitement and",
+                        "leisure, Comodo was once",
+                        "a haven for evil creatures, ruled by a witch named Meropusum?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "This witch lay dormant for",
+                        "years until she was awoken",
+                        "somehow years ago. She was",
+                        "a huge threat to the people, but then she was finally defeated",
+                        "in the famous War of the Witch."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "One of the heroes of that",
+                        "war became the current Chief",
+                        "of this village, and it was",
+                        "through his leadership that",
+                        "Comodo grew into a thriving",
+                        "tourist attraction."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Toruna",
+                    args![
+                        "However, the threat of",
+                        "Meropusum still exists,",
+                        "so I would be careful when",
+                        "exploring the uninhabited",
+                        "areas of the Comodo region."
+                    ],
+                )?;
             }
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Toruna",
                 args![
@@ -2046,8 +1801,8 @@ fn toruna_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "visiting this exotic city..."
                 ],
             )?;
-            break 'b1;
         }
+        _ => {}
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -2058,85 +1813,67 @@ pub fn toruna_cmd(ctx: &Ctx) -> Script {
 }
 
 fn rakusa_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(6)) && !subject1.loosely_equals(&Val::from(7));
-        if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rakusa",
-                args![
-                    "See that guy sitting",
-                    "over there? All he does",
-                    "is talk about Comodo Cheese,",
-                    "just mumbling nonsense about",
-                    "its incredible flavors all day",
-                    "long. He's nuts, I tell you."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rakusa",
-                args![
-                    "First of all, you need",
-                    "freakin' milk to make any",
-                    "cheese. You see any cows",
-                    "around here? Nope, I thought",
-                    "so! Still, I think he really",
-                    "believes that it exists..."
-                ],
-            )?;
-            ctx.var("dmdswrd_q").set(Val::from(7))?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(7)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rakusa",
-                args![
-                    "Damn it! I know for a fact",
-                    "that the idea of Comodo even",
-                    "having a cheese is crazy, but",
-                    "that guy's talking has gotten",
-                    "me curious now! Maybe it does",
-                    "exist? How would it even taste?"
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Rakusa",
-                args![
-                    "You know, Comodo has",
-                    "a reputation for offering",
-                    "high class recreation, so",
-                    "people forget that we actually",
-                    "have two dangerous dungeons."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Rakusa",
-                args![
-                    "You adventurers need to",
-                    "be extra careful if you explore",
-                    "the caves--the monsters there",
-                    "are unusually strong. Make",
-                    "sure that you're well prepared",
-                    "before you even think of going!"
-                ],
-            )?;
-            break 'b1;
-        }
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 6 {
+        ctx.lines_as(
+            "Rakusa",
+            args![
+                "See that guy sitting",
+                "over there? All he does",
+                "is talk about Comodo Cheese,",
+                "just mumbling nonsense about",
+                "its incredible flavors all day",
+                "long. He's nuts, I tell you."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rakusa",
+            args![
+                "First of all, you need",
+                "freakin' milk to make any",
+                "cheese. You see any cows",
+                "around here? Nope, I thought",
+                "so! Still, I think he really",
+                "believes that it exists..."
+            ],
+        )?;
+        ctx.var("dmdswrd_q").set(Val::from(7))?;
+    } else if subject1 == 7 {
+        ctx.lines_as(
+            "Rakusa",
+            args![
+                "Damn it! I know for a fact",
+                "that the idea of Comodo even",
+                "having a cheese is crazy, but",
+                "that guy's talking has gotten",
+                "me curious now! Maybe it does",
+                "exist? How would it even taste?"
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Rakusa",
+            args![
+                "You know, Comodo has",
+                "a reputation for offering",
+                "high class recreation, so",
+                "people forget that we actually",
+                "have two dangerous dungeons."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Rakusa",
+            args![
+                "You adventurers need to",
+                "be extra careful if you explore",
+                "the caves--the monsters there",
+                "are unusually strong. Make",
+                "sure that you're well prepared",
+                "before you even think of going!"
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -2147,84 +1884,66 @@ pub fn rakusa_cmd(ctx: &Ctx) -> Script {
 }
 
 fn kichiri_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(7)) && !subject1.loosely_equals(&Val::from(8));
-        if !matched1 && subject1.loosely_equals(&Val::from(7)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Kichiri",
-                args![
-                    "Freakin' ^3355FFMagatu^000000...!",
-                    "Can he talk about anything else",
-                    "aside from Comodo Cheese?",
-                    "I don't see why he's so excited",
-                    "about the stuff! Everyone knows",
-                    "it's just an old wive's tale."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kichiri",
-                args![
-                    "Would you do",
-                    "me a favor and get",
-                    "Magatu to shut up?",
-                    "I just want to drink",
-                    "my alcohol in peace!"
-                ],
-            )?;
-            ctx.var("dmdswrd_q").set(Val::from(8))?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(8)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Kichiri",
-                args![
-                    "Cripes! Now Magatu's",
-                    "got me wondering! I mean,",
-                    "just because I've never seen",
-                    "Comodo Cheese doesn't mean",
-                    "it doesn't exist, right? Curses! Now I'm thinking about it too!"
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Kichiri",
-                args![
-                    "There's more to do than",
-                    "gambling in Comodo, you",
-                    "know. Sometimes, I love",
-                    "to watch the Dancers on",
-                    "stage in the middle of the",
-                    "village. They're so glamorous~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Kichiri",
-                args![
-                    "I hear that the Dance",
-                    "Academy only accepts female",
-                    "Archers to become prospective",
-                    "Dancers. I guess that makes",
-                    "sense--they're tone and fit,",
-                    "but not musclebound either..."
-                ],
-            )?;
-            break 'b1;
-        }
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 7 {
+        ctx.lines_as(
+            "Kichiri",
+            args![
+                "Freakin' ^3355FFMagatu^000000...!",
+                "Can he talk about anything else",
+                "aside from Comodo Cheese?",
+                "I don't see why he's so excited",
+                "about the stuff! Everyone knows",
+                "it's just an old wive's tale."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kichiri",
+            args![
+                "Would you do",
+                "me a favor and get",
+                "Magatu to shut up?",
+                "I just want to drink",
+                "my alcohol in peace!"
+            ],
+        )?;
+        ctx.var("dmdswrd_q").set(Val::from(8))?;
+    } else if subject1 == 8 {
+        ctx.lines_as(
+            "Kichiri",
+            args![
+                "Cripes! Now Magatu's",
+                "got me wondering! I mean,",
+                "just because I've never seen",
+                "Comodo Cheese doesn't mean",
+                "it doesn't exist, right? Curses! Now I'm thinking about it too!"
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Kichiri",
+            args![
+                "There's more to do than",
+                "gambling in Comodo, you",
+                "know. Sometimes, I love",
+                "to watch the Dancers on",
+                "stage in the middle of the",
+                "village. They're so glamorous~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Kichiri",
+            args![
+                "I hear that the Dance",
+                "Academy only accepts female",
+                "Archers to become prospective",
+                "Dancers. I guess that makes",
+                "sense--they're tone and fit,",
+                "but not musclebound either..."
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -2235,103 +1954,85 @@ pub fn kichiri_cmd(ctx: &Ctx) -> Script {
 }
 
 fn magatu_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(8)) && !subject1.loosely_equals(&Val::from(9));
-        if !matched1 && subject1.loosely_equals(&Val::from(8)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Magatu",
-                args![
-                    "Comodo Cheese...",
-                    "It really exists...!",
-                    "And I'm so close to",
-                    "having the proof! Oh...",
-                    "That look in your eyes...",
-                    "Y-you really believe me!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Magatu",
-                args![
-                    "At long last, not only",
-                    "someone who believes me,",
-                    "but an adventurer to boot!",
-                    "Great, this is perfect! Now,",
-                    "listen, you want to learn more",
-                    "about Comodo Cheese, right?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Magatu",
-                args![
-                    "Well, I happen to know",
-                    "someone who knows someone",
-                    "that might be able to give you",
-                    "the chance to try it for yourself! His name is ^3355FFManzi^000000 , and you can",
-                    "find him in Comodo's Casino."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Magatu",
-                args![
-                    "Oh, here, before I forget,",
-                    "take my lucky bottle cap!",
-                    "Show this to Manzi, and he'll",
-                    "know that I sent you, and that",
-                    "you want to learn more about",
-                    "the elusive Comodo Cheese."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFYou have received",
-                "Magatu's lucky bottle",
-                "cap to present to Manzi."
-            ])?;
-            ctx.var("dmdswrd_q").set(Val::from(9))?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(9)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Magatu",
-                args![
-                    "Oh, don't forget to",
-                    "show my lucky bottle cap",
-                    "to Manzi, okay? You can find",
-                    "him inside Comodo's Casino~",
-                    "Good luck, and I hope you get",
-                    "to try that Comodo Cheese~"
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Magatu",
-                args![
-                    "It's true, it really",
-                    "exists... Comodo Cheese!",
-                    "Its flavor must be incomparably",
-                    "delicious if adventurers have",
-                    "quested to obtain it for so",
-                    "many generations..."
-                ],
-            )?;
-            break 'b1;
-        }
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 8 {
+        ctx.lines_as(
+            "Magatu",
+            args![
+                "Comodo Cheese...",
+                "It really exists...!",
+                "And I'm so close to",
+                "having the proof! Oh...",
+                "That look in your eyes...",
+                "Y-you really believe me!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Magatu",
+            args![
+                "At long last, not only",
+                "someone who believes me,",
+                "but an adventurer to boot!",
+                "Great, this is perfect! Now,",
+                "listen, you want to learn more",
+                "about Comodo Cheese, right?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Magatu",
+            args![
+                "Well, I happen to know",
+                "someone who knows someone",
+                "that might be able to give you",
+                "the chance to try it for yourself! His name is ^3355FFManzi^000000 , and you can",
+                "find him in Comodo's Casino."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Magatu",
+            args![
+                "Oh, here, before I forget,",
+                "take my lucky bottle cap!",
+                "Show this to Manzi, and he'll",
+                "know that I sent you, and that",
+                "you want to learn more about",
+                "the elusive Comodo Cheese."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou have received",
+            "Magatu's lucky bottle",
+            "cap to present to Manzi."
+        ])?;
+        ctx.var("dmdswrd_q").set(Val::from(9))?;
+    } else if subject1 == 9 {
+        ctx.lines_as(
+            "Magatu",
+            args![
+                "Oh, don't forget to",
+                "show my lucky bottle cap",
+                "to Manzi, okay? You can find",
+                "him inside Comodo's Casino~",
+                "Good luck, and I hope you get",
+                "to try that Comodo Cheese~"
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Magatu",
+            args![
+                "It's true, it really",
+                "exists... Comodo Cheese!",
+                "Its flavor must be incomparably",
+                "delicious if adventurers have",
+                "quested to obtain it for so",
+                "many generations..."
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -2342,144 +2043,126 @@ pub fn magatu_cmd(ctx: &Ctx) -> Script {
 }
 
 fn manzi_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(9)) && !subject1.loosely_equals(&Val::from(10));
-        if !matched1 && subject1.loosely_equals(&Val::from(9)) {
-            matched1 = true;
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 9 {
+        ctx.lines_as(
+            ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+            args![
+                "Excuse, but I'm",
+                "looking for someone",
+                "named Manzi. Do you",
+                "know where I can find him?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Manzi",
+            args![
+                "Hey guy, I'm right here.",
+                "So what exactly do you",
+                "want? I'm, um, not in",
+                "trouble or anything, am I?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou give Manzi the",
+            "lucky bottle cap that you",
+            "received from Magatsu.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Manzi",
+            args![
+                "Whoa, Magatsu gave you",
+                "this? Ah, okay, so you must",
+                "be looking for that Comodo",
+                "Cheese he keeps talking about.",
+                "Alright, I owe him a favor, so",
+                "I'll tell you who to talk to..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Manzi",
+            args![
+                "From the Casino, go north",
+                "towards the center of the",
+                "village, and then look to",
+                "the right where you'll see",
+                "the Dance Stage. You'll see",
+                "this old woman right there."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Manzi",
+            args![
+                "Don't be fooled by the",
+                "way she looks--that old",
+                "lady is one of Comodo's",
+                "wisest elders. Ask her",
+                "about the cheese, and",
+                "let her know I sent you~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Manzi",
+            args![
+                "Ah, she won't take you",
+                "very seriously unless you",
+                "show her this. Magatsu gave",
+                "you his lucky bottle cap, so I'm gonna give you my lucky coin!",
+                "The old crone'll recognize it~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.var("dmdswrd_q").set(Val::from(10))?;
+        ctx.lines(args![
+            "^3355FFYou received Manzi's",
+            "''lucky coin.'' Strangely",
+            "enough, both sides",
+            "are heads."
+        ])?;
+    } else if subject1 == 10 {
+        ctx.lines_as(
+            "Manzi",
+            args![
+                "Look for the old crone",
+                "near the Dance Stage here",
+                "in Comodo and ask her about",
+                "Comodo Cheese, alright? Ah,",
+                "and try not to insult her, kay?",
+                "It'll make me look bad~"
+            ],
+        )?;
+    } else {
+        if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
+            ctx.lines_as(
+                "Manzi",
+                args![
+                    "What th...?",
+                    "What's a kid like",
+                    "you doing in a Casino?",
+                    "Sure, it's not against the",
+                    "rules, but I think you oughta",
+                    "scram and play somewhere else!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
-        if matched1 {
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    "Excuse, but I'm",
-                    "looking for someone",
-                    "named Manzi. Do you",
-                    "know where I can find him?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Manzi",
-                args![
-                    "Hey guy, I'm right here.",
-                    "So what exactly do you",
-                    "want? I'm, um, not in",
-                    "trouble or anything, am I?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFYou give Manzi the",
-                "lucky bottle cap that you",
-                "received from Magatsu.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Manzi",
-                args![
-                    "Whoa, Magatsu gave you",
-                    "this? Ah, okay, so you must",
-                    "be looking for that Comodo",
-                    "Cheese he keeps talking about.",
-                    "Alright, I owe him a favor, so",
-                    "I'll tell you who to talk to..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Manzi",
-                args![
-                    "From the Casino, go north",
-                    "towards the center of the",
-                    "village, and then look to",
-                    "the right where you'll see",
-                    "the Dance Stage. You'll see",
-                    "this old woman right there."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Manzi",
-                args![
-                    "Don't be fooled by the",
-                    "way she looks--that old",
-                    "lady is one of Comodo's",
-                    "wisest elders. Ask her",
-                    "about the cheese, and",
-                    "let her know I sent you~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Manzi",
-                args![
-                    "Ah, she won't take you",
-                    "very seriously unless you",
-                    "show her this. Magatsu gave",
-                    "you his lucky bottle cap, so I'm gonna give you my lucky coin!",
-                    "The old crone'll recognize it~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.var("dmdswrd_q").set(Val::from(10))?;
-            ctx.lines(args![
-                "^3355FFYou received Manzi's",
-                "''lucky coin.'' Strangely",
-                "enough, both sides",
-                "are heads."
-            ])?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(10)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Manzi",
-                args![
-                    "Look for the old crone",
-                    "near the Dance Stage here",
-                    "in Comodo and ask her about",
-                    "Comodo Cheese, alright? Ah,",
-                    "and try not to insult her, kay?",
-                    "It'll make me look bad~"
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            if ctx.var("Class").get()?.loosely_equals(&ctx.constant("JOB_NOVICE")?) {
-                ctx.lines_as(
-                    "Manzi",
-                    args![
-                        "What th...?",
-                        "What's a kid like",
-                        "you doing in a Casino?",
-                        "Sure, it's not against the",
-                        "rules, but I think you oughta",
-                        "scram and play somewhere else!"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Manzi",
-                args![
-                    "Hey, have a good time in",
-                    "the Casino, but don't go buck",
-                    "wild. You wanna walk out of",
-                    "here with the shirt on your back, you know? Some people don't",
-                    "even leave here with that..."
-                ],
-            )?;
-            break 'b1;
-        }
+        ctx.lines_as(
+            "Manzi",
+            args![
+                "Hey, have a good time in",
+                "the Casino, but don't go buck",
+                "wild. You wanna walk out of",
+                "here with the shirt on your back, you know? Some people don't",
+                "even leave here with that..."
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -2490,181 +2173,120 @@ pub fn manzi_cmd(ctx: &Ctx) -> Script {
 }
 
 fn hullaris_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(10))
-            && !subject1.loosely_equals(&Val::from(11))
-            && !subject1.loosely_equals(&Val::from(12))
-            && !subject1.loosely_equals(&Val::from(13));
-        if !matched1 && subject1.loosely_equals(&Val::from(10)) {
-            matched1 = true;
-        }
-        if matched1 {
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 10 {
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Hula~hula~hula~",
+                "Love togther, love together,",
+                "we've groovin' on some more~",
+                "Love togther, love together,",
+                "we've living on the floor~"
+            ],
+        )?;
+        ctx.next()?;
+        if Val::from(runtime::select_values(
+            ctx,
+            &[Val::from("Present Muzi's Coin:Um... Comodo Cheese?")],
+        )?) == 1
+        {
+            ctx.lines(args!["^3355FFYou present Muzi's lucky", "coin to the old woman.^000000"])?;
+            ctx.next()?;
             ctx.lines_as(
                 "Hullaris",
                 args![
-                    "Hula~hula~hula~",
-                    "Love togther, love together,",
-                    "we've groovin' on some more~",
-                    "Love togther, love together,",
-                    "we've living on the floor~"
+                    "Love! Love!",
+                    "Love together~",
+                    "Love! Love!",
+                    "Love togeth-hm?",
+                    "Oh, that's um, Muzi's",
+                    "cheat coin, isn't it?"
                 ],
             )?;
             ctx.next()?;
-            if Val::from(runtime::select_values(
-                ctx,
-                &[Val::from("Present Muzi's Coin:Um... Comodo Cheese?")],
-            )?) == 1
-            {
-                ctx.lines(args!["^3355FFYou present Muzi's lucky", "coin to the old woman.^000000"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "Love! Love!",
-                        "Love together~",
-                        "Love! Love!",
-                        "Love togeth-hm?",
-                        "Oh, that's um, Muzi's",
-                        "cheat coin, isn't it?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "He always said that he",
-                        "might send someone with",
-                        "that coin to me as a sign",
-                        "of his trust in that person.",
-                        "I suppose, then, that I'm",
-                        "at your service. Now..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "What exactly did you need?",
-                        "I'm guessing you've come",
-                        "here to ask me something",
-                        "about Comodo. As one of the",
-                        "oldest elders, I know more",
-                        "about this village than most..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                    args![
-                        "Actually, I was hoping",
-                        "you can tell me about",
-                        "Comodo Cheese. If it really",
-                        "exists, I'd like to know",
-                        "where I can get some."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "Oh... That. First of all,",
-                        "Comodo Cheese does exist,",
-                        "and it's as precious as the",
-                        "legends say. However, it's",
-                        "not a true cheese, although you may think so from its taste."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "Yes, it's a very rare, natural",
-                        "substance and isn't made from",
-                        "cow or goat milk or anything",
-                        "like that. However, Comodo",
-                        "Cheese isn't merely food.",
-                        "No, it's much more..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "Those that eat Comodo",
-                        "Cheese find that their",
-                        "true potential is unlocked.",
-                        "Comodo Cheese's true name",
-                        "is the ^3355FFAwakening Stone^000000. Now,",
-                        "doesn't that sound impressive?"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "The Awakening Stone is",
-                        "one of the keys to obtaining",
-                        "some kind of forbidden power.",
-                        "That's why only the bravest",
-                        "adventurers can expect the",
-                        "chance of ever eating it."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "Do you really wish to",
-                        "eat the Comodo Cheese and",
-                        "see where its power may lead",
-                        "you? If so, you'll have to endure great challenges to obtain it..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "When you've decided",
-                        "to pursue the Awakening",
-                        "Stone, seek out a man named",
-                        "^3355FFNigirboran^000000. He will judge",
-                        "whether you are worthy",
-                        "of the Comodo Cheese..."
-                    ],
-                )?;
-                ctx.var("dmdswrd_q").set(Val::from(11))?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Hullaris",
-                    args![
-                        "Now, you should be",
-                        "able to find Nigiroban",
-                        "training somewhere in one",
-                        "of Comodo's Dungeon Caves.",
-                        "I'll send him a message to",
-                        "let him know you're coming..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
             ctx.lines_as(
                 "Hullaris",
-                args!["Love! Love!", "Love together~", "Love! Love!", "Love togeth-hm?"],
+                args![
+                    "He always said that he",
+                    "might send someone with",
+                    "that coin to me as a sign",
+                    "of his trust in that person.",
+                    "I suppose, then, that I'm",
+                    "at your service. Now..."
+                ],
             )?;
-            if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                ctx.lines(args!["Boy, you're ruining", "my groove! Now beat it!"])?;
-            } else {
-                ctx.lines(args!["Girl, you're ruining", "my groove! Get away~"])?;
-            }
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(11)) {
-            matched1 = true;
-        }
-        if matched1 {
+            ctx.next()?;
+            ctx.lines_as(
+                "Hullaris",
+                args![
+                    "What exactly did you need?",
+                    "I'm guessing you've come",
+                    "here to ask me something",
+                    "about Comodo. As one of the",
+                    "oldest elders, I know more",
+                    "about this village than most..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                args![
+                    "Actually, I was hoping",
+                    "you can tell me about",
+                    "Comodo Cheese. If it really",
+                    "exists, I'd like to know",
+                    "where I can get some."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hullaris",
+                args![
+                    "Oh... That. First of all,",
+                    "Comodo Cheese does exist,",
+                    "and it's as precious as the",
+                    "legends say. However, it's",
+                    "not a true cheese, although you may think so from its taste."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hullaris",
+                args![
+                    "Yes, it's a very rare, natural",
+                    "substance and isn't made from",
+                    "cow or goat milk or anything",
+                    "like that. However, Comodo",
+                    "Cheese isn't merely food.",
+                    "No, it's much more..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hullaris",
+                args![
+                    "Those that eat Comodo",
+                    "Cheese find that their",
+                    "true potential is unlocked.",
+                    "Comodo Cheese's true name",
+                    "is the ^3355FFAwakening Stone^000000. Now,",
+                    "doesn't that sound impressive?"
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Hullaris",
+                args![
+                    "The Awakening Stone is",
+                    "one of the keys to obtaining",
+                    "some kind of forbidden power.",
+                    "That's why only the bravest",
+                    "adventurers can expect the",
+                    "chance of ever eating it."
+                ],
+            )?;
+            ctx.next()?;
             ctx.lines_as(
                 "Hullaris",
                 args![
@@ -2686,6 +2308,7 @@ fn hullaris_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "of the Comodo Cheese..."
                 ],
             )?;
+            ctx.var("dmdswrd_q").set(Val::from(11))?;
             ctx.next()?;
             ctx.lines_as(
                 "Hullaris",
@@ -2698,156 +2321,185 @@ fn hullaris_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     "let him know you're coming..."
                 ],
             )?;
-            break 'b1;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(12)) {
-            matched1 = true;
+        ctx.lines_as(
+            "Hullaris",
+            args!["Love! Love!", "Love together~", "Love! Love!", "Love togeth-hm?"],
+        )?;
+        if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+            ctx.lines(args!["Boy, you're ruining", "my groove! Now beat it!"])?;
+        } else {
+            ctx.lines(args!["Girl, you're ruining", "my groove! Get away~"])?;
         }
-        if matched1 {
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "Hmm? So you've failed",
-                    "Nigirboran's test, have",
-                    "you? Well, you better train",
-                    "until you can pass it. Otherwise, eating Comodo Cheese could",
-                    "mean your death, you know."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(13)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "Ah, you've returned.",
-                    "So were you able to pass",
-                    "Nigirboran's little test? An",
-                    "adventurer like you should",
-                    "be able to have no problem",
-                    "with it. I've got faith in you~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFYou present the token that",
-                "signifies that you passed",
-                "Nigirboran's test to Hullaris.^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "Ah, I was right after all.",
-                    "I'm glad to see that you've",
-                    "proven worthy of eating this",
-                    "Comodo Cheese, or more",
-                    "accurately, the Awakening",
-                    "Stone. Here, let me get it..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "There you are...",
-                    "Only brave and worthy",
-                    "adventurers are allowed to",
-                    "eat this. Understand that",
-                    "eating Comodo Cheese is",
-                    "a rare and coveted honor!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFHullaris carefully",
-                "hands you a plate of",
-                "Comodo Cheese. You enjoy",
-                "the rich, smooth flavor of",
-                "each and every morsel...",
-                "It's sublimely delicious!^000000"
-            ])?;
-            ctx.next()?;
-            ctx.lines(args![
-                "^3355FFAfter you finish eating the",
-                "Comodo Cheese, you feel",
-                "a subtle, yet definite energy",
-                "gently pulsing through your",
-                "body. You feel a powerful, yet",
-                "quiet confidence of being able",
-                "to accomplish anything.^000000"
-            ])?;
-            ctx.var("dmdswrd_q").set(Val::from(14))?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "Hahahah! So what",
-                    "do you think? It's great,",
-                    "isn't it? It's unreal, how",
-                    "delicious it is. All other",
-                    "foods can never match the",
-                    "quality of Comodo Cheese~"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "Now, I know that you probably",
-                    "have things to do, but might",
-                    "I suggest that you visit the",
-                    "town of Al De Baran? There's",
-                    "a man there that can tell you",
-                    "about the Slate of Muriniel."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "You've already eaten the",
-                    "Awakening Stone, so you may",
-                    "as well obtain the other things",
-                    "that you need to earn one of",
-                    "the three forbidden swords.",
-                    "It's just a thought..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "Ah... Dance.",
-                    "It's more than just a form",
-                    "of entertainment. It's art,",
-                    "it's seduction, it's battle,",
-                    "and it's love. Only a true",
-                    "Dancer can understand this..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Hullaris",
-                args![
-                    "You know, Comodo is famous",
-                    "for its Dance Academy and the",
-                    "Dancers that have been trained",
-                    "there. If you know any female",
-                    "Archers, why don't you suggest",
-                    "visiting the school to them?"
-                ],
-            )?;
-            break 'b1;
-        }
+    } else if subject1 == 11 {
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Do you really wish to",
+                "eat the Comodo Cheese and",
+                "see where its power may lead",
+                "you? If so, you'll have to endure great challenges to obtain it..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "When you've decided",
+                "to pursue the Awakening",
+                "Stone, seek out a man named",
+                "^3355FFNigirboran^000000. He will judge",
+                "whether you are worthy",
+                "of the Comodo Cheese..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Now, you should be",
+                "able to find Nigiroban",
+                "training somewhere in one",
+                "of Comodo's Dungeon Caves.",
+                "I'll send him a message to",
+                "let him know you're coming..."
+            ],
+        )?;
+    } else if subject1 == 12 {
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Hmm? So you've failed",
+                "Nigirboran's test, have",
+                "you? Well, you better train",
+                "until you can pass it. Otherwise, eating Comodo Cheese could",
+                "mean your death, you know."
+            ],
+        )?;
+    } else if subject1 == 13 {
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Ah, you've returned.",
+                "So were you able to pass",
+                "Nigirboran's little test? An",
+                "adventurer like you should",
+                "be able to have no problem",
+                "with it. I've got faith in you~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFYou present the token that",
+            "signifies that you passed",
+            "Nigirboran's test to Hullaris.^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Ah, I was right after all.",
+                "I'm glad to see that you've",
+                "proven worthy of eating this",
+                "Comodo Cheese, or more",
+                "accurately, the Awakening",
+                "Stone. Here, let me get it..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "There you are...",
+                "Only brave and worthy",
+                "adventurers are allowed to",
+                "eat this. Understand that",
+                "eating Comodo Cheese is",
+                "a rare and coveted honor!"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFHullaris carefully",
+            "hands you a plate of",
+            "Comodo Cheese. You enjoy",
+            "the rich, smooth flavor of",
+            "each and every morsel...",
+            "It's sublimely delicious!^000000"
+        ])?;
+        ctx.next()?;
+        ctx.lines(args![
+            "^3355FFAfter you finish eating the",
+            "Comodo Cheese, you feel",
+            "a subtle, yet definite energy",
+            "gently pulsing through your",
+            "body. You feel a powerful, yet",
+            "quiet confidence of being able",
+            "to accomplish anything.^000000"
+        ])?;
+        ctx.var("dmdswrd_q").set(Val::from(14))?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Hahahah! So what",
+                "do you think? It's great,",
+                "isn't it? It's unreal, how",
+                "delicious it is. All other",
+                "foods can never match the",
+                "quality of Comodo Cheese~"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Now, I know that you probably",
+                "have things to do, but might",
+                "I suggest that you visit the",
+                "town of Al De Baran? There's",
+                "a man there that can tell you",
+                "about the Slate of Muriniel."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "You've already eaten the",
+                "Awakening Stone, so you may",
+                "as well obtain the other things",
+                "that you need to earn one of",
+                "the three forbidden swords.",
+                "It's just a thought..."
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "Ah... Dance.",
+                "It's more than just a form",
+                "of entertainment. It's art,",
+                "it's seduction, it's battle,",
+                "and it's love. Only a true",
+                "Dancer can understand this..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Hullaris",
+            args![
+                "You know, Comodo is famous",
+                "for its Dance Academy and the",
+                "Dancers that have been trained",
+                "there. If you know any female",
+                "Archers, why don't you suggest",
+                "visiting the school to them?"
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -2858,378 +2510,327 @@ pub fn hullaris_cmd(ctx: &Ctx) -> Script {
 }
 
 fn nigirboran_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(11))
-            && !subject1.loosely_equals(&Val::from(12))
-            && !subject1.loosely_equals(&Val::from(13))
-            && !subject1.loosely_equals(&Val::from(14));
-        if !matched1 && subject1.loosely_equals(&Val::from(11)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "You're the one that",
-                    "Hullaris sent? So you're",
-                    "here to earn the right to",
-                    "eat the Awakening Stone...",
-                    "Or Comodo Cheese, as it's",
-                    "more commonly known."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "Yes, it has many names...",
-                    "But it's more than a mere",
-                    "tasty treat--the Awakening",
-                    "Stone can help you access",
-                    "your true potential. But if you're not prepared... then you'll die."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "If your mind and body",
-                    "aren't sufficiently trained,",
-                    "your body will reject the",
-                    "Comodo Cheese and you",
-                    "would die a slow, painful,",
-                    "yet incredibly flavorful death."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "But I'm sure that won't",
-                    "happen to you! If Hullaris",
-                    "sent you to me, you must",
-                    "have a fighting chance, right?",
-                    "So come back when you're",
-                    "ready for the testing~"
-                ],
-            )?;
-            ctx.var("dmdswrd_q").set(Val::from(12))?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(12)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "Good, you have returned--",
-                    "I'd expect nothing less of",
-                    "a brave and daring adventurer.",
-                    "Now hold still as I gauge your",
-                    "body's internal energies and see if it can handle Comodo Cheese..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Nigirboran",
-                args!["Alright.", "Are you ready?", "Now... Brace yourself!", "Heeeeeyah! Hoooo-HAH!"],
-            )?;
-            ctx.next()?;
-            if (ctx.var("JobLevel").get()?.number()? > 20 && ctx.var("BaseLevel").get()?.number()? > 25) {
-                'b2: {
-                    let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines(args![
-                            "^3355FFA powerful current of",
-                            "warmth immediately coarses",
-                            "through your body from head",
-                            "to toe, and you struggle to",
-                            "keep yourself from writhing.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "Hmm... Your body seems",
-                                "well trained, but your mind",
-                                "is still reeling from the test.",
-                                "If you ate the Comodo Cheese",
-                                "now, you'd be reduced to an",
-                                "incoherent invalid..."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "Go and train yourself",
-                                "a little more, and try",
-                                "to improve your mind's",
-                                "sense of clarity. When",
-                                "you feel ready, come",
-                                "back to me once more."
-                            ],
-                        )?;
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines(args![
-                            "^3355FFA powerful current of",
-                            "warmth immediately coarses",
-                            "through your body from head",
-                            "to toe, and you struggle to",
-                            "keep yourself from writhing.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "Huh. Your body is",
-                                "strong, but your spirit",
-                                "is weak. You need more",
-                                "training. If you were to eat",
-                                "the Comodo Cheese now...",
-                                "You would evaporate."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "But don't lose heart,",
-                                "it's too early for you",
-                                "to give up. Go out and",
-                                "train some more, and then",
-                                "come back to me when you",
-                                "feel like you're ready."
-                            ],
-                        )?;
-                        break 'b2;
-                    }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
-                        ctx.lines(args![
-                            "^3355FFA powerful current of",
-                            "warmth immediately coarses",
-                            "through your body from head",
-                            "to toe, and you struggle to",
-                            "keep yourself from writhing.^000000"
-                        ])?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "Yes... Yes...",
-                                "Your mind, soul, and body",
-                                "seem well trained. I think you",
-                                "can eat the Comodo Cheese",
-                                "without any ill effect. Good,",
-                                "good, I think you're ready."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "Here, take this little",
-                                "token to Hullaris. That",
-                                "will prove to her that",
-                                "you've passed my little",
-                                "test. Congratulations~"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines(args![
-                            "^3355FFYou've received",
-                            "a token button to",
-                            "present to Hullaris",
-                            "from Nigirboran.^000000"
-                        ])?;
-                        ctx.var("dmdswrd_q").set(Val::from(13))?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "Ah, I almost forgot",
-                                "to ask you. Why do you",
-                                "seek the Comodo Cheese,",
-                                "or the Awakening Stone?",
-                                "Are you seeking one of",
-                                "the 3 forbidden swords?"
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "I don't know all the details,",
-                                "but I do know that you'll need",
-                                "the ^3355FFAwakening Stone^000000, the ^3355FFBook^000000",
-                                "^3355FFof the Lamb^000000 and the ^3355FFSlate of^000000",
-                                "^3355FFMurniel^000000 to even have a chance of obtaining one of those swords."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "Let's see... After you",
-                                "speak to Hullaris, you",
-                                "should go to Al De Baran",
-                                "and find someone named",
-                                "^3355FFMeteurengut^000000 to learn about",
-                                "the Slate of Muriniel."
-                            ],
-                        )?;
-                        ctx.next()?;
-                        ctx.lines_as(
-                            "Nigirboran",
-                            args![
-                                "Anyway, I wish you",
-                                "the best of luck in",
-                                "accomplishing your",
-                                "goals. Godspeed..."
-                            ],
-                        )?;
-                        break 'b2;
-                    }
-                }
-                ctx.close_window()?;
-                return Err(Stop::End);
-            } else {
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 11 {
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "You're the one that",
+                "Hullaris sent? So you're",
+                "here to earn the right to",
+                "eat the Awakening Stone...",
+                "Or Comodo Cheese, as it's",
+                "more commonly known."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "Yes, it has many names...",
+                "But it's more than a mere",
+                "tasty treat--the Awakening",
+                "Stone can help you access",
+                "your true potential. But if you're not prepared... then you'll die."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "If your mind and body",
+                "aren't sufficiently trained,",
+                "your body will reject the",
+                "Comodo Cheese and you",
+                "would die a slow, painful,",
+                "yet incredibly flavorful death."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "But I'm sure that won't",
+                "happen to you! If Hullaris",
+                "sent you to me, you must",
+                "have a fighting chance, right?",
+                "So come back when you're",
+                "ready for the testing~"
+            ],
+        )?;
+        ctx.var("dmdswrd_q").set(Val::from(12))?;
+    } else if subject1 == 12 {
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "Good, you have returned--",
+                "I'd expect nothing less of",
+                "a brave and daring adventurer.",
+                "Now hold still as I gauge your",
+                "body's internal energies and see if it can handle Comodo Cheese..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nigirboran",
+            args!["Alright.", "Are you ready?", "Now... Brace yourself!", "Heeeeeyah! Hoooo-HAH!"],
+        )?;
+        ctx.next()?;
+        if (ctx.var("JobLevel").get()?.number()? > 20 && ctx.var("BaseLevel").get()?.number()? > 25) {
+            let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+            if subject2 == 1 {
                 ctx.lines(args![
-                    "^3355FFA torrent of warmth",
-                    "coarses through your",
-                    "entire body, and you",
-                    "immediately faint from",
-                    "the rush of energy.^000000"
+                    "^3355FFA powerful current of",
+                    "warmth immediately coarses",
+                    "through your body from head",
+                    "to toe, and you struggle to",
+                    "keep yourself from writhing.^000000"
                 ])?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Nigirboran",
                     args![
-                        "Goodness...!",
-                        "Your mind and body",
-                        "are far too weak to",
-                        "handle the Comodo Cheese",
-                        "now. You must seriously",
-                        "train yourself much more..."
+                        "Hmm... Your body seems",
+                        "well trained, but your mind",
+                        "is still reeling from the test.",
+                        "If you ate the Comodo Cheese",
+                        "now, you'd be reduced to an",
+                        "incoherent invalid..."
                     ],
                 )?;
                 ctx.next()?;
                 ctx.lines_as(
                     "Nigirboran",
                     args![
-                        "After you've developed",
-                        "some more strength, come",
-                        "back to me. You can retake",
-                        "this little test anytime~"
+                        "Go and train yourself",
+                        "a little more, and try",
+                        "to improve your mind's",
+                        "sense of clarity. When",
+                        "you feel ready, come",
+                        "back to me once more."
                     ],
                 )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
+            } else if subject2 == 2 {
+                ctx.lines(args![
+                    "^3355FFA powerful current of",
+                    "warmth immediately coarses",
+                    "through your body from head",
+                    "to toe, and you struggle to",
+                    "keep yourself from writhing.^000000"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Nigirboran",
+                    args![
+                        "Huh. Your body is",
+                        "strong, but your spirit",
+                        "is weak. You need more",
+                        "training. If you were to eat",
+                        "the Comodo Cheese now...",
+                        "You would evaporate."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Nigirboran",
+                    args![
+                        "But don't lose heart,",
+                        "it's too early for you",
+                        "to give up. Go out and",
+                        "train some more, and then",
+                        "come back to me when you",
+                        "feel like you're ready."
+                    ],
+                )?;
+            } else if subject2 == 3 {
+                ctx.lines(args![
+                    "^3355FFA powerful current of",
+                    "warmth immediately coarses",
+                    "through your body from head",
+                    "to toe, and you struggle to",
+                    "keep yourself from writhing.^000000"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Nigirboran",
+                    args![
+                        "Yes... Yes...",
+                        "Your mind, soul, and body",
+                        "seem well trained. I think you",
+                        "can eat the Comodo Cheese",
+                        "without any ill effect. Good,",
+                        "good, I think you're ready."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Nigirboran",
+                    args![
+                        "Here, take this little",
+                        "token to Hullaris. That",
+                        "will prove to her that",
+                        "you've passed my little",
+                        "test. Congratulations~"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines(args![
+                    "^3355FFYou've received",
+                    "a token button to",
+                    "present to Hullaris",
+                    "from Nigirboran.^000000"
+                ])?;
+                ctx.var("dmdswrd_q").set(Val::from(13))?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Nigirboran",
+                    args![
+                        "Ah, I almost forgot",
+                        "to ask you. Why do you",
+                        "seek the Comodo Cheese,",
+                        "or the Awakening Stone?",
+                        "Are you seeking one of",
+                        "the 3 forbidden swords?"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Nigirboran",
+                    args![
+                        "I don't know all the details,",
+                        "but I do know that you'll need",
+                        "the ^3355FFAwakening Stone^000000, the ^3355FFBook^000000",
+                        "^3355FFof the Lamb^000000 and the ^3355FFSlate of^000000",
+                        "^3355FFMurniel^000000 to even have a chance of obtaining one of those swords."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Nigirboran",
+                    args![
+                        "Let's see... After you",
+                        "speak to Hullaris, you",
+                        "should go to Al De Baran",
+                        "and find someone named",
+                        "^3355FFMeteurengut^000000 to learn about",
+                        "the Slate of Muriniel."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Nigirboran",
+                    args![
+                        "Anyway, I wish you",
+                        "the best of luck in",
+                        "accomplishing your",
+                        "goals. Godspeed..."
+                    ],
+                )?;
             }
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(13)) {
-            matched1 = true;
-        }
-        if matched1 {
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else {
+            ctx.lines(args![
+                "^3355FFA torrent of warmth",
+                "coarses through your",
+                "entire body, and you",
+                "immediately faint from",
+                "the rush of energy.^000000"
+            ])?;
+            ctx.next()?;
             ctx.lines_as(
                 "Nigirboran",
                 args![
-                    "I don't know all the details,",
-                    "but I do know that you'll need",
-                    "the ^3355FFAwakening Stone^000000, the ^3355FFBook^000000",
-                    "^3355FFof the Lamb^000000 and the ^3355FFSlate of^000000",
-                    "^3355FFMurniel^000000 to even have a chance",
-                    "of obtaining a forbidden sword."
+                    "Goodness...!",
+                    "Your mind and body",
+                    "are far too weak to",
+                    "handle the Comodo Cheese",
+                    "now. You must seriously",
+                    "train yourself much more..."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Nigirboran",
                 args![
-                    "Let's see... After you",
-                    "speak to Hullaris, you",
-                    "should go to Al De Baran",
-                    "and find someone named",
-                    "^3355FFMeteurengut^000000 to learn about",
-                    "the Slate of Muriniel."
+                    "After you've developed",
+                    "some more strength, come",
+                    "back to me. You can retake",
+                    "this little test anytime~"
                 ],
             )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "Anyway, I wish you",
-                    "the best of luck in",
-                    "accomplishing your",
-                    "goals. Godspeed..."
-                ],
-            )?;
-            break 'b1;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(14)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "Somewhere in ^3355FFAl De Baran^000000,",
-                    "you'll find a man named",
-                    "^3355FFMeteurengut^000000. He should be",
-                    "able to help you learn more",
-                    "about the Slate of Muriniel."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "Oh... Hello there.",
-                    "I guess you could say",
-                    "that I'm something of",
-                    "a trainer here in Comodo.",
-                    "My name is Nigirboran.",
-                    "I know it's hard to say..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Nigirboran",
-                args![
-                    "If Hullaris hasn't sent",
-                    "you, then I don't think",
-                    "I can be of any real help",
-                    "for you. That seems to be",
-                    "the case, so I'd appreciate",
-                    "it if you'd let me train..."
-                ],
-            )?;
-            break 'b1;
-        }
+    } else if subject1 == 13 {
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "I don't know all the details,",
+                "but I do know that you'll need",
+                "the ^3355FFAwakening Stone^000000, the ^3355FFBook^000000",
+                "^3355FFof the Lamb^000000 and the ^3355FFSlate of^000000",
+                "^3355FFMurniel^000000 to even have a chance",
+                "of obtaining a forbidden sword."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "Let's see... After you",
+                "speak to Hullaris, you",
+                "should go to Al De Baran",
+                "and find someone named",
+                "^3355FFMeteurengut^000000 to learn about",
+                "the Slate of Muriniel."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "Anyway, I wish you",
+                "the best of luck in",
+                "accomplishing your",
+                "goals. Godspeed..."
+            ],
+        )?;
+    } else if subject1 == 14 {
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "Somewhere in ^3355FFAl De Baran^000000,",
+                "you'll find a man named",
+                "^3355FFMeteurengut^000000. He should be",
+                "able to help you learn more",
+                "about the Slate of Muriniel."
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "Oh... Hello there.",
+                "I guess you could say",
+                "that I'm something of",
+                "a trainer here in Comodo.",
+                "My name is Nigirboran.",
+                "I know it's hard to say..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Nigirboran",
+            args![
+                "If Hullaris hasn't sent",
+                "you, then I don't think",
+                "I can be of any real help",
+                "for you. That seems to be",
+                "the case, so I'd appreciate",
+                "it if you'd let me train..."
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -3240,357 +2841,326 @@ pub fn nigirboran_cmd(ctx: &Ctx) -> Script {
 }
 
 fn meteurengut_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(14))
-            && !subject1.loosely_equals(&Val::from(15))
-            && !subject1.loosely_equals(&Val::from(16))
-            && !subject1.loosely_equals(&Val::from(17));
-        if !matched1 && subject1.loosely_equals(&Val::from(14)) {
-            matched1 = true;
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 14 {
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "Ah. Your body is surrounded",
+                "by the glow of one that has",
+                "eaten of the Awakening Stone.",
+                "That alone may prove your value",
+                "as an adventurer, but are you",
+                "free from your selfish desires?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "Even just the smallest",
+                "taint of greed or jealousy",
+                "can prove to be a corruptive",
+                "influence when power is not",
+                "tempered by wisdom and a",
+                "sense of true compassion."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "Others like you have come",
+                "before me in hopes of learning",
+                "about the Slate of Muriniel and",
+                "eventually obtaining one of the",
+                "three accursed blades. You are probably no different from them..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "The Slate of Muriniel is an",
+                "alchemic artifact that can",
+                "help one access unimaginable",
+                "power, originally developed",
+                "by a master of alchemy that was",
+                "known as Rikaseh Sumarecon."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "Sumarecon had two apprentices,",
+                "and after he had passed down the secrets of the Slate of Muriniel",
+                "to only one of his proteges, his other protege killed him and the",
+                "other student out of jealousy."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "Sumarecon's secrets were",
+                "thought to be lost forever...",
+                "Fortunately, years later, an",
+                "Alchemist named Kuprite found",
+                "Sumarecon's secret documents",
+                "containing his knowledge."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "Kuprite then taught these",
+                "secrets to a select group of",
+                "Alchemy students, one of which",
+                "was my ancestor, Burukesaemu.",
+                "And so, because of my lineage,",
+                "I have learned those secrets."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "If you wish for me to",
+                "reproduce the Slate of",
+                "Muriniel for you, then",
+                "please bring me the items",
+                "I require to complete the",
+                "secret alchemic procedure."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "I shall need",
+                "^3355FF1 Sapphire^000000,",
+                "^3355FF1 Shining Stone^000000,",
+                "^3355FF1 Rough Elunium^000000,",
+                "^3355FF1 Emerald^000000, and",
+                "^3355FF1 Blue Gemstone^000000."
+            ],
+        )?;
+        ctx.var("dmdswrd_q").set(Val::from(15))?;
+    } else if subject1 == 15 {
+        if ((((ctx.call(Function::CountItem, vec![Val::from(717)])?.number()? > 0
+            && ctx.call(Function::CountItem, vec![Val::from(726)])?.number()? > 0)
+            && ctx.call(Function::CountItem, vec![Val::from(721)])?.number()? > 0)
+            && ctx.call(Function::CountItem, vec![Val::from(640)])?.number()? > 0)
+            && ctx.call(Function::CountItem, vec![Val::from(757)])?.number()? > 0)
+        {
+            ctx.lines_as(
+                "Meteurengut",
+                args![
+                    "You've already found",
+                    "all of the items I require to",
+                    "create the Slate of Muriniel?",
+                    "Fantastic. Now I can begin work",
+                    "on this. However, there is one",
+                    "more thing I must ask of you."
+                ],
+            )?;
+            ctx.call(Function::DelItem, vec![Val::from(717), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(726), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(721), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(640), Val::from(1)])?;
+            ctx.call(Function::DelItem, vec![Val::from(757), Val::from(1)])?;
+            ctx.var("dmdswrd_q").set(Val::from(16))?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Meteurengut",
+                args![
+                    "Would you please bring me",
+                    "^3355FF1 Cobweb^000000? You can obtain",
+                    "them by slaying spiders in",
+                    "Muriniel Pass which is on the",
+                    "way to Al De Baran from here."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Meteurengut",
+                args![
+                    "I'd have asked for it",
+                    "sooner, but I need to prepare",
+                    "all of these stones, and I need",
+                    "the freshest Cobwebs I can get.",
+                    "I'll make sure that these stones are ready when you return."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
-        if matched1 {
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "If you wish for me to",
+                "reproduce the Slate of",
+                "Muriniel for you, then",
+                "please bring me the items",
+                "I require to complete the",
+                "secret alchemic procedure."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "I shall need",
+                "^3355FF1 Sapphire^000000,",
+                "^3355FF1 Shining Stone^000000,",
+                "^3355FF1 Rough Elunium^000000,",
+                "^3355FF1 Emerald^000000, and",
+                "^3355FF1 Blue Gemstone^000000."
+            ],
+        )?;
+    } else if subject1 == 16 {
+        if ctx.call(Function::CountItem, vec![Val::from(1025)])?.number()? > 0 {
             ctx.lines_as(
                 "Meteurengut",
                 args![
-                    "Ah. Your body is surrounded",
-                    "by the glow of one that has",
-                    "eaten of the Awakening Stone.",
-                    "That alone may prove your value",
-                    "as an adventurer, but are you",
-                    "free from your selfish desires?"
+                    "I see that you've brought",
+                    "me a Cobweb. It's hard to",
+                    "believe, but it's integreal to",
+                    "creating the Slate of Muriniel.",
+                    "Now, if you'll wait a moment,",
+                    "I shall complete the slate..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.call(Function::DelItem, vec![Val::from(1025), Val::from(1)])?;
+            ctx.lines(args![
+                "*^3355FFClang Clang Clang!*",
+                "*Zaaaaaaaaaaaaaap*",
+                "*Ching tink t-t-t-tap*^000000"
+            ])?;
+            ctx.var("dmdswrd_q").set(Val::from(17))?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Meteurengut",
+                args![
+                    "*Whew* It's finished.",
+                    "Please take care of this",
+                    "slate, and know that I am",
+                    "entrusting you with an artifact",
+                    "that can help you access power",
+                    "beyond your imagination..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines(args!["^3355FFYou have received", "the Slate of Muriniel.^000000"])?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Meteurengut",
+                args![
+                    "There. You have eaten of",
+                    "the Awakening Stone and you",
+                    "possess the Slate of Muriniel.",
+                    "Now, you must try to obtain the",
+                    "^3355FFBook of the Lamb^000000 if you are",
+                    "questing for a doomed sword..."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Meteurengut",
                 args![
-                    "Even just the smallest",
-                    "taint of greed or jealousy",
-                    "can prove to be a corruptive",
-                    "influence when power is not",
-                    "tempered by wisdom and a",
-                    "sense of true compassion."
+                    "I know very little about",
+                    "that artifact, and its secrets",
+                    "are as well guarded as that of",
+                    "the Slate of Muriniel. However,",
+                    "I do know that a man in Morocc can create the Book of the Lamb..."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Meteurengut",
                 args![
-                    "Others like you have come",
-                    "before me in hopes of learning",
-                    "about the Slate of Muriniel and",
-                    "eventually obtaining one of the",
-                    "three accursed blades. You are probably no different from them..."
+                    "If that man is still in",
+                    "Morocc, then he will probably",
+                    "recognize the subtle emanation",
+                    "of the Awakening Stone and the",
+                    "Slate of Muriniel from you. Best of luck to you, adventurer..."
                 ],
             )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "The Slate of Muriniel is an",
-                    "alchemic artifact that can",
-                    "help one access unimaginable",
-                    "power, originally developed",
-                    "by a master of alchemy that was",
-                    "known as Rikaseh Sumarecon."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "Sumarecon had two apprentices,",
-                    "and after he had passed down the secrets of the Slate of Muriniel",
-                    "to only one of his proteges, his other protege killed him and the",
-                    "other student out of jealousy."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "Sumarecon's secrets were",
-                    "thought to be lost forever...",
-                    "Fortunately, years later, an",
-                    "Alchemist named Kuprite found",
-                    "Sumarecon's secret documents",
-                    "containing his knowledge."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "Kuprite then taught these",
-                    "secrets to a select group of",
-                    "Alchemy students, one of which",
-                    "was my ancestor, Burukesaemu.",
-                    "And so, because of my lineage,",
-                    "I have learned those secrets."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "If you wish for me to",
-                    "reproduce the Slate of",
-                    "Muriniel for you, then",
-                    "please bring me the items",
-                    "I require to complete the",
-                    "secret alchemic procedure."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "I shall need",
-                    "^3355FF1 Sapphire^000000,",
-                    "^3355FF1 Shining Stone^000000,",
-                    "^3355FF1 Rough Elunium^000000,",
-                    "^3355FF1 Emerald^000000, and",
-                    "^3355FF1 Blue Gemstone^000000."
-                ],
-            )?;
-            ctx.var("dmdswrd_q").set(Val::from(15))?;
-            break 'b1;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(15)) {
-            matched1 = true;
-        }
-        if matched1 {
-            if ((((ctx.call(Function::CountItem, vec![Val::from(717)])?.number()? > 0
-                && ctx.call(Function::CountItem, vec![Val::from(726)])?.number()? > 0)
-                && ctx.call(Function::CountItem, vec![Val::from(721)])?.number()? > 0)
-                && ctx.call(Function::CountItem, vec![Val::from(640)])?.number()? > 0)
-                && ctx.call(Function::CountItem, vec![Val::from(757)])?.number()? > 0)
-            {
-                ctx.lines_as(
-                    "Meteurengut",
-                    args![
-                        "You've already found",
-                        "all of the items I require to",
-                        "create the Slate of Muriniel?",
-                        "Fantastic. Now I can begin work",
-                        "on this. However, there is one",
-                        "more thing I must ask of you."
-                    ],
-                )?;
-                ctx.call(Function::DelItem, vec![Val::from(717), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(726), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(721), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(640), Val::from(1)])?;
-                ctx.call(Function::DelItem, vec![Val::from(757), Val::from(1)])?;
-                ctx.var("dmdswrd_q").set(Val::from(16))?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Meteurengut",
-                    args![
-                        "Would you please bring me",
-                        "^3355FF1 Cobweb^000000? You can obtain",
-                        "them by slaying spiders in",
-                        "Muriniel Pass which is on the",
-                        "way to Al De Baran from here."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Meteurengut",
-                    args![
-                        "I'd have asked for it",
-                        "sooner, but I need to prepare",
-                        "all of these stones, and I need",
-                        "the freshest Cobwebs I can get.",
-                        "I'll make sure that these stones are ready when you return."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "If you wish for me to",
-                    "reproduce the Slate of",
-                    "Muriniel for you, then",
-                    "please bring me the items",
-                    "I require to complete the",
-                    "secret alchemic procedure."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "I shall need",
-                    "^3355FF1 Sapphire^000000,",
-                    "^3355FF1 Shining Stone^000000,",
-                    "^3355FF1 Rough Elunium^000000,",
-                    "^3355FF1 Emerald^000000, and",
-                    "^3355FF1 Blue Gemstone^000000."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(16)) {
-            matched1 = true;
-        }
-        if matched1 {
-            if ctx.call(Function::CountItem, vec![Val::from(1025)])?.number()? > 0 {
-                ctx.lines_as(
-                    "Meteurengut",
-                    args![
-                        "I see that you've brought",
-                        "me a Cobweb. It's hard to",
-                        "believe, but it's integreal to",
-                        "creating the Slate of Muriniel.",
-                        "Now, if you'll wait a moment,",
-                        "I shall complete the slate..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.call(Function::DelItem, vec![Val::from(1025), Val::from(1)])?;
-                ctx.lines(args![
-                    "*^3355FFClang Clang Clang!*",
-                    "*Zaaaaaaaaaaaaaap*",
-                    "*Ching tink t-t-t-tap*^000000"
-                ])?;
-                ctx.var("dmdswrd_q").set(Val::from(17))?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Meteurengut",
-                    args![
-                        "*Whew* It's finished.",
-                        "Please take care of this",
-                        "slate, and know that I am",
-                        "entrusting you with an artifact",
-                        "that can help you access power",
-                        "beyond your imagination..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines(args!["^3355FFYou have received", "the Slate of Muriniel.^000000"])?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Meteurengut",
-                    args![
-                        "There. You have eaten of",
-                        "the Awakening Stone and you",
-                        "possess the Slate of Muriniel.",
-                        "Now, you must try to obtain the",
-                        "^3355FFBook of the Lamb^000000 if you are",
-                        "questing for a doomed sword..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Meteurengut",
-                    args![
-                        "I know very little about",
-                        "that artifact, and its secrets",
-                        "are as well guarded as that of",
-                        "the Slate of Muriniel. However,",
-                        "I do know that a man in Morocc can create the Book of the Lamb..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Meteurengut",
-                    args![
-                        "If that man is still in",
-                        "Morocc, then he will probably",
-                        "recognize the subtle emanation",
-                        "of the Awakening Stone and the",
-                        "Slate of Muriniel from you. Best of luck to you, adventurer..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "Ah, have you brought a",
-                    "Cobweb? I know it sounds",
-                    "strange, but I really need the",
-                    "unique energy found only in",
-                    "fresh Cobwebs to finish the",
-                    "Slate of Muriniel for you..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(17)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "You've eaten of the",
-                    "Awakening Stone and",
-                    "now possess the Slate of",
-                    "Muriniel. Now, all you must",
-                    "do is obtain the Book of the",
-                    "Lamb. I know little about it..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "All I can tell you is that",
-                    "there should be a man in",
-                    "Morocc that can create it",
-                    "for you. A man like that can",
-                    "sense the Slate of Muriniel,",
-                    "so he may call out to you..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "The ^3355FFSlate of Muriniel^000000",
-                    "is an ancient artifact",
-                    "that can only be created",
-                    "by the power of Alchemy.",
-                    "It is one of the best kept",
-                    "secrets of my family..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "I'm responsible for guarding",
-                    "the secrets of its creation, but I must also share the power",
-                    "of the slate with those that",
-                    "prove themselves worthy of it."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Meteurengut",
-                args![
-                    "After all, power is useless",
-                    "if it is never used. However,",
-                    "if power is never balanced with",
-                    "wisdom and compassion, then",
-                    "it will inevitably do more harm",
-                    "than good in the very end..."
-                ],
-            )?;
-            break 'b1;
-        }
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "Ah, have you brought a",
+                "Cobweb? I know it sounds",
+                "strange, but I really need the",
+                "unique energy found only in",
+                "fresh Cobwebs to finish the",
+                "Slate of Muriniel for you..."
+            ],
+        )?;
+    } else if subject1 == 17 {
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "You've eaten of the",
+                "Awakening Stone and",
+                "now possess the Slate of",
+                "Muriniel. Now, all you must",
+                "do is obtain the Book of the",
+                "Lamb. I know little about it..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "All I can tell you is that",
+                "there should be a man in",
+                "Morocc that can create it",
+                "for you. A man like that can",
+                "sense the Slate of Muriniel,",
+                "so he may call out to you..."
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "The ^3355FFSlate of Muriniel^000000",
+                "is an ancient artifact",
+                "that can only be created",
+                "by the power of Alchemy.",
+                "It is one of the best kept",
+                "secrets of my family..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "I'm responsible for guarding",
+                "the secrets of its creation, but I must also share the power",
+                "of the slate with those that",
+                "prove themselves worthy of it."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Meteurengut",
+            args![
+                "After all, power is useless",
+                "if it is never used. However,",
+                "if power is never balanced with",
+                "wisdom and compassion, then",
+                "it will inevitably do more harm",
+                "than good in the very end..."
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -3601,349 +3171,306 @@ pub fn meteurengut_cmd(ctx: &Ctx) -> Script {
 }
 
 fn zaka_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(17))
-            && !subject1.loosely_equals(&Val::from(18))
-            && !subject1.loosely_equals(&Val::from(19))
-            && !subject1.loosely_equals(&Val::from(20))
-            && !subject1.loosely_equals(&Val::from(21))
-            && !subject1.loosely_equals(&Val::from(22));
-        if !matched1 && subject1.loosely_equals(&Val::from(17)) {
-            matched1 = true;
-        }
-        if matched1 {
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 17 {
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "...You there! Hold it!",
+                "Yes, I can feel it from",
+                "you... The power of the",
+                "Awakening Stone... And...",
+                "The Slate of Muriniel?",
+                "Finally, you've come."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "I'm fully aware that only",
+                "those that seek to own one",
+                "of the doomed swords would",
+                "trouble themselve to obtain",
+                "those items. All that is left for you is the Book of the Lamb..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "I've been waiting for so",
+                "long for the opportunity to",
+                "create the Book of the Lamb.",
+                "If you really want the book,",
+                "I will help you so long as",
+                "you will help me."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "However, creating the book",
+                "is a complicated process and",
+                "requires multiple stages of",
+                "preparation. Therefore, I shall",
+                "ask you to bring me the items",
+                "I require in separate batches."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "Alright...",
+                "What was it now?",
+                "Ah, yes. The first thing",
+                "I need is ^3355FF2 Snake Scales^000000,",
+                "so please bring those soon."
+            ],
+        )?;
+        ctx.var("dmdswrd_q").set(Val::from(18))?;
+    } else if subject1 == 18 {
+        if ctx.call(Function::CountItem, vec![Val::from(926)])?.number()? > 1 {
+            ctx.call(Function::DelItem, vec![Val::from(926), Val::from(2)])?;
+            ctx.var("dmdswrd_q").set(Val::from(19))?;
             ctx.lines_as(
                 "Zaka",
                 args![
-                    "...You there! Hold it!",
-                    "Yes, I can feel it from",
-                    "you... The power of the",
-                    "Awakening Stone... And...",
-                    "The Slate of Muriniel?",
-                    "Finally, you've come."
+                    "Ah, you've brought",
+                    "the Snake Scales? Good,",
+                    "let me take them now and",
+                    "begin work on the Book of",
+                    "the Lamb. Now, I need you",
+                    "to bring me ^3355FF1 Scale Shell^000000."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Zaka",
                 args![
-                    "I'm fully aware that only",
-                    "those that seek to own one",
-                    "of the doomed swords would",
-                    "trouble themselve to obtain",
-                    "those items. All that is left for you is the Book of the Lamb..."
+                    "I know it would be more",
+                    "convenient for you if I told",
+                    "you everything I needed at",
+                    "once, but actually, this way",
+                    "is much more convenient for",
+                    "me. I'll be waiting right here!"
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "The first thing I'll",
+                "need to begin creating",
+                "the Book of the Lamb is",
+                "^3355FF2 Snake Scales^000000. Come back",
+                "to me once you get them,",
+                "alright? I'll be right here."
+            ],
+        )?;
+    } else if subject1 == 19 {
+        if ctx.call(Function::CountItem, vec![Val::from(936)])?.number()? > 0 {
+            ctx.lines_as(
+                "Zaka",
+                args![
+                    "Oh, nice! You've brought",
+                    "this Scale Shell for me,",
+                    "right? Great, great, this will",
+                    "help enhance the book's",
+                    "physical durability, but it",
+                    "still needs magic durability..."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Zaka",
                 args![
-                    "I've been waiting for so",
-                    "long for the opportunity to",
-                    "create the Book of the Lamb.",
-                    "If you really want the book,",
-                    "I will help you so long as",
-                    "you will help me."
+                    "Next, you need to bring",
+                    "me ^3355FF1 Shining Shell^000000. Hurry",
+                    "and bring you to me before",
+                    "I finish this part of the process, okay? Wait, actually, I think",
+                    "you can take your time..."
+                ],
+            )?;
+            ctx.call(Function::DelItem, vec![Val::from(936), Val::from(1)])?;
+            ctx.var("dmdswrd_q").set(Val::from(20))?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "I'll be waiting right",
+                "here while you go and",
+                "look for a ^3355FFScale Shell^000000",
+                "that you can bring to me.",
+                "I'll need that in order to",
+                "finish this Book of the Lamb."
+            ],
+        )?;
+    } else if subject1 == 20 {
+        if ctx.call(Function::CountItem, vec![Val::from(954)])?.number()? > 0 {
+            ctx.lines_as(
+                "Zaka",
+                args![
+                    "Ah, you're just in time!",
+                    "Have you got the Shining",
+                    "Scale? Perfect. Now, there",
+                    "is just one more item that",
+                    "I want to ask you to bring me:",
+                    "^3355FF1 Stinky Scale^000000. Easy, right?"
+                ],
+            )?;
+            ctx.call(Function::DelItem, vec![Val::from(954), Val::from(1)])?;
+            ctx.var("dmdswrd_q").set(Val::from(21))?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Zaka",
+                args![
+                    "The energy of a Stinky",
+                    "Scale can be used to",
+                    "regulate the power of",
+                    "incredibly potent artifacts.",
+                    "Without that item, the Book",
+                    "of the Lamb isn't much use..."
+                ],
+            )?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        }
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "If you want me to",
+                "finish this Book of",
+                "the Lamb, you need",
+                "to come back here with",
+                "^3355FF1 Shining Scale^000000. There's",
+                "no way to work around it..."
+            ],
+        )?;
+    } else if subject1 == 21 {
+        if ctx.call(Function::CountItem, vec![Val::from(959)])?.number()? > 0 {
+            ctx.lines_as(
+                "Zaka",
+                args![
+                    "What's that sme--?",
+                    "Oh, right. I asked you to",
+                    "bring me a Stinky Scale.",
+                    "Now I can finally complete",
+                    "this Book of the Lamb! I've",
+                    "been looking forward to this..."
+                ],
+            )?;
+            ctx.next()?;
+            ctx.lines(args![
+                "^3355FFZaka completes",
+                "the creation of the",
+                "Book of the Lamb.^000000"
+            ])?;
+            ctx.call(Function::DelItem, vec![Val::from(959), Val::from(1)])?;
+            ctx.var("dmdswrd_q").set(Val::from(22))?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Zaka",
+                args![
+                    "What...?!",
+                    "That's it? Well, um,",
+                    "it's done. That felt",
+                    "rather anticlimatic, but",
+                    "I can finally see this",
+                    "thing with my own eyes!"
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Zaka",
                 args![
-                    "However, creating the book",
-                    "is a complicated process and",
-                    "requires multiple stages of",
-                    "preparation. Therefore, I shall",
-                    "ask you to bring me the items",
-                    "I require in separate batches."
+                    "Alright, you've eaten of the",
+                    "Awakening Stone, obtained the",
+                    "Slate of Muriniel, and now have",
+                    "the Book of the Lamb. You're",
+                    "getting very close to owning",
+                    "one of the doomed swords."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Zaka",
                 args![
-                    "Alright...",
-                    "What was it now?",
-                    "Ah, yes. The first thing",
-                    "I need is ^3355FF2 Snake Scales^000000,",
-                    "so please bring those soon."
-                ],
-            )?;
-            ctx.var("dmdswrd_q").set(Val::from(18))?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(18)) {
-            matched1 = true;
-        }
-        if matched1 {
-            if ctx.call(Function::CountItem, vec![Val::from(926)])?.number()? > 1 {
-                ctx.call(Function::DelItem, vec![Val::from(926), Val::from(2)])?;
-                ctx.var("dmdswrd_q").set(Val::from(19))?;
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "Ah, you've brought",
-                        "the Snake Scales? Good,",
-                        "let me take them now and",
-                        "begin work on the Book of",
-                        "the Lamb. Now, I need you",
-                        "to bring me ^3355FF1 Scale Shell^000000."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "I know it would be more",
-                        "convenient for you if I told",
-                        "you everything I needed at",
-                        "once, but actually, this way",
-                        "is much more convenient for",
-                        "me. I'll be waiting right here!"
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Zaka",
-                args![
-                    "The first thing I'll",
-                    "need to begin creating",
-                    "the Book of the Lamb is",
-                    "^3355FF2 Snake Scales^000000. Come back",
-                    "to me once you get them,",
-                    "alright? I'll be right here."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(19)) {
-            matched1 = true;
-        }
-        if matched1 {
-            if ctx.call(Function::CountItem, vec![Val::from(936)])?.number()? > 0 {
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "Oh, nice! You've brought",
-                        "this Scale Shell for me,",
-                        "right? Great, great, this will",
-                        "help enhance the book's",
-                        "physical durability, but it",
-                        "still needs magic durability..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "Next, you need to bring",
-                        "me ^3355FF1 Shining Shell^000000. Hurry",
-                        "and bring you to me before",
-                        "I finish this part of the process, okay? Wait, actually, I think",
-                        "you can take your time..."
-                    ],
-                )?;
-                ctx.call(Function::DelItem, vec![Val::from(936), Val::from(1)])?;
-                ctx.var("dmdswrd_q").set(Val::from(20))?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Zaka",
-                args![
-                    "I'll be waiting right",
-                    "here while you go and",
-                    "look for a ^3355FFScale Shell^000000",
-                    "that you can bring to me.",
-                    "I'll need that in order to",
-                    "finish this Book of the Lamb."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(20)) {
-            matched1 = true;
-        }
-        if matched1 {
-            if ctx.call(Function::CountItem, vec![Val::from(954)])?.number()? > 0 {
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "Ah, you're just in time!",
-                        "Have you got the Shining",
-                        "Scale? Perfect. Now, there",
-                        "is just one more item that",
-                        "I want to ask you to bring me:",
-                        "^3355FF1 Stinky Scale^000000. Easy, right?"
-                    ],
-                )?;
-                ctx.call(Function::DelItem, vec![Val::from(954), Val::from(1)])?;
-                ctx.var("dmdswrd_q").set(Val::from(21))?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "The energy of a Stinky",
-                        "Scale can be used to",
-                        "regulate the power of",
-                        "incredibly potent artifacts.",
-                        "Without that item, the Book",
-                        "of the Lamb isn't much use..."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Zaka",
-                args![
-                    "If you want me to",
-                    "finish this Book of",
-                    "the Lamb, you need",
-                    "to come back here with",
-                    "^3355FF1 Shining Scale^000000. There's",
-                    "no way to work around it..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(21)) {
-            matched1 = true;
-        }
-        if matched1 {
-            if ctx.call(Function::CountItem, vec![Val::from(959)])?.number()? > 0 {
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "What's that sme--?",
-                        "Oh, right. I asked you to",
-                        "bring me a Stinky Scale.",
-                        "Now I can finally complete",
-                        "this Book of the Lamb! I've",
-                        "been looking forward to this..."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines(args![
-                    "^3355FFZaka completes",
-                    "the creation of the",
-                    "Book of the Lamb.^000000"
-                ])?;
-                ctx.call(Function::DelItem, vec![Val::from(959), Val::from(1)])?;
-                ctx.var("dmdswrd_q").set(Val::from(22))?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "What...?!",
-                        "That's it? Well, um,",
-                        "it's done. That felt",
-                        "rather anticlimatic, but",
-                        "I can finally see this",
-                        "thing with my own eyes!"
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "Alright, you've eaten of the",
-                        "Awakening Stone, obtained the",
-                        "Slate of Muriniel, and now have",
-                        "the Book of the Lamb. You're",
-                        "getting very close to owning",
-                        "one of the doomed swords."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "There is man that you",
-                        "must find in Comodo named",
-                        "^3355FFWon^000000. He will judge you, and",
-                        "then give you the proof that",
-                        "shows you are qualified to",
-                        "be a doomed sword bearer."
-                    ],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Zaka",
-                    args![
-                        "He looks like a simple",
-                        "man, but he is a true living",
-                        "legend renown for his wisdom.",
-                        "If you really want a doomed",
-                        "sword, you need to speak to",
-                        "Won and ask him to guide you."
-                    ],
-                )?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            ctx.lines_as(
-                "Zaka",
-                args![
-                    "The last thing that I need",
-                    "to complete the Book of the",
-                    "Lamb is ^3355FF1 Stinky Scale^000000. Please",
-                    "bring that to me as soon as",
-                    "you can. Thank you for being",
-                    "patient, young adventurer."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(22)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Zaka",
-                args![
-                    "Now, you need to visit a",
-                    "man named ^3355FFWon^000000 in Comodo",
-                    "in order to get the proof that",
-                    "shows that you're qualified to",
-                    "possess a doomed sword.",
-                    "Hopefully, you'll get it..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Zaka",
-                args![
-                    "Have you heard that swords",
-                    "with the power to change the",
-                    "world actually exist? It's true",
-                    "that three swords contain this",
-                    "immense power, but they are",
-                    "also bound to powerful curses."
+                    "There is man that you",
+                    "must find in Comodo named",
+                    "^3355FFWon^000000. He will judge you, and",
+                    "then give you the proof that",
+                    "shows you are qualified to",
+                    "be a doomed sword bearer."
                 ],
             )?;
             ctx.next()?;
             ctx.lines_as(
                 "Zaka",
                 args![
-                    "Therefore, the Mysteltainn,",
-                    "Ogretooth, and Executioner",
-                    "have all been sealed away.",
-                    "Only a truly great adventurer",
-                    "can release these doomed swords and actually wield them..."
+                    "He looks like a simple",
+                    "man, but he is a true living",
+                    "legend renown for his wisdom.",
+                    "If you really want a doomed",
+                    "sword, you need to speak to",
+                    "Won and ask him to guide you."
                 ],
             )?;
-            break 'b1;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "The last thing that I need",
+                "to complete the Book of the",
+                "Lamb is ^3355FF1 Stinky Scale^000000. Please",
+                "bring that to me as soon as",
+                "you can. Thank you for being",
+                "patient, young adventurer."
+            ],
+        )?;
+    } else if subject1 == 22 {
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "Now, you need to visit a",
+                "man named ^3355FFWon^000000 in Comodo",
+                "in order to get the proof that",
+                "shows that you're qualified to",
+                "possess a doomed sword.",
+                "Hopefully, you'll get it..."
+            ],
+        )?;
+    } else {
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "Have you heard that swords",
+                "with the power to change the",
+                "world actually exist? It's true",
+                "that three swords contain this",
+                "immense power, but they are",
+                "also bound to powerful curses."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Zaka",
+            args![
+                "Therefore, the Mysteltainn,",
+                "Ogretooth, and Executioner",
+                "have all been sealed away.",
+                "Only a truly great adventurer",
+                "can release these doomed swords and actually wield them..."
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -3954,220 +3481,195 @@ pub fn zaka_cmd(ctx: &Ctx) -> Script {
 }
 
 fn won_cmd_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
-    'b1: {
-        let subject1 = ctx.var("dmdswrd_q").get()?;
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(22))
-            && !subject1.loosely_equals(&Val::from(23))
-            && !subject1.loosely_equals(&Val::from(24));
-        if !matched1 && subject1.loosely_equals(&Val::from(22)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Hmm...? It's been a while",
-                    "since someone came here to",
-                    "get the qualification to own a",
-                    "doomed sword. Yeah, I know",
-                    "that's why you're here..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "To a man like me, the",
-                    "presenses of the Book of the",
-                    "Lamb, the Slate of Muriniel,",
-                    "and one that has eaten of the",
-                    "Awakening Stone are unmistakable."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Now, listen. I personally",
-                    "don't care why you want a",
-                    "doomed sword. If you abuse",
-                    "its power, you'll pay the price",
-                    "eventually. I'm only here to",
-                    "make sure you're up to snuff."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Of course, I also want to",
-                    "make sure that you don't bring",
-                    "great suffering to the world",
-                    "using a doomed sword. So I'm",
-                    "going to check if you're, you",
-                    "know, balanced and all that."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Alright, let me take",
-                    "a look into your eyes...",
-                    "Yeah, alright. You seem to",
-                    "understand the value of the",
-                    "Awakening Stone, Book of the Lamb, and the Slate of Muriniel."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Yeah, I can't sense any",
-                    "ill intent from you at all.",
-                    "That's very good. Huh, you",
-                    "seem pretty experienced in battle, so I'm sure you have the stamina",
-                    "to handle to a doomed sword..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Ah, but most importantly,",
-                    "you don't strike me as crazy",
-                    "at all. Alright, we're done here. Take this Stamp of Muriniel:",
-                    "it's the official qualification",
-                    "token to own a doomed sword."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines(args!["^3355FFYou receive the", "Stamp of Muriniel.^000000"])?;
-            ctx.var("dmdswrd_q").set(Val::from(23))?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Mysteltainn, Executioner,",
-                    "and Ogretooth... These are",
-                    "the forbidden blades, the",
-                    "doomed swords. Remember",
-                    "that you cannot choose",
-                    "which weapon you'll wield..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "These swords have a will",
-                    "of their own. The doomed",
-                    "sword that finds you most",
-                    "worthy of it will choose you.",
-                    "You can understand that, right?"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Now that you have this",
-                    "qualification, I'm supposed",
-                    "to direct you to the Sages",
-                    "that can help lead you to",
-                    "the doomed swords."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "The first Sage that you",
-                    "must visit is ^3355FFSage Yklah^000000",
-                    "in the city of ^3355FFJuno^000000 in the",
-                    "Schwarzwald Republic.",
-                    "Your quest to obtain a",
-                    "doomed sword isn't over yet..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(23)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Won",
-                args![
-                    "Now that you have this",
-                    "qualification, I'm supposed",
-                    "to direct you to the Sages",
-                    "that can help lead you to",
-                    "the doomed swords."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "The first Sage that you",
-                    "must visit is ^3355FFSage Yklah^000000",
-                    "in the city of ^3355FFJuno^000000 in the",
-                    "Schwarzwald Republic.",
-                    "Your quest to obtain a",
-                    "doomed sword isn't over yet..."
-                ],
-            )?;
-            break 'b1;
-        }
-        if !matched1 && subject1.loosely_equals(&Val::from(24)) {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.mes("1 2 3 4 5 6 7 8 9 10 1 2 3 4 5")?;
-            break 'b1;
-        }
-        if !matched1 && no_case1 {
-            matched1 = true;
-        }
-        if matched1 {
-            ctx.lines_as(
-                "Won",
-                args![
-                    "The visitors and even the",
-                    "people that live here always",
-                    "seem to be having such a good",
-                    "time, just lounging in leisure.",
-                    "It's hard to believe the War",
-                    "of the Witch even happened..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "But not everyone here in",
-                    "Comodo can afford to relax",
-                    "so easily. I, for one, have",
-                    "the responsibility of seeking",
-                    "out those that are worthy of, well, I don't know if I can say..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Won",
-                args![
-                    "You just have to",
-                    "trust that I've got an",
-                    "incredibly important",
-                    "job to do. I mean, sure,",
-                    "it doesn't look like I'm doing",
-                    "anything right now, but..."
-                ],
-            )?;
-            break 'b1;
-        }
+    let subject1 = ctx.var("dmdswrd_q").get()?;
+    if subject1 == 22 {
+        ctx.lines_as(
+            "Won",
+            args![
+                "Hmm...? It's been a while",
+                "since someone came here to",
+                "get the qualification to own a",
+                "doomed sword. Yeah, I know",
+                "that's why you're here..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "To a man like me, the",
+                "presenses of the Book of the",
+                "Lamb, the Slate of Muriniel,",
+                "and one that has eaten of the",
+                "Awakening Stone are unmistakable."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "Now, listen. I personally",
+                "don't care why you want a",
+                "doomed sword. If you abuse",
+                "its power, you'll pay the price",
+                "eventually. I'm only here to",
+                "make sure you're up to snuff."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "Of course, I also want to",
+                "make sure that you don't bring",
+                "great suffering to the world",
+                "using a doomed sword. So I'm",
+                "going to check if you're, you",
+                "know, balanced and all that."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "Alright, let me take",
+                "a look into your eyes...",
+                "Yeah, alright. You seem to",
+                "understand the value of the",
+                "Awakening Stone, Book of the Lamb, and the Slate of Muriniel."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "Yeah, I can't sense any",
+                "ill intent from you at all.",
+                "That's very good. Huh, you",
+                "seem pretty experienced in battle, so I'm sure you have the stamina",
+                "to handle to a doomed sword..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "Ah, but most importantly,",
+                "you don't strike me as crazy",
+                "at all. Alright, we're done here. Take this Stamp of Muriniel:",
+                "it's the official qualification",
+                "token to own a doomed sword."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines(args!["^3355FFYou receive the", "Stamp of Muriniel.^000000"])?;
+        ctx.var("dmdswrd_q").set(Val::from(23))?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "Mysteltainn, Executioner,",
+                "and Ogretooth... These are",
+                "the forbidden blades, the",
+                "doomed swords. Remember",
+                "that you cannot choose",
+                "which weapon you'll wield..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "These swords have a will",
+                "of their own. The doomed",
+                "sword that finds you most",
+                "worthy of it will choose you.",
+                "You can understand that, right?"
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "Now that you have this",
+                "qualification, I'm supposed",
+                "to direct you to the Sages",
+                "that can help lead you to",
+                "the doomed swords."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "The first Sage that you",
+                "must visit is ^3355FFSage Yklah^000000",
+                "in the city of ^3355FFJuno^000000 in the",
+                "Schwarzwald Republic.",
+                "Your quest to obtain a",
+                "doomed sword isn't over yet..."
+            ],
+        )?;
+    } else if subject1 == 23 {
+        ctx.lines_as(
+            "Won",
+            args![
+                "Now that you have this",
+                "qualification, I'm supposed",
+                "to direct you to the Sages",
+                "that can help lead you to",
+                "the doomed swords."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "The first Sage that you",
+                "must visit is ^3355FFSage Yklah^000000",
+                "in the city of ^3355FFJuno^000000 in the",
+                "Schwarzwald Republic.",
+                "Your quest to obtain a",
+                "doomed sword isn't over yet..."
+            ],
+        )?;
+    } else if subject1 == 24 {
+        ctx.mes("1 2 3 4 5 6 7 8 9 10 1 2 3 4 5")?;
+    } else {
+        ctx.lines_as(
+            "Won",
+            args![
+                "The visitors and even the",
+                "people that live here always",
+                "seem to be having such a good",
+                "time, just lounging in leisure.",
+                "It's hard to believe the War",
+                "of the Witch even happened..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "But not everyone here in",
+                "Comodo can afford to relax",
+                "so easily. I, for one, have",
+                "the responsibility of seeking",
+                "out those that are worthy of, well, I don't know if I can say..."
+            ],
+        )?;
+        ctx.next()?;
+        ctx.lines_as(
+            "Won",
+            args![
+                "You just have to",
+                "trust that I've got an",
+                "incredibly important",
+                "job to do. I mean, sure,",
+                "it doesn't look like I'm doing",
+                "anything right now, but..."
+            ],
+        )?;
     }
     ctx.close_window()?;
     return Err(Stop::End);

@@ -250,21 +250,13 @@ fn guildsman_asn_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         args!["So how about taking the next step and becoming an Assassin?"],
                                     )?;
                                     ctx.next()?;
-                                    'b1: {
-                                        let subject1 = Val::from(runtime::select_values(
+                                    match runtime::select_values(
                                             ctx,
                                             &[Val::from(
                                                 "Yes. I've picked my last pocket.:What's the requirements?:Maybe later, I need to steal some things first.",
                                             )],
-                                        )?);
-                                        let mut matched1 = false;
-                                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                            && !subject1.loosely_equals(&Val::from(2))
-                                            && !subject1.loosely_equals(&Val::from(3));
-                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                        )? {
+                                        1 => {
                                             ctx.lines_as(
                                                 "Ferocious-looking guy",
                                                 args![
@@ -285,20 +277,14 @@ fn guildsman_asn_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             )?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                        2 => {
                                             ctx.lines_as("Ferocious-looking guy", args!["Requirements? Well, first you need to be a Thief. Second, you need to be at least Thief job level 40."])?;
                                             ctx.next()?;
                                             ctx.lines_as("Ferocious-looking guy", args!["And third, you need to pass a test to become an Assassin. You got", "all that? If you're sure of your ability as a Thief, you won't have to worry."])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                        3 => {
                                             ctx.lines_as(
                                                 "Ferocious-looking guy",
                                                 args![
@@ -311,6 +297,7 @@ fn guildsman_asn_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 }
                             } else {
@@ -367,21 +354,13 @@ fn guildsman_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["Sorry for laughing, but this is hilarious! Hahaha~ So do you want me to give you some hints?"],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "I beg you, give me hints.:Don't laugh at me! Now, give me hints!:...Shut up, I don't need your help!",
                 )],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Assassin 'Khai'",
                     args![
@@ -431,10 +410,7 @@ fn guildsman_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.mes("[Assassin 'Khai']")?;
                 if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
                     ctx.mes("Huh. You must have a lot of self confidence to be a Thief nowadays.")?;
@@ -478,10 +454,7 @@ fn guildsman_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as("Assassin 'Khai'", args!["...Hm."])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -508,103 +481,84 @@ fn guildsman_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         args!["Yeah, I can trust you now. Let me give you some important tips."],
                     )?;
                     ctx.next()?;
-                    'b2: {
-                        let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as("Assassin 'Khai'", args!["First of all, Grimtooth is ...A skill specifically for the Katar. Therefore, it doesn't require any skills related to Dagger weapons."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["Double attack ...Haven't you tried it? It allows you to attack an enemy twice at a time."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["Red Blood is an elemental stone, Blue Gemstone doesn't have to do the Assassin job at all!"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["Have you ever seen Mages hunt Elder willow using the Cold Bolt skill? Water overpowers Fire. Water puts Fire under control, and Wind puts water under control."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["As long as you stick close to the shadows, by walls and things like that, Cloaking will hide you from sight perfectly! Unless some bastard uses a certain detecting skill, you know."])?;
-                            ctx.next()?;
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["'Sharpened Legbone of Ghoul' possesses the Undead property."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["What kind of weapon have you used so far? Damascus? Gladius? Stiletto? Or Main Gauche? What is that you're carrying now?"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["It's possible to get a slotted Katar from Desert Wolf. Well, just keep that in mind. You will need this information someday."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["You can gain a slotted Jur from a buddy living in a dark and damp place under the ground. Well, I have no idea why that dude has that weapon... Maybe he needs it to dig a hole?"])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["And...", "I've always wanted a frog as a pet. But it's impossible!"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["As far as I know, a Goblin carrying a hammer possesses the Earth property. Keep in mind that Fire overcomes the Earth property."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["You know elemental weapons? The names of Blacksmiths are engraved on them usually..."],
-                            )?;
-                            ctx.next()?;
-                            break 'b2;
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as("Assassin 'Khai'", args!["Sell an Elder Willow Card to a Mage as soon as you can. They are mad about the card for some reason. Doesn't it increase the INT of a character? Hmmm..."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["For us, Dodge and Attack is more important than defense. Don't ever think about wearing a helm. It's heavy, uncomfortable and will even block your sight."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["'Increase Dodge' allows you to have +3% flee rate per skill lvl."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["As I have told you repeatedly: Katar class weapons (Jamadhar/Jur/Katar etc) are two-handed!"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["City of desert... I miss my hometown, Morocc. I haven't been there for a long time. I feel like I became a Thief a few days ago. Time flies so fast..."])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args![
-                                    "Heh. I remember my Thief quest. I was so damn nervous when I broke into the farm to get Mushrooms..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["Insects detect hiding/cloaking skills. Their feelers never fail to find targets."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Assassin 'Khai'",
-                                args!["I've heard that the Baphomet Jr. Card adds +3 points to Agility and +1 point on Critical Attack..."],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Assassin 'Khai'", args!["Yeah, we Assassins specialize in training Agility. We can gain a bonus of 10 Agility points even before mastering job level. The problem is it won't go up anymore after that, you know."])?;
-                            ctx.next()?;
-                        }
+                    let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                    if subject2 == 1 {
+                        ctx.lines_as("Assassin 'Khai'", args!["First of all, Grimtooth is ...A skill specifically for the Katar. Therefore, it doesn't require any skills related to Dagger weapons."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["Double attack ...Haven't you tried it? It allows you to attack an enemy twice at a time."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["Red Blood is an elemental stone, Blue Gemstone doesn't have to do the Assassin job at all!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["Have you ever seen Mages hunt Elder willow using the Cold Bolt skill? Water overpowers Fire. Water puts Fire under control, and Wind puts water under control."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["As long as you stick close to the shadows, by walls and things like that, Cloaking will hide you from sight perfectly! Unless some bastard uses a certain detecting skill, you know."])?;
+                        ctx.next()?;
+                    } else if subject2 == 2 {
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["'Sharpened Legbone of Ghoul' possesses the Undead property."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["What kind of weapon have you used so far? Damascus? Gladius? Stiletto? Or Main Gauche? What is that you're carrying now?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["It's possible to get a slotted Katar from Desert Wolf. Well, just keep that in mind. You will need this information someday."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["You can gain a slotted Jur from a buddy living in a dark and damp place under the ground. Well, I have no idea why that dude has that weapon... Maybe he needs it to dig a hole?"])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["And...", "I've always wanted a frog as a pet. But it's impossible!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["As far as I know, a Goblin carrying a hammer possesses the Earth property. Keep in mind that Fire overcomes the Earth property."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["You know elemental weapons? The names of Blacksmiths are engraved on them usually..."],
+                        )?;
+                        ctx.next()?;
+                    } else if subject2 == 3 {
+                        ctx.lines_as("Assassin 'Khai'", args!["Sell an Elder Willow Card to a Mage as soon as you can. They are mad about the card for some reason. Doesn't it increase the INT of a character? Hmmm..."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["For us, Dodge and Attack is more important than defense. Don't ever think about wearing a helm. It's heavy, uncomfortable and will even block your sight."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["'Increase Dodge' allows you to have +3% flee rate per skill lvl."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["As I have told you repeatedly: Katar class weapons (Jamadhar/Jur/Katar etc) are two-handed!"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["City of desert... I miss my hometown, Morocc. I haven't been there for a long time. I feel like I became a Thief a few days ago. Time flies so fast..."])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args![
+                                "Heh. I remember my Thief quest. I was so damn nervous when I broke into the farm to get Mushrooms..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["Insects detect hiding/cloaking skills. Their feelers never fail to find targets."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Assassin 'Khai'",
+                            args!["I've heard that the Baphomet Jr. Card adds +3 points to Agility and +1 point on Critical Attack..."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Assassin 'Khai'", args!["Yeah, we Assassins specialize in training Agility. We can gain a bonus of 10 Agility points even before mastering job level. The problem is it won't go up anymore after that, you know."])?;
+                        ctx.next()?;
                     }
                     ctx.lines_as("Assassin 'Khai'", args!["^666666*Phew*^000000 That's all I can tell you, though that's a lot of hints. I don't doubt that I told you almost everything."])?;
                     ctx.next()?;
@@ -634,6 +588,7 @@ fn guildsman_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Warp, vec![Val::from("c_tower4"), Val::from(64), Val::from(76)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.lines_as(
@@ -883,19 +838,11 @@ fn nameless_one_run(ctx: &Ctx, mut step: NamelessOneStep, args: Vec<Val>) -> Res
                                 break 'l1;
                             }
                             'b1: {
-                                'b2: {
-                                    let subject2 = Val::from(runtime::select_values(
+                                match runtime::select_values(
                                         ctx,
                                         &[Val::from("...Skills?:...Stats?:Hmpf, I know it all.")],
-                                    )?);
-                                    let mut matched2 = false;
-                                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                        && !subject2.loosely_equals(&Val::from(2))
-                                        && !subject2.loosely_equals(&Val::from(3));
-                                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    )? {
+                                    1 => {
                                         ctx.lines_as("The Anonymous One", args!["Skills...?", "Although skills can have circumstantial applications, I will tell you about the basic concepts."])?;
                                         ctx.next()?;
                                         ctx.lines_as("The Anonymous One", args!["First, ^3355FFKatar Mastery^000000. This skill increases the damage of Katar class weapons. The higher the skill level, the more damage is increased."])?;
@@ -944,12 +891,8 @@ fn nameless_one_run(ctx: &Ctx, mut step: NamelessOneStep, args: Vec<Val>) -> Res
                                         )?;
                                         ctx.var("assin_q2").set(Val::from(1))?;
                                         ctx.next()?;
-                                        break 'b2;
                                     }
-                                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    2 => {
                                         ctx.lines_as(
                                             "The Anonymous One",
                                             args!["Hmm, Stats...", "For Assassins, Agility, or AGI, is the most important stat."],
@@ -960,12 +903,8 @@ fn nameless_one_run(ctx: &Ctx, mut step: NamelessOneStep, args: Vec<Val>) -> Res
                                         ctx.lines_as("The Anonymous One", args!["I cannot give you better advice than that in regards to Stats. You should research and see which stats suit you, and decide what kind of Assassin you want to be."])?;
                                         ctx.var("assin_q2").set(Val::from(2))?;
                                         ctx.next()?;
-                                        break 'b2;
                                     }
-                                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                        matched2 = true;
-                                    }
-                                    if matched2 {
+                                    3 => {
                                         if ctx.var("assin_q2").get()? == 0 {
                                             ctx.lines_as(
                                                 "The Anonymous One",
@@ -974,8 +913,8 @@ fn nameless_one_run(ctx: &Ctx, mut step: NamelessOneStep, args: Vec<Val>) -> Res
                                             ctx.next()?;
                                         }
                                         ctx.var("assin_q2").set(Val::from(3))?;
-                                        break 'b2;
                                     }
+                                    _ => {}
                                 }
                             }
                         }
@@ -1018,340 +957,305 @@ fn nameless_one_run(ctx: &Ctx, mut step: NamelessOneStep, args: Vec<Val>) -> Res
                         ctx.lines_as("The Anonymous One", args!["Okay,", "are you ready?", "Good luck."])?;
                     }
                     ctx.next()?;
-                    'b3: {
-                        let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
+                    let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                    if subject3 == 1 {
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["1. Choose skill that is not required to learn Grimtooth."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from(
+                                "Cloaking level 2:Sonic Blow level 5:Katar Mastery level 4:Right hand Mastery level 2",
+                            )],
+                        )?) == 4
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
                         }
-                        if matched3 {
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["1. Choose skill that is not required to learn Grimtooth."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from(
-                                    "Cloaking level 2:Sonic Blow level 5:Katar Mastery level 4:Right hand Mastery level 2",
-                                )],
-                            )?) == 4
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["2. What property does Enchant Poison possess?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Poison:Earth:Fire:Wind")])?) == 1 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["3. How does Level 4 Right Hand Mastery work?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from(
-                                    "Recover 80% of damage decrease:Recover 90% of damage decrease:Increase 90% of damage:Increase 108% of damage",
-                                )],
-                            )?) == 2
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["4. What is the item required for using Venom Dust?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Red Blood:Blue Gemstone:Yellow Gemstone:Red Gemstone")],
-                            )?) == 4
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["5. Which skill can you learn when you reach Level 5 Enchant Poison?"],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Envenom:Sonic Blow:Venom Splasher:Venom Dust")],
-                            )?) == 4
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["6. Among the following skills, which allows you to walk while invisible?"],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Hiding:Back Slide:Cloaking:Sand Attack")],
-                            )?) == 3
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["7. Choose the condition that is unrelated to Venom Splasher."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Poisoned target.:Red Gemstone.:Remaing HP of Target.")],
-                            )?) == 2
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["8. Which monster is weak to a weapon with Vadon card (adds 20% damage on Fire property monster)?"],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Steel Chonchon:Deviruchi:Elder Willow:Baphomet")],
-                            )?) == 3
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["9. How much SP does", "Double Attack need?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from(
-                                    "15:It's a passive skill, so SP use is 0.:It's passive skill, so SP use is 10.:54",
-                                )],
-                            )?) == 2
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["10. What is the best elemental Main Gauche weapon for hunting in Izlude dungeon?"],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Wind Main Gauche:Ice Main Gauche:Earth Main Gauche:Fire Main Gauche")],
-                            )?) == 1
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            break 'b3;
+                        ctx.lines_as("The Anonymous One", args!["2. What property does Enchant Poison possess?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Poison:Earth:Fire:Wind")])?) == 1 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
+                        ctx.lines_as("The Anonymous One", args!["3. How does Level 4 Right Hand Mastery work?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from(
+                                "Recover 80% of damage decrease:Recover 90% of damage decrease:Increase 90% of damage:Increase 108% of damage",
+                            )],
+                        )?) == 2
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
                         }
-                        if matched3 {
-                            ctx.lines_as("The Anonymous One", args!["1. Which monster", "drops a slotted Katar?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Thief Bug:Peco Peco:Desert Wolf:Hammer Cobolt")],
-                            )?) == 3
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["2. Which monster", "drops a slotted Jur?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Martin:Desert Wolf:Marionette:Myst")])?) == 1 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["3. Which class is allowed to craft elemental weapons?"],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Merchant:Blacksmith:Thief:Priest")])?) == 2 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["4. Choose the weapon which is not in the Katar class."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Jamadhar:Jur:Katar:Gladius")])?) == 4 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["5. What property do Izlude dungeon monsters posses?"],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Water:Fire:Wind:Earth")])?) == 1 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["6. Which monster", "cannot be a Cute Pet?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Poporing:Roda Frog:Smokie:Poison Spore")],
-                            )?) == 2
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["7. Choose a monster that Fire property Daggers work the best on."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Dagger Goblin:Mace Goblin:Morning Star Goblin:Hammer Goblin")],
-                            )?) == 4
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["8. Choose the non-elemental Katar from the following:"],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
+                        ctx.lines_as("The Anonymous One", args!["4. What is the item required for using Venom Dust?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Red Blood:Blue Gemstone:Yellow Gemstone:Red Gemstone")],
+                        )?) == 4
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["5. Which skill can you learn when you reach Level 5 Enchant Poison?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Envenom:Sonic Blow:Venom Splasher:Venom Dust")],
+                        )?) == 4
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["6. Among the following skills, which allows you to walk while invisible?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Hiding:Back Slide:Cloaking:Sand Attack")],
+                        )?) == 3
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["7. Choose the condition that is unrelated to Venom Splasher."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Poisoned target.:Red Gemstone.:Remaing HP of Target.")],
+                        )?) == 2
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["8. Which monster is weak to a weapon with Vadon card (adds 20% damage on Fire property monster)?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Steel Chonchon:Deviruchi:Elder Willow:Baphomet")],
+                        )?) == 3
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as("The Anonymous One", args!["9. How much SP does", "Double Attack need?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from(
+                                "15:It's a passive skill, so SP use is 0.:It's passive skill, so SP use is 10.:54",
+                            )],
+                        )?) == 2
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["10. What is the best elemental Main Gauche weapon for hunting in Izlude dungeon?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Wind Main Gauche:Ice Main Gauche:Earth Main Gauche:Fire Main Gauche")],
+                        )?) == 1
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                    } else if subject3 == 2 {
+                        ctx.lines_as("The Anonymous One", args!["1. Which monster", "drops a slotted Katar?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Thief Bug:Peco Peco:Desert Wolf:Hammer Cobolt")],
+                        )?) == 3
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as("The Anonymous One", args!["2. Which monster", "drops a slotted Jur?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Martin:Desert Wolf:Marionette:Myst")])?) == 1 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["3. Which class is allowed to craft elemental weapons?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Merchant:Blacksmith:Thief:Priest")])?) == 2 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["4. Choose the weapon which is not in the Katar class."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Jamadhar:Jur:Katar:Gladius")])?) == 4 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["5. What property do Izlude dungeon monsters posses?"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Water:Fire:Wind:Earth")])?) == 1 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as("The Anonymous One", args!["6. Which monster", "cannot be a Cute Pet?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Poporing:Roda Frog:Smokie:Poison Spore")],
+                        )?) == 2
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["7. Choose a monster that Fire property Daggers work the best on."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Dagger Goblin:Mace Goblin:Morning Star Goblin:Hammer Goblin")],
+                        )?) == 4
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["8. Choose the non-elemental Katar from the following:"],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from(
+                                "Katar of Raging Blaze:Katar of Dusty Thornbush:Sharpened Legbone of Ghoul:Infiltrator",
+                            )],
+                        )?) == 4
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as("The Anonymous One", args!["9. Which is the uncommon monster?"])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Poring:Mastering:Ghostring:Spore")])?) == 3 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as("The Anonymous One", args!["10. Choose the monster", "that is not Undead."])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Drake:Megalodon:Spore:Khalitzburg")])?) == 3 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                    } else if subject3 == 3 {
+                        ctx.lines_as("The Anonymous One", args!["1. Choose the correct amount of the maximum dodge rate increase from the 'Increase Dodge' skill when at level 10."])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("30:40:160:20")])?) == 1 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["2. Choose a monster which detects hiding/cloaking Thieves and Assassins."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Worm Tail:Andre:Mummy:Soldier Skeleton")],
+                        )?) == 2
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["3. Choose a group of weapons that cannot be used by an Assassin at once."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from(
+                                "Main Gaughe + Gladius:Stiletto + Main Gauche:Katar + Maingauche:Hammer + Stiletto",
+                            )],
+                        )?) == 3
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["4. Choose the town where Thieves can change their jobs."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Lutie:Alberta:Morocc")])?) == 4 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["5. Choose a card that does not affect the AGI stat."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Baphomet Jr. card:Whisper Card:Female Thiefbug card:Male Thiefbug card")],
+                        )?) == 2
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["6. Choose the correct specialty of the Assassin class."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from(
+                                "Excellent singing talent:Excellent reading talent:Excellent dancing talent:Excellent dodge ability",
+                            )],
+                        )?) == 4
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["7. Choose the maximum AGI bonus an Assassin can get at job level 50."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("7:8:9:10")])?) == 4 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as("The Anonymous One", args!["8. Choose the item that an Assassin cannot equip."])?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(ctx, &[Val::from("Dagger:Helm:Boots:Brooch")])?) == 2 {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
+                        }
+                        ctx.lines_as("The Anonymous One", args!["9. Choose the job change item for Thief."])?;
+                        ctx.next()?;
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
-                                    "Katar of Raging Blaze:Katar of Dusty Thornbush:Sharpened Legbone of Ghoul:Infiltrator",
+                                    "Orange Gooey Mushroom:Red Gooey Mushroom:Orange Net Mushroom:Orange Hair Mushroom",
                                 )],
-                            )?) == 4
-                            {
+                            )? {
+                            1 | 3 => {
                                 l_assassin_t = (l_assassin_t.clone() + Val::from(10));
                             }
-                            ctx.lines_as("The Anonymous One", args!["9. Which is the uncommon monster?"])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Poring:Mastering:Ghostring:Spore")])?) == 3 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["10. Choose the monster", "that is not Undead."])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Drake:Megalodon:Spore:Khalitzburg")])?) == 3 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            break 'b3;
+                            _ => {}
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("The Anonymous One", args!["1. Choose the correct amount of the maximum dodge rate increase from the 'Increase Dodge' skill when at level 10."])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("30:40:160:20")])?) == 1 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["2. Choose a monster which detects hiding/cloaking Thieves and Assassins."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Worm Tail:Andre:Mummy:Soldier Skeleton")],
-                            )?) == 2
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["3. Choose a group of weapons that cannot be used by an Assassin at once."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from(
-                                    "Main Gaughe + Gladius:Stiletto + Main Gauche:Katar + Maingauche:Hammer + Stiletto",
-                                )],
-                            )?) == 3
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["4. Choose the town where Thieves can change their jobs."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Prontera:Lutie:Alberta:Morocc")])?) == 4 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["5. Choose a card that does not affect the AGI stat."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Baphomet Jr. card:Whisper Card:Female Thiefbug card:Male Thiefbug card")],
-                            )?) == 2
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["6. Choose the correct specialty of the Assassin class."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from(
-                                    "Excellent singing talent:Excellent reading talent:Excellent dancing talent:Excellent dodge ability",
-                                )],
-                            )?) == 4
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["7. Choose the maximum AGI bonus an Assassin can get at job level 50."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("7:8:9:10")])?) == 4 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["8. Choose the item that an Assassin cannot equip."])?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(ctx, &[Val::from("Dagger:Helm:Boots:Brooch")])?) == 2 {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            ctx.lines_as("The Anonymous One", args!["9. Choose the job change item for Thief."])?;
-                            ctx.next()?;
-                            'b4: {
-                                let subject4 = Val::from(runtime::select_values(
-                                    ctx,
-                                    &[Val::from(
-                                        "Orange Gooey Mushroom:Red Gooey Mushroom:Orange Net Mushroom:Orange Hair Mushroom",
-                                    )],
-                                )?);
-                                let mut matched4 = false;
-                                let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(3));
-                                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                    matched4 = true;
-                                }
-                                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                                    break 'b4;
-                                }
-                                if !matched4 && no_case4 {
-                                    matched4 = true;
-                                }
-                                if matched4 {
-                                    break 'b4;
-                                }
-                            }
-                            ctx.lines_as(
-                                "The Anonymous One",
-                                args!["10. Choose a card that would typically benefit an Assassin the least."],
-                            )?;
-                            ctx.next()?;
-                            if Val::from(runtime::select_values(
-                                ctx,
-                                &[Val::from("Whisper card:Elder Willow card:Soldier Skeleton card:Cobold card")],
-                            )?) == 2
-                            {
-                                l_assassin_t = (l_assassin_t.clone() + Val::from(10));
-                            }
-                            break 'b3;
+                        ctx.lines_as(
+                            "The Anonymous One",
+                            args!["10. Choose a card that would typically benefit an Assassin the least."],
+                        )?;
+                        ctx.next()?;
+                        if Val::from(runtime::select_values(
+                            ctx,
+                            &[Val::from("Whisper card:Elder Willow card:Soldier Skeleton card:Cobold card")],
+                        )?) == 2
+                        {
+                            l_assassin_t = (l_assassin_t.clone() + Val::from(10));
                         }
                     }
                     if ctx.var("assin_q2").get()? == 3 {
@@ -2666,25 +2570,16 @@ fn thomas_asntest_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("I'm gonna try it again!:I... I quit!")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as("Thomas", args!["Hmm. Well, okay.", "Good luck out there."])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Thomas",
                     args![
@@ -2714,6 +2609,7 @@ fn thomas_asntest_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::DoNpcEvent, vec![Val::from("Standby Room#ASNTEST::OnStart")])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     ctx.lines_as(
@@ -3277,19 +3173,11 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
             args!["First off, what do you think is the priority of an Assassin?"],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("More power.:An Assassin's pride.:Endless practice.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Guildmaster",
                     args![
@@ -3304,19 +3192,11 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 ctx.next()?;
                 ctx.lines_as("Guildmaster", args!["Why do you want", "to be stronger", "than you are now?"])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Revenge...!:Money~:I want to travel.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Guildmaster",
                             args![
@@ -3329,12 +3209,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                         ctx.next()?;
                         ctx.lines_as("Guildmaster", args!["Being an Assassin means", "to abandon the ego."])?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.var("assin_q").set(Val::from(9))?;
                         ctx.lines_as("Guildmaster", args!["Financial reasons...? I won't deny that we all need money to live. But being Assassin means living for a higher purpose."])?;
                         ctx.next()?;
@@ -3343,12 +3219,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             args!["Being an Assassin means", "to abandon such worldly", "attachments..."],
                         )?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.var("assin_q").set(Val::from(10))?;
                         ctx.lines_as(
                             "Guildmaster",
@@ -3365,15 +3237,11 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             args!["In a way, being an Assassin is to live life in loneliness..."],
                         )?;
                         ctx.next()?;
-                        break 'b2;
                     }
+                    _ => {}
                 }
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Guildmaster",
                     args!["An Assassin's pride...", "Did other Assassins tell you that...?"],
@@ -3391,21 +3259,13 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                 ctx.next()?;
                 ctx.lines_as("Guildmaster", args!["I can understand why their pride and dignity would be so important to them. Now, for what reason do you wish to become an Assassin?"])?;
                 ctx.next()?;
-                'b3: {
-                    let subject3 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "I like the solitude.:Making money being an Assassin.:They just look interesting.",
                         )],
-                    )?);
-                    let mut matched3 = false;
-                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                        && !subject3.loosely_equals(&Val::from(2))
-                        && !subject3.loosely_equals(&Val::from(3));
-                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    )? {
+                    1 => {
                         ctx.var("assin_q").set(Val::from(11))?;
                         ctx.lines_as(
                             "Guildmaster",
@@ -3422,21 +3282,13 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                         ctx.next()?;
                         ctx.lines_as("Guildmaster", args!["But, as I told you before, we have comrades. I recommend having at least one comrade to back up you when you're on a mission."])?;
                         ctx.next()?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    2 => {
                         ctx.var("assin_q").set(Val::from(12))?;
                         ctx.lines_as("Guildmaster", args!["Well, I can't deny it, we do need money to make a living. But don't you think we should pursue something even more important than money?"])?;
                         ctx.next()?;
-                        break 'b3;
                     }
-                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                        matched3 = true;
-                    }
-                    if matched3 {
+                    3 => {
                         ctx.var("assin_q").set(Val::from(13))?;
                         ctx.lines_as(
                             "Guildmaster",
@@ -3456,15 +3308,11 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b3;
                     }
+                    _ => {}
                 }
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as(
                     "Guildmaster",
                     args![
@@ -3481,19 +3329,11 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     ],
                 )?;
                 ctx.next()?;
-                'b4: {
-                    let subject4 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("To broaden my skills.:It's a goal of mine.:For spiritual improvement.")],
-                    )?);
-                    let mut matched4 = false;
-                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                        && !subject4.loosely_equals(&Val::from(2))
-                        && !subject4.loosely_equals(&Val::from(3));
-                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    )? {
+                    1 => {
                         ctx.var("assin_q").set(Val::from(14))?;
                         ctx.lines_as("Guildmaster", args!["Learning skills comes naturally with the Assassin job. But don't think of skills as the best value of your training."])?;
                         ctx.next()?;
@@ -3502,12 +3342,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             args!["You won't be satisfied in becoming an Assassin if you think this..."],
                         )?;
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    2 => {
                         ctx.var("assin_q").set(Val::from(15))?;
                         ctx.lines_as(
                             "Guildmaster",
@@ -3525,12 +3361,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             "I'm a bit worried about you. I hope you realize that once you become an Assassin, there's no turning back...",
                         )?;
                         ctx.next()?;
-                        break 'b4;
                     }
-                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                        matched4 = true;
-                    }
-                    if matched4 {
+                    3 => {
                         ctx.var("assin_q").set(Val::from(16))?;
                         ctx.lines_as("Guildmaster", args!["Good idea...", "That is a good way to improve yourself. I've seen many people who know how to be strong physically but not in their mental state."])?;
                         ctx.next()?;
@@ -3539,11 +3371,11 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             args!["I hope you're not a hypocrite. Spiritual discipline is the best way for you to survive."],
                         )?;
                         ctx.next()?;
-                        break 'b4;
                     }
+                    _ => {}
                 }
-                break 'b1;
             }
+            _ => {}
         }
         ctx.lines_as(
             "Guildmaster",
@@ -3567,38 +3399,22 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
             args!["So if you could become an Assassin right now, what is the first thing you would do?"],
         )?;
         ctx.next()?;
-        'b5: {
-            let subject5 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from(
                     "I would go hunt right away.:There are people waiting for me.:Check how I can help as an Assassin.",
                 )],
-            )?);
-            let mut matched5 = false;
-            let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                && !subject5.loosely_equals(&Val::from(2))
-                && !subject5.loosely_equals(&Val::from(3));
-            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                matched5 = true;
-            }
-            if matched5 {
+            )? {
+            1 => {
                 ctx.lines_as("Guildmaster", args!["Hunt...", "Is that all...?"])?;
                 ctx.next()?;
-                'b6: {
-                    let subject6 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "I would level up fast.:I want to explore my Assassin skills.:I will go where I couldn't go as a Thief.",
                         )],
-                    )?);
-                    let mut matched6 = false;
-                    let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                        && !subject6.loosely_equals(&Val::from(2))
-                        && !subject6.loosely_equals(&Val::from(3));
-                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    )? {
+                    1 => {
                         l_assassin_sangdam = (l_assassin_sangdam.clone() + Val::from(10));
                         ctx.lines_as(
                             "Guildmaster",
@@ -3608,12 +3424,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             ],
                         )?;
                         ctx.next()?;
-                        break 'b6;
                     }
-                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    2 => {
                         l_assassin_sangdam = (l_assassin_sangdam.clone() + Val::from(5));
                         ctx.lines_as("Guildmaster", args!["It is good for one to examine oneself. I can understand that you will be excited by the great change in your ability."])?;
                         ctx.next()?;
@@ -3622,12 +3434,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             args!["In the meantime, I hope you won't forget the Assassin mentality."],
                         )?;
                         ctx.next()?;
-                        break 'b6;
                     }
-                    if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                        matched6 = true;
-                    }
-                    if matched6 {
+                    3 => {
                         ctx.lines_as("Guildmaster", args!["Very well...", "Exploring places you've never seen before. But know that being an Assassin never makes you a different person."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -3635,42 +3443,26 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             args!["Don't force yourself too much.", "Take your time and travel wisely."],
                         )?;
                         ctx.next()?;
-                        break 'b6;
                     }
+                    _ => {}
                 }
-                break 'b5;
             }
-            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                matched5 = true;
-            }
-            if matched5 {
+            2 => {
                 ctx.lines_as("Guildmaster", args!["Who is waiting", "for you, might I ask?"])?;
                 ctx.next()?;
-                'b7: {
-                    let subject7 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("My friends.:My Guildsmen.:My lover.")],
-                    )?);
-                    let mut matched7 = false;
-                    let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                        && !subject7.loosely_equals(&Val::from(2))
-                        && !subject7.loosely_equals(&Val::from(3));
-                    if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    )? {
+                    1 => {
                         l_assassin_sangdam = (l_assassin_sangdam.clone() + Val::from(5));
                         ctx.lines_as(
                             "Guildmaster",
                             args!["I see...", "Appreciate them for caring about you, even when you're alone."],
                         )?;
                         ctx.next()?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    2 => {
                         l_assassin_sangdam = (l_assassin_sangdam.clone() + Val::from(5));
                         ctx.lines_as("Guildmaster", args!["Great...", "Comrades for whom you would die for..."])?;
                         ctx.next()?;
@@ -3679,12 +3471,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             args!["As an Assassin, find a job that you can do for them without them knowing.."],
                         )?;
                         ctx.next()?;
-                        break 'b7;
                     }
-                    if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                        matched7 = true;
-                    }
-                    if matched7 {
+                    3 => {
                         ctx.lines_as(
                             "Guildmaster",
                             args![
@@ -3701,35 +3489,23 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                         ctx.next()?;
                         ctx.lines_as("Guildmaster", args!["Love your beloved forever, even if you can't openly express it. Sometimes, life doesn't allow you to find true love more than once."])?;
                         ctx.next()?;
-                        break 'b7;
                     }
+                    _ => {}
                 }
-                break 'b5;
             }
-            if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                matched5 = true;
-            }
-            if matched5 {
+            3 => {
                 ctx.lines_as(
                     "Guildmaster",
                     args!["That's most admirable. Is there anything that you would like to ask me about?"],
                 )?;
                 ctx.next()?;
-                'b8: {
-                    let subject8 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from(
                             "Places where Assassins can level up...:Main goals as an Assassin.:Financial consulting.",
                         )],
-                    )?);
-                    let mut matched8 = false;
-                    let no_case8 = !subject8.loosely_equals(&Val::from(1))
-                        && !subject8.loosely_equals(&Val::from(2))
-                        && !subject8.loosely_equals(&Val::from(3));
-                    if !matched8 && subject8.loosely_equals(&Val::from(1)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    )? {
+                    1 => {
                         l_assassin_sangdam = (l_assassin_sangdam.clone() + Val::from(5));
                         ctx.lines_as(
                             "Guildmaster",
@@ -3738,12 +3514,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                         ctx.next()?;
                         ctx.lines_as("Guildmaster", args!["You must know how to", "survive in any situation."])?;
                         ctx.next()?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    2 => {
                         ctx.lines_as(
                             "Guildmaster",
                             args!["There are many Assassins out there. Look to them as your trainers, and ask for their opinions."],
@@ -3751,12 +3523,8 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                         ctx.next()?;
                         ctx.lines_as("Guildmaster", args!["I hope you will become an excellent Assassin. And when you reach a certain level, you must guide newbies as your trainers have."])?;
                         ctx.next()?;
-                        break 'b8;
                     }
-                    if !matched8 && subject8.loosely_equals(&Val::from(3)) {
-                        matched8 = true;
-                    }
-                    if matched8 {
+                    3 => {
                         l_assassin_sangdam = (l_assassin_sangdam.clone() + Val::from(10));
                         ctx.lines_as(
                             "Guildmaster",
@@ -3768,11 +3536,11 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                             args!["People of that nature are unwelcome. If such is your goal, you may wish to reconsider your job..."],
                         )?;
                         ctx.next()?;
-                        break 'b8;
                     }
+                    _ => {}
                 }
-                break 'b5;
             }
+            _ => {}
         }
         ctx.lines_as(
             "Guildmaster",
@@ -3870,254 +3638,136 @@ fn guildmaster_asn2_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
             ],
         )?;
         ctx.next()?;
-        'b9: {
-            let subject9 = ctx.var("assin_q").get()?;
-            let mut matched9 = false;
-            let no_case9 = !subject9.loosely_equals(&Val::from(8))
-                && !subject9.loosely_equals(&Val::from(9))
-                && !subject9.loosely_equals(&Val::from(10))
-                && !subject9.loosely_equals(&Val::from(11))
-                && !subject9.loosely_equals(&Val::from(12))
-                && !subject9.loosely_equals(&Val::from(13))
-                && !subject9.loosely_equals(&Val::from(14))
-                && !subject9.loosely_equals(&Val::from(15))
-                && !subject9.loosely_equals(&Val::from(16));
-            if !matched9 && subject9.loosely_equals(&Val::from(8)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["Even though you're driven by personal revenge, I hope it will go away as you train..."],
-                )?;
-                ctx.next()?;
-                break 'b9;
-            }
-            if !matched9 && subject9.loosely_equals(&Val::from(9)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["Even though your main concern for now is being a rich, I'm sure you'll pursue something even greater..."],
-                )?;
-                ctx.next()?;
-                break 'b9;
-            }
-            if !matched9 && subject9.loosely_equals(&Val::from(10)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["Eager to travel all around the world, I hope your real identity is found in your journeys..."],
-                )?;
-                ctx.next()?;
-                break 'b9;
-            }
-            if !matched9 && subject9.loosely_equals(&Val::from(11)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as(
-                    "Guildmaster",
-                    args![
-                        "You seem to know a lot about Assassins. I don't think frustration from being alone will be difficult for you..."
-                    ],
-                )?;
-                ctx.next()?;
-                break 'b9;
-            }
-            if !matched9 && subject9.loosely_equals(&Val::from(12)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["You have an idiocy about money, but I believe that you should be able to overcome it."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["Although I do not trust you for now, I will give you a chance..."],
-                )?;
-                ctx.next()?;
-                break 'b9;
-            }
-            if !matched9 && subject9.loosely_equals(&Val::from(13)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as("Guildmaster", args!["Even though you're enamored with Assassins superficially, I believe you will realize the real value of the Assassin job sooner or later."])?;
-                ctx.next()?;
-                break 'b9;
-            }
-            if !matched9 && subject9.loosely_equals(&Val::from(14)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as("Guildmaster", args!["One of the rare people who seeks better skills, I hope you will realize the importance of spiritual discipline sooner or later."])?;
-                ctx.next()?;
-                break 'b9;
-            }
-            if !matched9 && subject9.loosely_equals(&Val::from(15)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["Sooner or later, you will find a new goal to which you can devote yourself..."],
-                )?;
-                ctx.next()?;
-                break 'b9;
-            }
-            if !matched9 && subject9.loosely_equals(&Val::from(16)) {
-                matched9 = true;
-            }
-            if matched9 {
-                ctx.lines_as(
-                    "Guildmaster",
-                    args![
-                        "I know some people care only about their physical training, but",
-                        "I believe you stand out amongst them..."
-                    ],
-                )?;
-                ctx.next()?;
-            }
+        let subject9 = ctx.var("assin_q").get()?;
+        if subject9 == 8 {
+            ctx.lines_as(
+                "Guildmaster",
+                args!["Even though you're driven by personal revenge, I hope it will go away as you train..."],
+            )?;
+            ctx.next()?;
+        } else if subject9 == 9 {
+            ctx.lines_as(
+                "Guildmaster",
+                args!["Even though your main concern for now is being a rich, I'm sure you'll pursue something even greater..."],
+            )?;
+            ctx.next()?;
+        } else if subject9 == 10 {
+            ctx.lines_as(
+                "Guildmaster",
+                args!["Eager to travel all around the world, I hope your real identity is found in your journeys..."],
+            )?;
+            ctx.next()?;
+        } else if subject9 == 11 {
+            ctx.lines_as(
+                "Guildmaster",
+                args![
+                    "You seem to know a lot about Assassins. I don't think frustration from being alone will be difficult for you..."
+                ],
+            )?;
+            ctx.next()?;
+        } else if subject9 == 12 {
+            ctx.lines_as(
+                "Guildmaster",
+                args!["You have an idiocy about money, but I believe that you should be able to overcome it."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Guildmaster",
+                args!["Although I do not trust you for now, I will give you a chance..."],
+            )?;
+            ctx.next()?;
+        } else if subject9 == 13 {
+            ctx.lines_as("Guildmaster", args!["Even though you're enamored with Assassins superficially, I believe you will realize the real value of the Assassin job sooner or later."])?;
+            ctx.next()?;
+        } else if subject9 == 14 {
+            ctx.lines_as("Guildmaster", args!["One of the rare people who seeks better skills, I hope you will realize the importance of spiritual discipline sooner or later."])?;
+            ctx.next()?;
+        } else if subject9 == 15 {
+            ctx.lines_as(
+                "Guildmaster",
+                args!["Sooner or later, you will find a new goal to which you can devote yourself..."],
+            )?;
+            ctx.next()?;
+        } else if subject9 == 16 {
+            ctx.lines_as(
+                "Guildmaster",
+                args![
+                    "I know some people care only about their physical training, but",
+                    "I believe you stand out amongst them..."
+                ],
+            )?;
+            ctx.next()?;
         }
-        'b10: {
-            let subject10 = ctx.var("assin_q3").get()?;
-            let mut matched10 = false;
-            let no_case10 = !subject10.loosely_equals(&Val::from(1)) && !subject10.loosely_equals(&Val::from(2));
-            if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                matched10 = true;
-            }
-            if matched10 {
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["Well, I've said too much. Please choose a weapon as a present."],
-                )?;
-                ctx.next()?;
-                ctx.lines_as(
-                    "Guildmaster",
-                    args!["You can choose a Jur, Katar, Main Gauche, or a Gladius. As a master, I love them all."],
-                )?;
-                ctx.next()?;
-                'b11: {
-                    let subject11 = Val::from(runtime::select_values(ctx, &[Val::from("Jur:Katar:Main Gauche:Gladius")])?);
-                    let mut matched11 = false;
-                    let no_case11 = !subject11.loosely_equals(&Val::from(1))
-                        && !subject11.loosely_equals(&Val::from(2))
-                        && !subject11.loosely_equals(&Val::from(3))
-                        && !subject11.loosely_equals(&Val::from(4));
-                    if !matched11 && subject11.loosely_equals(&Val::from(1)) {
-                        matched11 = true;
-                    }
-                    if matched11 {
-                        ctx.lines_as(
-                            "Guildmaster",
-                            args!["A Jur...", "Good choice. There you are. I hope it will serve you well."],
-                        )?;
-                        ctx.call(Function::GetItem, vec![Val::from(1251), Val::from(1)])?;
-                        break 'b11;
-                    }
-                    if !matched11 && subject11.loosely_equals(&Val::from(2)) {
-                        matched11 = true;
-                    }
-                    if matched11 {
-                        ctx.lines_as(
-                            "Guildmaster",
-                            args![
-                                "A Katar...",
-                                "Here you are.",
-                                "Although it's used,",
-                                "I know it will",
-                                "serve you well."
-                            ],
-                        )?;
-                        ctx.call(Function::GetItem, vec![Val::from(1253), Val::from(1)])?;
-                        break 'b11;
-                    }
-                    if !matched11 && subject11.loosely_equals(&Val::from(3)) {
-                        matched11 = true;
-                    }
-                    if matched11 {
-                        ctx.lines_as(
-                            "Guildmaster",
-                            args!["I see. You want to use both hands. Here, take your Main Gauche."],
-                        )?;
-                        ctx.call(Function::GetItem, vec![Val::from(1208), Val::from(1)])?;
-                        break 'b11;
-                    }
-                    if !matched11 && subject11.loosely_equals(&Val::from(4)) {
-                        matched11 = true;
-                    }
-                    if matched11 {
-                        ctx.lines_as(
-                            "Guildmaster",
-                            args![
-                                "A Gladius...",
-                                "It used to rule over the Assassin weapon market. Please take care of my gladius."
-                            ],
-                        )?;
-                        ctx.call(Function::GetItem, vec![Val::from(1220), Val::from(1)])?;
-                    }
+        let subject10 = ctx.var("assin_q3").get()?;
+        if subject10 == 1 {
+            ctx.lines_as(
+                "Guildmaster",
+                args!["Well, I've said too much. Please choose a weapon as a present."],
+            )?;
+            ctx.next()?;
+            ctx.lines_as(
+                "Guildmaster",
+                args!["You can choose a Jur, Katar, Main Gauche, or a Gladius. As a master, I love them all."],
+            )?;
+            ctx.next()?;
+            match runtime::select_values(ctx, &[Val::from("Jur:Katar:Main Gauche:Gladius")])? {
+                1 => {
+                    ctx.lines_as(
+                        "Guildmaster",
+                        args!["A Jur...", "Good choice. There you are. I hope it will serve you well."],
+                    )?;
+                    ctx.call(Function::GetItem, vec![Val::from(1251), Val::from(1)])?;
                 }
-                ctx.var("assin_q3").set(Val::from(3))?;
-                ctx.next()?;
-                break 'b10;
-            }
-            if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                matched10 = true;
-            }
-            if matched10 {
-                ctx.lines_as("Guildmaster", args!["Well, I talked too much.", "Please take this first."])?;
-                ctx.next()?;
-                'b12: {
-                    let subject12 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
-                    let mut matched12 = false;
-                    let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                        && !subject12.loosely_equals(&Val::from(2))
-                        && !subject12.loosely_equals(&Val::from(3))
-                        && !subject12.loosely_equals(&Val::from(4))
-                        && !subject12.loosely_equals(&Val::from(5));
-                    if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                        matched12 = true;
-                    }
-                    if matched12 {
-                        ctx.call(Function::GetItem, vec![Val::from(1207), Val::from(1)])?;
-                        break 'b12;
-                    }
-                    if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                        matched12 = true;
-                    }
-                    if matched12 {
-                        ctx.call(Function::GetItem, vec![Val::from(1250), Val::from(1)])?;
-                        break 'b12;
-                    }
-                    if !matched12 && subject12.loosely_equals(&Val::from(3)) {
-                        matched12 = true;
-                    }
-                    if matched12 {
-                        ctx.call(Function::GetItem, vec![Val::from(1216), Val::from(1)])?;
-                        break 'b12;
-                    }
-                    if !matched12 && subject12.loosely_equals(&Val::from(4)) {
-                        matched12 = true;
-                    }
-                    if matched12 {
-                        ctx.call(Function::GetItem, vec![Val::from(1201), Val::from(1)])?;
-                        break 'b12;
-                    }
-                    if !matched12 && subject12.loosely_equals(&Val::from(5)) {
-                        matched12 = true;
-                    }
-                    if matched12 {
-                        ctx.call(Function::GetItem, vec![Val::from(1252), Val::from(1)])?;
-                    }
+                2 => {
+                    ctx.lines_as(
+                        "Guildmaster",
+                        args![
+                            "A Katar...",
+                            "Here you are.",
+                            "Although it's used,",
+                            "I know it will",
+                            "serve you well."
+                        ],
+                    )?;
+                    ctx.call(Function::GetItem, vec![Val::from(1253), Val::from(1)])?;
                 }
-                ctx.var("assin_q3").set(Val::from(3))?;
+                3 => {
+                    ctx.lines_as(
+                        "Guildmaster",
+                        args!["I see. You want to use both hands. Here, take your Main Gauche."],
+                    )?;
+                    ctx.call(Function::GetItem, vec![Val::from(1208), Val::from(1)])?;
+                }
+                4 => {
+                    ctx.lines_as(
+                        "Guildmaster",
+                        args![
+                            "A Gladius...",
+                            "It used to rule over the Assassin weapon market. Please take care of my gladius."
+                        ],
+                    )?;
+                    ctx.call(Function::GetItem, vec![Val::from(1220), Val::from(1)])?;
+                }
+                _ => {}
             }
+            ctx.var("assin_q3").set(Val::from(3))?;
+            ctx.next()?;
+        } else if subject10 == 2 {
+            ctx.lines_as("Guildmaster", args!["Well, I talked too much.", "Please take this first."])?;
+            ctx.next()?;
+            let subject12 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(5)])?;
+            if subject12 == 1 {
+                ctx.call(Function::GetItem, vec![Val::from(1207), Val::from(1)])?;
+            } else if subject12 == 2 {
+                ctx.call(Function::GetItem, vec![Val::from(1250), Val::from(1)])?;
+            } else if subject12 == 3 {
+                ctx.call(Function::GetItem, vec![Val::from(1216), Val::from(1)])?;
+            } else if subject12 == 4 {
+                ctx.call(Function::GetItem, vec![Val::from(1201), Val::from(1)])?;
+            } else if subject12 == 5 {
+                ctx.call(Function::GetItem, vec![Val::from(1252), Val::from(1)])?;
+            }
+            ctx.var("assin_q3").set(Val::from(3))?;
         }
         ctx.lines_as(
             "Guildmaster",

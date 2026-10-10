@@ -2477,21 +2477,13 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
                                                 ],
                                             )?;
                                             ctx.next()?;
-                                            'b1: {
-                                                let subject1 = Val::from(runtime::select_values(
+                                            match runtime::select_values(
                                                     ctx,
                                                     &[Val::from(
                                                         "Look around.:Go back to the mainland.:Venture into the unknown.",
                                                     )],
-                                                )?);
-                                                let mut matched1 = false;
-                                                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                                    && !subject1.loosely_equals(&Val::from(2))
-                                                    && !subject1.loosely_equals(&Val::from(3));
-                                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                                    matched1 = true;
-                                                }
-                                                if matched1 {
+                                                )? {
+                                                1 => {
                                                     ctx.lines_as(
                                                         "Aged Stranger",
                                                         args![
@@ -2502,10 +2494,7 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
                                                 }
-                                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                                    matched1 = true;
-                                                }
-                                                if matched1 {
+                                                2 => {
                                                     ctx.lines_as("Aged Stranger", args!["I see. If so, let's go."])?;
                                                     ctx.next()?;
                                                     aged_stranger_npc_run(ctx, AgedStrangerNpcStep::SAS3, vec![])?;
@@ -2516,10 +2505,7 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
                                                     )?;
                                                     return Err(Stop::End);
                                                 }
-                                                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                                    matched1 = true;
-                                                }
-                                                if matched1 {
+                                                3 => {
                                                     ctx.lines_as(
                                                         "Aged Stranger",
                                                         args![
@@ -2569,6 +2555,7 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
                                                     )?;
                                                     return Err(Stop::End);
                                                 }
+                                                _ => {}
                                             }
                                         }
                                     }
@@ -2683,8 +2670,7 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
             AgedStrangerNpcStep::SAS2 => {
                 ctx.lines_as("Aged Stranger", args!["So, what will you do now?"])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[((Val::from("How would I get back here?:")
                             + (if runtime::arg(&args, 0, Val::from(0)).is_true() {
@@ -2693,15 +2679,8 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
                                 Val::from("")
                             }))
                             + Val::from(":Go back to the mainland."))],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Aged Stranger",
                             args![
@@ -2744,10 +2723,7 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "Aged Stranger",
                             args![
@@ -2782,10 +2758,7 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as("Aged Stranger", args!["I see. Okay, let's go."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -2831,6 +2804,7 @@ fn aged_stranger_npc_run(ctx: &Ctx, mut step: AgedStrangerNpcStep, args: Vec<Val
                         ctx.call(Function::Warp, vec![Val::from("moscovia"), Val::from(162), Val::from(56)])?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
                 step = AgedStrangerNpcStep::SAS3;
                 continue 'machine;
@@ -4183,64 +4157,40 @@ fn baehideun_main_run(ctx: &Ctx, mut step: BaehideunMainStep, args: Vec<Val>) ->
                 ctx.call(Function::EnableNpc, vec![])?;
                 l_c = runtime::charat(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from(9))?;
                 {
-                    'b1: {
-                        let subject1 = l_c.clone();
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3))
-                            && !subject1.loosely_equals(&Val::from(4));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_m, &Val::from(base + 0), Val::from(89), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 1), Val::from(112), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 2), Val::from(1425), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 3), Val::from(85), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 4), Val::from(110), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 5), Val::from(1425), false);
-                            break 'b1;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_m, &Val::from(base + 0), Val::from(89), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 1), Val::from(112), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 2), Val::from(1425), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 3), Val::from(80), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 4), Val::from(110), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 5), Val::from(1426), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 6), Val::from(83), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 7), Val::from(114), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 8), Val::from(1426), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 9), Val::from(85), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 10), Val::from(110), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 11), Val::from(1425), false);
-                            break 'b1;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
-                            let base = Val::from(0).number()?;
-                            runtime::local_set(&mut l_m, &Val::from(base + 0), Val::from(85), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 1), Val::from(111), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 2), Val::from(1451), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 3), Val::from(89), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 4), Val::from(112), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 5), Val::from(1543), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 6), Val::from(90), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 7), Val::from(106), false);
-                            runtime::local_set(&mut l_m, &Val::from(base + 8), Val::from(1543), false);
-                            break 'b1;
-                        }
+                    let subject1 = l_c.clone();
+                    if subject1 == 1 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_m, &Val::from(base + 0), Val::from(89), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 1), Val::from(112), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 2), Val::from(1425), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 3), Val::from(85), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 4), Val::from(110), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 5), Val::from(1425), false);
+                    } else if subject1 == 2 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_m, &Val::from(base + 0), Val::from(89), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 1), Val::from(112), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 2), Val::from(1425), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 3), Val::from(80), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 4), Val::from(110), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 5), Val::from(1426), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 6), Val::from(83), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 7), Val::from(114), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 8), Val::from(1426), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 9), Val::from(85), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 10), Val::from(110), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 11), Val::from(1425), false);
+                    } else if subject1 == 3 || subject1 == 4 {
+                        let base = Val::from(0).number()?;
+                        runtime::local_set(&mut l_m, &Val::from(base + 0), Val::from(85), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 1), Val::from(111), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 2), Val::from(1451), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 3), Val::from(89), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 4), Val::from(112), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 5), Val::from(1543), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 6), Val::from(90), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 7), Val::from(106), false);
+                        runtime::local_set(&mut l_m, &Val::from(base + 8), Val::from(1543), false);
                     }
                 }
                 l_i = Val::from(0);
@@ -4301,36 +4251,11 @@ fn baehideun_main_run(ctx: &Ctx, mut step: BaehideunMainStep, args: Vec<Val>) ->
                         args!["Now that all the monsters are gone,", "we can start sailing again", "normally."],
                     )?;
                     l_c = runtime::charat(&ctx.call(Function::StrNpcInfo, vec![Val::from(0)])?, &Val::from(9))?;
-                    'b3: {
-                        let subject3 = l_c.clone();
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3))
-                            && !subject3.loosely_equals(&Val::from(4));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.var("mos_whale_edq").set(Val::from(11))?;
-                            break 'b3;
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.var("mos_whale_edq").set(Val::from(26))?;
-                            break 'b3;
-                        }
+                    let subject3 = l_c.clone();
+                    if subject3 == 1 || subject3 == 2 {} else if subject3 == 3 {
+                        ctx.var("mos_whale_edq").set(Val::from(11))?;
+                    } else if subject3 == 4 {
+                        ctx.var("mos_whale_edq").set(Val::from(26))?;
                     }
                     ctx.call(
                         Function::DoNpcEvent,
@@ -4496,23 +4421,13 @@ fn anna_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         break 'l1;
                     }
                     'b1: {
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "About where Mikhail might be hiding:About their relationship:About the situation:Ask her about other things:End the conversation",
                                 )],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3))
-                                && !subject2.loosely_equals(&Val::from(4))
-                                && !subject2.loosely_equals(&Val::from(5));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["Where is Mikhail?", "Do you know where he is?"],
@@ -4532,12 +4447,8 @@ fn anna_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["Hahaha, you're right."],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["How's your relationship with your brother?"],
@@ -4557,12 +4468,8 @@ fn anna_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["You seem very courageous.", "I can understand why your mother worries about him."],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            3 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["What were you doing when Mikhail broke your mother's Matrushka?"],
@@ -4641,12 +4548,8 @@ fn anna_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.var("mos_swan").set(Val::from(3))?;
                                     ctx.call(Function::ChangeQuest, vec![Val::from(18060), Val::from(18061)])?;
                                 }
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            4 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["What am I going to ask her?"],
@@ -4678,12 +4581,8 @@ fn anna_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 } else {
                                     ctx.lines_as("Anna", args!["I have no idea about that thing."])?;
                                 }
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            5 => {
                                 ctx.lines_as("Anna", args!["Hmm ~ ~ ~ ~ "])?;
                                 ctx.next()?;
                                 ctx.lines(args![
@@ -4693,6 +4592,7 @@ fn anna_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                         ctx.next()?;
                     }
@@ -4827,21 +4727,13 @@ fn fire_pot_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.next()?;
             ctx.mes("- As you look it over very carefully, you find some pieces of bread on the floor around the fire pot! -")?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Mikhail is in the fire pot.:Mikhail is around the fire pot.:There's nothing between pieces of bread and Mikhail.",
                     )],
-                )?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                )? {
+                1 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["I finally found him."],
@@ -4952,22 +4844,17 @@ fn fire_pot_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.mes("- I guess he's near the fire pot. Where can I find him? -")?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                3 => {
                     ctx.mes("- I guess pieces of bread have nothing to do with Mikhail. -")?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else if ctx.var("mos_swan").get()? == 12 {
             ctx.mes("- Ok, what I have to do first is ask Mr. Victor what I need for the paste. -")?;
@@ -5087,27 +4974,15 @@ fn landlord_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 break 'l1;
             }
             'b1: {
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Ask her about the inn:Ask her about Mikhail.:End the conversation")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Landlord", args!["The name of our inn came from a big apple tree which is outside of the village.", "I hope our inn will be the most famous place in Moscovia like the apple tree that distinguishes itself in the thick wood."])?;
                         ctx.next()?;
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "Landlord",
                             args![
@@ -5186,10 +5061,7 @@ fn landlord_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as("Landlord", args!["When you need to take a rest, where will you go?"])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -5202,12 +5074,13 @@ fn landlord_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
         }
     }
     'b3: {
-        let subject3 = Val::from(runtime::select_values(
+        match runtime::select_values(
             ctx,
             &[
                 Val::from("Save"),
@@ -5218,143 +5091,132 @@ fn landlord_mos_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     Val::from("")
                 }),
             ],
-        )?);
-        let mut matched3 = false;
-        let no_case3 =
-            !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2)) && !subject3.loosely_equals(&Val::from(3));
-        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-            matched3 = true;
-        }
-        if matched3 {
-            ctx.lines_as(
-                "Landlord",
-                args!["Your respawn point has been saved.", "Hope we can see you again next time hoho."],
-            )?;
-            ctx.call(
-                Function::SavePoint,
-                vec![Val::from("mosk_in"), Val::from(142), Val::from(189), Val::from(1), Val::from(1)],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
-        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-            matched3 = true;
-        }
-        if matched3 {
-            if ctx.var("Zeny").get()?.number()? > 4999 {
-                ctx.mes("[Landlord]")?;
-                if ctx.var("mos_swan").get()? == 3 {
-                    ctx.lines(args![
-                        "Ok, I'll bring you the best room.",
-                        "Please have a rest, young adventurer."
-                    ])?;
-                } else {
-                    ctx.mes("Please be comfortable.")?;
-                }
-                break 'b3;
-            }
-            ctx.lines_as(
-                "Landlord",
-                args![
-                    "The service charge is 5000z.",
-                    "Please make sure you have enough money for the service."
-                ],
-            )?;
-            ctx.close_window()?;
-            return Err(Stop::End);
-        }
-        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-            matched3 = true;
-        }
-        if matched3 {
-            ctx.mes("[Landlord]")?;
-            ctx.call(Function::Emotion, vec![ctx.constant("ET_THROB")?])?;
-            ctx.lines(args![
-                ((Val::from("Oh~! You look great! Look at the ")
-                    + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                        Val::from("solid muscle")
-                    } else {
-                        Val::from("fair skin")
-                    }))
-                    + Val::from("!")),
-                "But you look tired. Is it because of a long journey?"
-            ])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Landlord",
-                args![
-                    (Val::from("We've got a room available just for you. ")
-                        + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                            Val::from("It's the best in town. How about staying the night?")
-                        } else {
-                            Val::from("It's like a princess' room.")
-                        })),
-                    (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
-                        Val::from("I'll charge you at reasonable price for you, handsome guy.")
-                    } else {
-                        Val::from("How about staying the night? I'll mark down the price for you, beautiful lady.")
-                    })
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
-                args![
-                    "Oh, I'm sorry but I didn't come to stay here.",
-                    "I'm looking for a kid and I've got something to ask you..."
-                ],
-            )?;
-            ctx.next()?;
-            ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
-            ctx.lines_as("Landlord", args!["What!?!?"])?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Landlord",
-                args![
-                    "Hey~ You've heard about 'give and take'?",
-                    "Haven't you?",
-                    "If you're my customer, I could offer you what you want but you're not!"
-                ],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Landlord",
-                args!["If you promise me to stay overnight, I'll tell you about what you want to know. Deal?"],
-            )?;
-            ctx.next()?;
-            if Val::from(runtime::select_values(
-                ctx,
-                &[Val::from("Refuse.:Stay overnight and get the info. - 5000z")],
-            )?) == 1
-            {
-                ctx.call(Function::Emotion, vec![ctx.constant("ET_ANGER")?])?;
-                ctx.lines_as("Landlord", args!["Well, get the info by yourself then."])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if ctx.var("Zeny").get()?.number()? < 5000 {
+        )? {
+            1 => {
                 ctx.lines_as(
                     "Landlord",
-                    args!["No way. You don't have enough money.", "Go away! I can't offer you a room."],
+                    args!["Your respawn point has been saved.", "Hope we can see you again next time hoho."],
+                )?;
+                ctx.call(
+                    Function::SavePoint,
+                    vec![Val::from("mosk_in"), Val::from(142), Val::from(189), Val::from(1), Val::from(1)],
                 )?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            ctx.lines_as(
-                "Landlord",
-                args!["Oh, God! You're as great as you look~", "Ok, I'll bring you to the room in a bit!!"],
-            )?;
-            ctx.next()?;
-            ctx.lines_as(
-                "Landlord",
-                args![
-                    "Come on, please follow me with your luggage.",
-                    "Oh, let me carry them. Hohoho, you must be exhausted.",
-                    "I wish you a good night's rest. Hohoho."
-                ],
-            )?;
-            ctx.var("mos_swan").set(Val::from(4))?;
-            break 'b3;
+            2 => {
+                if ctx.var("Zeny").get()?.number()? > 4999 {
+                    ctx.mes("[Landlord]")?;
+                    if ctx.var("mos_swan").get()? == 3 {
+                        ctx.lines(args![
+                            "Ok, I'll bring you the best room.",
+                            "Please have a rest, young adventurer."
+                        ])?;
+                    } else {
+                        ctx.mes("Please be comfortable.")?;
+                    }
+                    break 'b3;
+                }
+                ctx.lines_as(
+                    "Landlord",
+                    args![
+                        "The service charge is 5000z.",
+                        "Please make sure you have enough money for the service."
+                    ],
+                )?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            }
+            3 => {
+                ctx.mes("[Landlord]")?;
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_THROB")?])?;
+                ctx.lines(args![
+                    ((Val::from("Oh~! You look great! Look at the ")
+                        + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                            Val::from("solid muscle")
+                        } else {
+                            Val::from("fair skin")
+                        }))
+                        + Val::from("!")),
+                    "But you look tired. Is it because of a long journey?"
+                ])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Landlord",
+                    args![
+                        (Val::from("We've got a room available just for you. ")
+                            + (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                                Val::from("It's the best in town. How about staying the night?")
+                            } else {
+                                Val::from("It's like a princess' room.")
+                            })),
+                        (if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
+                            Val::from("I'll charge you at reasonable price for you, handsome guy.")
+                        } else {
+                            Val::from("How about staying the night? I'll mark down the price for you, beautiful lady.")
+                        })
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
+                    args![
+                        "Oh, I'm sorry but I didn't come to stay here.",
+                        "I'm looking for a kid and I've got something to ask you..."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.call(Function::Emotion, vec![ctx.constant("ET_HUK")?])?;
+                ctx.lines_as("Landlord", args!["What!?!?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Landlord",
+                    args![
+                        "Hey~ You've heard about 'give and take'?",
+                        "Haven't you?",
+                        "If you're my customer, I could offer you what you want but you're not!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Landlord",
+                    args!["If you promise me to stay overnight, I'll tell you about what you want to know. Deal?"],
+                )?;
+                ctx.next()?;
+                if Val::from(runtime::select_values(
+                    ctx,
+                    &[Val::from("Refuse.:Stay overnight and get the info. - 5000z")],
+                )?) == 1
+                {
+                    ctx.call(Function::Emotion, vec![ctx.constant("ET_ANGER")?])?;
+                    ctx.lines_as("Landlord", args!["Well, get the info by yourself then."])?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                if ctx.var("Zeny").get()?.number()? < 5000 {
+                    ctx.lines_as(
+                        "Landlord",
+                        args!["No way. You don't have enough money.", "Go away! I can't offer you a room."],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                }
+                ctx.lines_as(
+                    "Landlord",
+                    args!["Oh, God! You're as great as you look~", "Ok, I'll bring you to the room in a bit!!"],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Landlord",
+                    args![
+                        "Come on, please follow me with your luggage.",
+                        "Oh, let me carry them. Hohoho, you must be exhausted.",
+                        "I wish you a good night's rest. Hohoho."
+                    ],
+                )?;
+                ctx.var("mos_swan").set(Val::from(4))?;
+            }
+            _ => {}
         }
     }
     ctx.close_window()?;
@@ -6090,19 +5952,11 @@ fn larissa_mos_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.next()?;
                 ctx.lines_as("Larissa", args!["What should I do with the wheat flour?"])?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Turn it down.:Pass it through a sieve.:Press it with your fist.")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Larissa",
                             args![
@@ -6111,27 +5965,19 @@ fn larissa_mos_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 "Look, pass it through a sieve."
                             ],
                         )?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as("Larissa", args!["There you go. Just do it slowly while tapping the sides, sifting the sugar and baking powder through the sieve together."])?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.lines_as(
                             "Larissa",
                             args![
                                 "If we don't have the sieve, we can use our fist but we've got one. So we might as well use it right?"
                             ],
                         )?;
-                        break 'b1;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 ctx.lines_as(
@@ -6193,21 +6039,11 @@ fn larissa_mos_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Caviar:Mushrooms:Honey:Strawberry jam:Sour cream")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4))
-                        && !subject2.loosely_equals(&Val::from(5));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(
                             "Larissa",
                             args![
@@ -6219,12 +6055,8 @@ fn larissa_mos_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         let base = Val::from(0).number()?;
                         runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(591), false);
                         runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(1), false);
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             "Larissa",
                             args!["Ok. you want mushrooms.. It has an earthly flavor.", "Here we go. It's all done!"],
@@ -6232,12 +6064,8 @@ fn larissa_mos_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         let base = Val::from(0).number()?;
                         runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(595), false);
                         runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(1), false);
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         ctx.lines_as(
                             "Larissa",
                             args!["Ok, honey syrup goes perfectly with pancakes.", "Here we go. It's all done!"],
@@ -6245,12 +6073,8 @@ fn larissa_mos_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         let base = Val::from(0).number()?;
                         runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(593), false);
                         runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(1), false);
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.lines_as(
                             "Larissa",
                             args![
@@ -6262,12 +6086,8 @@ fn larissa_mos_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         let base = Val::from(0).number()?;
                         runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(592), false);
                         runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(1), false);
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    5 => {
                         ctx.lines_as(
                             "Larissa",
                             args![
@@ -6279,8 +6099,8 @@ fn larissa_mos_01_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         let base = Val::from(0).number()?;
                         runtime::local_set(&mut l_n, &Val::from(base + 0), Val::from(594), false);
                         runtime::local_set(&mut l_n, &Val::from(base + 1), Val::from(1), false);
-                        break 'b2;
                     }
+                    _ => {}
                 }
                 let base = Val::from(0).number()?;
                 runtime::local_set(&mut l_di, &Val::from(base + 0), Val::from(7031), false);
@@ -6483,19 +6303,11 @@ fn big_squirrel_mos_run(ctx: &Ctx, mut step: BigSquirrelMosStep, args: Vec<Val>)
                 ctx.mes("- When the animal comes across you, it starts to sniffle and purse up its lips. -")?;
                 ctx.next()?;
                 if ctx.call(Function::CountItem, vec![Val::from(1026)])?.number()? > 19 {
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Give acorns to it.:Ignore it.:Ask about the squirrel.")],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.mes("- You take one of acorns out and hold it out to the squirrel. -")?;
                             ctx.next()?;
                             ctx.mes("- It cocked it's ears up and begins to nibble the acorn quickly. -")?;
@@ -6547,92 +6359,36 @@ fn big_squirrel_mos_run(ctx: &Ctx, mut step: BigSquirrelMosStep, args: Vec<Val>)
                                             ctx.call(Function::GetItem, vec![Val::from(732), Val::from(1)])?;
                                         }
                                     } else {
-                                        'b2: {
-                                            let subject2 = l_cyworld.clone();
-                                            let mut matched2 = false;
-                                            let no_case2 = !subject2.loosely_equals(&Val::from(200))
-                                                && !subject2.loosely_equals(&Val::from(300))
-                                                && !subject2.loosely_equals(&Val::from(100))
-                                                && !subject2.loosely_equals(&Val::from(400))
-                                                && !subject2.loosely_equals(&Val::from(500))
-                                                && !subject2.loosely_equals(&Val::from(600))
-                                                && !subject2.loosely_equals(&Val::from(700))
-                                                && !subject2.loosely_equals(&Val::from(800))
-                                                && !subject2.loosely_equals(&Val::from(900));
-                                            if !matched2 && subject2.loosely_equals(&Val::from(200)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
-                                                l_stonez1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
-                                                if l_stonez1.clone().number()? < 6 {
-                                                    ctx.call(Function::GetItem, vec![Val::from(7290), Val::from(1)])?;
-                                                } else if l_stonez1.clone().number()? < 8 {
-                                                    ctx.call(Function::GetItem, vec![Val::from(7297), Val::from(1)])?;
-                                                } else {
-                                                    ctx.call(Function::GetItem, vec![Val::from(7292), Val::from(1)])?;
-                                                }
-                                                break 'b2;
-                                            }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(300)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
-                                                if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? < 6 {
-                                                    ctx.call(Function::GetItem, vec![Val::from(7291), Val::from(1)])?;
-                                                } else {
-                                                    ctx.call(Function::GetItem, vec![Val::from(7294), Val::from(1)])?;
-                                                }
-                                                break 'b2;
-                                            }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(100)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
-                                                ctx.call(Function::GetItem, vec![Val::from(7289), Val::from(1)])?;
-                                                break 'b2;
-                                            }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(400)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
-                                                ctx.call(Function::GetItem, vec![Val::from(7295), Val::from(1)])?;
-                                                break 'b2;
-                                            }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(500)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
-                                                ctx.call(Function::GetItem, vec![Val::from(7293), Val::from(1)])?;
-                                                break 'b2;
-                                            }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(600)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
-                                                ctx.call(Function::GetItem, vec![Val::from(7292), Val::from(1)])?;
-                                                break 'b2;
-                                            }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(700)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
+                                        let subject2 = l_cyworld.clone();
+                                        if subject2 == 200 {
+                                            l_stonez1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
+                                            if l_stonez1.clone().number()? < 6 {
                                                 ctx.call(Function::GetItem, vec![Val::from(7290), Val::from(1)])?;
-                                                break 'b2;
-                                            }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(800)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
-                                                ctx.call(Function::GetItem, vec![Val::from(7296), Val::from(1)])?;
-                                                break 'b2;
-                                            }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(900)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
+                                            } else if l_stonez1.clone().number()? < 8 {
                                                 ctx.call(Function::GetItem, vec![Val::from(7297), Val::from(1)])?;
-                                                break 'b2;
+                                            } else {
+                                                ctx.call(Function::GetItem, vec![Val::from(7292), Val::from(1)])?;
                                             }
+                                        } else if subject2 == 300 {
+                                            if ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?.number()? < 6 {
+                                                ctx.call(Function::GetItem, vec![Val::from(7291), Val::from(1)])?;
+                                            } else {
+                                                ctx.call(Function::GetItem, vec![Val::from(7294), Val::from(1)])?;
+                                            }
+                                        } else if subject2 == 100 {
+                                            ctx.call(Function::GetItem, vec![Val::from(7289), Val::from(1)])?;
+                                        } else if subject2 == 400 {
+                                            ctx.call(Function::GetItem, vec![Val::from(7295), Val::from(1)])?;
+                                        } else if subject2 == 500 {
+                                            ctx.call(Function::GetItem, vec![Val::from(7293), Val::from(1)])?;
+                                        } else if subject2 == 600 {
+                                            ctx.call(Function::GetItem, vec![Val::from(7292), Val::from(1)])?;
+                                        } else if subject2 == 700 {
+                                            ctx.call(Function::GetItem, vec![Val::from(7290), Val::from(1)])?;
+                                        } else if subject2 == 800 {
+                                            ctx.call(Function::GetItem, vec![Val::from(7296), Val::from(1)])?;
+                                        } else if subject2 == 900 {
+                                            ctx.call(Function::GetItem, vec![Val::from(7297), Val::from(1)])?;
                                         }
                                     }
                                 }
@@ -6648,18 +6404,12 @@ fn big_squirrel_mos_run(ctx: &Ctx, mut step: BigSquirrelMosStep, args: Vec<Val>)
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["It's so cute."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        3 => {
                             ctx.lines_as(
                                 "Aged Man",
                                 args![
@@ -6677,6 +6427,7 @@ fn big_squirrel_mos_run(ctx: &Ctx, mut step: BigSquirrelMosStep, args: Vec<Val>)
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
                 ctx.mes("- The squirrel looks at the acorn which you held for a while but it turned its head with indifference. -")?;
@@ -8114,20 +7865,11 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         'b1: {
             ctx.lines(args!["-Something is still being boiled in the pot.", "What am I going to do?-"])?;
             ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("Put the materials in it.:Pour water in it.:Stir it up.:It is over!")],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3))
-                    && !subject2.loosely_equals(&Val::from(4));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                )? {
+                1 => {
                     l_m = (Val::from(runtime::select_values(ctx, &[l_implode_s.clone()])?).try_sub(Val::from(1))?);
                     if (((!(l_m.clone().is_true()) && l_bat.clone().is_true()) || (l_m.clone() == 1 && l_mush.clone().is_true()))
                         || (l_m.clone() == 2 && l_locker.clone().is_true()))
@@ -8154,12 +7896,8 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ((Val::from("-I put the ") + runtime::local_get(&l_menu_s, &l_m.clone(), true)) + Val::from(" in the pot.")),
                         "Its smell slightly changes.-"
                     ])?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                2 => {
                     ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONHIT")?])?;
                     l_nankai = (l_nankai.clone() + Val::from(1));
                     ctx.lines(args![
@@ -8168,12 +7906,8 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "No other remarkable changes",
                         "have happened.-"
                     ])?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                3 => {
                     ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONHIT")?])?;
                     l_nankai = (l_nankai.clone() + Val::from(1));
                     ctx.lines(args![
@@ -8182,12 +7916,8 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         "No other remarkable changes",
                         "have happened.-"
                     ])?;
-                    break 'b2;
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                4 => {
                     ctx.call(Function::NpcSpecialEffect, vec![ctx.constant("EF_POISONATTACK")?])?;
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
@@ -8197,6 +7927,7 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             ctx.next()?;
         }
@@ -8218,20 +7949,11 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         'b3: {
             ctx.mes("-Well, What am I going to do?-")?;
             ctx.next()?;
-            'b4: {
-                let subject4 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("Put the materials in it.:Pour water in it.:Stir it up.:It is over!")],
-                )?);
-                let mut matched4 = false;
-                let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                    && !subject4.loosely_equals(&Val::from(2))
-                    && !subject4.loosely_equals(&Val::from(3))
-                    && !subject4.loosely_equals(&Val::from(4));
-                if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                )? {
+                1 => {
                     l_w = Val::from(0);
                     l_m = (Val::from(runtime::select_values(ctx, &[runtime::implode(&l_menu_s, &Val::from(":"))?])?)
                         .try_sub(Val::from(1))?);
@@ -8280,12 +8002,8 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 + Val::from(" slightly changes.-"))
                         ])?;
                     }
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                2 => {
                     if l_nankai.clone() == 3 {
                         ctx.lines(args![
                             "-I pour water in the pot a little.",
@@ -8300,12 +8018,8 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.mes("-I pour water in the pot and, the liquid gets thin.-")?;
                     }
                     l_nankai = (l_nankai.clone() + Val::from(1));
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                3 => {
                     if l_nankai.clone() == 4 {
                         ctx.lines_as(
                             ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
@@ -8347,12 +8061,8 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         l_nankai = (l_nankai.clone() + Val::from(1));
                     }
-                    break 'b4;
                 }
-                if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                    matched4 = true;
-                }
-                if matched4 {
+                4 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["I will tell Baba Yaga that", "it has been done."],
@@ -8362,6 +8072,7 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             ctx.next()?;
         }
@@ -8400,20 +8111,11 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         'b5: {
             ctx.mes("-Well, What am I going to do?-")?;
             ctx.next()?;
-            'b6: {
-                let subject6 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("Put the materials in it.:Pour water in it.:Stir it up.:It is over!")],
-                )?);
-                let mut matched6 = false;
-                let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                    && !subject6.loosely_equals(&Val::from(2))
-                    && !subject6.loosely_equals(&Val::from(3))
-                    && !subject6.loosely_equals(&Val::from(4));
-                if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                )? {
+                1 => {
                     l_w = Val::from(0);
                     if l_nankai.clone() != 11 {
                         l_m = (Val::from(runtime::select_values(ctx, &[l_implode2_s.clone()])?).try_sub(Val::from(1))?);
@@ -8465,20 +8167,12 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.mes("The smell gets worse.-")?;
                         }
                     }
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                2 => {
                     l_nankai = (l_nankai.clone() + Val::from(1));
                     ctx.lines(args!["-I pour water in the pot a little.", "The smell gets better.-"])?;
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                3 => {
                     if l_nankai.clone() == 7 {
                         ctx.lines_as(
                             ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
@@ -8515,12 +8209,8 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         )?;
                         l_nankai = (l_nankai.clone() + Val::from(1));
                     }
-                    break 'b6;
                 }
-                if !matched6 && subject6.loosely_equals(&Val::from(4)) {
-                    matched6 = true;
-                }
-                if matched6 {
+                4 => {
                     ctx.lines(args!["-It seems that the work is over.", "I need to show this to Baba Yaga.-"])?;
                     if l_maho.clone() == 12 {
                         ctx.var("mos_nowinter").set(Val::from(18))?;
@@ -8533,6 +8223,7 @@ fn bowl_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             ctx.next()?;
         }
@@ -9814,16 +9505,8 @@ fn mysterious_stone_rus02_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["...Where should I go?"],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Right:Left:Middle")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Right:Left:Middle")])? {
+            1 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["...What about the right..."],
@@ -9848,10 +9531,7 @@ fn mysterious_stone_rus02_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Warp, vec![Val::from("mosk_dun01"), Val::from(190), Val::from(47)])?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines(args![
                     ((Val::from("[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]"))
                 ])?;
@@ -9899,10 +9579,7 @@ fn mysterious_stone_rus02_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Warp, vec![Val::from("mosk_dun01"), Val::from(190), Val::from(47)])?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["...What about the middle...?"],
@@ -9923,6 +9600,7 @@ fn mysterious_stone_rus02_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else if (ctx.var("rhea_rus_main").get()? == 3 || ctx.var("rhea_rus_main").get()? == 4) {
         ctx.lines(args!["- Words are engraved -", "- on the stone -"])?;
@@ -10698,57 +10376,19 @@ fn wall_rus04_run(ctx: &Ctx, mut step: WallRus04Step, args: Vec<Val>) -> Result<
                                                     ctx.lines_as("Maria Morebna", args!["It's been a long time since I've felt the sunlight, fresh wind and the scent of grass. I'm so grateful."])?;
                                                     ctx.var("rhea_rus_main").set(Val::from(52))?;
                                                     l_rus_food = ctx.call(Function::Rand, vec![Val::from(1), Val::from(6)])?;
-                                                    'b1: {
-                                                        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(6)])?;
-                                                        let mut matched1 = false;
-                                                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                                            && !subject1.loosely_equals(&Val::from(2))
-                                                            && !subject1.loosely_equals(&Val::from(3))
-                                                            && !subject1.loosely_equals(&Val::from(4))
-                                                            && !subject1.loosely_equals(&Val::from(5))
-                                                            && !subject1.loosely_equals(&Val::from(6));
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.call(Function::GetItem, vec![Val::from(12093), Val::from(1)])?;
-                                                            break 'b1;
-                                                        }
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.call(Function::GetItem, vec![Val::from(12088), Val::from(1)])?;
-                                                            break 'b1;
-                                                        }
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.call(Function::GetItem, vec![Val::from(12073), Val::from(1)])?;
-                                                            break 'b1;
-                                                        }
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.call(Function::GetItem, vec![Val::from(12078), Val::from(1)])?;
-                                                            break 'b1;
-                                                        }
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.call(Function::GetItem, vec![Val::from(12083), Val::from(1)])?;
-                                                            break 'b1;
-                                                        }
-                                                        if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                                                            matched1 = true;
-                                                        }
-                                                        if matched1 {
-                                                            ctx.call(Function::GetItem, vec![Val::from(12098), Val::from(1)])?;
-                                                            break 'b1;
-                                                        }
+                                                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(6)])?;
+                                                    if subject1 == 1 {
+                                                        ctx.call(Function::GetItem, vec![Val::from(12093), Val::from(1)])?;
+                                                    } else if subject1 == 2 {
+                                                        ctx.call(Function::GetItem, vec![Val::from(12088), Val::from(1)])?;
+                                                    } else if subject1 == 3 {
+                                                        ctx.call(Function::GetItem, vec![Val::from(12073), Val::from(1)])?;
+                                                    } else if subject1 == 4 {
+                                                        ctx.call(Function::GetItem, vec![Val::from(12078), Val::from(1)])?;
+                                                    } else if subject1 == 5 {
+                                                        ctx.call(Function::GetItem, vec![Val::from(12083), Val::from(1)])?;
+                                                    } else if subject1 == 6 {
+                                                        ctx.call(Function::GetItem, vec![Val::from(12098), Val::from(1)])?;
                                                     }
                                                     {
                                                         if ctx.var("BaseLevel").get()?.number()? < 56 {
@@ -11330,28 +10970,16 @@ fn the_blacksmith_rus06_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ],
                 )?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Red Ring?:Lusalka's Hair?:Golden Thread?")],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.lines_as("The Blacksmith", args!["The Red Ring has powerful enchanting powers. I had one before, but I gave it to my friend, Vassili, as a gift."])?;
                         ctx.next()?;
                         ctx.lines_as("The Blacksmith", args!["I think it would be odd to ask him to give it back to me. So uh you've got to ask him if he would give it to you."])?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(
                             "The Blacksmith",
                             args![
@@ -11373,19 +11001,15 @@ fn the_blacksmith_rus06_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             "The Blacksmith",
                             args!["Her mother is somewhere in this village asking for people to help her find her missing daughter."],
                         )?;
-                        break 'b1;
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.lines_as("The Blacksmith", args!["Golden Thread is made from gold by using a special spinning wheel technique. I don't know exactly how it's done. But I know who does."])?;
                         ctx.next()?;
                         ctx.lines_as("The Blacksmith", args!["Find a man named Marozka. He is the only one who knows how to use the spinning wheel to make the Golden Thread."])?;
                         ctx.next()?;
                         ctx.lines_as("The Blacksmith", args!["Maria should know where he is."])?;
-                        break 'b1;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
                 ctx.lines_as("The Blacksmith", args!["Ah, and... You still have the boots that I made right? ^ff0000Without them, you cannot get anything for the key, I swear. You must put on them.^000000"])?;
@@ -14902,37 +14526,8 @@ fn baba_yaga_rus32_run(ctx: &Ctx, mut step: BabaYagaRus32Step, args: Vec<Val>) -
                                                                                                 {
                                                                                                     ctx.lines_as("Baba Yaga", args!["Oh, you are back. What can I do for you?"])?;
                                                                                                     ctx.next()?;
-                                                                                                    'b1: {
-                                                                                                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Condensed Red Potion:Condensed Yellow Potion:Cancel")])?);
-                                                                                                        let mut matched1 =
-                                                                                                            false;
-                                                                                                        let no_case1 = !subject1
-                                                                                                            .loosely_equals(
-                                                                                                                &Val::from(1),
-                                                                                                            )
-                                                                                                            && !subject1
-                                                                                                                .loosely_equals(
-                                                                                                                    &Val::from(
-                                                                                                                        2,
-                                                                                                                    ),
-                                                                                                                )
-                                                                                                            && !subject1
-                                                                                                                .loosely_equals(
-                                                                                                                    &Val::from(
-                                                                                                                        3,
-                                                                                                                    ),
-                                                                                                                );
-                                                                                                        if !matched1
-                                                                                                            && subject1
-                                                                                                                .loosely_equals(
-                                                                                                                    &Val::from(
-                                                                                                                        1,
-                                                                                                                    ),
-                                                                                                                )
-                                                                                                        {
-                                                                                                            matched1 = true;
-                                                                                                        }
-                                                                                                        if matched1 {
+                                                                                                    match runtime::select_values(ctx, &[Val::from("Condensed Red Potion:Condensed Yellow Potion:Cancel")])? {
+                                                                                                        1 => {
                                                                                                             l_item =
                                                                                                                 Val::from(545);
                                                                                                             l_zeny_req =
@@ -15011,19 +14606,8 @@ fn baba_yaga_rus32_run(ctx: &Ctx, mut step: BabaYagaRus32Step, args: Vec<Val>) -
                                                                                                                 Val::from(
                                                                                                                     "I can only make 100 at a time. If you don't want any, then just say '0'",
                                                                                                                 );
-                                                                                                            break 'b1;
                                                                                                         }
-                                                                                                        if !matched1
-                                                                                                            && subject1
-                                                                                                                .loosely_equals(
-                                                                                                                    &Val::from(
-                                                                                                                        2,
-                                                                                                                    ),
-                                                                                                                )
-                                                                                                        {
-                                                                                                            matched1 = true;
-                                                                                                        }
-                                                                                                        if matched1 {
+                                                                                                        2 => {
                                                                                                             l_item =
                                                                                                                 Val::from(546);
                                                                                                             l_zeny_req =
@@ -15102,19 +14686,8 @@ fn baba_yaga_rus32_run(ctx: &Ctx, mut step: BabaYagaRus32Step, args: Vec<Val>) -
                                                                                                                 Val::from(
                                                                                                                     "Tell me the number less than 100. If you don't want, tell me zero",
                                                                                                                 );
-                                                                                                            break 'b1;
                                                                                                         }
-                                                                                                        if !matched1
-                                                                                                            && subject1
-                                                                                                                .loosely_equals(
-                                                                                                                    &Val::from(
-                                                                                                                        3,
-                                                                                                                    ),
-                                                                                                                )
-                                                                                                        {
-                                                                                                            matched1 = true;
-                                                                                                        }
-                                                                                                        if matched1 {
+                                                                                                        3 => {
                                                                                                             ctx.lines_as("Baba Yaga", args!["You don't want anything?"])?;
                                                                                                             ctx.next()?;
                                                                                                             ctx.lines_as("Baba Yaga", args!["I don't understand you. What do you want? kehehehehe."])?;
@@ -15123,6 +14696,7 @@ fn baba_yaga_rus32_run(ctx: &Ctx, mut step: BabaYagaRus32Step, args: Vec<Val>) -
                                                                                                                 Stop::End,
                                                                                                             );
                                                                                                         }
+                                                                                                        _ => {}
                                                                                                     }
                                                                                                     ctx.lines_as("Baba Yaga", args![runtime::sprintf(&Val::from("To make %s, I need ^0000ff%d %s, %d %s, %d %s, %d %s and %d Zeny^000000."), &[ctx.call(Function::GetItemName, vec![l_item.clone()])?, runtime::local_get(&l_amount, &Val::from(0), false), ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item_req, &Val::from(0), false)])?, runtime::local_get(&l_amount, &Val::from(1), false), ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item_req, &Val::from(1), false)])?, runtime::local_get(&l_amount, &Val::from(2), false), ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item_req, &Val::from(2), false)])?, runtime::local_get(&l_amount, &Val::from(3), false), ctx.call(Function::GetItemName, vec![runtime::local_get(&l_item_req, &Val::from(3), false)])?, l_zeny_req.clone()])?])?;
                                                                                                     if ((((runtime::op(&ctx.var("Zeny").get()?, ">=", &l_zeny_req.clone())?.is_true() && runtime::op(&ctx.call(Function::CountItem, vec![runtime::local_get(&l_item_req, &Val::from(0), false)])?, ">=", &runtime::local_get(&l_amount, &Val::from(0), false))?.is_true()) && runtime::op(&ctx.call(Function::CountItem, vec![runtime::local_get(&l_item_req, &Val::from(1), false)])?, ">=", &runtime::local_get(&l_amount, &Val::from(1), false))?.is_true()) && runtime::op(&ctx.call(Function::CountItem, vec![runtime::local_get(&l_item_req, &Val::from(2), false)])?, ">=", &runtime::local_get(&l_amount, &Val::from(2), false))?.is_true()) && runtime::op(&ctx.call(Function::CountItem, vec![runtime::local_get(&l_item_req, &Val::from(3), false)])?, ">=", &runtime::local_get(&l_amount, &Val::from(3), false))?.is_true()) {
@@ -15413,20 +14987,11 @@ fn noisy_coffin_rus36_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 break 'l1;
             }
             'b1: {
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Pray:Sing a hymn:Pour Holy Water on him:Kick him")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["...I'll pray."])?;
                         ctx.next()?;
                         ctx.lines_as(
@@ -15448,12 +15013,8 @@ fn noisy_coffin_rus36_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             l_break_while = Val::from(1);
                         }
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         ctx.lines_as(
                             ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                             args!["Hmm, hmm! I'll sing a hymn. The first phrase 'Holy god against evils'!!"],
@@ -15482,12 +15043,8 @@ fn noisy_coffin_rus36_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             l_break_while = Val::from(1);
                         }
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         if ctx.call(Function::CountItem, vec![Val::from(523)])?.is_true() {
                             ctx.lines_as(
                                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
@@ -15529,12 +15086,8 @@ fn noisy_coffin_rus36_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                             l_break_while = Val::from(1);
                         }
-                        break 'b2;
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.lines_as(
                             ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                             args!["...If you don't shut up...", "......I will kick you!!"],
@@ -15556,8 +15109,8 @@ fn noisy_coffin_rus36_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             )?;
                         }
                         l_break_while = Val::from(1);
-                        break 'b2;
                     }
+                    _ => {}
                 }
                 ctx.next()?;
             }
@@ -15804,24 +15357,15 @@ fn old_bed_rus38_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     if (ctx.var("rhea_rus_main").get()?.number()? >= 21 && ctx.var("rhea_rus_main").get()?.number()? < 26) {
         ctx.mes("- An old bed covered with dust and must -")?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("On the bed:Under the bed:Bed sheet")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("On the bed:Under the bed:Bed sheet")])? {
+            1 => {
                 ctx.mes("- Mushrooms grow on the bed -")?;
                 ctx.next()?;
                 ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["...Life......"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.mes("- You look at the under the bed -")?;
                 ctx.next()?;
                 ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["Ouch?!"])?;
@@ -15832,6 +15376,7 @@ fn old_bed_rus38_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
         if ctx.var("rhea_rus_main").get()? != 21 {
             ctx.mes("- While running in a hurry, the sheet is a bit torn -")?;
@@ -15978,57 +15523,19 @@ fn opened_treasure_chest_41_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
         ctx.next()?;
         l_russ_key02 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(7)])?;
         if l_russ_key02.clone() != 3 {
-            'b1: {
-                let subject1 = l_russ_key02.clone();
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(4))
-                    && !subject1.loosely_equals(&Val::from(5))
-                    && !subject1.loosely_equals(&Val::from(6))
-                    && !subject1.loosely_equals(&Val::from(7));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("- You find the cuticle of Kukre !! -")?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("- You find the egg of a Theif Bug !! -")?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("- You find something that seems to be a banana before !! -")?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("- You find the tentacles of a Jelly Fish !! -")?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("- You find pieces of cloth with must on it !! -")?;
-                    break 'b1;
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(7)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("- You find a bone !! -")?;
-                    break 'b1;
-                }
+            let subject1 = l_russ_key02.clone();
+            if subject1 == 1 {
+                ctx.mes("- You find the cuticle of Kukre !! -")?;
+            } else if subject1 == 2 {
+                ctx.mes("- You find the egg of a Theif Bug !! -")?;
+            } else if subject1 == 4 {
+                ctx.mes("- You find something that seems to be a banana before !! -")?;
+            } else if subject1 == 5 {
+                ctx.mes("- You find the tentacles of a Jelly Fish !! -")?;
+            } else if subject1 == 6 {
+                ctx.mes("- You find pieces of cloth with must on it !! -")?;
+            } else if subject1 == 7 {
+                ctx.mes("- You find a bone !! -")?;
             }
             ctx.next()?;
             ctx.lines_as(ctx.call(Function::StrCharInfo, vec![Val::from(0)])?, args!["W, what is this!?"])?;
@@ -16367,36 +15874,16 @@ fn house_ghost_jar_rus43_run(ctx: &Ctx, mut step: HouseGhostJarRus43Step, args: 
                             ctx.lines_as("House Ghost", args!["Ok, time to find out!", "One! Two! Three!!"])?;
                             ctx.next()?;
                             ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
-                            'b2: {
-                                let subject2 = l_rucard_game01.clone();
-                                let mut matched2 = false;
-                                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                    && !subject2.loosely_equals(&Val::from(2))
-                                    && !subject2.loosely_equals(&Val::from(3));
-                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
-                                    ctx.call(Function::Cutin, vec![Val::from("����ī��"), Val::from(4)])?;
-                                    l_win_string_s = Val::from("You are good. Can you do it next time?");
-                                    break 'b2;
-                                }
-                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
-                                    ctx.call(Function::Cutin, vec![Val::from("������ī��"), Val::from(4)])?;
-                                    l_win_string_s = Val::from("You are pretty good at this. Ok, but can you do it again?");
-                                    break 'b2;
-                                }
-                                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
-                                    ctx.call(Function::Cutin, vec![Val::from("����Ʈ��ī��"), Val::from(4)])?;
-                                    l_win_string_s = Val::from("You are pretty good at this. Ok, but can you do it again?");
-                                    break 'b2;
-                                }
+                            let subject2 = l_rucard_game01.clone();
+                            if subject2 == 1 {
+                                ctx.call(Function::Cutin, vec![Val::from("����ī��"), Val::from(4)])?;
+                                l_win_string_s = Val::from("You are good. Can you do it next time?");
+                            } else if subject2 == 2 {
+                                ctx.call(Function::Cutin, vec![Val::from("������ī��"), Val::from(4)])?;
+                                l_win_string_s = Val::from("You are pretty good at this. Ok, but can you do it again?");
+                            } else if subject2 == 3 {
+                                ctx.call(Function::Cutin, vec![Val::from("����Ʈ��ī��"), Val::from(4)])?;
+                                l_win_string_s = Val::from("You are pretty good at this. Ok, but can you do it again?");
                             }
                             ctx.call(Function::Emotion, vec![ctx.constant("ET_SURPRISE")?])?;
                             if l_rucard_game01.clone().loosely_equals(&(l_s.clone() + Val::from(1))) {

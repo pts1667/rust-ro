@@ -32,17 +32,11 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         args!["You know, I really really want a new doll! I hope my daddy will give me one on my birthday...!"],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Um, I hope your daddy gives you one too.:How about I give you one now?")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as(
                 "Elin",
                 args!["Yeah, I'm hoping", "he gives me a Yoyo", "doll. They're so cute!"],
@@ -50,10 +44,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             if (ctx.var("MaxWeight").get()?.try_sub(ctx.var("Weight").get()?)?).number()? < 1000 {
                 ctx.mes("[Elin]")?;
                 if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
@@ -76,28 +67,13 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["What kind of doll are you going to give me? Are you really gonna give me one?"],
             )?;
             ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Poring Doll:Chonchon Doll:Puppet:Rocker Doll:Spore Doll:Osiris Doll:Baphomet Doll:Raccoon Doll:Yoyo Doll:I'm as adorable as a doll.",
                     )],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3))
-                    && !subject2.loosely_equals(&Val::from(4))
-                    && !subject2.loosely_equals(&Val::from(5))
-                    && !subject2.loosely_equals(&Val::from(6))
-                    && !subject2.loosely_equals(&Val::from(7))
-                    && !subject2.loosely_equals(&Val::from(8))
-                    && !subject2.loosely_equals(&Val::from(9))
-                    && !subject2.loosely_equals(&Val::from(10));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                )? {
+                1 => {
                     if ctx.call(Function::CountItem, vec![Val::from(741)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(741), Val::from(1)])?;
                         ctx.lines_as("Elin", args!["Aww...", "I have a lot", "of Poring dolls..."])?;
@@ -137,10 +113,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                2 => {
                     if ctx.call(Function::CountItem, vec![Val::from(742)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(742), Val::from(1)])?;
                         ctx.lines_as("Elin", args!["Agh--!", "A Ch-Ch, Chonchon doll?!"])?;
@@ -174,10 +147,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                3 => {
                     if ctx.call(Function::CountItem, vec![Val::from(740)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(740), Val::from(1)])?;
                         ctx.lines_as("Elin", args!["Wow...!", "It looks like a bunny!"])?;
@@ -206,10 +176,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                4 => {
                     if ctx.call(Function::CountItem, vec![Val::from(752)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(752), Val::from(1)])?;
                         ctx.lines_as("Elin", args!["Ooh! Rocker Doll!", "It's the Rocker that likes singing and dancing! I don't like grasshoppers, but I like this because it's cute~"])?;
@@ -234,10 +201,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                5 => {
                     if ctx.call(Function::CountItem, vec![Val::from(743)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(743), Val::from(1)])?;
                         ctx.lines_as(
@@ -280,10 +244,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                6 => {
                     if ctx.call(Function::CountItem, vec![Val::from(751)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(751), Val::from(1)])?;
                         ctx.lines_as("Elin", args!["Ahhhhh!", "What is this", "thing?! It's so scary!"])?;
@@ -313,10 +274,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(7)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                7 => {
                     if ctx.call(Function::CountItem, vec![Val::from(750)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(750), Val::from(1)])?;
                         ctx.lines_as("Elin", args!["Huh?", "It's a little goat..."])?;
@@ -335,10 +293,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(8)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                8 => {
                     if ctx.call(Function::CountItem, vec![Val::from(754)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(754), Val::from(1)])?;
                         ctx.lines_as("Elin", args!["Hehe, it's a", "raccoon doll.", "It's very very cute~"])?;
@@ -363,10 +318,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(9)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                9 => {
                     if ctx.call(Function::CountItem, vec![Val::from(753)])?.number()? >= 1 {
                         ctx.call(Function::DelItem, vec![Val::from(753), Val::from(1)])?;
                         ctx.lines_as("Elin", args!["Woooooooow~!"])?;
@@ -393,10 +345,7 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(10)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                10 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args!["I'm as adorable as a doll..."],
@@ -408,8 +357,10 @@ fn elin_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -435,19 +386,11 @@ fn grampa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     )?;
     ctx.next()?;
     if ctx.call(Function::CountItem, vec![Val::from(1030)])?.number()? > 9 {
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Show him Tiger's Footskin.:Exchange it with Boys Cap.:Cancel")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Grampa",
                     args![
@@ -467,10 +410,7 @@ fn grampa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.call(Function::DelItem, vec![Val::from(1030), Val::from(10)])?;
                 ctx.call(Function::GetItem, vec![Val::from(5016), Val::from(1)])?;
                 ctx.lines_as(
@@ -492,24 +432,16 @@ fn grampa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as("Grampa", args!["He...Hey, kid !! W-Wait !"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
-        'b2: {
-            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Talk:Cancel")])?);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
+        match runtime::select_values(ctx, &[Val::from("Talk:Cancel")])? {
+            1 => {
                 ctx.lines_as("Grampa", args!["Listen well...", "You've got to take care of yourself as well as your can. Without your health, one cannot enjoy the pleasures of this mortal realm."])?;
                 ctx.next()?;
                 ctx.lines_as("Grampa", args!["In order to restore my youth, I tried all sorts of things, mostly by hearsay, but nothing worked. In the end, I spent so much zeny on miracle cures, I ended up broke."])?;
@@ -535,10 +467,7 @@ fn grampa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
+            2 => {
                 ctx.lines_as(
                     "Grampa",
                     args!["Cough Cough !!", "Tiger ....Tiger's ..... Foot ..... skin .....Cough Cough !!"],
@@ -546,6 +475,7 @@ fn grampa_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     Ok(Val::from(0))
@@ -573,14 +503,8 @@ fn cherokee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Okay, let's deal.:Shut up, Dumbo.")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Okay, let's deal.:Shut up, Dumbo.")])? {
+        1 => {
             if ctx.call(Function::CountItem, vec![Val::from(923)])?.number()? > 19 {
                 ctx.call(Function::DelItem, vec![Val::from(923), Val::from(20)])?;
                 ctx.lines_as(
@@ -607,10 +531,7 @@ fn cherokee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 return Err(Stop::End);
             }
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Cherokee",
                 args!["Well that's fine. Although you're a rude prick, I will forgive you. We'll probably speak again..."],
@@ -618,6 +539,7 @@ fn cherokee_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -709,20 +631,11 @@ fn stylish_merchant_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             args!["Let me know what item you're interested in, and maybe I'll make it for you..."],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Bao Bao:Cresent Hairpin:Fashionable Glasses:Heart Hairpin")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Zic",
                     args!["Sooo...", "You want me to make you a Bao Bao, huh? Alright, alright..."],
@@ -740,10 +653,7 @@ fn stylish_merchant_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Zic",
                     args!["So you want a Crescent Hairpin, huh? Man, I guess these things are pretty high in demand."],
@@ -761,10 +671,7 @@ fn stylish_merchant_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as(
                     "Zic",
                     args!["Weird. How'd you know I make Fashionable Glasses? I guess I must be more famous that I thought."],
@@ -782,10 +689,7 @@ fn stylish_merchant_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
+            4 => {
                 ctx.lines_as(
                     "Zic",
                     args!["You want a heart hairpin, eh? Okay, I think I can work something out for you..."],
@@ -798,6 +702,7 @@ fn stylish_merchant_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     Ok(Val::from(0))
@@ -908,14 +813,8 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.lines_as("Tempestra", args!["What?!? ", "You have all the items already? If there are forged items or slotted items with monster cards, then put them into your storage."])?;
                                     ctx.next()?;
                                     ctx.lines_as("Tempestra", args!["I just want to make something for the Yellow Potion, so I won't charge you any zeny for my hat making service."])?;
-                                    'b4: {
-                                        let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Oh, please do.:No thanks.")])?);
-                                        let mut matched4 = false;
-                                        let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
+                                    match runtime::select_values(ctx, &[Val::from("Oh, please do.:No thanks.")])? {
+                                        1 => {
                                             ctx.next()?;
                                             ctx.lines_as("Tempestra", args!["Alrighty. Just give me a moment..."])?;
                                             ctx.next()?;
@@ -934,10 +833,7 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
+                                        2 => {
                                             ctx.next()?;
                                             ctx.lines_as("Tempestra", args!["Oh alright~"])?;
                                             ctx.next()?;
@@ -950,6 +846,7 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 } else {
                                     ctx.lines_as(
@@ -994,14 +891,8 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.lines_as("Tempestra", args!["What?!? ", "You have all the items already? If there are forged items or slotted items with monster cards, then put them into your storage."])?;
                                     ctx.next()?;
                                     ctx.lines_as("Tempestra", args!["I just want to make something nice for you, so I won't charge you any zeny for my hat making service."])?;
-                                    'b5: {
-                                        let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("Oh, please do.:No thanks.")])?);
-                                        let mut matched5 = false;
-                                        let no_case5 = !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                            matched5 = true;
-                                        }
-                                        if matched5 {
+                                    match runtime::select_values(ctx, &[Val::from("Oh, please do.:No thanks.")])? {
+                                        1 => {
                                             ctx.next()?;
                                             ctx.lines_as("Tempestra", args!["Alrighty. Just give me a moment..."])?;
                                             ctx.next()?;
@@ -1020,10 +911,7 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                            matched5 = true;
-                                        }
-                                        if matched5 {
+                                        2 => {
                                             ctx.next()?;
                                             ctx.lines_as("Tempestra", args!["Oh alright~"])?;
                                             ctx.next()?;
@@ -1036,6 +924,7 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 } else {
                                     ctx.lines_as(
@@ -1078,14 +967,8 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.lines_as("Tempestra", args!["What?!? ", "You have all the items already?", "If there are forged items or slotted items with monster cards, then put them into your storage."])?;
                                     ctx.next()?;
                                     ctx.lines_as("Tempestra", args!["I just want to make something nice for you, so I won't charge you any zeny for my hat making service."])?;
-                                    'b6: {
-                                        let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("Please do:No thanks")])?);
-                                        let mut matched6 = false;
-                                        let no_case6 = !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                                        if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                            matched6 = true;
-                                        }
-                                        if matched6 {
+                                    match runtime::select_values(ctx, &[Val::from("Please do:No thanks")])? {
+                                        1 => {
                                             ctx.next()?;
                                             ctx.lines_as("Tempestra", args!["Alrighty. Just give me a moment..."])?;
                                             ctx.next()?;
@@ -1103,10 +986,7 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                            matched6 = true;
-                                        }
-                                        if matched6 {
+                                        2 => {
                                             ctx.next()?;
                                             ctx.lines_as("Tempestra", args!["Oh alright~"])?;
                                             ctx.next()?;
@@ -1119,6 +999,7 @@ fn hat_store_girl_new30_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 } else {
                                     ctx.lines_as(
@@ -1301,18 +1182,11 @@ fn grandpa_turtle_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         args!["There isn't one decent drinking establishment in all of Alberta! But then again, why did I drink so much? Hmm..."],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Tell me about Turtle Island:How can I get there?:Stop talking")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as("Grandpa Turtle", args!["Eh...?", "Turtle Island?"])?;
             ctx.next()?;
             ctx.lines_as(
@@ -1332,17 +1206,11 @@ fn grandpa_turtle_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["But only someone with a good heart that's eager for adventure should be able to go to that kind of place."],
             )?;
             ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from("^3333FF*ting!*^000000:Tell me more, old man!")],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                )? {
+                1 => {
                     ctx.lines_as("Grandpa Turtle", args!["Ha ha ha~!"])?;
                     if ctx.var("Sex").get()?.loosely_equals(&ctx.constant("SEX_MALE")?) {
                         ctx.mes("I like the shine in your eye, my boy! I can see a little bit of myself in those eyes. Yes...")?;
@@ -1383,6 +1251,7 @@ fn grandpa_turtle_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
             ctx.lines_as("Grandpa Turtle", args!["Grrrr...!"])?;
             ctx.next()?;
@@ -1393,10 +1262,7 @@ fn grandpa_turtle_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             if (runtime::op(&ctx.var("misc_quest").get()?, "&", &Val::from(65536))?.is_true() || ctx.var("turtle").get()?.is_true()) {
                 if runtime::op(&ctx.var("misc_quest").get()?, "&", &Val::from(65536))?.is_true() {
                     ctx.var("turtle").set(Val::from(0))?;
@@ -1433,10 +1299,7 @@ fn grandpa_turtle_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as(
                 "Grandpa Turtle",
                 args!["Oooh...", "Even at this age...", "I don't understand", "how I can drink so much..."],
@@ -1444,6 +1307,7 @@ fn grandpa_turtle_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -1463,19 +1327,11 @@ fn sailor_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Do you know about Turtle Island?:How can I get there?:Stop talking.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as("Gotanblue", args!["Turtle Island...?", "Well, first I think it's fair to warn you that Turtle Island took the lives of my buddies. That's right, I was part of ^3355FFJornadan Niliria^000000's crew."])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -1549,10 +1405,7 @@ fn sailor_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Gotanblue",
                     args!["After my story of Turtle Island, you're still not afraid of going? I'm impressed! Alright then..."],
@@ -1590,10 +1443,7 @@ fn sailor_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as("Gotanblue", args!["Heh..."])?;
                 ctx.next()?;
                 ctx.lines_as(
@@ -1603,6 +1453,7 @@ fn sailor_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     ctx.lines_as("Gotanblue", args!["Ahhhh...!", "Just look at that ocean! It covers the earth as far as the eye can see. Tell me that's not one of the most beautiful things you've ever seen..."])?;
@@ -1644,18 +1495,11 @@ fn turtle_scholar_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         args!["Heh heh...", "Just like my", "time on Turtle Island.", "Hah Hah Hah~"],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("About Turtle island:You're Jornadan Niliria?!:Stop talking")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as("Jornadan Niliria", args!["Turtle...", "Island..."])?;
             ctx.next()?;
             ctx.lines_as(
@@ -1683,10 +1527,7 @@ fn turtle_scholar_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as("Jornadan Niliria", args!["Hmm...?", "You've heard of me?"])?;
             ctx.next()?;
             ctx.lines_as(
@@ -1706,10 +1547,7 @@ fn turtle_scholar_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as("Jornadan Niliria", args!["When you want to discover the truth, never give in to despair. If you never give up your search, the answer will come to you."])?;
             ctx.next()?;
             ctx.lines_as("Jornadan Niliria", args!["..."])?;
@@ -1720,6 +1558,7 @@ fn turtle_scholar_alberta_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -1798,206 +1637,189 @@ fn voyage_log_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         if ctx.var("turtle").get()? == 1 {
             ctx.mes("^3355FFThe paper is torn and seaweed and mold are stuck to the paper. It seems this log is in very poor condition...^000000")?;
             ctx.next()?;
-            'b1: {
-                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("^3355FFThere is a banana leaf between some of the pages. Here is what is written.^000000")?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "O / X date",
-                            "Just after we arrived on Turtle Island, we frantically searched all over for food."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["It was so bad, that you could see the bones through our skin."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "X / X date",
-                            "We found some kind of fruit to eat! It's covered in some sort of yellow skin and looks like a banana!"
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "XO / X date",
-                            "Well, it wasn't exactly like the bananas we have in Rune-Midgarts, but it was very similar."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "O / O date",
-                            "In the middle of the night, one of the men reported that he felt sick after eating the food."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "OO / O date",
-                            "Another crew member, Berot Berot, was also found to have severe indigestion."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["It's now becoming very clear that the food we have been eating contains some kind of poison."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "XO / O date",
-                            "The third person to experience indigestion passed away today. We are all very worried."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["Our suspicions were confirmed when we found that the animals on Turtle Island wouldn't eat the bananas we found."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["OX / O date", "We decided to seal away this poisonous fruit, but learned that it didn't rot, not even after we removed the skin."])?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["We have no idea why it's harmful to eat, or why it never perishes, but it be of some medical or scientific interest."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["In the meantime, we've decided to bury this fruit until we can get back to Alberta."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["^FF3355tur_dun01^000000", "^FF3355X : 160 , Y : 81^000000"])?;
-                    ctx.next()?;
-                    ctx.mes("^3355FFIn the Voyage log is a thin key marked with a skull. You've taken this Skull key, as it may be of some use later.^000000")?;
-                    ctx.var("turtle").set(Val::from(2))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(11029), Val::from(11030)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes(
-                        "^3355FFYou notice a page with a stamp shaped like a bird's foot. The black ink smells sort of like fruit.^000000",
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "X / OO date",
-                            "We've found evidence that other people were here, and that we are not the first to find Turtle Island."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "There was at least one person who made it here before us. Hopefully, his records are on the island somewhere."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["Starting tomorrow, we will begin searching for these hidden records."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["O / OO date", "We are having difficulty trying to find any records. Is it possible that the first people here wrote nothing of their journey?"])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["XO / OO date", "We finally found the records we have been searching for."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["His notes were so hard to find because only one man, rather than a whole team, came to Turtle Island before us!"])?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["This man was a swordsman simply known as 'One.' His records tell much about what can be found on Turtle Island."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "His records were written on animals skin, but they were durable and still easy to read after all this time."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["According to his notes, Turtle Island consists of 4 levels. Although there are no people here, but there are many traps and devices which operate through a mysterious force."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["Still, it is certain that something has some control over Turtle Island."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["To keep this record safe, our crew has decided to hide this valuable record on the second level of Turtle Island."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["Search here...", "^FF3355tur_dun02^000000", "^FF3355X : 132 , Y : 251^000000"],
-                    )?;
-                    ctx.next()?;
-                    ctx.mes("^3355FFThere is a picture of a tree in which there is a small keyhole clearly shown under the roots.^000000")?;
-                    ctx.next()?;
-                    ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFthe Roots key.^000000"])?;
-                    ctx.var("turtle").set(Val::from(3))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(11029), Val::from(11031)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.mes("^3355FFThese pages of this log are soiled with mud, and some of them are missing.^000000")?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["O / XX date", "The greatest treasure of Turtle Island, the likes of which have never been seen, is hidden, sealed in some secret place..."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["We have spent many days searching for it, but found not one trace."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["In the meantime, we've collected many precious treasures. We've decided to take only some of it back home, and to leave the rest here."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args![
-                            "XO / XX date",
-                            "We have hidden the treasure we have left behind to keep it from getting stolen."
-                        ],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as("Voyage Log", args!["It is somewhere on the fourth level, the bottom of the island. The treasure is sealed in a box that is a relic from an ancient culture."])?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["However, the technology of this treasure box is very sophisticated, and it won't be easy to open by force."],
-                    )?;
-                    ctx.next()?;
-                    ctx.lines_as(
-                        "Voyage Log",
-                        args!["Here...", "^FF3355tur_dun01^000000", "^FF3355X : 203 , Y : 155^000000"],
-                    )?;
-                    ctx.next()?;
-                    ctx.mes("^3355FFYou find three small holes under the turtle stone. Within one of these holes is a thin key.^000000")?;
-                    ctx.next()?;
-                    ctx.lines(args!["^3355FFYou've gained ^000000", "^3355FFthe Security key^000000"])?;
-                    ctx.var("turtle").set(Val::from(4))?;
-                    ctx.call(Function::ChangeQuest, vec![Val::from(11029), Val::from(11032)])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+            if subject1 == 1 {
+                ctx.mes("^3355FFThere is a banana leaf between some of the pages. Here is what is written.^000000")?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "O / X date",
+                        "Just after we arrived on Turtle Island, we frantically searched all over for food."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["It was so bad, that you could see the bones through our skin."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "X / X date",
+                        "We found some kind of fruit to eat! It's covered in some sort of yellow skin and looks like a banana!"
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "XO / X date",
+                        "Well, it wasn't exactly like the bananas we have in Rune-Midgarts, but it was very similar."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "O / O date",
+                        "In the middle of the night, one of the men reported that he felt sick after eating the food."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "OO / O date",
+                        "Another crew member, Berot Berot, was also found to have severe indigestion."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["It's now becoming very clear that the food we have been eating contains some kind of poison."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "XO / O date",
+                        "The third person to experience indigestion passed away today. We are all very worried."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["Our suspicions were confirmed when we found that the animals on Turtle Island wouldn't eat the bananas we found."])?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["OX / O date", "We decided to seal away this poisonous fruit, but learned that it didn't rot, not even after we removed the skin."])?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["We have no idea why it's harmful to eat, or why it never perishes, but it be of some medical or scientific interest."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["In the meantime, we've decided to bury this fruit until we can get back to Alberta."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["^FF3355tur_dun01^000000", "^FF3355X : 160 , Y : 81^000000"])?;
+                ctx.next()?;
+                ctx.mes("^3355FFIn the Voyage log is a thin key marked with a skull. You've taken this Skull key, as it may be of some use later.^000000")?;
+                ctx.var("turtle").set(Val::from(2))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(11029), Val::from(11030)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if subject1 == 2 {
+                ctx.mes(
+                    "^3355FFYou notice a page with a stamp shaped like a bird's foot. The black ink smells sort of like fruit.^000000",
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "X / OO date",
+                        "We've found evidence that other people were here, and that we are not the first to find Turtle Island."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "There was at least one person who made it here before us. Hopefully, his records are on the island somewhere."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["Starting tomorrow, we will begin searching for these hidden records."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["O / OO date", "We are having difficulty trying to find any records. Is it possible that the first people here wrote nothing of their journey?"])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["XO / OO date", "We finally found the records we have been searching for."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["His notes were so hard to find because only one man, rather than a whole team, came to Turtle Island before us!"])?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["This man was a swordsman simply known as 'One.' His records tell much about what can be found on Turtle Island."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "His records were written on animals skin, but they were durable and still easy to read after all this time."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["According to his notes, Turtle Island consists of 4 levels. Although there are no people here, but there are many traps and devices which operate through a mysterious force."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["Still, it is certain that something has some control over Turtle Island."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["To keep this record safe, our crew has decided to hide this valuable record on the second level of Turtle Island."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["Search here...", "^FF3355tur_dun02^000000", "^FF3355X : 132 , Y : 251^000000"],
+                )?;
+                ctx.next()?;
+                ctx.mes("^3355FFThere is a picture of a tree in which there is a small keyhole clearly shown under the roots.^000000")?;
+                ctx.next()?;
+                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFthe Roots key.^000000"])?;
+                ctx.var("turtle").set(Val::from(3))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(11029), Val::from(11031)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if subject1 == 3 {
+                ctx.mes("^3355FFThese pages of this log are soiled with mud, and some of them are missing.^000000")?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["O / XX date", "The greatest treasure of Turtle Island, the likes of which have never been seen, is hidden, sealed in some secret place..."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["We have spent many days searching for it, but found not one trace."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["In the meantime, we've collected many precious treasures. We've decided to take only some of it back home, and to leave the rest here."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args![
+                        "XO / XX date",
+                        "We have hidden the treasure we have left behind to keep it from getting stolen."
+                    ],
+                )?;
+                ctx.next()?;
+                ctx.lines_as("Voyage Log", args!["It is somewhere on the fourth level, the bottom of the island. The treasure is sealed in a box that is a relic from an ancient culture."])?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["However, the technology of this treasure box is very sophisticated, and it won't be easy to open by force."],
+                )?;
+                ctx.next()?;
+                ctx.lines_as(
+                    "Voyage Log",
+                    args!["Here...", "^FF3355tur_dun01^000000", "^FF3355X : 203 , Y : 155^000000"],
+                )?;
+                ctx.next()?;
+                ctx.mes("^3355FFYou find three small holes under the turtle stone. Within one of these holes is a thin key.^000000")?;
+                ctx.next()?;
+                ctx.lines(args!["^3355FFYou've gained ^000000", "^3355FFthe Security key^000000"])?;
+                ctx.var("turtle").set(Val::from(4))?;
+                ctx.call(Function::ChangeQuest, vec![Val::from(11029), Val::from(11032)])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         ctx.mes("^3355FFYou've closed the voyage log.^000000")?;
@@ -2032,44 +1854,27 @@ fn skull_stone_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             .set(runtime::op(&ctx.var("misc_quest").get()?, "|", &Val::from(65536))?)?;
         ctx.var("turtle").set(Val::from(0))?;
         ctx.call(Function::CompleteQuest, vec![Val::from(11030)])?;
-        'b1: {
-            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(532), Val::from(5)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FF5 Banana Juice^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(513), Val::from(5)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FF5 Banana^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(513), Val::from(5)])?;
-                ctx.call(Function::GetItem, vec![Val::from(532), Val::from(5)])?;
-                ctx.lines(args![
-                    "^3355FFYou've gained^000000",
-                    "^3355FF5 Banana and^000000",
-                    "^3355FF5 Banana Juice^000000"
-                ])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+        if subject1 == 1 {
+            ctx.call(Function::GetItem, vec![Val::from(532), Val::from(5)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FF5 Banana Juice^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 2 {
+            ctx.call(Function::GetItem, vec![Val::from(513), Val::from(5)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FF5 Banana^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 3 {
+            ctx.call(Function::GetItem, vec![Val::from(513), Val::from(5)])?;
+            ctx.call(Function::GetItem, vec![Val::from(532), Val::from(5)])?;
+            ctx.lines(args![
+                "^3355FFYou've gained^000000",
+                "^3355FF5 Banana and^000000",
+                "^3355FF5 Banana Juice^000000"
+            ])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     ctx.lines(args![
@@ -2298,109 +2103,57 @@ fn turtle_pillar_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             .set(runtime::op(&ctx.var("misc_quest").get()?, "|", &Val::from(65536))?)?;
         ctx.var("turtle").set(Val::from(0))?;
         ctx.call(Function::CompleteQuest, vec![Val::from(11034)])?;
-        'b1: {
-            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4))
-                && !subject1.loosely_equals(&Val::from(5))
-                && !subject1.loosely_equals(&Val::from(6))
-                && !subject1.loosely_equals(&Val::from(7))
-                && !subject1.loosely_equals(&Val::from(8))
-                && !subject1.loosely_equals(&Val::from(9))
-                && !subject1.loosely_equals(&Val::from(10));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(702), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained ^000000", "^3355FFAnimal Gore.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(734), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Frame^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(10019), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFRed Scarf.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(725), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Sardonyx.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(7)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(8)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(9)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
-            if !matched1 && subject1.loosely_equals(&Val::from(10)) {
-                matched1 = true;
-            }
-            if matched1 {
-                ctx.call(Function::GetItem, vec![Val::from(725), Val::from(1)])?;
-                ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Sardonyx.^000000"])?;
-                ctx.close_window()?;
-                return Err(Stop::End);
-            }
+        let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(10)])?;
+        if subject1 == 1 {
+            ctx.call(Function::GetItem, vec![Val::from(702), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained ^000000", "^3355FFAnimal Gore.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 2 {
+            ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 3 {
+            ctx.call(Function::GetItem, vec![Val::from(734), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Frame^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 4 {
+            ctx.call(Function::GetItem, vec![Val::from(10019), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFRed Scarf.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 5 {
+            ctx.call(Function::GetItem, vec![Val::from(725), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Sardonyx.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 6 {
+            ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 7 {
+            ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 8 {
+            ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 9 {
+            ctx.call(Function::GetItem, vec![Val::from(716), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Red Gemstone.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
+        } else if subject1 == 10 {
+            ctx.call(Function::GetItem, vec![Val::from(725), Val::from(1)])?;
+            ctx.lines(args!["^3355FFYou've gained^000000", "^3355FFa Sardonyx.^000000"])?;
+            ctx.close_window()?;
+            return Err(Stop::End);
         }
     }
     ctx.lines(args![
@@ -2657,65 +2410,43 @@ fn turtle_statue_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ctx.var("turtle").set(Val::from(0))?;
         ctx.call(Function::CompleteQuest, vec![Val::from(11037)])?;
         if ctx.call(Function::Rand, vec![Val::from(1), Val::from(20)])? == 7 {
-            'b1: {
-                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                    && !subject1.loosely_equals(&Val::from(2))
-                    && !subject1.loosely_equals(&Val::from(3))
-                    && !subject1.loosely_equals(&Val::from(4));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
-                    ctx.lines(args![
-                        "^3355FFInside the drawer,",
-                        "is a Gift Box. This",
-                        "Gift Box is now yours.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.call(Function::GetItem, vec![Val::from(616), Val::from(1)])?;
-                    ctx.lines(args![
-                        "^3355FFInside the drawer,",
-                        "is an Old Card Album.",
-                        "It is now yours to keep.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
-                    ctx.lines(args![
-                        "^3355FFInside the drawer,",
-                        "is an Old Purple Box.",
-                        "It is now yours to keep.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
-                if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                    matched1 = true;
-                }
-                if matched1 {
-                    ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
-                    ctx.lines(args![
-                        "^3355FFInside the drawer,",
-                        "is an Old Purple Box.",
-                        "It is now yours to keep.^000000"
-                    ])?;
-                    ctx.close_window()?;
-                    return Err(Stop::End);
-                }
+            let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
+            if subject1 == 1 {
+                ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
+                ctx.lines(args![
+                    "^3355FFInside the drawer,",
+                    "is a Gift Box. This",
+                    "Gift Box is now yours.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if subject1 == 2 {
+                ctx.call(Function::GetItem, vec![Val::from(616), Val::from(1)])?;
+                ctx.lines(args![
+                    "^3355FFInside the drawer,",
+                    "is an Old Card Album.",
+                    "It is now yours to keep.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if subject1 == 3 {
+                ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
+                ctx.lines(args![
+                    "^3355FFInside the drawer,",
+                    "is an Old Purple Box.",
+                    "It is now yours to keep.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
+            } else if subject1 == 4 {
+                ctx.call(Function::GetItem, vec![Val::from(617), Val::from(1)])?;
+                ctx.lines(args![
+                    "^3355FFInside the drawer,",
+                    "is an Old Purple Box.",
+                    "It is now yours to keep.^000000"
+                ])?;
+                ctx.close_window()?;
+                return Err(Stop::End);
             }
         }
         ctx.call(Function::GetItem, vec![Val::from(604), Val::from(1)])?;
@@ -2758,33 +2489,21 @@ fn knight_leader_tur_run(ctx: &Ctx, mut step: KnightLeaderTurStep, args: Vec<Val
                     args!["Oh...", "*Whew!*", "Finally, another person.", "Tell me who you are!"],
                 )?;
                 ctx.next()?;
-                'b1: {
-                    let subject1 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[
                             ((Val::from("Who are you to ask?:") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
                                 + Val::from("!:What are you doing here?:First, tell me who you are.")),
                         ],
-                    )?);
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    )? {
+                    1 => {
                         ctx.lines_as("Takuyaka", args!["How dare you speak to me in that tone! Don't you know who I am?! I'm Takuyaka, leader of the Security Knights of Alberta! Kobolds and Porings quiver in fear when they hear my name..."])?;
                         ctx.next()?;
                         ctx.lines_as("Takuyaka", args!["So tell me the truth! You came here for treasure, didn't you?! You want it all for yourself! You bastard! Now get off this island! Go, shoo!"])?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    2 => {
                         ctx.lines_as(
                             "Takuyaka",
                             args![
@@ -2797,10 +2516,7 @@ fn knight_leader_tur_run(ctx: &Ctx, mut step: KnightLeaderTurStep, args: Vec<Val
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    3 => {
                         ctx.lines_as("Takuyaka", args!["I've heard that many treasures can be found on Turtle Island. If I can take enough home, I'll be rich! Well, we're supposed to rescue lost adventurers too, but whatever. As leader, I can do whatever I want!"])?;
                         ctx.next()?;
                         ctx.lines_as("Takuyaka", args!["However, we're totally lost. Meaning we can't find any treasure or even rescue any people. Grrr...! Where are my useless soldiers! I've probably spoiled them with too much food!"])?;
@@ -2812,10 +2528,7 @@ fn knight_leader_tur_run(ctx: &Ctx, mut step: KnightLeaderTurStep, args: Vec<Val
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
+                    4 => {
                         ctx.lines_as("Takuyaka", args!["Me? I'm Takuyaka. A tall, dark, handsome, and dashing leader, as well as a fearsome knight! I have come to save the foolish people of Alberta that have come seeking treasure on Turtle Island."])?;
                         ctx.next()?;
                         ctx.lines_as("Mudasamu", args!["Really, now?"])?;
@@ -2833,6 +2546,7 @@ fn knight_leader_tur_run(ctx: &Ctx, mut step: KnightLeaderTurStep, args: Vec<Val
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
                 step = KnightLeaderTurStep::OnTouch;
                 continue 'machine;
@@ -2894,22 +2608,13 @@ fn knight_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from(
                 "Who are you?:Sorry, I don't.:Why did you come here?:How did you get here?",
             )],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines_as("Passats", args!["My name is Passats, a proud Security Knight of Alberta. We've obtained some information that some people came here to seek treasure."])?;
             ctx.next()?;
             ctx.lines_as("Passats", args!["Our task here is to save people, but when we arrived on Turtle Island, we were attacked by a mob of monsters! So we all got scattered."])?;
@@ -2921,10 +2626,7 @@ fn knight_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 "Passats",
                 args![
@@ -2945,10 +2647,7 @@ fn knight_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines_as("Passats", args!["There are a lot of stories about the amazing wealth that can be found on this island. However, everyone assumed that it was impossible to find Turtle Island."])?;
             ctx.next()?;
             ctx.lines_as("Passats", args!["But then, the problem began when some navigator actually knew the way to Turtle Island. I think he'll take just about anybody for 10,000 zeny!"])?;
@@ -2959,10 +2658,7 @@ fn knight_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
+        4 => {
             ctx.lines_as("Passats", args!["Hmmm..."])?;
             ctx.next()?;
             ctx.lines_as("Passats", args!["No clue."])?;
@@ -2975,6 +2671,7 @@ fn knight_tur_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }

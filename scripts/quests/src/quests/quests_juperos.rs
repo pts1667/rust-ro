@@ -45,22 +45,13 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                         ctx.next()?;
                         ctx.lines_as("Scholar", args!["...", "......", "May I help you?"])?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Oh! N-Nothing!:Excuse me...")])?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                        match runtime::select_values(ctx, &[Val::from("Oh! N-Nothing!:Excuse me...")])? {
+                            1 => {
                                 ctx.lines_as("Scholar", args!["...", "......", "Hmm?", "...........", "Hmpf."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.lines_as("Scholar", args!["...", "......", "Hmm?", "...........", "Hmmm..."])?;
                                 ctx.next()?;
                                 ctx.lines_as(
@@ -98,6 +89,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched1 && subject1.loosely_equals(&Val::from(1)) {
@@ -108,22 +100,13 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                         ctx.next()?;
                         ctx.lines_as("Scholar", args!["...", "......", "May I help you?"])?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Oh! N-Nothing!:By any chance...")])?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                        match runtime::select_values(ctx, &[Val::from("Oh! N-Nothing!:By any chance...")])? {
+                            1 => {
                                 ctx.lines_as("Scholar", args!["...", "......", "Hmm?", "...........", "Hmpf."])?;
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args!["By any chance...", "Are you conducting", "research about Juperos?"],
@@ -219,6 +202,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -297,17 +281,11 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                             ],
                         )?;
                         ctx.next()?;
-                        'b4: {
-                            let subject4 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("I found something in Juperos.:Nothing much.")],
-                            )?);
-                            let mut matched4 = false;
-                            let no_case4 = !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                                     args![
@@ -398,10 +376,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                matched4 = true;
-                            }
-                            if matched4 {
+                            2 => {
                                 ctx.lines_as(
                                     "Fayruz",
                                     args![
@@ -414,6 +389,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched1 && subject1.loosely_equals(&Val::from(4)) {
@@ -429,21 +405,13 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                             ],
                         )?;
                         ctx.next()?;
-                        'b5: {
-                            let subject5 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "Nice weather today, isn't it?:I found something in Juperos.:Nothing much.",
                                 )],
-                            )?);
-                            let mut matched5 = false;
-                            let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                                && !subject5.loosely_equals(&Val::from(2))
-                                && !subject5.loosely_equals(&Val::from(3));
-                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Fayruz",
                                     args![
@@ -458,10 +426,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
+                            2 => {
                                 if (((ctx.call(Function::CountItem, vec![Val::from(7352)])?.is_true()
                                     || ctx.call(Function::CountItem, vec![Val::from(7353)])?.is_true())
                                     || ctx.call(Function::CountItem, vec![Val::from(7354)])?.is_true())
@@ -557,10 +522,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                                matched5 = true;
-                            }
-                            if matched5 {
+                            3 => {
                                 ctx.lines_as(
                                     "Fayruz",
                                     args![
@@ -587,6 +549,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched1 && subject1.loosely_equals(&Val::from(5)) {
@@ -996,17 +959,11 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                             ],
                         )?;
                         ctx.next()?;
-                        'b13: {
-                            let subject13 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("I found another Transparent Plate.:Just visiting, really.")],
-                            )?);
-                            let mut matched13 = false;
-                            let no_case13 = !subject13.loosely_equals(&Val::from(1)) && !subject13.loosely_equals(&Val::from(2));
-                            if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                                matched13 = true;
-                            }
-                            if matched13 {
+                            )? {
+                            1 => {
                                 if (((ctx.call(Function::CountItem, vec![Val::from(7352)])?.is_true()
                                     || ctx.call(Function::CountItem, vec![Val::from(7353)])?.is_true())
                                     || ctx.call(Function::CountItem, vec![Val::from(7354)])?.is_true())
@@ -1063,10 +1020,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                                matched13 = true;
-                            }
-                            if matched13 {
+                            2 => {
                                 ctx.lines_as(
                                     "Fayruz",
                                     args![
@@ -1081,6 +1035,7 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                 }
@@ -1093,668 +1048,646 @@ fn scholar_run(ctx: &Ctx, mut step: ScholarStep, args: Vec<Val>) -> Result<Val, 
                 runtime::local_set(&mut l_arg, &Val::from(base + 1), runtime::arg(&args, 1, Val::from(0)), false);
                 runtime::local_set(&mut l_arg, &Val::from(base + 2), runtime::arg(&args, 2, Val::from(0)), false);
                 runtime::local_set(&mut l_arg, &Val::from(base + 3), runtime::arg(&args, 3, Val::from(0)), false);
-                'b14: {
-                    let subject14 = ctx.var("yuno_hist").get()?;
-                    let mut matched14 = false;
-                    let no_case14 = !subject14.loosely_equals(&Val::from(4))
-                        && !subject14.loosely_equals(&Val::from(5))
-                        && !subject14.loosely_equals(&Val::from(7))
-                        && !subject14.loosely_equals(&Val::from(9));
-                    if !matched14 && subject14.loosely_equals(&Val::from(4)) {
-                        matched14 = true;
-                    }
-                    if matched14 {
+                let subject14 = ctx.var("yuno_hist").get()?;
+                if subject14 == 4 {
+                    ctx.lines_as(
+                        "Fayruz",
+                        args![
+                            "Thank you so much,",
+                            "you don't know what",
+                            "this means to me! Okay,",
+                            "please relax and take a",
+                            "seat. Close your eyes while",
+                            "I tell you this ancient story."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFFayruz begins to",
+                        "relate an ancient tale",
+                        "about Juperos that seems",
+                        "typical for a classic story, but her way of storytelling subtly",
+                        "draws you into a vicarious, yet extremely vivid experience."
+                    ])?;
+                    ctx.next()?;
+                    ctx.lines(args![
+                        "^3355FFYou feel the protagonist's",
+                        "glories and tragedies as if",
+                        "you were actually there with",
+                        "the hero on his journeys. The",
+                        "tale eventually comes to an end",
+                        "and you awaken from the trance,",
+                        "gently brought back to reality.^000000"
+                    ])?;
+                    ctx.call(
+                        Function::DelItem,
+                        vec![runtime::local_get(&l_arg, &Val::from(0), false), Val::from(1)],
+                    )?;
+                    ctx.var("yuno_hist").set(Val::from(5))?;
+                    ctx.var("jupe_hist").set(runtime::local_get(&l_arg, &Val::from(1), false))?;
+                    ctx.call(Function::GetExperience, vec![Val::from(100000), Val::from(0)])?;
+                    ctx.call(Function::ChangeQuest, vec![Val::from(11019), Val::from(11020)])?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Fayruz",
+                        args![
+                            "Everyone can relate",
+                            "to these old, classic",
+                            "stories. I hope this tale had",
+                            "as meaning for you as it did",
+                            "for me when I first heard it."
+                        ],
+                    )?;
+                    ctx.next()?;
+                    ctx.lines_as(
+                        "Fayruz",
+                        args![
+                            "If you can find me",
+                            "another artifact from",
+                            "Juperos, I'll share another",
+                            "tale like that with you. Now",
+                            "how does that sound? Okay",
+                            "then, I'll see you, adventurer~"
+                        ],
+                    )?;
+                    ctx.close_window()?;
+                    return Err(Stop::End);
+                } else if subject14 == 5 {
+                    if ((ctx
+                        .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
+                        .is_true()
+                        || ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
+                            .is_true())
+                        || ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
+                            .is_true())
+                    {
                         ctx.lines_as(
                             "Fayruz",
                             args![
-                                "Thank you so much,",
-                                "you don't know what",
-                                "this means to me! Okay,",
-                                "please relax and take a",
-                                "seat. Close your eyes while",
-                                "I tell you this ancient story."
+                                "Oh, that's unexpected.",
+                                "This Transparent Plate",
+                                "seems to have been made",
+                                "in a different era than the",
+                                "one you gave me earlier.",
+                                "How intriguing..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "*Sigh* I really wish",
+                                "that I could explore",
+                                "Juperos on my own, but",
+                                "I'm just not strong enough.",
+                                "In a way, I'm quite jealous of you. But it can't be helped..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "You know, that reminds",
+                                "me of this great story of",
+                                "a tragic hero that I'd like to",
+                                "share with you. Let your",
+                                "mind wander as I relate this ageless, yet bittersweet tale..."
                             ],
                         )?;
                         ctx.next()?;
                         ctx.lines(args![
-                            "^3355FFFayruz begins to",
-                            "relate an ancient tale",
-                            "about Juperos that seems",
-                            "typical for a classic story, but her way of storytelling subtly",
-                            "draws you into a vicarious, yet extremely vivid experience."
+                            "^3355FFFayruz tells you a story",
+                            "with a bright beginning, full",
+                            "of hope that fills you with the",
+                            "bliss of the heavens, but then",
+                            "suddenly plummets you into all the despair and torment of hell.^000000"
                         ])?;
                         ctx.next()?;
                         ctx.lines(args![
-                            "^3355FFYou feel the protagonist's",
-                            "glories and tragedies as if",
-                            "you were actually there with",
-                            "the hero on his journeys. The",
-                            "tale eventually comes to an end",
-                            "and you awaken from the trance,",
-                            "gently brought back to reality.^000000"
+                            "^3355FFThe story finally",
+                            "reaches its ending",
+                            "and you're surprised",
+                            "to find yourself sitting",
+                            "in the Juno Library.^000000"
                         ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "I know it's a very",
+                                "depressing story, but",
+                                "I hope you enjoyed it.",
+                                "I think you'd agree that",
+                                "it contains a truth about",
+                                "mankind that can't be ignored."
+                            ],
+                        )?;
+                        if ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
+                            .is_true()
+                        {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(0), false), Val::from(1)],
+                            )?;
+                            if runtime::local_get(&l_arg, &Val::from(0), false) == 7352 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(1)))?;
+                            } else {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
+                            }
+                        } else if ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
+                            .is_true()
+                        {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
+                            )?;
+                            if runtime::local_get(&l_arg, &Val::from(1), false) == 7353 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
+                            } else {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
+                            }
+                        } else {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
+                            )?;
+                            if runtime::local_get(&l_arg, &Val::from(2), false) == 7354 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
+                            } else {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
+                            }
+                        }
+                        ctx.var("yuno_hist").set(Val::from(6))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(11020), Val::from(11021)])?;
+                        ctx.call(Function::GetExperience, vec![Val::from(100000), Val::from(0)])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "By now I'm sure you've",
+                                "figured that these classic",
+                                "tales are like condensed",
+                                "experiences, refined and",
+                                "immutable truths that we",
+                                "can see in our own reality."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "If you find more of",
+                                "these Transparent",
+                                "Plates in Juperos, I'd be",
+                                "very happy to share another",
+                                ((Val::from("story with you, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("."))
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ctx
+                        .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
+                        .is_true()
+                    {
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Oh, this one seems",
+                                "to have been created",
+                                "in a similar era as the",
+                                "one you gave me earlier.",
+                                "I'm not sure how much new",
+                                "information this may provide..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Still, I'm sure this will",
+                                "helpful in my research. I just",
+                                "won't be as making progress",
+                                "as quickly as I had projected.",
+                                "Please, I'd like you to take this as a token of my gratitude."
+                            ],
+                        )?;
                         ctx.call(
                             Function::DelItem,
-                            vec![runtime::local_get(&l_arg, &Val::from(0), false), Val::from(1)],
+                            vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
                         )?;
-                        ctx.var("yuno_hist").set(Val::from(5))?;
-                        ctx.var("jupe_hist").set(runtime::local_get(&l_arg, &Val::from(1), false))?;
-                        ctx.call(Function::GetExperience, vec![Val::from(100000), Val::from(0)])?;
-                        ctx.call(Function::ChangeQuest, vec![Val::from(11019), Val::from(11020)])?;
+                        ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
                         ctx.next()?;
                         ctx.lines_as(
                             "Fayruz",
                             args![
-                                "Everyone can relate",
-                                "to these old, classic",
-                                "stories. I hope this tale had",
-                                "as meaning for you as it did",
-                                "for me when I first heard it."
+                                "Now if you'll excuse",
+                                "me, I need to go back",
+                                "to compiling my research...",
+                                "Thank you so much for",
+                                ((Val::from("your help, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("."))
                             ],
                         )?;
-                        ctx.next()?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
                         ctx.lines_as(
                             "Fayruz",
                             args![
-                                "If you can find me",
-                                "another artifact from",
-                                "Juperos, I'll share another",
-                                "tale like that with you. Now",
-                                "how does that sound? Okay",
-                                "then, I'll see you, adventurer~"
+                                "Oh. There isn't anything",
+                                "here that would help in my",
+                                "research, but thank you anyway.",
+                                "If you find anything else while",
+                                "you're in Juperos, please come back and show it to me, alright?"
                             ],
                         )?;
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched14 && subject14.loosely_equals(&Val::from(5)) {
-                        matched14 = true;
-                    }
-                    if matched14 {
-                        if ((ctx
-                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
-                            .is_true()
-                            || ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
-                                .is_true())
-                            || ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
-                                .is_true())
-                        {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Oh, that's unexpected.",
-                                    "This Transparent Plate",
-                                    "seems to have been made",
-                                    "in a different era than the",
-                                    "one you gave me earlier.",
-                                    "How intriguing..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "*Sigh* I really wish",
-                                    "that I could explore",
-                                    "Juperos on my own, but",
-                                    "I'm just not strong enough.",
-                                    "In a way, I'm quite jealous of you. But it can't be helped..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "You know, that reminds",
-                                    "me of this great story of",
-                                    "a tragic hero that I'd like to",
-                                    "share with you. Let your",
-                                    "mind wander as I relate this ageless, yet bittersweet tale..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFFayruz tells you a story",
-                                "with a bright beginning, full",
-                                "of hope that fills you with the",
-                                "bliss of the heavens, but then",
-                                "suddenly plummets you into all the despair and torment of hell.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFThe story finally",
-                                "reaches its ending",
-                                "and you're surprised",
-                                "to find yourself sitting",
-                                "in the Juno Library.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "I know it's a very",
-                                    "depressing story, but",
-                                    "I hope you enjoyed it.",
-                                    "I think you'd agree that",
-                                    "it contains a truth about",
-                                    "mankind that can't be ignored."
-                                ],
-                            )?;
-                            if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
-                                .is_true()
-                            {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(0), false), Val::from(1)],
-                                )?;
-                                if runtime::local_get(&l_arg, &Val::from(0), false) == 7352 {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(1)))?;
-                                } else {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                                }
-                            } else if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
-                                .is_true()
-                            {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
-                                )?;
-                                if runtime::local_get(&l_arg, &Val::from(1), false) == 7353 {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                                } else {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                }
-                            } else {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
-                                )?;
-                                if runtime::local_get(&l_arg, &Val::from(2), false) == 7354 {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                } else {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
-                                }
-                            }
-                            ctx.var("yuno_hist").set(Val::from(6))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(11020), Val::from(11021)])?;
-                            ctx.call(Function::GetExperience, vec![Val::from(100000), Val::from(0)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "By now I'm sure you've",
-                                    "figured that these classic",
-                                    "tales are like condensed",
-                                    "experiences, refined and",
-                                    "immutable truths that we",
-                                    "can see in our own reality."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "If you find more of",
-                                    "these Transparent",
-                                    "Plates in Juperos, I'd be",
-                                    "very happy to share another",
-                                    ((Val::from("story with you, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                        + Val::from("."))
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else if ctx
-                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
-                            .is_true()
-                        {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Oh, this one seems",
-                                    "to have been created",
-                                    "in a similar era as the",
-                                    "one you gave me earlier.",
-                                    "I'm not sure how much new",
-                                    "information this may provide..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Still, I'm sure this will",
-                                    "helpful in my research. I just",
-                                    "won't be as making progress",
-                                    "as quickly as I had projected.",
-                                    "Please, I'd like you to take this as a token of my gratitude."
-                                ],
-                            )?;
-                            ctx.call(
-                                Function::DelItem,
-                                vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
-                            )?;
-                            ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Now if you'll excuse",
-                                    "me, I need to go back",
-                                    "to compiling my research...",
-                                    "Thank you so much for",
-                                    ((Val::from("your help, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                        + Val::from("."))
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Oh. There isn't anything",
-                                    "here that would help in my",
-                                    "research, but thank you anyway.",
-                                    "If you find anything else while",
-                                    "you're in Juperos, please come back and show it to me, alright?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    if !matched14 && subject14.loosely_equals(&Val::from(7)) {
-                        matched14 = true;
-                    }
-                    if matched14 {
-                        if (ctx
-                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
-                            .is_true()
-                            || ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
-                                .is_true())
-                        {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Is this another",
-                                    "Transparent Plate?",
-                                    "Yes, it's quite different",
-                                    "than the last one you",
-                                    "brought over to me...",
-                                    "This is so exciting!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Oh. You must be thinking",
-                                    "that I'm a complete academia",
-                                    "addict. Well, my life might be",
-                                    "a little uneventful, but there",
-                                    "are other things I think about!",
-                                    "Like, well... It's weird but..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "You see, there's this",
-                                    "guy that I like. I'm not sure",
-                                    "where he might be now, but",
-                                    "his name is Nadim Amal. He's",
-                                    "my friend's brother who I first",
-                                    "met 10 years ago. ^333333*Sigh...*^000000"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Just recently, I saw",
-                                    "him with his sister, my",
-                                    "friend from Morocc. It's",
-                                    "weird to think that I'd have",
-                                    "these feelings for him after",
-                                    "all this time, isn't it? Oh...!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "I really should repay",
-                                    "you for this Transparent",
-                                    "Plate. Why don't I tell you",
-                                    "the scariest story that I know?"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFFayruz tells you a",
-                                "creepy horror story that",
-                                "makes you shiver with fear.",
-                                "You've heard other ghost",
-                                "stories, but you've never been",
-                                "so deeply immersed in one before.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "It is only when the",
-                                "story ends and you return",
-                                "to your senses that you notice that you're soaked in cold sweat.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "It may be a natural",
-                                    "response, but all people",
-                                    "fear the unknown in one way",
-                                    "or another. Scary stories are",
-                                    "appealing because we actually",
-                                    "like the strange and grotesque."
-                                ],
-                            )?;
-                            if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
-                                .is_true()
-                            {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(0), false), Val::from(1)],
-                                )?;
-                                if runtime::local_get(&l_arg, &Val::from(0), false) == 7352 {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(1)))?;
-                                } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7353 {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                                } else {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                }
-                            } else if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
-                                .is_true()
-                            {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
-                                )?;
-                                if runtime::local_get(&l_arg, &Val::from(1), false) == 7353 {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                                } else if runtime::local_get(&l_arg, &Val::from(1), false) == 7354 {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                                } else {
-                                    ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
-                                }
-                            }
-                            ctx.var("yuno_hist").set(Val::from(8))?;
-                            ctx.call(Function::ChangeQuest, vec![Val::from(11021), Val::from(11022)])?;
-                            ctx.call(Function::GetExperience, vec![Val::from(100000), Val::from(0)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Well... That's just my",
-                                    "opinion. Anyway, if you",
-                                    "find anything else in Juperos",
-                                    "that may help in my research,",
-                                    "please come back and show it",
-                                    "to me, alright? See you later~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else if (ctx
-                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
-                            .is_true()
-                            || ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
-                                .is_true())
-                        {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Oh, this one seems",
-                                    "to have been created",
-                                    "in a similar era as the",
-                                    "one you gave me earlier.",
-                                    "I'm not sure how much new",
-                                    "information this may provide..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Still, I'm sure this will",
-                                    "helpful in my research. I just",
-                                    "won't be as making progress",
-                                    "as quickly as I had projected.",
-                                    "Please, I'd like you to take this as a token of my gratitude."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Now if you'll excuse",
-                                    "me, I need to go back",
-                                    "to compiling my research...",
-                                    "Thank you so much for",
-                                    ((Val::from("your help, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
-                                        + Val::from("."))
-                                ],
-                            )?;
-                            if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
-                                .is_true()
-                            {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
-                                )?;
-                            } else if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
-                                .is_true()
-                            {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
-                                )?;
-                            }
-                            ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Oh. There isn't anything",
-                                    "here that would help in my",
-                                    "research, but thank you anyway.",
-                                    "If you find anything else while",
-                                    "you're in Juperos, please come back and show it to me, alright?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                    }
-                    if !matched14 && subject14.loosely_equals(&Val::from(9)) {
-                        matched14 = true;
-                    }
-                    if matched14 {
+                } else if subject14 == 7 {
+                    if (ctx
+                        .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
+                        .is_true()
+                        || ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
+                            .is_true())
+                    {
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Is this another",
+                                "Transparent Plate?",
+                                "Yes, it's quite different",
+                                "than the last one you",
+                                "brought over to me...",
+                                "This is so exciting!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Oh. You must be thinking",
+                                "that I'm a complete academia",
+                                "addict. Well, my life might be",
+                                "a little uneventful, but there",
+                                "are other things I think about!",
+                                "Like, well... It's weird but..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "You see, there's this",
+                                "guy that I like. I'm not sure",
+                                "where he might be now, but",
+                                "his name is Nadim Amal. He's",
+                                "my friend's brother who I first",
+                                "met 10 years ago. ^333333*Sigh...*^000000"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Just recently, I saw",
+                                "him with his sister, my",
+                                "friend from Morocc. It's",
+                                "weird to think that I'd have",
+                                "these feelings for him after",
+                                "all this time, isn't it? Oh...!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "I really should repay",
+                                "you for this Transparent",
+                                "Plate. Why don't I tell you",
+                                "the scariest story that I know?"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^3355FFFayruz tells you a",
+                            "creepy horror story that",
+                            "makes you shiver with fear.",
+                            "You've heard other ghost",
+                            "stories, but you've never been",
+                            "so deeply immersed in one before.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "It is only when the",
+                            "story ends and you return",
+                            "to your senses that you notice that you're soaked in cold sweat.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "It may be a natural",
+                                "response, but all people",
+                                "fear the unknown in one way",
+                                "or another. Scary stories are",
+                                "appealing because we actually",
+                                "like the strange and grotesque."
+                            ],
+                        )?;
                         if ctx
                             .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
                             .is_true()
                         {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Oooh...! This one is",
-                                    "much different than the",
-                                    "other ones you gave me",
-                                    "before. This should provide",
-                                    "a wealth of brand new insights",
-                                    "into the Juperos civilization!"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "All the Transparent",
-                                    "Plates you've given me",
-                                    "should contain more than",
-                                    "enough data for me to fully",
-                                    "complete my research thesis.",
-                                    "Once again, thank you so much~"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Still, that doesn't mean that",
-                                    "I will stop collecting data for",
-                                    "my research. Anyway, I have one last story to tell you, about",
-                                    "a man of pure heart chosen by the gods to serve and protect mankind."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "For this purpose he was given",
-                                    "gaudy armor which contained",
-                                    "amazing powers, as well as a",
-                                    "book detailing the instructions",
-                                    "for its use. However, he promptly",
-                                    "lost these instructions..."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFThe story about the",
-                                "greatest Juperosian hero",
-                                "that Fayruz tells you is very",
-                                "humorous at first, but then it",
-                                "covers the entire spectrum",
-                                "of emotion and humanity..."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^3355FFThe story ends and you",
-                                "are left with a swelling",
-                                "feeling of indefatigable",
-                                "hope and inspiration...",
-                                "You can make it if you try!^000000"
-                            ])?;
-                            if runtime::local_get(&l_arg, &Val::from(0), false) == 7352 {
-                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(1)))?;
-                            } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7353 {
-                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
-                            } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7354 {
-                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
-                            } else {
-                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
-                            }
-                            ctx.var("yuno_hist").set(Val::from(10))?;
-                            ctx.call(Function::CompleteQuest, vec![Val::from(11022)])?;
                             ctx.call(
                                 Function::DelItem,
                                 vec![runtime::local_get(&l_arg, &Val::from(0), false), Val::from(1)],
                             )?;
-                            ctx.call(Function::GetExperience, vec![Val::from(100000), Val::from(0)])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Well, that is the",
-                                    "last and the best story",
-                                    "that I have to share",
-                                    "with you. Perhaps next",
-                                    "time, I'll fill you in on my",
-                                    "research progress~"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else if ((ctx
+                            if runtime::local_get(&l_arg, &Val::from(0), false) == 7352 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(1)))?;
+                            } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7353 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
+                            } else {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
+                            }
+                        } else if ctx
                             .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
                             .is_true()
-                            || ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
-                                .is_true())
-                            || ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
-                                .is_true())
                         {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args!["Hmm...", "This one seems to be created in a similar time", "as the previous one."],
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
                             )?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Don't you worry.",
-                                    "This will help my research of course,",
-                                    "although I do not think this will",
-                                    "help me in advancing my research",
-                                    "with a great speed unlike this other one."
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Fayruz", args!["Please take this as a token of my gratitude."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Fayruz", args!["Now, excuse me. I need to go back to my research."])?;
-                            if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
-                                .is_true()
-                            {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
-                                )?;
-                            } else if ctx
-                                .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
-                                .is_true()
-                            {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
-                                )?;
+                            if runtime::local_get(&l_arg, &Val::from(1), false) == 7353 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
+                            } else if runtime::local_get(&l_arg, &Val::from(1), false) == 7354 {
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
                             } else {
-                                ctx.call(
-                                    Function::DelItem,
-                                    vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
-                                )?;
+                                ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
                             }
-                            ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        } else {
-                            ctx.lines_as(
-                                "Fayruz",
-                                args![
-                                    "Oh. There isn't anything",
-                                    "here that would help in my",
-                                    "research, but thank you anyway.",
-                                    "If you find anything else while",
-                                    "you're in Juperos, please come back and show it to me, alright?"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
                         }
+                        ctx.var("yuno_hist").set(Val::from(8))?;
+                        ctx.call(Function::ChangeQuest, vec![Val::from(11021), Val::from(11022)])?;
+                        ctx.call(Function::GetExperience, vec![Val::from(100000), Val::from(0)])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Well... That's just my",
+                                "opinion. Anyway, if you",
+                                "find anything else in Juperos",
+                                "that may help in my research,",
+                                "please come back and show it",
+                                "to me, alright? See you later~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if (ctx
+                        .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
+                        .is_true()
+                        || ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
+                            .is_true())
+                    {
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Oh, this one seems",
+                                "to have been created",
+                                "in a similar era as the",
+                                "one you gave me earlier.",
+                                "I'm not sure how much new",
+                                "information this may provide..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Still, I'm sure this will",
+                                "helpful in my research. I just",
+                                "won't be as making progress",
+                                "as quickly as I had projected.",
+                                "Please, I'd like you to take this as a token of my gratitude."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Now if you'll excuse",
+                                "me, I need to go back",
+                                "to compiling my research...",
+                                "Thank you so much for",
+                                ((Val::from("your help, ") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?)
+                                    + Val::from("."))
+                            ],
+                        )?;
+                        if ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
+                            .is_true()
+                        {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
+                            )?;
+                        } else if ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
+                            .is_true()
+                        {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
+                            )?;
+                        }
+                        ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Oh. There isn't anything",
+                                "here that would help in my",
+                                "research, but thank you anyway.",
+                                "If you find anything else while",
+                                "you're in Juperos, please come back and show it to me, alright?"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    }
+                } else if subject14 == 9 {
+                    if ctx
+                        .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(0), false)])?
+                        .is_true()
+                    {
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Oooh...! This one is",
+                                "much different than the",
+                                "other ones you gave me",
+                                "before. This should provide",
+                                "a wealth of brand new insights",
+                                "into the Juperos civilization!"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "All the Transparent",
+                                "Plates you've given me",
+                                "should contain more than",
+                                "enough data for me to fully",
+                                "complete my research thesis.",
+                                "Once again, thank you so much~"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Still, that doesn't mean that",
+                                "I will stop collecting data for",
+                                "my research. Anyway, I have one last story to tell you, about",
+                                "a man of pure heart chosen by the gods to serve and protect mankind."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "For this purpose he was given",
+                                "gaudy armor which contained",
+                                "amazing powers, as well as a",
+                                "book detailing the instructions",
+                                "for its use. However, he promptly",
+                                "lost these instructions..."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^3355FFThe story about the",
+                            "greatest Juperosian hero",
+                            "that Fayruz tells you is very",
+                            "humorous at first, but then it",
+                            "covers the entire spectrum",
+                            "of emotion and humanity..."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^3355FFThe story ends and you",
+                            "are left with a swelling",
+                            "feeling of indefatigable",
+                            "hope and inspiration...",
+                            "You can make it if you try!^000000"
+                        ])?;
+                        if runtime::local_get(&l_arg, &Val::from(0), false) == 7352 {
+                            ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(1)))?;
+                        } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7353 {
+                            ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(2)))?;
+                        } else if runtime::local_get(&l_arg, &Val::from(0), false) == 7354 {
+                            ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(4)))?;
+                        } else {
+                            ctx.var("jupe_hist").set((ctx.var("jupe_hist").get()? + Val::from(8)))?;
+                        }
+                        ctx.var("yuno_hist").set(Val::from(10))?;
+                        ctx.call(Function::CompleteQuest, vec![Val::from(11022)])?;
+                        ctx.call(
+                            Function::DelItem,
+                            vec![runtime::local_get(&l_arg, &Val::from(0), false), Val::from(1)],
+                        )?;
+                        ctx.call(Function::GetExperience, vec![Val::from(100000), Val::from(0)])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Well, that is the",
+                                "last and the best story",
+                                "that I have to share",
+                                "with you. Perhaps next",
+                                "time, I'll fill you in on my",
+                                "research progress~"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if ((ctx
+                        .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
+                        .is_true()
+                        || ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
+                            .is_true())
+                        || ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(3), false)])?
+                            .is_true())
+                    {
+                        ctx.lines_as(
+                            "Fayruz",
+                            args!["Hmm...", "This one seems to be created in a similar time", "as the previous one."],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Don't you worry.",
+                                "This will help my research of course,",
+                                "although I do not think this will",
+                                "help me in advancing my research",
+                                "with a great speed unlike this other one."
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Fayruz", args!["Please take this as a token of my gratitude."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Fayruz", args!["Now, excuse me. I need to go back to my research."])?;
+                        if ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(1), false)])?
+                            .is_true()
+                        {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(1), false), Val::from(1)],
+                            )?;
+                        } else if ctx
+                            .call(Function::CountItem, vec![runtime::local_get(&l_arg, &Val::from(2), false)])?
+                            .is_true()
+                        {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(2), false), Val::from(1)],
+                            )?;
+                        } else {
+                            ctx.call(
+                                Function::DelItem,
+                                vec![runtime::local_get(&l_arg, &Val::from(3), false), Val::from(1)],
+                            )?;
+                        }
+                        ctx.call(Function::GetItem, vec![Val::from(644), Val::from(1)])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else {
+                        ctx.lines_as(
+                            "Fayruz",
+                            args![
+                                "Oh. There isn't anything",
+                                "here that would help in my",
+                                "research, but thank you anyway.",
+                                "If you find anything else while",
+                                "you're in Juperos, please come back and show it to me, alright?"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
                 return Ok(Val::from(0));
@@ -1792,20 +1725,11 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     " 3. Theory Behind Its Fall^000000"
                 ])?;
                 ctx.next()?;
-                'b2: {
-                    let subject2 = Val::from(runtime::select_values(
+                match runtime::select_values(
                         ctx,
                         &[Val::from("Preface:Juperos Background:Theory Behind Its Fall:Leave it alone.")],
-                    )?);
-                    let mut matched2 = false;
-                    let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                        && !subject2.loosely_equals(&Val::from(2))
-                        && !subject2.loosely_equals(&Val::from(3))
-                        && !subject2.loosely_equals(&Val::from(4));
-                    if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    )? {
+                    1 => {
                         ctx.lines(args![
                             "^8B6914Scholars are certain",
                             "that the Juperos civilization",
@@ -1863,10 +1787,7 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    2 => {
                         if ctx.var("yuno_hist").get()?.number()? < 9 {
                             ctx.lines(args!["^8B6914...", "......", "..........^000000"])?;
                             ctx.next()?;
@@ -1930,10 +1851,7 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    3 => {
                         if ctx.var("yuno_hist").get()?.number()? < 10 {
                             ctx.lines(args!["^8B6914...", "......", "..........^000000"])?;
                             ctx.next()?;
@@ -2033,10 +1951,7 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
-                    if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                        matched2 = true;
-                    }
-                    if matched2 {
+                    4 => {
                         ctx.lines_as(
                             ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                             args![
@@ -2049,16 +1964,11 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.close_window()?;
                         return Err(Stop::End);
                     }
+                    _ => {}
                 }
             }
-            'b3: {
-                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Preface:Close the file.")])?);
-                let mut matched3 = false;
-                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                    matched3 = true;
-                }
-                if matched3 {
+            match runtime::select_values(ctx, &[Val::from("Preface:Close the file.")])? {
+                1 => {
                     ctx.lines(args![
                         "^8B6914Scholars are certain",
                         "that the Juperos civilization",
@@ -2104,10 +2014,7 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                    matched3 = true;
-                }
-                if matched3 {
+                2 => {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                         args![
@@ -2121,6 +2028,7 @@ fn bundle_of_files_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         }
         if !matched1 && subject1.loosely_equals(&Val::from(2)) {
@@ -2286,14 +2194,8 @@ fn bronze_statue_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "Bronze Statue's rod.^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Investigate:Ignore it")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Investigate:Ignore it")])? {
+            1 => {
                 ctx.lines(args![
                     "^3355FFIt's an inscription that's",
                     "written in an old language",
@@ -2343,13 +2245,11 @@ fn bronze_statue_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     Ok(Val::from(0))
@@ -2434,18 +2334,11 @@ fn popular_feasts_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         "Muha Books, Co.^000000"
     ])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from(" 1. Fried Yoyo Tails: 14. Poring Salad: 252. Beak Soup")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 =
-            !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2)) && !subject1.loosely_equals(&Val::from(3));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines(args![
                 "^8B6914...",
                 "If possible, try",
@@ -2458,10 +2351,7 @@ fn popular_feasts_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                 args![
@@ -2474,10 +2364,7 @@ fn popular_feasts_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             ctx.lines(args![
                 "^8B6914...",
                 "Fry the cut beaks",
@@ -2499,6 +2386,7 @@ fn popular_feasts_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -2523,14 +2411,8 @@ pub fn hamerun_rat_hunter(ctx: &Ctx) -> Script {
 fn red_book_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines(args!["^3355FFYou find a book", "with red binding.^000000"])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Read.:Leave it alone.")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Read.:Leave it alone.")])? {
+        1 => {
             ctx.mes("^8B6914...^000000")?;
             ctx.next()?;
             ctx.lines(args!["^8B6914...", "......^000000"])?;
@@ -2572,10 +2454,7 @@ fn red_book_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                 args![
@@ -2590,6 +2469,7 @@ fn red_book_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -2606,14 +2486,8 @@ fn scroll_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         "layer of fine dust.^000000"
     ])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Peruse:Leave it alone")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Peruse:Leave it alone")])? {
+        1 => {
             ctx.lines(args![
                 "^8B6914Item Upgrade Introduction",
                 " ",
@@ -2657,10 +2531,7 @@ fn scroll_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                 args![
@@ -2674,6 +2545,7 @@ fn scroll_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -2689,14 +2561,8 @@ fn paper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         "like a personal letter.^000000"
     ])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Read it.:Leave it alone.")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Read it.:Leave it alone.")])? {
+        1 => {
             if ctx.var("yuno_hist").get()?.number()? > 7 {
                 ctx.lines(args![
                     "^8B6914P.S.",
@@ -2744,10 +2610,7 @@ fn paper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                 args!["I guess I better", "not look at this.", "I mean, I might", "regret reading it."],
@@ -2755,6 +2618,7 @@ fn paper_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     Ok(Val::from(0))
 }
@@ -2857,17 +2721,11 @@ fn jupe_goto_1_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         "Wrapping all over me..."
     ])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[Val::from("Ah, it's so nice...:No! This is wrong!")],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             ctx.lines(args![
                 ((Val::from("^777777[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]^000000")),
                 "Ahhhh...",
@@ -2878,12 +2736,8 @@ fn jupe_goto_1_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             ctx.call(Function::StopNpcTimer, vec![])?;
             ctx.call(Function::Warp, vec![Val::from("juperos_02"), Val::from(128), Val::from(278)])?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines(args![
                 ((Val::from("^777777[") + ctx.call(Function::StrCharInfo, vec![Val::from(0)])?) + Val::from("]^000000")),
                 "N-No! This is",
@@ -2894,8 +2748,8 @@ fn jupe_goto_1_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             ctx.call(Function::StopNpcTimer, vec![])?;
             ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(96), Val::from(91)])?;
-            break 'b1;
         }
+        _ => {}
     }
     return Err(Stop::End);
 }
@@ -3539,14 +3393,8 @@ fn hole_1_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "some kind of object...^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])? {
+            1 => {
                 if ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0 {
                     ctx.lines(args![
                         "^3355FFYou take out your",
@@ -3601,10 +3449,7 @@ fn hole_1_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
@@ -3613,6 +3458,7 @@ fn hole_1_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -4383,14 +4229,8 @@ fn hole_1_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "some kind of object...^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])? {
+            1 => {
                 if ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0 {
                     ctx.lines(args![
                         "^3355FFYou take out your",
@@ -4444,12 +4284,8 @@ fn hole_1_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
@@ -4458,6 +4294,7 @@ fn hole_1_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -5255,14 +5092,8 @@ fn hole_1_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "some kind of object...^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])? {
+            1 => {
                 if ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0 {
                     ctx.lines(args![
                         "^3355FFYou take out your",
@@ -5317,10 +5148,7 @@ fn hole_1_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
@@ -5329,6 +5157,7 @@ fn hole_1_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.lines(args![
@@ -6147,14 +5976,8 @@ fn hole_1_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "some kind of object...^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])? {
+            1 => {
                 if ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0 {
                     ctx.lines(args![
                         "^3355FFYou take out your",
@@ -6208,12 +6031,8 @@ fn hole_1_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
@@ -6222,6 +6041,7 @@ fn hole_1_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.lines(args![
@@ -6962,14 +6782,8 @@ pub fn monster2_1_4_onmymobdead(ctx: &Ctx) -> Script {
 fn lever_ufe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines(args!["^3355FFIt's a lever", "whose function", "is not known to you.^000000"])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Pull.:Cancel.")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Pull.:Cancel.")])? {
+        1 => {
             if ctx.var("$@juprearea1inuse").get()? == 1 {
                 ctx.close_window()?;
                 return Err(Stop::End);
@@ -6980,10 +6794,7 @@ fn lever_ufe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                 args!["Pull this lever?", "I don't even know", "what will happen..."],
@@ -6991,6 +6802,7 @@ fn lever_ufe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -7100,14 +6912,8 @@ fn hole_2_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "some kind of object...^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])? {
+            1 => {
                 if ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0 {
                     ctx.lines(args![
                         "^3355FFYou take out your",
@@ -7162,10 +6968,7 @@ fn hole_2_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
@@ -7174,6 +6977,7 @@ fn hole_2_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("1"), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -7944,14 +7748,8 @@ fn hole_2_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "some kind of object...^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])? {
+            1 => {
                 if ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0 {
                     ctx.lines(args![
                         "^3355FFYou take out your",
@@ -8005,12 +7803,8 @@ fn hole_2_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
@@ -8019,6 +7813,7 @@ fn hole_2_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("2"), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -8816,14 +8611,8 @@ fn hole_2_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "some kind of object...^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])? {
+            1 => {
                 if ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0 {
                     ctx.lines(args![
                         "^3355FFYou take out your",
@@ -8878,10 +8667,7 @@ fn hole_2_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
@@ -8890,6 +8676,7 @@ fn hole_2_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("3"), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.lines(args![
@@ -9721,14 +9508,8 @@ fn hole_2_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "some kind of object...^000000"
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Insert a Crest Piece.:Cancel.")])? {
+            1 => {
                 if ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0 {
                     ctx.lines(args![
                         "^3355FFYou take out your",
@@ -9782,12 +9563,8 @@ fn hole_2_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
                     return Err(Stop::End);
                 }
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                     args!["Hmmm...", "Do I have anything", "that might make this", "weird machine work?"],
@@ -9796,6 +9573,7 @@ fn hole_2_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::Cutin, vec![Val::from("4"), Val::from(255)])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.lines(args![
@@ -10560,14 +10338,8 @@ pub fn monster2_2_4_onmymobdead(ctx: &Ctx) -> Script {
 fn lever_ufe2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
     ctx.lines(args!["^3355FFIt's a lever", "whose function", "is not known to you.^000000"])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Pull.:Cancel.")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Pull.:Cancel.")])? {
+        1 => {
             if ctx.var("$@juprearea2inuse").get()? == 1 {
                 ctx.close_window()?;
                 return Err(Stop::End);
@@ -10578,10 +10350,7 @@ fn lever_ufe2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                 args!["Pull this lever?", "I don't even know", "what will happen..."],
@@ -10589,6 +10358,7 @@ fn lever_ufe2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
+        _ => {}
     }
     ctx.close_window()?;
     return Err(Stop::End);
@@ -10710,14 +10480,8 @@ fn switch_ufe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     && ctx.call(Function::CountItem, vec![Val::from(7357)])?.number()? > 0)
                     && ctx.call(Function::CountItem, vec![Val::from(7358)])?.number()? > 0)
                 {
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Insert all of your Crest Pieces.")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                    match runtime::select_values(ctx, &[Val::from("Insert all of your Crest Pieces.")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^3300FF*Snap!*^000000",
                                 "^3300FFStrangely enough,",
@@ -10733,17 +10497,11 @@ fn switch_ufe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             ctx.call(Function::DelItem, vec![Val::from(7357), Val::from(1)])?;
                             ctx.call(Function::DelItem, vec![Val::from(7358), Val::from(1)])?;
                             ctx.next()?;
-                            'b3: {
-                                let subject3 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("Pull out the Crest Pieces.:Pull the lever.")],
-                                )?);
-                                let mut matched3 = false;
-                                let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
+                                )? {
+                                1 => {
                                     ctx.call(Function::Cutin, vec![Val::from("5"), Val::from(2)])?;
                                     ctx.lines(args![
                                         "^3355FFYou pull out all",
@@ -10759,10 +10517,7 @@ fn switch_ufe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.call(Function::Cutin, vec![Val::from("5"), Val::from(255)])?;
                                     return Err(Stop::End);
                                 }
-                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
+                                2 => {
                                     if ctx.var("$@jupeelevatorinuse").get()? == 1 {
                                         ctx.lines(args![
                                             "^3355FFIt's strange,",
@@ -10793,8 +10548,10 @@ fn switch_ufe_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         return Err(Stop::End);
                                     }
                                 }
+                                _ => {}
                             }
                         }
+                        _ => {}
                     }
                 } else if (((ctx.call(Function::CountItem, vec![Val::from(7356)])?.number()? > 0
                     || ctx.call(Function::CountItem, vec![Val::from(7359)])?.number()? > 0)
@@ -12974,24 +12731,14 @@ fn gate_start_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         "to the previous floor.^000000"
     ])?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Use it.:Ignore it.")])?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+    match runtime::select_values(ctx, &[Val::from("Use it.:Ignore it.")])? {
+        1 => {
             ctx.call(Function::SpecialEffect, vec![ctx.constant("EF_LIGHTSPHERE")?])?;
             ctx.close_window()?;
             ctx.call(Function::StopNpcTimer, vec![])?;
             ctx.call(Function::Warp, vec![Val::from("juperos_02"), Val::from(130), Val::from(142)])?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             ctx.lines_as(
                 ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
                 args!["Not now!", "I can't leave yet!"],
@@ -12999,8 +12746,8 @@ fn gate_start_ontouch_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             ctx.call(Function::StopNpcTimer, vec![])?;
             ctx.call(Function::Warp, vec![Val::from("jupe_gate"), Val::from(50), Val::from(168)])?;
-            break 'b1;
         }
+        _ => {}
     }
     return Err(Stop::End);
 }
@@ -13082,41 +12829,19 @@ fn jupe_goto2f_run(ctx: &Ctx, mut step: JupeGoto2fStep, args: Vec<Val>) -> Resul
                 continue 'machine;
             }
             JupeGoto2fStep::OnTouch => {
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                        && !subject1.loosely_equals(&Val::from(2))
-                        && !subject1.loosely_equals(&Val::from(3))
-                        && !subject1.loosely_equals(&Val::from(4));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(120), Val::from(72)])?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(120), Val::from(112)])?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(79), Val::from(112)])?;
-                        return Err(Stop::End);
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(79), Val::from(72)])?;
-                        return Err(Stop::End);
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(4)])?;
+                if subject1 == 1 {
+                    ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(120), Val::from(72)])?;
+                    return Err(Stop::End);
+                } else if subject1 == 2 {
+                    ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(120), Val::from(112)])?;
+                    return Err(Stop::End);
+                } else if subject1 == 3 {
+                    ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(79), Val::from(112)])?;
+                    return Err(Stop::End);
+                } else if subject1 == 4 {
+                    ctx.call(Function::Warp, vec![Val::from("juperos_01"), Val::from(79), Val::from(72)])?;
+                    return Err(Stop::End);
                 }
                 return Err(Stop::End);
             }
@@ -13165,48 +12890,27 @@ fn juperos_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("jupe_Area1:jupe_Area2:jupe_ele_r:jupe_ele")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 l_loc_s = Val::from("jupe_Area1");
                 l_var_s = Val::from("$@JupreArea1InUse");
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 l_loc_s = Val::from("jupe_Area2");
                 l_var_s = Val::from("$@JupreArea2InUse");
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 l_loc_s = Val::from("jupe_ele_r");
                 l_var_s = Val::from("$@JupeElevatorInUse");
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
+            4 => {
                 l_loc_s = Val::from("jupe_ele");
                 l_var_s = Val::from("$@JupeElevatorInUse2");
-                break 'b1;
             }
+            _ => {}
         }
         ctx.lines_as(
             "Juperos Manager",
@@ -13217,14 +12921,8 @@ fn juperos_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b2: {
-            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes.:No.")])?);
-            let mut matched2 = false;
-            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                matched2 = true;
-            }
-            if matched2 {
+        match runtime::select_values(ctx, &[Val::from("Yes.:No.")])? {
+            1 => {
                 ctx.lines_as(
                     "Juperos Manager",
                     args![
@@ -13245,14 +12943,12 @@ fn juperos_manager_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                matched2 = true;
-            }
-            if matched2 {
+            2 => {
                 ctx.lines_as("Juperos Manager", args!["This command", "has been canceled."])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     Ok(Val::from(0))

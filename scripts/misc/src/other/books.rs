@@ -40,20 +40,11 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l2;
                 }
                 'b2: {
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3))
-                            && !subject3.loosely_equals(&Val::from(4));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        )? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 1: Small Water Monsters]^000000",
                                 "1. Plankton",
@@ -142,12 +133,8 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Tendon, Detonator"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 2: Medium Water Monsters]^000000",
                                 "1. Poring",
@@ -260,12 +247,8 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Lips"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 3: Great Water Monsters]^000000",
                                 "1. Ambernite",
@@ -288,15 +271,12 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Sharp Scale, Gill"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -310,20 +290,11 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l4;
                 }
                 'b4: {
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3))
-                            && !subject5.loosely_equals(&Val::from(4));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        )? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 4: Small Wind Monsters]^000000",
                                 "1. Chonchon",
@@ -398,12 +369,8 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Solid Shell, Zargon"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 5: Medium Wind Monsters]^000000",
                                 "1. Condor",
@@ -438,12 +405,8 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Tail, Zargon"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 6: Great Wind Monsters]^000000",
                                 "1. Joker",
@@ -454,15 +417,12 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: High Heels"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -476,20 +436,11 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l6;
                 }
                 'b6: {
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3))
-                            && !subject7.loosely_equals(&Val::from(4));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        )? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 7: Small Ghost Monsters]^000000",
                                 "1. Whisper",
@@ -508,12 +459,8 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Golden Hair, Trunk"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 8: Medium Ghost Monsters]^000000",
                                 "1. Eggyra",
@@ -525,12 +472,8 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Red Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 9: Great Ghost Monsters]^000000",
                                 "1. Nightmare",
@@ -550,15 +493,12 @@ fn monster_encyclopedia_prt_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Hair, White Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -608,20 +548,11 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l2;
                 }
                 'b2: {
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3))
-                            && !subject3.loosely_equals(&Val::from(4));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        )? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 10: Small Earth Monsters]^000000",
                                 "1. Fabre",
@@ -757,12 +688,8 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Old Pixie's Moustache"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 11: Medium Earth Monsters]^000000",
                                 "1. Willow",
@@ -877,12 +804,8 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Tail, Zargon"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 12: Great Earth Monsters]^000000",
                                 "1. Worm Tail",
@@ -924,15 +847,12 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Maneater Blossom, Stem"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -946,20 +866,11 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l4;
                 }
                 'b4: {
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3))
-                            && !subject5.loosely_equals(&Val::from(4));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        )? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 13: Small Fire Monsters]^000000",
                                 "1. Picky",
@@ -989,12 +900,8 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Fire Arrow"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 14: Medium Fire Monsters]^000000",
                                 "1. Drops",
@@ -1093,12 +1000,8 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Jack'o'Pumpkin, Zargon"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 15: Great Fire Monsters]^000000",
                                 "1. Peco Peco",
@@ -1119,15 +1022,12 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Flame Heart"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -1141,20 +1041,11 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l6;
                 }
                 'b6: {
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3))
-                            && !subject7.loosely_equals(&Val::from(4));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        )? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 16: Small Neutral Monsters]^000000",
                                 "1. Lunatic",
@@ -1199,12 +1090,8 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Jellopy"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        2 => {
                             ctx.lines(args!["^FF0000[Vol. 17: Medium Neutral Monsters]^000000", "^0099FF...^000000"])?;
                             ctx.next()?;
                             ctx.lines(args![
@@ -1222,12 +1109,8 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFmonsters on your own.^000000"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 18: Great Neutral Monsters]^000000",
                                 "1. Golem",
@@ -1239,15 +1122,12 @@ fn monster_encyclopedia_2pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Scell"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -1296,20 +1176,11 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l2;
                 }
                 'b2: {
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3))
-                            && !subject3.loosely_equals(&Val::from(4));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        )? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 19: Small Dark Monsters]^000000",
                                 "1. Thief Bug Egg",
@@ -1370,12 +1241,8 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Little Evil Wing, Zargon"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 20: Medium Dark Monsters]^000000",
                                 "1. Female Thief Bug",
@@ -1443,12 +1310,8 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Witch Starsand"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 21: Great Dark Monsters]^000000",
                                 "1. Isis",
@@ -1469,15 +1332,12 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Emblem"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -1491,20 +1351,11 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l4;
                 }
                 'b4: {
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3))
-                            && !subject5.loosely_equals(&Val::from(4));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        )? {
+                        1 => {
                             ctx.lines(args!["^FF0000[Vol. 22: Small Poison Monsters]^000000", "^0099FF...^000000"])?;
                             ctx.next()?;
                             ctx.lines(args![
@@ -1525,12 +1376,8 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFon your own.^000000"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 23: Medium Posion Monsters]^000000",
                                 "1. Poporing",
@@ -1573,12 +1420,8 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Poisonous Canine, Snake Scale"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 24: Great Poison Monsters]^000000",
                                 "1. Argos",
@@ -1609,15 +1452,12 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Trunk, Gas Mask"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -1631,20 +1471,11 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l6;
                 }
                 'b6: {
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from("Small Sized Monsters:Medium Sized Monsters:Great Sized Monsters:Cancel")],
-                        )?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3))
-                            && !subject7.loosely_equals(&Val::from(4));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        )? {
+                        1 => {
                             ctx.lines(args!["^FF0000[Vol. 25: Small Undead Monsters]^000000", "^0099FF...^000000"])?;
                             ctx.next()?;
                             ctx.lines(args![
@@ -1662,12 +1493,8 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFon your very own.^000000"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 26: Medium Undead Monsters]^000000",
                                 "1. Zombie",
@@ -1781,12 +1608,8 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Horrendous Mouth"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Vol. 27: Great Undead Monsters]^000000",
                                 "1. Evil Druid",
@@ -1797,15 +1620,12 @@ fn monster_encyclopedia_3pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Amulet, White Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -1851,16 +1671,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l2;
                 }
                 'b2: {
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:Cancel")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Ant Hell 1F Monsters]^000000",
                                 "1. Ant Egg",
@@ -1919,12 +1731,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Old Pixie's Moustache"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Ant Hell 2F Monsters]^000000",
                                 "1. Ant Egg",
@@ -1988,15 +1796,12 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Tongue, Ant Jaw"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -2010,18 +1815,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l4;
                 }
                 'b4: {
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:Cancel")])?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3))
-                            && !subject5.loosely_equals(&Val::from(4))
-                            && !subject5.loosely_equals(&Val::from(5));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Geffen Dungeon 1F Monsters]^000000",
                                 "1. Familiar",
@@ -2065,12 +1860,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Spore, Green Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Geffen Dungeon 2F Monsters]^000000",
                                 "1. Familiar",
@@ -2134,12 +1925,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Jack'o'Pumpkin, Zargon"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Geffen Dungeon 3F Monsters]^000000",
                                 "1. Argos",
@@ -2207,12 +1994,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Horseshoe, Blue Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        4 => {
                             ctx.lines(args![
                                 "^FF0000[Geffen Dungeon 4F Monsters]^000000",
                                 "1. Myst",
@@ -2263,15 +2046,12 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Potion, Cursed Ruby, Ruby"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        5 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -2285,19 +2065,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l6;
                 }
                 'b6: {
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:5F:Cancel")])?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3))
-                            && !subject7.loosely_equals(&Val::from(4))
-                            && !subject7.loosely_equals(&Val::from(5))
-                            && !subject7.loosely_equals(&Val::from(6));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:5F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Sphinx 1F Monsters]^000000",
                                 "1. Familiar",
@@ -2351,12 +2120,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Old Blue Box"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Sphinx 2F Monsters]^000000",
                                 "1. Familiar",
@@ -2399,12 +2164,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Fabric"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Sphinx 3F Monsters]^000000",
                                 "1. Matyr",
@@ -2433,12 +2194,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Flame Heart"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        4 => {
                             ctx.lines(args![
                                 "^FF0000[Sphinx 4F Monsters]^000000",
                                 "1. Whisper",
@@ -2467,12 +2224,8 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Snake, White Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(5)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        5 => {
                             ctx.lines(args![
                                 "^FF0000[Sphinx 5F Monsters]^000000",
                                 "1. Whisper",
@@ -2501,15 +2254,12 @@ fn monster_encyclopedia_4pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Snake, White Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(6)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        6 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -2555,16 +2305,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l2;
                 }
                 'b2: {
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:Cancel")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Orc Dungeon 1F Monsters]^000000",
                                 "1. Chonchon",
@@ -2605,12 +2347,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Orc Dungeon 2F Monsters]^000000",
                                 "1. Chonchon",
@@ -2653,15 +2391,12 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Mucus, Yellow Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -2675,19 +2410,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l4;
                 }
                 'b4: {
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:5F:Cancel")])?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3))
-                            && !subject5.loosely_equals(&Val::from(4))
-                            && !subject5.loosely_equals(&Val::from(5))
-                            && !subject5.loosely_equals(&Val::from(6));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:5F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Byalan Cave 1F Monsters]^000000",
                                 "1. Plankton",
@@ -2744,12 +2468,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Mucus"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Byalan Cave 2F Monsters]^000000",
                                 "1. Plankton",
@@ -2817,12 +2537,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Webfoot"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Byalan Cave 3F Monsters]^000000",
                                 "1. Hydra",
@@ -2877,12 +2593,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Heart of Mermaid, Fin"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        4 => {
                             ctx.lines(args![
                                 "^FF0000[Byalan Cave 4F Monsters]^000000",
                                 "1. Hydra",
@@ -2944,12 +2656,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Sharp Scale, Gill"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        5 => {
                             ctx.lines(args![
                                 "^FF0000[Byalan Cave 5F Monsters]^000000",
                                 "1. Marine Sphere",
@@ -3010,15 +2718,12 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Fin, Feather, Gill"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        6 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -3032,18 +2737,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l6;
                 }
                 'b6: {
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("1F.:2F.:3F.:4F.:Cancel.")])?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3))
-                            && !subject7.loosely_equals(&Val::from(4))
-                            && !subject7.loosely_equals(&Val::from(5));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                    match runtime::select_values(ctx, &[Val::from("1F.:2F.:3F.:4F.:Cancel.")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Prontera Culvert 1F Monsters]^000000",
                                 "1. Thief Bug Egg",
@@ -3096,12 +2791,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Skin, Feather, Monster's Feed"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Prontera Culvert 2F Monsters]^000000",
                                 "1. Thief Bug Egg",
@@ -3188,12 +2879,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Jellopy, Garlet, Insect Feeler"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Prontera Culvert 3F Monsters]^000000",
                                 "1. Thief Bug Egg",
@@ -3257,12 +2944,8 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Green Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        4 => {
                             ctx.lines(args![
                                 "^FF0000[Prontera Culvert 4F Monsters]^000000",
                                 "1. Theif Bug Egg",
@@ -3317,15 +3000,12 @@ fn monster_encyclopedia_5pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Ora, Insect Feeler"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(5)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        5 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -3371,17 +3051,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l2;
                 }
                 'b2: {
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:3F:Cancel")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3))
-                            && !subject3.loosely_equals(&Val::from(4));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:3F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Dead Pit 1F Monsters]^000000",
                                 "1. Familiar",
@@ -3424,12 +3095,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Tooth of Bat, Red Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Dead Pit 2F Monsters]^000000",
                                 "1. Martin",
@@ -3469,12 +3136,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Trunk, Gas Mask"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Dead Pit 3F Monsters]^000000",
                                 "1. Skel Worker",
@@ -3504,15 +3167,12 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Amulet, White Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        4 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -3526,19 +3186,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l4;
                 }
                 'b4: {
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:5F:Cancel")])?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3))
-                            && !subject5.loosely_equals(&Val::from(4))
-                            && !subject5.loosely_equals(&Val::from(5))
-                            && !subject5.loosely_equals(&Val::from(6));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:5F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Payon Cave 1F Monsters]^000000",
                                 "1. Familiar",
@@ -3570,12 +3219,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Mucus, Horrendous Mouth"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Payon Cave 2F Monsters]^000000",
                                 "1. Familiar",
@@ -3618,12 +3263,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Skel-Bone, Red Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Payon Cave 3F Monsters]^000000",
                                 "1. Familiar",
@@ -3661,12 +3302,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Red Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        4 => {
                             ctx.lines(args![
                                 "^FF0000[Payon Cave 4F Monsters]^000000",
                                 "1. Soldier Skeleton",
@@ -3706,12 +3343,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Fire Arrow"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(5)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        5 => {
                             ctx.lines(args![
                                 "^FF0000[Payon Cave 5F Monsters]^000000",
                                 "1. Soldier Skeleton",
@@ -3761,15 +3394,12 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Topaz, Elunium"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(6)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        6 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -3783,20 +3413,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l6;
                 }
                 'b6: {
-                    'b7: {
-                        let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:5F:6F:Cancel")])?);
-                        let mut matched7 = false;
-                        let no_case7 = !subject7.loosely_equals(&Val::from(1))
-                            && !subject7.loosely_equals(&Val::from(2))
-                            && !subject7.loosely_equals(&Val::from(3))
-                            && !subject7.loosely_equals(&Val::from(4))
-                            && !subject7.loosely_equals(&Val::from(5))
-                            && !subject7.loosely_equals(&Val::from(6))
-                            && !subject7.loosely_equals(&Val::from(7));
-                        if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:3F:4F:5F:6F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Pyramid 1F Monsters]^000000",
                                 "1. Familiar",
@@ -3830,12 +3448,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Green Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Pyramid 2F Monsters]^000000",
                                 "1. Poporing",
@@ -3875,12 +3489,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Red Herb"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        3 => {
                             ctx.lines(args![
                                 "^FF0000[Pyramid 3F Monsters]^000000",
                                 "1. Drainliar",
@@ -3929,12 +3539,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Rotten Bandage"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(4)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        4 => {
                             ctx.lines(args![
                                 "^FF0000[Pyramid 4F Monsters]^000000",
                                 "1. Mummy",
@@ -3975,12 +3581,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Scale"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(5)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        5 => {
                             ctx.lines(args![
                                 "^FF0000[Pyramid 5F Monsters]^000000",
                                 "1. Mummy",
@@ -4010,12 +3612,8 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Scale"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(6)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        6 => {
                             ctx.lines(args![
                                 "^FF0000[Pyramid 6F Monsters]^000000",
                                 "1. Mummy",
@@ -4067,15 +3665,12 @@ fn monster_encyclopedia_6pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Bandage, Hand of God, Elunium"
                             ])?;
                             ctx.next()?;
-                            break 'b7;
                         }
-                        if !matched7 && subject7.loosely_equals(&Val::from(7)) {
-                            matched7 = true;
-                        }
-                        if matched7 {
+                        7 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -4119,16 +3714,8 @@ fn monster_encyclopedia_7pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l2;
                 }
                 'b2: {
-                    'b3: {
-                        let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("1F:2F:Cancel")])?);
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                    match runtime::select_values(ctx, &[Val::from("1F:2F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Sunken Ship 1F Monsters]^000000",
                                 "1. Plankton",
@@ -4193,12 +3780,8 @@ fn monster_encyclopedia_7pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Skel-Bone"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Sunken Ship 2F Monsters]^000000",
                                 "1. Kukre",
@@ -4289,15 +3872,12 @@ fn monster_encyclopedia_7pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Herb, Elunium"
                             ])?;
                             ctx.next()?;
-                            break 'b3;
                         }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
+                        3 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }
@@ -4311,16 +3891,8 @@ fn monster_encyclopedia_7pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                     break 'l4;
                 }
                 'b4: {
-                    'b5: {
-                        let subject5 = Val::from(runtime::select_values(ctx, &[Val::from("1F:3F:Cancel")])?);
-                        let mut matched5 = false;
-                        let no_case5 = !subject5.loosely_equals(&Val::from(1))
-                            && !subject5.loosely_equals(&Val::from(2))
-                            && !subject5.loosely_equals(&Val::from(3));
-                        if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                    match runtime::select_values(ctx, &[Val::from("1F:3F:Cancel")])? {
+                        1 => {
                             ctx.lines(args![
                                 "^FF0000[Prontera Maze 1F Monsters]^000000",
                                 "1. Poring",
@@ -4600,12 +4172,8 @@ fn monster_encyclopedia_7pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "^0099FFItem Drops^000000: Mane, Animal Skin"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        2 => {
                             ctx.lines(args![
                                 "^FF0000[Prontera Maze 3F Monsters]^000000",
                                 "1. Poring",
@@ -4918,15 +4486,12 @@ fn monster_encyclopedia_7pr_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop>
                                 "Oridecon"
                             ])?;
                             ctx.next()?;
-                            break 'b5;
                         }
-                        if !matched5 && subject5.loosely_equals(&Val::from(3)) {
-                            matched5 = true;
-                        }
-                        if matched5 {
+                        3 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 }
             }

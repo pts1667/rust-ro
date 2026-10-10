@@ -82,14 +82,8 @@ fn helper_party_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("No"), Val::from("Yes")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("No"), Val::from("Yes")])? {
+            1 => {
                 ctx.var("$arn_partywait").set(Val::from(0))?;
                 ctx.lines_as(
                     "Helper Iriff",
@@ -98,10 +92,7 @@ fn helper_party_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Helper Iriff",
                     args![
@@ -116,6 +107,7 @@ fn helper_party_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.call(Function::DoNpcEvent, vec![Val::from("arena_p::OnStart")])?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     return Err(Stop::End);
@@ -4286,46 +4278,33 @@ fn force_10mob_1_party_run(ctx: &Ctx, mut step: Force10mob1PartyStep, args: Vec<
                 continue 'machine;
             }
             Force10mob1PartyStep::OnEnable => {
-                'b1: {
-                    let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])?;
-                    let mut matched1 = false;
-                    let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                    if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                Val::from("force_1-2"),
-                                Val::from(16),
-                                Val::from(179),
-                                Val::from("Evil Snake Lord"),
-                                Val::from(1529),
-                                Val::from(1),
-                                Val::from("force_10mob-1#party::OnMyMobDead"),
-                            ],
-                        )?;
-                        break 'b1;
-                    }
-                    if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                        matched1 = true;
-                    }
-                    if matched1 {
-                        ctx.call(
-                            Function::Monster,
-                            vec![
-                                Val::from("force_1-2"),
-                                Val::from(24),
-                                Val::from(179),
-                                Val::from("Dracula"),
-                                Val::from(1530),
-                                Val::from(1),
-                                Val::from("force_10mob-1#party::OnMyMobDead"),
-                            ],
-                        )?;
-                        break 'b1;
-                    }
+                let subject1 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(2)])?;
+                if subject1 == 1 {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            Val::from("force_1-2"),
+                            Val::from(16),
+                            Val::from(179),
+                            Val::from("Evil Snake Lord"),
+                            Val::from(1529),
+                            Val::from(1),
+                            Val::from("force_10mob-1#party::OnMyMobDead"),
+                        ],
+                    )?;
+                } else if subject1 == 2 {
+                    ctx.call(
+                        Function::Monster,
+                        vec![
+                            Val::from("force_1-2"),
+                            Val::from(24),
+                            Val::from(179),
+                            Val::from("Dracula"),
+                            Val::from(1530),
+                            Val::from(1),
+                            Val::from("force_10mob-1#party::OnMyMobDead"),
+                        ],
+                    )?;
                 }
                 return Err(Stop::End);
             }
@@ -5106,14 +5085,8 @@ fn staff_party_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 args!["Please enter a name within 10 letters which can represent you and your party members."],
             )?;
             ctx.next()?;
-            'b1: {
-                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Ok."), Val::from("Let me think.")])?);
-                let mut matched1 = false;
-                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                    matched1 = true;
-                }
-                if matched1 {
+            match runtime::select_values(ctx, &[Val::from("Ok."), Val::from("Let me think.")])? {
+                1 => {
                     let (input, status) = runtime::input_text(ctx, None, None)?;
                     l_arnparty_s = input;
                     ctx.lines_as(
@@ -5121,41 +5094,29 @@ fn staff_party_2_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         args![((Val::from("You have entered ^3131FF") + l_arnparty_s.clone()) + Val::from("^000000. Is it correct?"))],
                     )?;
                     ctx.next()?;
-                    'b2: {
-                        let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("Yes"), Val::from("No")])?);
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                    match runtime::select_values(ctx, &[Val::from("Yes"), Val::from("No")])? {
+                        1 => {
                             ctx.var("$top_ptmin").set(ctx.var("@record_minpt").get()?)?;
                             ctx.var("$top_ptsec").set(ctx.var("@record_secpt").get()?)?;
                             ctx.var("$arena_pttopn$").set(l_arnparty_s.clone())?;
                             ctx.call(Function::DoNpcEvent, vec![Val::from("Vendigos::OnLineRec_pt")])?;
                             ctx.lines_as("Staff", args!["Your record has been entered."])?;
                             ctx.next()?;
-                            break 'b2;
                         }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
+                        2 => {
                             ctx.lines_as("Staff", args!["Please take your time and think up a nice name."])?;
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
-                    break 'b1;
                 }
-                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                    matched1 = true;
-                }
-                if matched1 {
+                2 => {
                     ctx.lines_as("Staff", args!["Please take your time and think up a nice name."])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         }
         if ctx.var("arena_point").get()?.number()? > 29900 {

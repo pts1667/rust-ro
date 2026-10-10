@@ -4855,23 +4855,13 @@ fn arena_record_staff_aco_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
         ],
     )?;
     ctx.next()?;
-    'b1: {
-        let subject1 = Val::from(runtime::select_values(
+    match runtime::select_values(
             ctx,
             &[(Val::from(
                 "Acolyte Mode:Priest - Level 70 or lower:Priest - Level 80 or lower:Priest - Level 90 or lower:Priest - Level 91 ~ ",
             ) + Val::from("99"))],
-        )?);
-        let mut matched1 = false;
-        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-            && !subject1.loosely_equals(&Val::from(2))
-            && !subject1.loosely_equals(&Val::from(3))
-            && !subject1.loosely_equals(&Val::from(4))
-            && !subject1.loosely_equals(&Val::from(5));
-        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-            matched1 = true;
-        }
-        if matched1 {
+        )? {
+        1 => {
             l_acotop_t = ctx.var("$arn_acotop").get()?;
             l_acotop_n_s = ctx.var("$arn_acotopn$").get()?;
             l_acotopbun = ((l_acotop_t.clone().try_rem(Val::from(3600))?).try_div(Val::from(60))?);
@@ -4890,38 +4880,23 @@ fn arena_record_staff_aco_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ctx.close_window()?;
             return Err(Stop::End);
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-            matched1 = true;
-        }
-        if matched1 {
+        2 => {
             l_pritop_t = ctx.var("$arn_pritop60").get()?;
             l_pritop_n_s = ctx.var("$arn_pritopn60$").get()?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-            matched1 = true;
-        }
-        if matched1 {
+        3 => {
             l_pritop_t = ctx.var("$arn_pritop70").get()?;
             l_pritop_n_s = ctx.var("$arn_pritopn70$").get()?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-            matched1 = true;
-        }
-        if matched1 {
+        4 => {
             l_pritop_t = ctx.var("$arn_pritop80").get()?;
             l_pritop_n_s = ctx.var("$arn_pritopn80$").get()?;
-            break 'b1;
         }
-        if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-            matched1 = true;
-        }
-        if matched1 {
+        5 => {
             l_pritop_t = ctx.var("$arn_pritop90").get()?;
             l_pritop_n_s = ctx.var("$arn_pritopn90$").get()?;
-            break 'b1;
         }
+        _ => {}
     }
     l_pritopbun = ((l_pritop_t.clone().try_rem(Val::from(3600))?).try_div(Val::from(60))?);
     l_pritopcho = (l_pritop_t.clone().try_rem(Val::from(60))?);
@@ -5195,66 +5170,36 @@ fn log_on_aco_arena_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[(Val::from("Cancel:Acolyte:~level 70:~level 80:~level 90:~level ") + Val::from("99"))],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3))
-                && !subject1.loosely_equals(&Val::from(4))
-                && !subject1.loosely_equals(&Val::from(5))
-                && !subject1.loosely_equals(&Val::from(6));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines(args!["^3355FFCommand has", "been canceled.^000000"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.var("$arn_acotop").set(Val::from(480))?;
                 ctx.var("$arn_acotopn$").set(Val::from("Default"))?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.var("$arn_pritop60").set(Val::from(480))?;
                 ctx.var("$arn_pritopn60$").set(Val::from("Default"))?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(4)) {
-                matched1 = true;
-            }
-            if matched1 {
+            4 => {
                 ctx.var("$arn_pritop70").set(Val::from(480))?;
                 ctx.var("$arn_pritopn70$").set(Val::from("Default"))?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(5)) {
-                matched1 = true;
-            }
-            if matched1 {
+            5 => {
                 ctx.var("$arn_pritop80").set(Val::from(480))?;
                 ctx.var("$arn_pritopn80$").set(Val::from("Default"))?;
-                break 'b1;
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(6)) {
-                matched1 = true;
-            }
-            if matched1 {
+            6 => {
                 ctx.var("$arn_pritop90").set(Val::from(480))?;
                 ctx.var("$arn_pritopn90$").set(Val::from("Default"))?;
-                break 'b1;
             }
+            _ => {}
         }
         ctx.close_window()?;
         return Err(Stop::End);
@@ -5283,38 +5228,25 @@ fn acolink_arena_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             "an option from the menu."
         ])?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Cancel:Warp ON:Warp OFF")])?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+        match runtime::select_values(ctx, &[Val::from("Cancel:Warp ON:Warp OFF")])? {
+            1 => {
                 ctx.lines(args!["Command has", "been canceled."])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.call(Function::EnableNpc, vec![Val::from("onlyaco#arena")])?;
                 ctx.lines(args!["The Warp Portal", "will be opened shortly."])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.call(Function::DisableNpc, vec![Val::from("onlyaco#arena")])?;
                 ctx.lines(args!["The Warp Portal", "will be closed shortly."])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     }
     Ok(Val::from(0))

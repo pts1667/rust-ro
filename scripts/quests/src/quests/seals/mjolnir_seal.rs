@@ -106,34 +106,24 @@ fn tialfi_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Tialfi", args!["So which treasure", "would you like to have?"])?;
                         ctx.next()?;
-                        'b1: {
-                            let subject1 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("An item that I can use.:An item that my friend can use.")],
-                            )?);
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Tialfi",
                                     args!["I see...", "Give me a moment", "to find a suitable", "item for you."],
                                 )?;
-                                break 'b1;
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            2 => {
                                 l_gift = ctx.call(Function::Rand, vec![Val::from(1), Val::from(13)])?;
                                 ctx.lines_as(
                                     "Tialfi",
                                     args!["I see...", "Give me a moment", "to find a suitable", "item for your friend."],
                                 )?;
-                                break 'b1;
                             }
+                            _ => {}
                         }
                         ctx.next()?;
                         ctx.lines_as(
@@ -392,14 +382,8 @@ fn tialfi_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Tialfi", args!["If you don't mind, I'd like to ask you to explore this mountain and search for these Dwarven Blacksmiths."])?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(ctx, &[Val::from("No.:Okay.")])?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                        match runtime::select_values(ctx, &[Val::from("No.:Okay.")])? {
+                            1 => {
                                 ctx.call(Function::Cutin, vec![Val::from("god_tialpi02"), Val::from(2)])?;
                                 ctx.lines_as(
                                     "Tialfi",
@@ -408,12 +392,8 @@ fn tialfi_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         "Hopefully someday I'll learn the truth about my dreams and about Mjolnir itself."
                                     ],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.call(Function::Cutin, vec![Val::from("god_tialpi01"), Val::from(2)])?;
                                 ctx.lines_as("Tialfi", args!["Thank you,", "thank you so much!", "Even though it won't be easy, I have faith that if the Dwarven Blacksmiths do exist, you'll be able to find them."])?;
                                 ctx.next()?;
@@ -436,6 +416,7 @@ fn tialfi_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ],
                                 )?;
                             }
+                            _ => {}
                         }
                     }
                 } else {
@@ -576,50 +557,31 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 {
                                     ctx.lines_as("Austri", args!["Hm...?", "Why have you", "come to me, human?"])?;
                                     ctx.next()?;
-                                    'b1: {
-                                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Hey, 'sup!")])?);
-                                        let mut matched1 = false;
-                                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                    match runtime::select_values(ctx, &[Val::from("Nothing.:Hey, 'sup!")])? {
+                                        1 => {
                                             ctx.lines_as("Austri", args!["..."])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                        2 => {
                                             ctx.var("god_mjo_1").set(Val::from(3))?;
                                             ctx.lines_as("Austri", args!["What...?!", "Do not greet the", "Dwarves lightly,", "mortal!"])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 } else {
                                     if ctx.var("god_mjo_1").get()? == 1 {
                                         ctx.lines_as("Austri", args!["What has made", "you come to me?"])?;
                                         ctx.next()?;
-                                        'b2: {
-                                            let subject2 =
-                                                Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                            let mut matched2 = false;
-                                            let no_case2 =
-                                                !subject2.loosely_equals(&Val::from(1)) && !subject2.loosely_equals(&Val::from(2));
-                                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
+                                        match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])? {
+                                            1 => {
                                                 ctx.lines_as("Austri", args!["..."])?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                                matched2 = true;
-                                            }
-                                            if matched2 {
+                                            2 => {
                                                 if ctx.call(Function::CountItem, vec![Val::from(1005)])?.number()? > 0 {
                                                     ctx.lines_as("Austri", args!["Ah, I see that the entire human race is not worthy of scorn. Unlike many of your kind, I see that you respect your elders."])?;
                                                     ctx.next()?;
@@ -631,27 +593,15 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             if l_talk_to.clone() == 0 {
                                                                 ctx.lines_as("Austri", args!["So what did", "want to ask", "me about?"])?;
                                                                 ctx.next()?;
-                                                                'b4: {
-                                                                    let subject4 = Val::from(runtime::select_values(
+                                                                match runtime::select_values(
                                                                         ctx,
                                                                         &[Val::from("...:About Mjolnir.")],
-                                                                    )?);
-                                                                    let mut matched4 = false;
-                                                                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                                                        && !subject4.loosely_equals(&Val::from(2));
-                                                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                                        matched4 = true;
-                                                                    }
-                                                                    if matched4 {
+                                                                    )? {
+                                                                    1 => {
                                                                         l_talk_not = Val::from(1);
-                                                                        break 'b4;
                                                                     }
-                                                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                                        matched4 = true;
-                                                                    }
-                                                                    if matched4 {
-                                                                        break 'b4;
-                                                                    }
+                                                                    2 => {}
+                                                                    _ => {}
                                                                 }
                                                             } else {
                                                                 if l_talk_to.clone() == 1 {
@@ -661,25 +611,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                     ctx.next()?;
                                                                     ctx.lines_as("Austri", args!["The hilt of Mjolnir was forged shorter than intended. Are you still listening to me?"])?;
                                                                     ctx.next()?;
-                                                                    'b5: {
-                                                                        let subject5 = Val::from(runtime::select_values(
+                                                                    match runtime::select_values(
                                                                             ctx,
                                                                             &[Val::from("...:Yes, sir!:Huh?")],
-                                                                        )?);
-                                                                        let mut matched5 = false;
-                                                                        let no_case5 = !subject5.loosely_equals(&Val::from(2));
-                                                                        if !matched5 && no_case5 {
-                                                                            matched5 = true;
-                                                                        }
-                                                                        if matched5 {
+                                                                        )? {
+                                                                        2 => {}
+                                                                        _ => {
                                                                             l_talk_not = Val::from(1);
-                                                                            break 'b5;
-                                                                        }
-                                                                        if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                                                            matched5 = true;
-                                                                        }
-                                                                        if matched5 {
-                                                                            break 'b5;
                                                                         }
                                                                     }
                                                                 } else {
@@ -688,25 +626,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                         ctx.next()?;
                                                                         ctx.lines_as("Austri", args!["Frankly his treasures were", "made by another Dwarf tribe, but we couldn't tolerate his insult. So my ancestors created three treasures of their own."])?;
                                                                         ctx.next()?;
-                                                                        'b6: {
-                                                                            let subject6 = Val::from(runtime::select_values(
+                                                                        match runtime::select_values(
                                                                                 ctx,
                                                                                 &[Val::from("...:Boooring!:Oh, wow.")],
-                                                                            )?);
-                                                                            let mut matched6 = false;
-                                                                            let no_case6 = !subject6.loosely_equals(&Val::from(3));
-                                                                            if !matched6 && no_case6 {
-                                                                                matched6 = true;
-                                                                            }
-                                                                            if matched6 {
+                                                                            )? {
+                                                                            3 => {}
+                                                                            _ => {
                                                                                 l_talk_not = Val::from(1);
-                                                                                break 'b6;
-                                                                            }
-                                                                            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                                                                matched6 = true;
-                                                                            }
-                                                                            if matched6 {
-                                                                                break 'b6;
                                                                             }
                                                                         }
                                                                     } else {
@@ -717,25 +643,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                             ctx.next()?;
                                                                             ctx.lines_as("Austri", args!["It's very sad. Although Mjolnir is the greatest weapon ever, it was very close to being the epitome of craftsmanship."])?;
                                                                             ctx.next()?;
-                                                                            'b7: {
-                                                                                let subject7 = Val::from(runtime::select_values(
+                                                                            match runtime::select_values(
                                                                                     ctx,
                                                                                     &[Val::from("...:Epito--what?:Yes sir, I agree.")],
-                                                                                )?);
-                                                                                let mut matched7 = false;
-                                                                                let no_case7 = !subject7.loosely_equals(&Val::from(3));
-                                                                                if !matched7 && no_case7 {
-                                                                                    matched7 = true;
-                                                                                }
-                                                                                if matched7 {
+                                                                                )? {
+                                                                                3 => {}
+                                                                                _ => {
                                                                                     l_talk_not = Val::from(1);
-                                                                                    break 'b7;
-                                                                                }
-                                                                                if !matched7 && subject7.loosely_equals(&Val::from(3)) {
-                                                                                    matched7 = true;
-                                                                                }
-                                                                                if matched7 {
-                                                                                    break 'b7;
                                                                                 }
                                                                             }
                                                                         } else {
@@ -746,25 +660,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                 ctx.next()?;
                                                                                 ctx.lines_as("Austri", args!["I must say, a Blacksmith's greatest pride comes when he creates the weapon and armor that can be considered his life's work."])?;
                                                                                 ctx.next()?;
-                                                                                'b8: {
-                                                                                    let subject8 = Val::from(runtime::select_values(
+                                                                                match runtime::select_values(
                                                                                         ctx,
                                                                                         &[Val::from("...:I agree, sir!:Um, yeah.")],
-                                                                                    )?);
-                                                                                    let mut matched8 = false;
-                                                                                    let no_case8 = !subject8.loosely_equals(&Val::from(2));
-                                                                                    if !matched8 && no_case8 {
-                                                                                        matched8 = true;
-                                                                                    }
-                                                                                    if matched8 {
+                                                                                    )? {
+                                                                                    2 => {}
+                                                                                    _ => {
                                                                                         l_talk_not = Val::from(1);
-                                                                                        break 'b8;
-                                                                                    }
-                                                                                    if !matched8 && subject8.loosely_equals(&Val::from(2)) {
-                                                                                        matched8 = true;
-                                                                                    }
-                                                                                    if matched8 {
-                                                                                        break 'b8;
                                                                                     }
                                                                                 }
                                                                             } else if l_talk_to.clone() == 5 {
@@ -774,30 +676,15 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                 ctx.next()?;
                                                                                 ctx.lines_as("Austri", args!["You can imagine just", "how powerful Mjolnir is.", "However, humans can never hope to see or even wield Mjolnir. Only a god can handle that kind of force."])?;
                                                                                 ctx.next()?;
-                                                                                'b9: {
-                                                                                    let subject9 = Val::from(runtime::select_values(
+                                                                                match runtime::select_values(
                                                                                         ctx,
                                                                                         &[Val::from(
                                                                                             "...:Wah wah wah~!:Ah, I understand sir!",
                                                                                         )],
-                                                                                    )?);
-                                                                                    let mut matched9 = false;
-                                                                                    let no_case9 =
-                                                                                        !subject9.loosely_equals(&Val::from(3));
-                                                                                    if !matched9 && no_case9 {
-                                                                                        matched9 = true;
-                                                                                    }
-                                                                                    if matched9 {
+                                                                                    )? {
+                                                                                    3 => {}
+                                                                                    _ => {
                                                                                         l_talk_not = Val::from(1);
-                                                                                        break 'b9;
-                                                                                    }
-                                                                                    if !matched9
-                                                                                        && subject9.loosely_equals(&Val::from(3))
-                                                                                    {
-                                                                                        matched9 = true;
-                                                                                    }
-                                                                                    if matched9 {
-                                                                                        break 'b9;
                                                                                     }
                                                                                 }
                                                                             } else if l_talk_to.clone() == 6 {
@@ -805,31 +692,15 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                 ctx.next()?;
                                                                                 ctx.lines_as("Austri", args!["Yes, it's possible to create", "a Mjolnir suited to humans. Still, it wouldn't be very easy."])?;
                                                                                 ctx.next()?;
-                                                                                'b10: {
-                                                                                    let subject10 =
-                                                                                        Val::from(runtime::select_values(
+                                                                                match runtime::select_values(
                                                                                             ctx,
                                                                                             &[Val::from(
                                                                                                 "...:Yes, sir!:Yeah, whatever.",
                                                                                             )],
-                                                                                        )?);
-                                                                                    let mut matched10 = false;
-                                                                                    let no_case10 =
-                                                                                        !subject10.loosely_equals(&Val::from(2));
-                                                                                    if !matched10 && no_case10 {
-                                                                                        matched10 = true;
-                                                                                    }
-                                                                                    if matched10 {
+                                                                                        )? {
+                                                                                    2 => {}
+                                                                                    _ => {
                                                                                         l_talk_not = Val::from(1);
-                                                                                        break 'b10;
-                                                                                    }
-                                                                                    if !matched10
-                                                                                        && subject10.loosely_equals(&Val::from(2))
-                                                                                    {
-                                                                                        matched10 = true;
-                                                                                    }
-                                                                                    if matched10 {
-                                                                                        break 'b10;
                                                                                     }
                                                                                 }
                                                                             } else if l_talk_to.clone() == 7 {
@@ -839,30 +710,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                 ctx.next()?;
                                                                                 ctx.lines_as("Austri", args!["Perhaps only the gods can be", "sure as to what the future will bring. In any case, we must prepare ourselves for what will happen."])?;
                                                                                 ctx.next()?;
-                                                                                'b11: {
-                                                                                    let subject11 =
-                                                                                        Val::from(runtime::select_values(
+                                                                                match runtime::select_values(
                                                                                             ctx,
                                                                                             &[Val::from("...:Yes?:Yes, sir!")],
-                                                                                        )?);
-                                                                                    let mut matched11 = false;
-                                                                                    let no_case11 = !subject11
-                                                                                        .loosely_equals(&Val::from(3));
-                                                                                    if !matched11 && no_case11 {
-                                                                                        matched11 = true;
-                                                                                    }
-                                                                                    if matched11 {
+                                                                                        )? {
+                                                                                    3 => {}
+                                                                                    _ => {
                                                                                         l_talk_not = Val::from(1);
-                                                                                        break 'b11;
-                                                                                    }
-                                                                                    if !matched11
-                                                                                        && subject11
-                                                                                            .loosely_equals(&Val::from(3))
-                                                                                    {
-                                                                                        matched11 = true;
-                                                                                    }
-                                                                                    if matched11 {
-                                                                                        break 'b11;
                                                                                     }
                                                                                 }
                                                                             } else if l_talk_to.clone() == 8 {
@@ -899,28 +753,18 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     return Err(Stop::End);
                                                 }
                                             }
+                                            _ => {}
                                         }
                                     } else if ctx.var("god_mjo_1").get()? == 0 {
                                         ctx.lines_as("Austri", args!["What has made", "you come to me?"])?;
                                         ctx.next()?;
-                                        'b12: {
-                                            let subject12 =
-                                                Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                            let mut matched12 = false;
-                                            let no_case12 =
-                                                !subject12.loosely_equals(&Val::from(1)) && !subject12.loosely_equals(&Val::from(2));
-                                            if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                                matched12 = true;
-                                            }
-                                            if matched12 {
+                                        match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])? {
+                                            1 => {
                                                 ctx.lines_as("Austri", args!["..."])?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                                matched12 = true;
-                                            }
-                                            if matched12 {
+                                            2 => {
                                                 ctx.lines_as("Austri", args!["A respectable blacksmith cherishes his tools and crafts with diligence and care."])?;
                                                 ctx.next()?;
                                                 ctx.lines_as("Austri", args!["When it comes to humans, I believe the ones who can appreciate my line of work are the only ones worth talking to."])?;
@@ -935,6 +779,7 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
+                                            _ => {}
                                         }
                                     } else {
                                         ctx.lines_as("Austri", args!["Zzzz Zzzz..."])?;
@@ -973,23 +818,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     {
                                         ctx.lines_as("Austri", args!["What made you come to me?"])?;
                                         ctx.next()?;
-                                        'b13: {
-                                            let subject13 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Hey, sup!")])?);
-                                            let mut matched13 = false;
-                                            let no_case13 =
-                                                !subject13.loosely_equals(&Val::from(1)) && !subject13.loosely_equals(&Val::from(2));
-                                            if !matched13 && subject13.loosely_equals(&Val::from(1)) {
-                                                matched13 = true;
-                                            }
-                                            if matched13 {
+                                        match runtime::select_values(ctx, &[Val::from("Nothing.:Hey, sup!")])? {
+                                            1 => {
                                                 ctx.lines_as("Austri", args!["..."])?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched13 && subject13.loosely_equals(&Val::from(2)) {
-                                                matched13 = true;
-                                            }
-                                            if matched13 {
+                                            2 => {
                                                 ctx.var("god_mjo_4").set(Val::from(3))?;
                                                 ctx.lines_as(
                                                     "Austri",
@@ -998,29 +833,19 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
+                                            _ => {}
                                         }
                                     } else {
                                         if ctx.var("god_mjo_4").get()? == 1 {
                                             ctx.lines_as("Austri", args!["What has made", "you come to me?"])?;
                                             ctx.next()?;
-                                            'b14: {
-                                                let subject14 =
-                                                    Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                                let mut matched14 = false;
-                                                let no_case14 =
-                                                    !subject14.loosely_equals(&Val::from(1)) && !subject14.loosely_equals(&Val::from(2));
-                                                if !matched14 && subject14.loosely_equals(&Val::from(1)) {
-                                                    matched14 = true;
-                                                }
-                                                if matched14 {
+                                            match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])? {
+                                                1 => {
                                                     ctx.lines_as("Austri", args!["..."])?;
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
                                                 }
-                                                if !matched14 && subject14.loosely_equals(&Val::from(2)) {
-                                                    matched14 = true;
-                                                }
-                                                if matched14 {
+                                                2 => {
                                                     if ctx.call(Function::CountItem, vec![Val::from(1005)])?.number()? > 0 {
                                                         ctx.lines_as("Austri", args!["Ah, I see that the entire human race is not worthy of scorn. Unlike many of your kind, I see that you respect your elders."])?;
                                                         ctx.next()?;
@@ -1035,27 +860,15 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                         args!["So what did", "want to ask", "me about?"],
                                                                     )?;
                                                                     ctx.next()?;
-                                                                    'b16: {
-                                                                        let subject16 = Val::from(runtime::select_values(
+                                                                    match runtime::select_values(
                                                                             ctx,
                                                                             &[Val::from("...:About Mjolnir.")],
-                                                                        )?);
-                                                                        let mut matched16 = false;
-                                                                        let no_case16 = !subject16.loosely_equals(&Val::from(1))
-                                                                            && !subject16.loosely_equals(&Val::from(2));
-                                                                        if !matched16 && subject16.loosely_equals(&Val::from(1)) {
-                                                                            matched16 = true;
-                                                                        }
-                                                                        if matched16 {
+                                                                        )? {
+                                                                        1 => {
                                                                             l_talk_not = Val::from(1);
-                                                                            break 'b16;
                                                                         }
-                                                                        if !matched16 && subject16.loosely_equals(&Val::from(2)) {
-                                                                            matched16 = true;
-                                                                        }
-                                                                        if matched16 {
-                                                                            break 'b16;
-                                                                        }
+                                                                        2 => {}
+                                                                        _ => {}
                                                                     }
                                                                 } else {
                                                                     if l_talk_to.clone() == 1 {
@@ -1065,25 +878,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                         ctx.next()?;
                                                                         ctx.lines_as("Austri", args!["The hilt of Mjolnir was forged shorter than intended. Are you still listening to me?"])?;
                                                                         ctx.next()?;
-                                                                        'b17: {
-                                                                            let subject17 = Val::from(runtime::select_values(
+                                                                        match runtime::select_values(
                                                                                 ctx,
                                                                                 &[Val::from("...:Yes, sir!:Huh?")],
-                                                                            )?);
-                                                                            let mut matched17 = false;
-                                                                            let no_case17 = !subject17.loosely_equals(&Val::from(2));
-                                                                            if !matched17 && no_case17 {
-                                                                                matched17 = true;
-                                                                            }
-                                                                            if matched17 {
+                                                                            )? {
+                                                                            2 => {}
+                                                                            _ => {
                                                                                 l_talk_not = Val::from(1);
-                                                                                break 'b17;
-                                                                            }
-                                                                            if !matched17 && subject17.loosely_equals(&Val::from(2)) {
-                                                                                matched17 = true;
-                                                                            }
-                                                                            if matched17 {
-                                                                                break 'b17;
                                                                             }
                                                                         }
                                                                     } else {
@@ -1092,35 +893,18 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                             ctx.next()?;
                                                                             ctx.lines_as("Austri", args!["Frankly his treasures were", "made by another Dwarf tribe, but we couldn't tolerate his insult. So my ancestors created three treasures of their own."])?;
                                                                             ctx.next()?;
-                                                                            'b18: {
-                                                                                let subject18 = Val::from(runtime::select_values(
+                                                                            match runtime::select_values(
                                                                                     ctx,
                                                                                     &[Val::from("...:Boooring!:Oh, wow.")],
-                                                                                )?);
-                                                                                let mut matched18 = false;
-                                                                                let no_case18 = !subject18.loosely_equals(&Val::from(1))
-                                                                                    && !subject18.loosely_equals(&Val::from(2))
-                                                                                    && !subject18.loosely_equals(&Val::from(3));
-                                                                                if !matched18 && subject18.loosely_equals(&Val::from(1)) {
-                                                                                    matched18 = true;
-                                                                                }
-                                                                                if matched18 {
+                                                                                )? {
+                                                                                1 => {
                                                                                     l_talk_not = Val::from(1);
-                                                                                    break 'b18;
                                                                                 }
-                                                                                if !matched18 && subject18.loosely_equals(&Val::from(2)) {
-                                                                                    matched18 = true;
-                                                                                }
-                                                                                if matched18 {
+                                                                                2 => {
                                                                                     l_talk_not = Val::from(1);
-                                                                                    break 'b18;
                                                                                 }
-                                                                                if !matched18 && subject18.loosely_equals(&Val::from(3)) {
-                                                                                    matched18 = true;
-                                                                                }
-                                                                                if matched18 {
-                                                                                    break 'b18;
-                                                                                }
+                                                                                3 => {}
+                                                                                _ => {}
                                                                             }
                                                                         } else {
                                                                             if l_talk_to.clone() == 3 {
@@ -1130,27 +914,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                 ctx.next()?;
                                                                                 ctx.lines_as("Austri", args!["It's very sad. Although Mjolnir is the greatest weapon ever, it was very close to being the epitome of craftsmanship."])?;
                                                                                 ctx.next()?;
-                                                                                'b19: {
-                                                                                    let subject19 = Val::from(runtime::select_values(
+                                                                                match runtime::select_values(
                                                                                         ctx,
                                                                                         &[Val::from("...:Epito--what?:Yes sir, I agree.")],
-                                                                                    )?);
-                                                                                    let mut matched19 = false;
-                                                                                    let no_case19 =
-                                                                                        !subject19.loosely_equals(&Val::from(3));
-                                                                                    if !matched19 && no_case19 {
-                                                                                        matched19 = true;
-                                                                                    }
-                                                                                    if matched19 {
+                                                                                    )? {
+                                                                                    3 => {}
+                                                                                    _ => {
                                                                                         l_talk_not = Val::from(1);
-                                                                                        break 'b19;
-                                                                                    }
-                                                                                    if !matched19 && subject19.loosely_equals(&Val::from(3))
-                                                                                    {
-                                                                                        matched19 = true;
-                                                                                    }
-                                                                                    if matched19 {
-                                                                                        break 'b19;
                                                                                     }
                                                                                 }
                                                                             } else {
@@ -1161,28 +931,13 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                     ctx.next()?;
                                                                                     ctx.lines_as("Austri", args!["I must say, a Blacksmith's greatest pride comes when he creates the weapon and armor that can be considered his life's work."])?;
                                                                                     ctx.next()?;
-                                                                                    'b20: {
-                                                                                        let subject20 = Val::from(runtime::select_values(
+                                                                                    match runtime::select_values(
                                                                                             ctx,
                                                                                             &[Val::from("...:I agree, sir!:Um, yeah.")],
-                                                                                        )?);
-                                                                                        let mut matched20 = false;
-                                                                                        let no_case20 =
-                                                                                            !subject20.loosely_equals(&Val::from(2));
-                                                                                        if !matched20 && no_case20 {
-                                                                                            matched20 = true;
-                                                                                        }
-                                                                                        if matched20 {
+                                                                                        )? {
+                                                                                        2 => {}
+                                                                                        _ => {
                                                                                             l_talk_not = Val::from(1);
-                                                                                            break 'b20;
-                                                                                        }
-                                                                                        if !matched20
-                                                                                            && subject20.loosely_equals(&Val::from(2))
-                                                                                        {
-                                                                                            matched20 = true;
-                                                                                        }
-                                                                                        if matched20 {
-                                                                                            break 'b20;
                                                                                         }
                                                                                     }
                                                                                 } else if l_talk_to.clone() == 5 {
@@ -1192,32 +947,15 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                     ctx.next()?;
                                                                                     ctx.lines_as("Austri", args!["You can imagine just", "how powerful Mjolnir is.", "However, humans can never hope to see or even wield Mjolnir. Only a god can handle that kind of force."])?;
                                                                                     ctx.next()?;
-                                                                                    'b21: {
-                                                                                        let subject21 = Val::from(
-                                                                                            runtime::select_values(
+                                                                                    match runtime::select_values(
                                                                                                 ctx,
                                                                                                 &[Val::from(
                                                                                                     "...:Wah wah wah~!:Ah, I understand sir!",
                                                                                                 )],
-                                                                                            )?,
-                                                                                        );
-                                                                                        let mut matched21 = false;
-                                                                                        let no_case21 =
-                                                                                            !subject21.loosely_equals(&Val::from(3));
-                                                                                        if !matched21 && no_case21 {
-                                                                                            matched21 = true;
-                                                                                        }
-                                                                                        if matched21 {
+                                                                                            )? {
+                                                                                        3 => {}
+                                                                                        _ => {
                                                                                             l_talk_not = Val::from(1);
-                                                                                            break 'b21;
-                                                                                        }
-                                                                                        if !matched21
-                                                                                            && subject21.loosely_equals(&Val::from(3))
-                                                                                        {
-                                                                                            matched21 = true;
-                                                                                        }
-                                                                                        if matched21 {
-                                                                                            break 'b21;
                                                                                         }
                                                                                     }
                                                                                 } else if l_talk_to.clone() == 6 {
@@ -1225,32 +963,15 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                     ctx.next()?;
                                                                                     ctx.lines_as("Austri", args!["Yes, it's possible to create", "a Mjolnir suited to humans. Still, it wouldn't be very easy."])?;
                                                                                     ctx.next()?;
-                                                                                    'b22: {
-                                                                                        let subject22 =
-                                                                                            Val::from(runtime::select_values(
+                                                                                    match runtime::select_values(
                                                                                                 ctx,
                                                                                                 &[Val::from(
                                                                                                     "...:Yes, sir!:Yeah, whatever.",
                                                                                                 )],
-                                                                                            )?);
-                                                                                        let mut matched22 = false;
-                                                                                        let no_case22 = !subject22
-                                                                                            .loosely_equals(&Val::from(2));
-                                                                                        if !matched22 && no_case22 {
-                                                                                            matched22 = true;
-                                                                                        }
-                                                                                        if matched22 {
+                                                                                            )? {
+                                                                                        2 => {}
+                                                                                        _ => {
                                                                                             l_talk_not = Val::from(1);
-                                                                                            break 'b22;
-                                                                                        }
-                                                                                        if !matched22
-                                                                                            && subject22
-                                                                                                .loosely_equals(&Val::from(2))
-                                                                                        {
-                                                                                            matched22 = true;
-                                                                                        }
-                                                                                        if matched22 {
-                                                                                            break 'b22;
                                                                                         }
                                                                                     }
                                                                                 } else if l_talk_to.clone() == 7 {
@@ -1260,32 +981,15 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                                                     ctx.next()?;
                                                                                     ctx.lines_as("Austri", args!["Perhaps only the gods can be", "sure as to what the future will bring. In any case, we must prepare ourselves for what will happen."])?;
                                                                                     ctx.next()?;
-                                                                                    'b23: {
-                                                                                        let subject23 =
-                                                                                            Val::from(runtime::select_values(
+                                                                                    match runtime::select_values(
                                                                                                 ctx,
                                                                                                 &[Val::from(
                                                                                                     "...:Yes?:Yes, sir!",
                                                                                                 )],
-                                                                                            )?);
-                                                                                        let mut matched23 = false;
-                                                                                        let no_case23 = !subject23
-                                                                                            .loosely_equals(&Val::from(3));
-                                                                                        if !matched23 && no_case23 {
-                                                                                            matched23 = true;
-                                                                                        }
-                                                                                        if matched23 {
+                                                                                            )? {
+                                                                                        3 => {}
+                                                                                        _ => {
                                                                                             l_talk_not = Val::from(1);
-                                                                                            break 'b23;
-                                                                                        }
-                                                                                        if !matched23
-                                                                                            && subject23
-                                                                                                .loosely_equals(&Val::from(3))
-                                                                                        {
-                                                                                            matched23 = true;
-                                                                                        }
-                                                                                        if matched23 {
-                                                                                            break 'b23;
                                                                                         }
                                                                                     }
                                                                                 } else if l_talk_to.clone() == 8 {
@@ -1330,28 +1034,18 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         return Err(Stop::End);
                                                     }
                                                 }
+                                                _ => {}
                                             }
                                         } else if ctx.var("god_mjo_4").get()? == 0 {
                                             ctx.lines_as("Austri", args!["What made you come to me?"])?;
                                             ctx.next()?;
-                                            'b24: {
-                                                let subject24 =
-                                                    Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                                let mut matched24 = false;
-                                                let no_case24 = !subject24.loosely_equals(&Val::from(1))
-                                                    && !subject24.loosely_equals(&Val::from(2));
-                                                if !matched24 && subject24.loosely_equals(&Val::from(1)) {
-                                                    matched24 = true;
-                                                }
-                                                if matched24 {
+                                            match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])? {
+                                                1 => {
                                                     ctx.lines_as("Austri", args!["..."])?;
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
                                                 }
-                                                if !matched24 && subject24.loosely_equals(&Val::from(2)) {
-                                                    matched24 = true;
-                                                }
-                                                if matched24 {
+                                                2 => {
                                                     ctx.lines_as("Austri", args!["A respectable blacksmith cherishes his tools and crafts with diligence and care."])?;
                                                     ctx.next()?;
                                                     ctx.lines_as("Austri", args!["When it comes to humans, I believe the ones who can appreciate my line of work are the only ones worth talking to."])?;
@@ -1366,6 +1060,7 @@ fn dwarf_blacksmith_east_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
                                                 }
+                                                _ => {}
                                             }
                                         } else {
                                             ctx.lines_as("Austri", args!["Zzzz Zzzz..."])?;
@@ -1469,22 +1164,13 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 {
                                     ctx.lines_as("Sudri", args!["So...", "What brings", "you here?"])?;
                                     ctx.next()?;
-                                    'b1: {
-                                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                        let mut matched1 = false;
-                                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                    match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])? {
+                                        1 => {
                                             ctx.lines_as("Sudri", args!["You have too much time on your hands. Why don't you log out and hang out with your friends instead?"])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                        2 => {
                                             ctx.var("god_mjo_2").set(Val::from(3))?;
                                             ctx.lines_as("Sudri", args!["Why should", "I excuse you?"])?;
                                             ctx.next()?;
@@ -1501,6 +1187,7 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 } else {
                                     if ctx.var("god_mjo_2").get()? == 1 {
@@ -1524,52 +1211,26 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     "an attack!"
                                                 ])?;
                                                 ctx.next()?;
-                                                'b3: {
-                                                    let subject3 = Val::from(runtime::select_values(
+                                                match runtime::select_values(
                                                         ctx,
                                                         &[Val::from("...?!:Strike Head!:Strike Chest!:Strike Legs!:Take a break.")],
-                                                    )?);
-                                                    let mut matched3 = false;
-                                                    let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                                        && !subject3.loosely_equals(&Val::from(2))
-                                                        && !subject3.loosely_equals(&Val::from(3))
-                                                        && !subject3.loosely_equals(&Val::from(4))
-                                                        && !subject3.loosely_equals(&Val::from(5));
-                                                    if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                                        matched3 = true;
-                                                    }
-                                                    if matched3 {
+                                                    )? {
+                                                    1 => {
                                                         l_p_atk = Val::from(0);
-                                                        break 'b3;
                                                     }
-                                                    if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                                        matched3 = true;
-                                                    }
-                                                    if matched3 {
+                                                    2 => {
                                                         l_p_atk = Val::from(1);
-                                                        break 'b3;
                                                     }
-                                                    if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                                        matched3 = true;
-                                                    }
-                                                    if matched3 {
+                                                    3 => {
                                                         l_p_atk = Val::from(2);
-                                                        break 'b3;
                                                     }
-                                                    if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                                        matched3 = true;
-                                                    }
-                                                    if matched3 {
+                                                    4 => {
                                                         l_p_atk = Val::from(3);
-                                                        break 'b3;
                                                     }
-                                                    if !matched3 && subject3.loosely_equals(&Val::from(5)) {
-                                                        matched3 = true;
-                                                    }
-                                                    if matched3 {
+                                                    5 => {
                                                         l_p_atk = Val::from(4);
-                                                        break 'b3;
                                                     }
+                                                    _ => {}
                                                 }
                                                 l_n_def = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
                                                 l_damage = ctx.call(Function::Rand, vec![Val::from(15), Val::from(25)])?;
@@ -1728,52 +1389,26 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     "Sudri attacks...!"
                                                 ])?;
                                                 ctx.next()?;
-                                                'b4: {
-                                                    let subject4 = Val::from(runtime::select_values(
+                                                match runtime::select_values(
                                                         ctx,
                                                         &[Val::from("...?!:Dodge!:Block!:Jump!:Counter back!")],
-                                                    )?);
-                                                    let mut matched4 = false;
-                                                    let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                                        && !subject4.loosely_equals(&Val::from(2))
-                                                        && !subject4.loosely_equals(&Val::from(3))
-                                                        && !subject4.loosely_equals(&Val::from(4))
-                                                        && !subject4.loosely_equals(&Val::from(5));
-                                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                        matched4 = true;
-                                                    }
-                                                    if matched4 {
+                                                    )? {
+                                                    1 => {
                                                         l_p_def = Val::from(0);
-                                                        break 'b4;
                                                     }
-                                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                        matched4 = true;
-                                                    }
-                                                    if matched4 {
+                                                    2 => {
                                                         l_p_def = Val::from(1);
-                                                        break 'b4;
                                                     }
-                                                    if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                                        matched4 = true;
-                                                    }
-                                                    if matched4 {
+                                                    3 => {
                                                         l_p_def = Val::from(2);
-                                                        break 'b4;
                                                     }
-                                                    if !matched4 && subject4.loosely_equals(&Val::from(4)) {
-                                                        matched4 = true;
-                                                    }
-                                                    if matched4 {
+                                                    4 => {
                                                         l_p_def = Val::from(3);
-                                                        break 'b4;
                                                     }
-                                                    if !matched4 && subject4.loosely_equals(&Val::from(5)) {
-                                                        matched4 = true;
-                                                    }
-                                                    if matched4 {
+                                                    5 => {
                                                         l_p_def = Val::from(4);
-                                                        break 'b4;
                                                     }
+                                                    _ => {}
                                                 }
                                                 l_n_atk = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
                                                 l_damage = ctx.call(Function::Rand, vec![Val::from(20), Val::from(25)])?;
@@ -1978,24 +1613,13 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     } else if ctx.var("god_mjo_2").get()? == 0 {
                                         ctx.lines_as("Sudri", args!["So...", "What brings", "you here, human?"])?;
                                         ctx.next()?;
-                                        'b5: {
-                                            let subject5 =
-                                                Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                            let mut matched5 = false;
-                                            let no_case5 =
-                                                !subject5.loosely_equals(&Val::from(1)) && !subject5.loosely_equals(&Val::from(2));
-                                            if !matched5 && subject5.loosely_equals(&Val::from(1)) {
-                                                matched5 = true;
-                                            }
-                                            if matched5 {
+                                        match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])? {
+                                            1 => {
                                                 ctx.lines_as("Sudri", args!["You have too much time on your hands. Why don't you log out and hang out with your buddies for a while?"])?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched5 && subject5.loosely_equals(&Val::from(2)) {
-                                                matched5 = true;
-                                            }
-                                            if matched5 {
+                                            2 => {
                                                 ctx.lines_as("Sudri", args!["Huh. You're different than other humans. But still, trusting you because you know how to speak respectfully isn't very wise."])?;
                                                 ctx.next()?;
                                                 ctx.lines_as(
@@ -2018,19 +1642,11 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     ],
                                                 )?;
                                                 ctx.next()?;
-                                                'b6: {
-                                                    let subject6 = Val::from(runtime::select_values(
+                                                match runtime::select_values(
                                                         ctx,
                                                         &[Val::from("...:Yes, I accept your challenge.:No, I'm scared!")],
-                                                    )?);
-                                                    let mut matched6 = false;
-                                                    let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                                        && !subject6.loosely_equals(&Val::from(2))
-                                                        && !subject6.loosely_equals(&Val::from(3));
-                                                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                        matched6 = true;
-                                                    }
-                                                    if matched6 {
+                                                    )? {
+                                                    1 => {
                                                         ctx.var("god_mjo_2").set(Val::from(3))?;
                                                         ctx.lines_as(
                                                             "Sudri",
@@ -2039,19 +1655,13 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         ctx.close_window()?;
                                                         return Err(Stop::End);
                                                     }
-                                                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                        matched6 = true;
-                                                    }
-                                                    if matched6 {
+                                                    2 => {
                                                         ctx.var("god_mjo_2").set(Val::from(1))?;
                                                         ctx.lines_as("Sudri", args!["Ah, I like you already, human! Now why don't you go do some warm ups, and we'll fight when you're ready."])?;
                                                         ctx.close_window()?;
                                                         return Err(Stop::End);
                                                     }
-                                                    if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                                        matched6 = true;
-                                                    }
-                                                    if matched6 {
+                                                    3 => {
                                                         ctx.var("god_mjo_2").set(Val::from(1))?;
                                                         ctx.lines_as(
                                                             "Sudri",
@@ -2068,8 +1678,10 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         ctx.close_window()?;
                                                         return Err(Stop::End);
                                                     }
+                                                    _ => {}
                                                 }
                                             }
+                                            _ => {}
                                         }
                                     } else {
                                         ctx.lines_as("Sudri", args!["Zzzz Zzzz..."])?;
@@ -2116,16 +1728,8 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     {
                                         ctx.lines_as("Sudri", args!["What made you come to me?"])?;
                                         ctx.next()?;
-                                        'b7: {
-                                            let subject7 =
-                                                Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])?);
-                                            let mut matched7 = false;
-                                            let no_case7 =
-                                                !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                                matched7 = true;
-                                            }
-                                            if matched7 {
+                                        match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me, sir.")])? {
+                                            1 => {
                                                 ctx.lines_as(
                                                     "Sudri",
                                                     args![
@@ -2137,10 +1741,7 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                                matched7 = true;
-                                            }
-                                            if matched7 {
+                                            2 => {
                                                 ctx.var("god_mjo_3").set(Val::from(3))?;
                                                 ctx.lines_as(
                                                     "Sudri",
@@ -2149,6 +1750,7 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
+                                            _ => {}
                                         }
                                     } else {
                                         if ctx.var("god_mjo_3").get()? == 1 {
@@ -2174,52 +1776,26 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         "an attack!"
                                                     ])?;
                                                     ctx.next()?;
-                                                    'b9: {
-                                                        let subject9 = Val::from(runtime::select_values(
+                                                    match runtime::select_values(
                                                             ctx,
                                                             &[Val::from("...?!:Strike Head!:Strike Chest!:Strike Legs!:Take a break.")],
-                                                        )?);
-                                                        let mut matched9 = false;
-                                                        let no_case9 = !subject9.loosely_equals(&Val::from(1))
-                                                            && !subject9.loosely_equals(&Val::from(2))
-                                                            && !subject9.loosely_equals(&Val::from(3))
-                                                            && !subject9.loosely_equals(&Val::from(4))
-                                                            && !subject9.loosely_equals(&Val::from(5));
-                                                        if !matched9 && subject9.loosely_equals(&Val::from(1)) {
-                                                            matched9 = true;
-                                                        }
-                                                        if matched9 {
+                                                        )? {
+                                                        1 => {
                                                             l_p_atk = Val::from(0);
-                                                            break 'b9;
                                                         }
-                                                        if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                                                            matched9 = true;
-                                                        }
-                                                        if matched9 {
+                                                        2 => {
                                                             l_p_atk = Val::from(1);
-                                                            break 'b9;
                                                         }
-                                                        if !matched9 && subject9.loosely_equals(&Val::from(3)) {
-                                                            matched9 = true;
-                                                        }
-                                                        if matched9 {
+                                                        3 => {
                                                             l_p_atk = Val::from(2);
-                                                            break 'b9;
                                                         }
-                                                        if !matched9 && subject9.loosely_equals(&Val::from(4)) {
-                                                            matched9 = true;
-                                                        }
-                                                        if matched9 {
+                                                        4 => {
                                                             l_p_atk = Val::from(3);
-                                                            break 'b9;
                                                         }
-                                                        if !matched9 && subject9.loosely_equals(&Val::from(5)) {
-                                                            matched9 = true;
-                                                        }
-                                                        if matched9 {
+                                                        5 => {
                                                             l_p_atk = Val::from(4);
-                                                            break 'b9;
                                                         }
+                                                        _ => {}
                                                     }
                                                     l_n_def = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
                                                     l_damage = ctx.call(Function::Rand, vec![Val::from(15), Val::from(25)])?;
@@ -2389,52 +1965,26 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         "Sudri attacks...!"
                                                     ])?;
                                                     ctx.next()?;
-                                                    'b10: {
-                                                        let subject10 = Val::from(runtime::select_values(
+                                                    match runtime::select_values(
                                                             ctx,
                                                             &[Val::from("...?!:Dodge!:Block!:Jump!:Counter back!")],
-                                                        )?);
-                                                        let mut matched10 = false;
-                                                        let no_case10 = !subject10.loosely_equals(&Val::from(1))
-                                                            && !subject10.loosely_equals(&Val::from(2))
-                                                            && !subject10.loosely_equals(&Val::from(3))
-                                                            && !subject10.loosely_equals(&Val::from(4))
-                                                            && !subject10.loosely_equals(&Val::from(5));
-                                                        if !matched10 && subject10.loosely_equals(&Val::from(1)) {
-                                                            matched10 = true;
-                                                        }
-                                                        if matched10 {
+                                                        )? {
+                                                        1 => {
                                                             l_p_def = Val::from(0);
-                                                            break 'b10;
                                                         }
-                                                        if !matched10 && subject10.loosely_equals(&Val::from(2)) {
-                                                            matched10 = true;
-                                                        }
-                                                        if matched10 {
+                                                        2 => {
                                                             l_p_def = Val::from(1);
-                                                            break 'b10;
                                                         }
-                                                        if !matched10 && subject10.loosely_equals(&Val::from(3)) {
-                                                            matched10 = true;
-                                                        }
-                                                        if matched10 {
+                                                        3 => {
                                                             l_p_def = Val::from(2);
-                                                            break 'b10;
                                                         }
-                                                        if !matched10 && subject10.loosely_equals(&Val::from(4)) {
-                                                            matched10 = true;
-                                                        }
-                                                        if matched10 {
+                                                        4 => {
                                                             l_p_def = Val::from(3);
-                                                            break 'b10;
                                                         }
-                                                        if !matched10 && subject10.loosely_equals(&Val::from(5)) {
-                                                            matched10 = true;
-                                                        }
-                                                        if matched10 {
+                                                        5 => {
                                                             l_p_def = Val::from(4);
-                                                            break 'b10;
                                                         }
+                                                        _ => {}
                                                     }
                                                     l_n_atk = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
                                                     l_damage = ctx.call(Function::Rand, vec![Val::from(20), Val::from(25)])?;
@@ -2700,19 +2250,11 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         ],
                                                     )?;
                                                     ctx.next()?;
-                                                    'b12: {
-                                                        let subject12 = Val::from(runtime::select_values(
+                                                    match runtime::select_values(
                                                             ctx,
                                                             &[Val::from("...:Yes, I accept your challenge.:No, I'm scared!")],
-                                                        )?);
-                                                        let mut matched12 = false;
-                                                        let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                                                            && !subject12.loosely_equals(&Val::from(2))
-                                                            && !subject12.loosely_equals(&Val::from(3));
-                                                        if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                                            matched12 = true;
-                                                        }
-                                                        if matched12 {
+                                                        )? {
+                                                        1 => {
                                                             ctx.var("god_mjo_3").set(Val::from(3))?;
                                                             ctx.lines_as(
                                                                 "Sudri",
@@ -2721,19 +2263,13 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             ctx.close_window()?;
                                                             return Err(Stop::End);
                                                         }
-                                                        if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                                            matched12 = true;
-                                                        }
-                                                        if matched12 {
+                                                        2 => {
                                                             ctx.var("god_mjo_3").set(Val::from(1))?;
                                                             ctx.lines_as("Sudri", args!["Ah, I like you already, human! Now why don't you go do some warm ups, and we'll fight when you're ready."])?;
                                                             ctx.close_window()?;
                                                             return Err(Stop::End);
                                                         }
-                                                        if !matched12 && subject12.loosely_equals(&Val::from(3)) {
-                                                            matched12 = true;
-                                                        }
-                                                        if matched12 {
+                                                        3 => {
                                                             ctx.var("god_mjo_3").set(Val::from(1))?;
                                                             ctx.lines_as(
                                                                 "Sudri",
@@ -2750,6 +2286,7 @@ fn dwarf_blacksmith_south_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                             ctx.close_window()?;
                                                             return Err(Stop::End);
                                                         }
+                                                        _ => {}
                                                     }
                                                 }
                                             }
@@ -2885,14 +2422,8 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         {
                             ctx.lines_as("Vestri", args!["What do you want?"])?;
                             ctx.next()?;
-                            'b1: {
-                                let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                let mut matched1 = false;
-                                let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
+                            match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])? {
+                                1 => {
                                     ctx.lines_as(
                                         "Vestri",
                                         args!["If you want something, you should earn it through your own efforts."],
@@ -2902,10 +2433,7 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                    matched1 = true;
-                                }
-                                if matched1 {
+                                2 => {
                                     ctx.var("god_mjo_3").set(Val::from(3))?;
                                     ctx.lines_as(
                                         "Vestri",
@@ -2919,6 +2447,7 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         } else if ctx.var("god_mjo_3").get()? == 1 {
                             ctx.lines_as(
@@ -3179,15 +2708,8 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         } else if ctx.var("god_mjo_3").get()? == 0 {
                             ctx.lines_as("Vestri", args!["What do you want?"])?;
                             ctx.next()?;
-                            'b3: {
-                                let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                let mut matched3 = false;
-                                let no_case3 =
-                                    !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
+                            match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])? {
+                                1 => {
                                     ctx.lines_as(
                                         "Vestri",
                                         args!["If you want something, you should earn it through your own efforts."],
@@ -3197,10 +2719,7 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
-                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                    matched3 = true;
-                                }
-                                if matched3 {
+                                2 => {
                                     ctx.lines_as("Vestri", args!["Huh...", "I don't know how I can be much help to an adventurer like you. Aside from being a Blacksmith..."])?;
                                     ctx.next()?;
                                     ctx.lines_as("Vestri", args!["There's nothing I enjoy more than upgrading high level weapons that are on the verge of breaking."])?;
@@ -3214,6 +2733,7 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 }
+                                _ => {}
                             }
                         } else {
                             ctx.lines_as("Vestri", args!["Zzzz Zzzz Zzzz..."])?;
@@ -3253,15 +2773,8 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             {
                                 ctx.lines_as("Vestri", args!["What do you want?"])?;
                                 ctx.next()?;
-                                'b4: {
-                                    let subject4 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                    let mut matched4 = false;
-                                    let no_case4 =
-                                        !subject4.loosely_equals(&Val::from(1)) && !subject4.loosely_equals(&Val::from(2));
-                                    if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
+                                match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])? {
+                                    1 => {
                                         ctx.lines_as(
                                             "Vestri",
                                             args!["If you want something, you should earn it through your own efforts."],
@@ -3271,10 +2784,7 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                        matched4 = true;
-                                    }
-                                    if matched4 {
+                                    2 => {
                                         ctx.var("god_mjo_2").set(Val::from(3))?;
                                         ctx.lines_as(
                                             "Vestri",
@@ -3292,6 +2802,7 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
+                                    _ => {}
                                 }
                             } else if ctx.var("god_mjo_2").get()? == 1 {
                                 ctx.lines_as(
@@ -3555,16 +3066,8 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                             } else if ctx.var("god_mjo_2").get()? == 0 {
                                 ctx.lines_as("Vestri", args!["What do you want?"])?;
                                 ctx.next()?;
-                                'b6: {
-                                    let subject6 =
-                                        Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                    let mut matched6 = false;
-                                    let no_case6 =
-                                        !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                                    if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                        matched6 = true;
-                                    }
-                                    if matched6 {
+                                match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])? {
+                                    1 => {
                                         ctx.lines_as(
                                             "Vestri",
                                             args!["If you want something, you should earn it through your own efforts."],
@@ -3574,10 +3077,7 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
-                                    if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                        matched6 = true;
-                                    }
-                                    if matched6 {
+                                    2 => {
                                         ctx.lines_as("Vestri", args!["Huh...", "I don't know how I can be much help to an adventurer like you. Aside from being a Blacksmith..."])?;
                                         ctx.next()?;
                                         ctx.lines_as("Vestri", args!["There's nothing I enjoy more than upgrading high level weapons that are on the verge of breaking."])?;
@@ -3591,6 +3091,7 @@ fn dwarf_blacksmith_west_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         ctx.close_window()?;
                                         return Err(Stop::End);
                                     }
+                                    _ => {}
                                 }
                             } else {
                                 ctx.lines_as("Vestri", args!["Zzzz Zzzz Zzzz..."])?;
@@ -3692,22 +3193,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 {
                                     ctx.lines_as("Nordri", args!["What business", "do you have with", "me, human?"])?;
                                     ctx.next()?;
-                                    'b1: {
-                                        let subject1 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                        let mut matched1 = false;
-                                        let no_case1 = !subject1.loosely_equals(&Val::from(1)) && !subject1.loosely_equals(&Val::from(2));
-                                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                    match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])? {
+                                        1 => {
                                             ctx.lines_as("Nordri", args!["Huh.", "If that's the case,", "then leave me alone."])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                            matched1 = true;
-                                        }
-                                        if matched1 {
+                                        2 => {
                                             ctx.var("god_mjo_4").set(Val::from(3))?;
                                             ctx.lines_as(
                                                 "Nordri",
@@ -3716,6 +3208,7 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 } else if ctx.var("god_mjo_4").get()? == 1 {
                                     if ctx.call(Function::CountItem, vec![Val::from(501)])?.number()? > 0 {
@@ -3758,25 +3251,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     ctx.next()?;
                                                     ctx.lines_as("Nordri", args!["In truth, Thor was tricked, and the opponent that defeated him was not", "actually a giant. Illusion was used to disguise Thor's opponent, but I forget was it was. Do you know?"])?;
                                                     ctx.next()?;
-                                                    'b3: {
-                                                        let subject3 = Val::from(runtime::select_values(
+                                                    match runtime::select_values(
                                                             ctx,
                                                             &[Val::from("Greed:Sea:Blaze:Hog")],
-                                                        )?);
-                                                        let mut matched3 = false;
-                                                        let no_case3 = !subject3.loosely_equals(&Val::from(3));
-                                                        if !matched3 && no_case3 {
-                                                            matched3 = true;
-                                                        }
-                                                        if matched3 {
+                                                        )? {
+                                                        3 => {}
+                                                        _ => {
                                                             l_talk_not = Val::from(1);
-                                                            break 'b3;
-                                                        }
-                                                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                                            matched3 = true;
-                                                        }
-                                                        if matched3 {
-                                                            break 'b3;
                                                         }
                                                     }
                                                 } else if l_talk_to.clone() == 1 {
@@ -3786,25 +3267,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     ctx.next()?;
                                                     ctx.lines_as("Nordri", args!["Once again, illusion magic was", "used to disguise the competitor. Do you know what Tialfi was really racing against?"])?;
                                                     ctx.next()?;
-                                                    'b4: {
-                                                        let subject4 = Val::from(runtime::select_values(
+                                                    match runtime::select_values(
                                                             ctx,
                                                             &[Val::from("Language:Thoughts:Turtle:Wolf")],
-                                                        )?);
-                                                        let mut matched4 = false;
-                                                        let no_case4 = !subject4.loosely_equals(&Val::from(2));
-                                                        if !matched4 && no_case4 {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
+                                                        )? {
+                                                        2 => {}
+                                                        _ => {
                                                             l_talk_not = Val::from(1);
-                                                            break 'b4;
-                                                        }
-                                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                            matched4 = true;
-                                                        }
-                                                        if matched4 {
-                                                            break 'b4;
                                                         }
                                                     }
                                                 } else if l_talk_to.clone() == 2 {
@@ -3814,25 +3283,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     ctx.next()?;
                                                     ctx.lines_as("Nordri", args!["Once again, Thor was the victim", "of illusion magic. He didn't realize he wasn't actually wrestling with an old woman. Do you know what his opponent really was?"])?;
                                                     ctx.next()?;
-                                                    'b5: {
-                                                        let subject5 = Val::from(runtime::select_values(
+                                                    match runtime::select_values(
                                                             ctx,
                                                             &[Val::from("Curse:Earth:Heart:Old Age")],
-                                                        )?);
-                                                        let mut matched5 = false;
-                                                        let no_case5 = !subject5.loosely_equals(&Val::from(4));
-                                                        if !matched5 && no_case5 {
-                                                            matched5 = true;
-                                                        }
-                                                        if matched5 {
+                                                        )? {
+                                                        4 => {}
+                                                        _ => {
                                                             l_talk_not = Val::from(1);
-                                                            break 'b5;
-                                                        }
-                                                        if !matched5 && subject5.loosely_equals(&Val::from(4)) {
-                                                            matched5 = true;
-                                                        }
-                                                        if matched5 {
-                                                            break 'b5;
                                                         }
                                                     }
                                                 } else if l_talk_to.clone() == 3 {
@@ -3873,23 +3330,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     if ctx.var("god_mjo_4").get()? == 0 {
                                         ctx.lines_as("Nordri", args!["What business", "do you have with", "me, human?"])?;
                                         ctx.next()?;
-                                        'b6: {
-                                            let subject6 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                            let mut matched6 = false;
-                                            let no_case6 =
-                                                !subject6.loosely_equals(&Val::from(1)) && !subject6.loosely_equals(&Val::from(2));
-                                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                matched6 = true;
-                                            }
-                                            if matched6 {
+                                        match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])? {
+                                            1 => {
                                                 ctx.lines_as("Nordri", args!["Huh.", "If that's the case,", "then leave me alone."])?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                matched6 = true;
-                                            }
-                                            if matched6 {
+                                            2 => {
                                                 ctx.lines_as("Nordri", args!["Odd. Recently, too many humans have been interested in meeting with me and my brothers. Still, I cannot say their visits have been unpleasant."])?;
                                                 ctx.next()?;
                                                 ctx.var("god_mjo_4").set(Val::from(1))?;
@@ -3897,6 +3344,7 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
+                                            _ => {}
                                         }
                                     } else {
                                         ctx.lines_as("Nordri", args!["Zzzz Zzzz..."])?;
@@ -3930,23 +3378,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     {
                                         ctx.lines_as("Nordri", args!["What business", "do you have with", "me, human?"])?;
                                         ctx.next()?;
-                                        'b7: {
-                                            let subject7 = Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                            let mut matched7 = false;
-                                            let no_case7 =
-                                                !subject7.loosely_equals(&Val::from(1)) && !subject7.loosely_equals(&Val::from(2));
-                                            if !matched7 && subject7.loosely_equals(&Val::from(1)) {
-                                                matched7 = true;
-                                            }
-                                            if matched7 {
+                                        match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])? {
+                                            1 => {
                                                 ctx.lines_as("Nordri", args!["Huh.", "If that's the case,", "then leave me alone."])?;
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched7 && subject7.loosely_equals(&Val::from(2)) {
-                                                matched7 = true;
-                                            }
-                                            if matched7 {
+                                            2 => {
                                                 ctx.var("god_mjo_1").set(Val::from(3))?;
                                                 ctx.lines_as(
                                                     "Nordri",
@@ -3955,6 +3393,7 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
+                                            _ => {}
                                         }
                                     } else if ctx.var("god_mjo_1").get()? == 1 {
                                         if ctx.call(Function::CountItem, vec![Val::from(501)])?.number()? > 0 {
@@ -3991,25 +3430,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         ctx.next()?;
                                                         ctx.lines_as("Nordri", args!["So Thor decided to test his knowledge by asking him some questions. The first question was, 'What is the name of the ground in human terms?' Do you know the answer?"])?;
                                                         ctx.next()?;
-                                                        'b9: {
-                                                            let subject9 = Val::from(runtime::select_values(
+                                                        match runtime::select_values(
                                                                 ctx,
                                                                 &[Val::from("Ymir's body:Earth:Lane:Universe")],
-                                                            )?);
-                                                            let mut matched9 = false;
-                                                            let no_case9 = !subject9.loosely_equals(&Val::from(2));
-                                                            if !matched9 && no_case9 {
-                                                                matched9 = true;
-                                                            }
-                                                            if matched9 {
+                                                            )? {
+                                                            2 => {}
+                                                            _ => {
                                                                 l_talk_not = Val::from(1);
-                                                                break 'b9;
-                                                            }
-                                                            if !matched9 && subject9.loosely_equals(&Val::from(2)) {
-                                                                matched9 = true;
-                                                            }
-                                                            if matched9 {
-                                                                break 'b9;
                                                             }
                                                         }
                                                     } else if l_talk_to.clone() == 1 {
@@ -4017,25 +3444,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         ctx.next()?;
                                                         ctx.lines_as("Nordri", args!["Thor then gave Alvis another question. What is the giant's term for the round shell that covers the earth?"])?;
                                                         ctx.next()?;
-                                                        'b10: {
-                                                            let subject10 = Val::from(runtime::select_values(
+                                                        match runtime::select_values(
                                                                 ctx,
                                                                 &[Val::from("Ymir's Head:Sky:Cloud Factory:High House")],
-                                                            )?);
-                                                            let mut matched10 = false;
-                                                            let no_case10 = !subject10.loosely_equals(&Val::from(4));
-                                                            if !matched10 && no_case10 {
-                                                                matched10 = true;
-                                                            }
-                                                            if matched10 {
+                                                            )? {
+                                                            4 => {}
+                                                            _ => {
                                                                 l_talk_not = Val::from(1);
-                                                                break 'b10;
-                                                            }
-                                                            if !matched10 && subject10.loosely_equals(&Val::from(4)) {
-                                                                matched10 = true;
-                                                            }
-                                                            if matched10 {
-                                                                break 'b10;
                                                             }
                                                         }
                                                     } else if l_talk_to.clone() == 2 {
@@ -4043,25 +3458,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                         ctx.next()?;
                                                         ctx.lines_as("Nordri", args!["So Thor gave him another question. What is the term for the ball that rises in the sky at night, as used by the gods?"])?;
                                                         ctx.next()?;
-                                                        'b11: {
-                                                            let subject11 = Val::from(runtime::select_values(
+                                                        match runtime::select_values(
                                                                 ctx,
                                                                 &[Val::from("Circling Wheel:Moon:False Sun:Fast Stranger")],
-                                                            )?);
-                                                            let mut matched11 = false;
-                                                            let no_case11 = !subject11.loosely_equals(&Val::from(3));
-                                                            if !matched11 && no_case11 {
-                                                                matched11 = true;
-                                                            }
-                                                            if matched11 {
+                                                            )? {
+                                                            3 => {}
+                                                            _ => {
                                                                 l_talk_not = Val::from(1);
-                                                                break 'b11;
-                                                            }
-                                                            if !matched11 && subject11.loosely_equals(&Val::from(3)) {
-                                                                matched11 = true;
-                                                            }
-                                                            if matched11 {
-                                                                break 'b11;
                                                             }
                                                         }
                                                     } else if l_talk_to.clone() == 3 {
@@ -4102,24 +3505,13 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                         if ctx.var("god_mjo_1").get()? == 0 {
                                             ctx.lines_as("Nordri", args!["What business", "do you have with", "me, human?"])?;
                                             ctx.next()?;
-                                            'b12: {
-                                                let subject12 =
-                                                    Val::from(runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])?);
-                                                let mut matched12 = false;
-                                                let no_case12 = !subject12.loosely_equals(&Val::from(1))
-                                                    && !subject12.loosely_equals(&Val::from(2));
-                                                if !matched12 && subject12.loosely_equals(&Val::from(1)) {
-                                                    matched12 = true;
-                                                }
-                                                if matched12 {
+                                            match runtime::select_values(ctx, &[Val::from("Nothing.:Excuse me.")])? {
+                                                1 => {
                                                     ctx.lines_as("Nordri", args!["You're funny, leave me alone."])?;
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
                                                 }
-                                                if !matched12 && subject12.loosely_equals(&Val::from(2)) {
-                                                    matched12 = true;
-                                                }
-                                                if matched12 {
+                                                2 => {
                                                     ctx.lines_as("Nordri", args!["Odd. Recently, too many humans have been interested in meeting with me and my brothers. Still, I cannot say their visits have been unpleasant."])?;
                                                     ctx.next()?;
                                                     ctx.var("god_mjo_1").set(Val::from(1))?;
@@ -4127,6 +3519,7 @@ fn dwarf_blacksmith_north_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                                     ctx.close_window()?;
                                                     return Err(Stop::End);
                                                 }
+                                                _ => {}
                                             }
                                         } else {
                                             ctx.lines_as("Nordri", args!["Zzzz Zzzz Zzzz..."])?;

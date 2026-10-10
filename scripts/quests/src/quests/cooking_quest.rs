@@ -177,19 +177,11 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                             ],
                         )?;
                         ctx.next()?;
-                        'b1: {
-                            let subject1 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("......?:She is my sister:Actually, I don't know her.")],
-                            )?);
-                            let mut matched1 = false;
-                            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                                && !subject1.loosely_equals(&Val::from(2))
-                                && !subject1.loosely_equals(&Val::from(3));
-                            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            )? {
+                            1 => {
                                 ctx.call(Function::Cutin, vec![Val::from("nyuang_3"), Val::from(2)])?;
                                 ctx.call(
                                     Function::Emotion,
@@ -204,12 +196,8 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                 ctx.call(Function::Emotion, vec![ctx.constant("ET_SMILE")?])?;
                                 ctx.lines_as("Charles Orleans", args!["What a lovely child.", "Be quiet like a good girl."])?;
                                 ctx.next()?;
-                                break 'b1;
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            2 => {
                                 ctx.call(Function::Cutin, vec![Val::from("nyuang_1"), Val::from(2)])?;
                                 ctx.call(
                                     Function::Emotion,
@@ -231,12 +219,8 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                         "Even her cat looks adorable."
                                     ],
                                 )?;
-                                break 'b1;
                             }
-                            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                                matched1 = true;
-                            }
-                            if matched1 {
+                            3 => {
                                 ctx.call(Function::Cutin, vec![Val::from("nyuang_2"), Val::from(2)])?;
                                 ctx.call(
                                     Function::Emotion,
@@ -260,8 +244,8 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                         "of the mademoiselle."
                                     ],
                                 )?;
-                                break 'b1;
                             }
+                            _ => {}
                         }
                         ctx.next()?;
                         ctx.call(Function::Cutin, vec![Val::from("orleans_1"), Val::from(0)])?;
@@ -344,19 +328,11 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                 ],
                             )?;
                             ctx.next()?;
-                            'b2: {
-                                let subject2 = Val::from(runtime::select_values(
+                            match runtime::select_values(
                                     ctx,
                                     &[Val::from("Um, are you talking to me?:Wait, don't you remember me?:Sir Orleans?")],
-                                )?);
-                                let mut matched2 = false;
-                                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                    && !subject2.loosely_equals(&Val::from(2))
-                                    && !subject2.loosely_equals(&Val::from(3));
-                                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                )? {
+                                1 => {
                                     ctx.call(Function::Cutin, vec![Val::from("orleans_7"), Val::from(0)])?;
                                     ctx.lines_as(
                                         "Charles Orleans",
@@ -380,12 +356,8 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                         "Charles Orleans",
                                         args!["Goodness, you scared me!", "What an ill natured kid!", "Who brought this kid in?"],
                                     )?;
-                                    break 'b2;
                                 }
-                                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                2 => {
                                     ctx.lines_as(
                                         "Charles Orleans",
                                         args![
@@ -403,12 +375,8 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                         "Charles Orleans",
                                         args!["Bah! No matter.", "I suppose that's", "of no importance", "at the moment."],
                                     )?;
-                                    break 'b2;
                                 }
-                                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                    matched2 = true;
-                                }
-                                if matched2 {
+                                3 => {
                                     ctx.call(Function::Cutin, vec![Val::from("orleans_4"), Val::from(0)])?;
                                     ctx.lines_as(
                                         "Charles Orleans",
@@ -444,8 +412,8 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                             "if I'm a knight only in title and manner, rather than strength."
                                         ],
                                     )?;
-                                    break 'b2;
                                 }
+                                _ => {}
                             }
                             ctx.next()?;
                             ctx.call(Function::Cutin, vec![Val::from("orleans_7"), Val::from(0)])?;
@@ -1214,22 +1182,13 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                             ctx.call(Function::Cutin, vec![Val::from("nyuang_1"), Val::from(2)])?;
                                                             ctx.lines_as("Child with Cat", args!["...Nyaaa?", "...Meow?"])?;
                                                             ctx.next()?;
-                                                            'b3: {
-                                                                let subject3 = Val::from(runtime::select_values(
+                                                            match runtime::select_values(
                                                                     ctx,
                                                                     &[Val::from(
                                                                         "What's your name, kid?:Do you want to eat something?:Here, kitty~:Get out!",
                                                                     )],
-                                                                )?);
-                                                                let mut matched3 = false;
-                                                                let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                                                                    && !subject3.loosely_equals(&Val::from(2))
-                                                                    && !subject3.loosely_equals(&Val::from(3))
-                                                                    && !subject3.loosely_equals(&Val::from(4));
-                                                                if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                                                    matched3 = true;
-                                                                }
-                                                                if matched3 {
+                                                                )? {
+                                                                1 => {
                                                                     ctx.call(
                                                                         Function::Emotion,
                                                                         vec![
@@ -1257,10 +1216,7 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                     step = CharlesOrleansCookStep::LEnd;
                                                                     continue 'machine;
                                                                 }
-                                                                if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                                                    matched3 = true;
-                                                                }
-                                                                if matched3 {
+                                                                2 => {
                                                                     ctx.call(Function::Cutin, vec![Val::from("nyuang_2"), Val::from(2)])?;
                                                                     ctx.call(
                                                                         Function::Emotion,
@@ -1289,10 +1245,7 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                     step = CharlesOrleansCookStep::LEnd;
                                                                     continue 'machine;
                                                                 }
-                                                                if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                                                                    matched3 = true;
-                                                                }
-                                                                if matched3 {
+                                                                3 => {
                                                                     ctx.call(Function::Cutin, vec![Val::from("nyuang_3"), Val::from(2)])?;
                                                                     ctx.call(
                                                                         Function::Emotion,
@@ -1320,10 +1273,7 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                     step = CharlesOrleansCookStep::LEnd;
                                                                     continue 'machine;
                                                                 }
-                                                                if !matched3 && subject3.loosely_equals(&Val::from(4)) {
-                                                                    matched3 = true;
-                                                                }
-                                                                if matched3 {
+                                                                4 => {
                                                                     ctx.call(
                                                                         Function::Emotion,
                                                                         vec![
@@ -1364,6 +1314,7 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                     step = CharlesOrleansCookStep::LEnd;
                                                                     continue 'machine;
                                                                 }
+                                                                _ => {}
                                                             }
                                                         } else {
                                                             if ctx.var("cooking_q").get()? == 9 {
@@ -1701,21 +1652,13 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                             ],
                                                                         )?;
                                                                         ctx.next()?;
-                                                                        'b4: {
-                                                                            let subject4 = Val::from(runtime::select_values(
+                                                                        match runtime::select_values(
                                                                                 ctx,
                                                                                 &[Val::from(
                                                                                     "I want to learn more recipes.:For whom do you cook?:I'm sorry to bother you...",
                                                                                 )],
-                                                                            )?);
-                                                                            let mut matched4 = false;
-                                                                            let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                                                                && !subject4.loosely_equals(&Val::from(2))
-                                                                                && !subject4.loosely_equals(&Val::from(3));
-                                                                            if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                                                                matched4 = true;
-                                                                            }
-                                                                            if matched4 {
+                                                                            )? {
+                                                                            1 => {
                                                                                 ctx.call(
                                                                                     Function::Cutin,
                                                                                     vec![Val::from("orleans_7"), Val::from(0)],
@@ -1885,96 +1828,44 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                         vec![Val::from("orleans_2"), Val::from(0)],
                                                                                     )?;
                                                                                     ctx.mes("[Charles Orleans]")?;
-                                                                                    'b5: {
-                                                                                        let subject5 = l_old_book.clone();
-                                                                                        let mut matched5 = false;
-                                                                                        let no_case5 = !subject5
-                                                                                            .loosely_equals(&Val::from(1))
-                                                                                            && !subject5
-                                                                                                .loosely_equals(&Val::from(2))
-                                                                                            && !subject5
-                                                                                                .loosely_equals(&Val::from(3))
-                                                                                            && !subject5
-                                                                                                .loosely_equals(&Val::from(4))
-                                                                                            && !subject5
-                                                                                                .loosely_equals(&Val::from(5));
-                                                                                        if !matched5
-                                                                                            && subject5
-                                                                                                .loosely_equals(&Val::from(1))
-                                                                                        {
-                                                                                            matched5 = true;
-                                                                                        }
-                                                                                        if matched5 {
-                                                                                            ctx.lines(args![
-                                                                                                "Ah, so you're done",
-                                                                                                "with the Level 1 Cookbook.",
-                                                                                                "That's good, that means you're",
-                                                                                                "ready to graduate from the most",
-                                                                                                "basic of basics. From now on,",
-                                                                                                "the recipes will be harder..."
-                                                                                            ])?;
-                                                                                            break 'b5;
-                                                                                        }
-                                                                                        if !matched5
-                                                                                            && subject5
-                                                                                                .loosely_equals(&Val::from(2))
-                                                                                        {
-                                                                                            matched5 = true;
-                                                                                        }
-                                                                                        if matched5 {
-                                                                                            ctx.lines(args![
-                                                                                                "Ah, so what did you",
-                                                                                                "think of the recipes in",
-                                                                                                "the Level 2 Cookbook?",
-                                                                                                "Homestyle cooking may be",
-                                                                                                "simple, but it should never",
-                                                                                                "be neglected by chefs."
-                                                                                            ])?;
-                                                                                            break 'b5;
-                                                                                        }
-                                                                                        if !matched5
-                                                                                            && subject5
-                                                                                                .loosely_equals(&Val::from(3))
-                                                                                        {
-                                                                                            matched5 = true;
-                                                                                        }
-                                                                                        if matched5 {
-                                                                                            ctx.lines(args!["Ah, done with the Level 3", "Cookbook already? The recipes", "in there are really good when you're cooking romantic dinners.", "They'll come in handy someday,", "if you know what I mean."])?;
-                                                                                            break 'b5;
-                                                                                        }
-                                                                                        if !matched5
-                                                                                            && subject5
-                                                                                                .loosely_equals(&Val::from(4))
-                                                                                        {
-                                                                                            matched5 = true;
-                                                                                        }
-                                                                                        if matched5 {
-                                                                                            ctx.lines(args![
-                                                                                                "So you've finished the",
-                                                                                                "Level 4 Cookbook. That's",
-                                                                                                "no small feat! You've got to",
-                                                                                                "use very strange ingredients",
-                                                                                                "to create delicious cuisine!"
-                                                                                            ])?;
-                                                                                            break 'b5;
-                                                                                        }
-                                                                                        if !matched5
-                                                                                            && subject5
-                                                                                                .loosely_equals(&Val::from(5))
-                                                                                        {
-                                                                                            matched5 = true;
-                                                                                        }
-                                                                                        if matched5 {
-                                                                                            ctx.lines(args![
-                                                                                                "You're done with the",
-                                                                                                "Level 5 Cookbook? Good",
-                                                                                                "work: most beginners don't",
-                                                                                                "even get this far. I suppose",
-                                                                                                "you'll want to review some",
-                                                                                                "of the easier recipes now~"
-                                                                                            ])?;
-                                                                                            break 'b5;
-                                                                                        }
+                                                                                    let subject5 = l_old_book.clone();
+                                                                                    if subject5 == 1 {
+                                                                                        ctx.lines(args![
+                                                                                            "Ah, so you're done",
+                                                                                            "with the Level 1 Cookbook.",
+                                                                                            "That's good, that means you're",
+                                                                                            "ready to graduate from the most",
+                                                                                            "basic of basics. From now on,",
+                                                                                            "the recipes will be harder..."
+                                                                                        ])?;
+                                                                                    } else if subject5 == 2 {
+                                                                                        ctx.lines(args![
+                                                                                            "Ah, so what did you",
+                                                                                            "think of the recipes in",
+                                                                                            "the Level 2 Cookbook?",
+                                                                                            "Homestyle cooking may be",
+                                                                                            "simple, but it should never",
+                                                                                            "be neglected by chefs."
+                                                                                        ])?;
+                                                                                    } else if subject5 == 3 {
+                                                                                        ctx.lines(args!["Ah, done with the Level 3", "Cookbook already? The recipes", "in there are really good when you're cooking romantic dinners.", "They'll come in handy someday,", "if you know what I mean."])?;
+                                                                                    } else if subject5 == 4 {
+                                                                                        ctx.lines(args![
+                                                                                            "So you've finished the",
+                                                                                            "Level 4 Cookbook. That's",
+                                                                                            "no small feat! You've got to",
+                                                                                            "use very strange ingredients",
+                                                                                            "to create delicious cuisine!"
+                                                                                        ])?;
+                                                                                    } else if subject5 == 5 {
+                                                                                        ctx.lines(args![
+                                                                                            "You're done with the",
+                                                                                            "Level 5 Cookbook? Good",
+                                                                                            "work: most beginners don't",
+                                                                                            "even get this far. I suppose",
+                                                                                            "you'll want to review some",
+                                                                                            "of the easier recipes now~"
+                                                                                        ])?;
                                                                                     }
                                                                                     ctx.next()?;
                                                                                 }
@@ -2384,10 +2275,7 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                 step = CharlesOrleansCookStep::LEnd;
                                                                                 continue 'machine;
                                                                             }
-                                                                            if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                                                                matched4 = true;
-                                                                            }
-                                                                            if matched4 {
+                                                                            2 => {
                                                                                 ctx.call(
                                                                                     Function::Cutin,
                                                                                     vec![Val::from("orleans_3"), Val::from(0)],
@@ -2437,10 +2325,7 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                 step = CharlesOrleansCookStep::LEnd;
                                                                                 continue 'machine;
                                                                             }
-                                                                            if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                                                                matched4 = true;
-                                                                            }
-                                                                            if matched4 {
+                                                                            3 => {
                                                                                 ctx.call(
                                                                                     Function::Cutin,
                                                                                     vec![Val::from("orleans_5"), Val::from(0)],
@@ -2456,6 +2341,7 @@ fn charles_orleans_cook_run(ctx: &Ctx, mut step: CharlesOrleansCookStep, args: V
                                                                                 step = CharlesOrleansCookStep::LEnd;
                                                                                 continue 'machine;
                                                                             }
+                                                                            _ => {}
                                                                         }
                                                                     } else {
                                                                         ctx.lines_as(
@@ -2537,21 +2423,13 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                         ],
                     )?;
                     ctx.next()?;
-                    'b1: {
-                        let subject1 = Val::from(runtime::select_values(
+                    match runtime::select_values(
                             ctx,
                             &[Val::from(
                                 "What do you do as a chef?:Which foods can you make?:I want to learn cooking too!",
                             )],
-                        )?);
-                        let mut matched1 = false;
-                        let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                            && !subject1.loosely_equals(&Val::from(2))
-                            && !subject1.loosely_equals(&Val::from(3));
-                        if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        )? {
+                        1 => {
                             ctx.lines_as(
                                 "Madeleine Chu",
                                 args![
@@ -2587,10 +2465,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        2 => {
                             ctx.lines_as(
                                 "Madeleine Chu",
                                 args![
@@ -2640,10 +2515,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
-                        if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                            matched1 = true;
-                        }
-                        if matched1 {
+                        3 => {
                             ctx.lines_as(
                                 "Madeleine Chu",
                                 args![
@@ -2692,6 +2564,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                             ctx.close_window()?;
                             return Err(Stop::End);
                         }
+                        _ => {}
                     }
                 } else {
                     if (ctx.var("cooking_q").get()?.number()? > 0 && ctx.var("cooking_q").get()?.number()? < 7) {
@@ -2707,24 +2580,13 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                             ],
                         )?;
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from(
                                     "Fried Grasshopper Legs:Grape Juice Herbal Tea:Honey Grape Juice:Frog Egg and Squid Ink Soup:Steamed Crab Nippers:Fried Monkey Tails",
                                 )],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3))
-                                && !subject2.loosely_equals(&Val::from(4))
-                                && !subject2.loosely_equals(&Val::from(5))
-                                && !subject2.loosely_equals(&Val::from(6));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            )? {
+                            1 => {
                                 ctx.lines_as(
                                     "Madeleine Chu",
                                     args![
@@ -2735,12 +2597,8 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                         "fried Grasshopper Legs."
                                     ],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.lines_as(
                                     "Madeleine Chu",
                                     args![
@@ -2750,12 +2608,8 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                         "Grape Juice Herbal Tea."
                                     ],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            3 => {
                                 ctx.lines_as(
                                     "Madeleine Chu",
                                     args![
@@ -2765,12 +2619,8 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                         "^4D4DFF1 Red Potion^000000."
                                     ],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(4)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            4 => {
                                 ctx.lines_as(
                                     "Madeleine Chu",
                                     args![
@@ -2781,12 +2631,8 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                         "Egg and Squid Ink soup."
                                     ],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(5)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            5 => {
                                 ctx.lines_as(
                                     "Madeleine Chu",
                                     args![
@@ -2797,12 +2643,8 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                         "Steamed Crab Nippers."
                                     ],
                                 )?;
-                                break 'b2;
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(6)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            6 => {
                                 ctx.lines_as(
                                     "Madeleine Chu",
                                     args![
@@ -2813,8 +2655,8 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                         "Fried Monkey Tails."
                                     ],
                                 )?;
-                                break 'b2;
                             }
+                            _ => {}
                         }
                         ctx.next()?;
                         ctx.lines_as(
@@ -2921,27 +2763,16 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                 if matched3 {
                                     ctx.lines_as("Madeleine Chu", args!["Sure, which kind", "of Cooking Kits", "did you need?"])?;
                                     ctx.next()?;
-                                    'b4: {
-                                        let subject4 = Val::from(runtime::select_values(
+                                    match runtime::select_values(
                                             ctx,
                                             &[Val::from("Outdoor Cooking Kit - 500z:Home Cooking Kit - 1,000z:Quit")],
-                                        )?);
-                                        let mut matched4 = false;
-                                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                            && !subject4.loosely_equals(&Val::from(2))
-                                            && !subject4.loosely_equals(&Val::from(3));
-                                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
+                                        )? {
+                                        1 => {
                                             madeleine_chu_cook_run(ctx, MadeleineChuCookStep::SSellSets, vec![Val::from(12125)])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
+                                        2 => {
                                             ctx.lines_as(
                                                 "Madeleine Chu",
                                                 args![
@@ -2956,10 +2787,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
+                                        3 => {
                                             ctx.lines_as(
                                                 "Madeleine Chu",
                                                 args![
@@ -2972,6 +2800,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 }
                                 if !matched3 && subject3.loosely_equals(&Val::from(2)) {
@@ -3288,22 +3117,13 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                             args!["Sure, which kind", "of Cooking Kits", "did you need?"],
                                         )?;
                                         ctx.next()?;
-                                        'b6: {
-                                            let subject6 = Val::from(runtime::select_values(
+                                        match runtime::select_values(
                                                 ctx,
                                                 &[Val::from(
                                                     "Outdoor Cooking Kit - 500z:Home Cooking Kit - 1,000z:Show me a different kit.:Quit",
                                                 )],
-                                            )?);
-                                            let mut matched6 = false;
-                                            let no_case6 = !subject6.loosely_equals(&Val::from(1))
-                                                && !subject6.loosely_equals(&Val::from(2))
-                                                && !subject6.loosely_equals(&Val::from(3))
-                                                && !subject6.loosely_equals(&Val::from(4));
-                                            if !matched6 && subject6.loosely_equals(&Val::from(1)) {
-                                                matched6 = true;
-                                            }
-                                            if matched6 {
+                                            )? {
+                                            1 => {
                                                 madeleine_chu_cook_run(
                                                     ctx,
                                                     MadeleineChuCookStep::SSellSets,
@@ -3312,10 +3132,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched6 && subject6.loosely_equals(&Val::from(2)) {
-                                                matched6 = true;
-                                            }
-                                            if matched6 {
+                                            2 => {
                                                 madeleine_chu_cook_run(
                                                     ctx,
                                                     MadeleineChuCookStep::SSellSets,
@@ -3324,10 +3141,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched6 && subject6.loosely_equals(&Val::from(3)) {
-                                                matched6 = true;
-                                            }
-                                            if matched6 {
+                                            3 => {
                                                 ctx.lines_as(
                                                     "Madeleine Chu",
                                                     args![
@@ -3364,10 +3178,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
-                                            if !matched6 && subject6.loosely_equals(&Val::from(4)) {
-                                                matched6 = true;
-                                            }
-                                            if matched6 {
+                                            4 => {
                                                 ctx.lines_as(
                                                     "Madeleine Chu",
                                                     args![
@@ -3380,6 +3191,7 @@ fn madeleine_chu_cook_run(ctx: &Ctx, mut step: MadeleineChuCookStep, args: Vec<V
                                                 ctx.close_window()?;
                                                 return Err(Stop::End);
                                             }
+                                            _ => {}
                                         }
                                     }
                                     if !matched5 && subject5.loosely_equals(&Val::from(2)) {
@@ -3713,19 +3525,11 @@ fn servant_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Sure, I'll buy one!:No, thanks.:Actually, Madeleine sent me...")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 if ctx.var("Zeny").get()?.number()? < 200 {
                     ctx.lines_as(
                         "Chulsoo",
@@ -3746,10 +3550,7 @@ fn servant_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Chulsoo",
                     args![
@@ -3764,10 +3565,7 @@ fn servant_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 if ctx.call(Function::CountItem, vec![Val::from(12111)])?.number()? > 0 {
                     ctx.lines_as(
                         ctx.call(Function::StrCharInfo, vec![Val::from(0)])?,
@@ -3908,6 +3706,7 @@ fn servant_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else if ctx.var("cooking_q").get()? == 8 {
         ctx.lines_as(

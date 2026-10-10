@@ -1498,19 +1498,11 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                             ctx.mes("At last, I've met someone who recognizes my talent! You deserve to listen to my songs! Now, what would you like to hear? I can play anything you want, you know.")?;
                         }
                         ctx.next()?;
-                        'b2: {
-                            let subject2 = Val::from(runtime::select_values(
+                        match runtime::select_values(
                                 ctx,
                                 &[Val::from("Hmm, any song will do.:Play an upbeat song~!:Never mind...")],
-                            )?);
-                            let mut matched2 = false;
-                            let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                                && !subject2.loosely_equals(&Val::from(2))
-                                && !subject2.loosely_equals(&Val::from(3));
-                            if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            )? {
+                            1 => {
                                 ctx.mes("[Errende]")?;
                                 if ctx.var("Zeny").get()?.number()? > 499 {
                                     ctx.var("Zeny").set((ctx.var("Zeny").get()?.try_sub(Val::from(500))?))?;
@@ -1536,10 +1528,7 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            2 => {
                                 ctx.call(Function::Cutin, vec![Val::from("bard_eland03"), Val::from(2)])?;
                                 ctx.lines_as(
                                     "Errende",
@@ -1769,10 +1758,7 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                                 return Err(Stop::End);
                             }
-                            if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                                matched2 = true;
-                            }
-                            if matched2 {
+                            3 => {
                                 ctx.call(Function::Cutin, vec![Val::from("bard_eland01"), Val::from(2)])?;
                                 ctx.lines_as(
                                     "Errende",
@@ -1788,6 +1774,7 @@ fn bard_2_run(ctx: &Ctx, mut step: Bard2Step, args: Vec<Val>) -> Result<Val, Sto
                                 ctx.call(Function::Cutin, vec![Val::from(""), Val::from(255)])?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     }
                     if !matched1 && subject1.loosely_equals(&Val::from(3)) {
@@ -1834,19 +1821,11 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Tell me a story...:Your voice is...:No thanks, I appreciate it though.")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 l_random = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
                 if l_random.clone() == 1 {
                     ctx.lines_as("Kino Kitty", args!["Many legends have been passed down as songs. Stories of Gods and tales of brave warriors have all been written as songs."])?;
@@ -1990,10 +1969,7 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     return Err(Stop::End);
                 }
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as("Kino Kitty", args!["Oh... Well, I have a chronic disease so I can't speak out loud. I, um, even cough up a little blood. But aside from that, I'm perfectly healthy."])?;
                 ctx.next()?;
                 ctx.mes("^3355FFA look of bitterness momentarily flashed across Kino Kitty's face. He then adjusted his guitar strings and began to play, humming a low tune.^000000")?;
@@ -2001,14 +1977,12 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as("Kino Kitty", args!["Hmm...?", "I wish everyone in the world were as kind and honest as you. If that were the case, there'd be no selfish fights. Hahahahaha~"])?;
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         if ctx.var("gef_bard_q").get()? == 30 {
@@ -2031,21 +2005,13 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ],
             )?;
             ctx.next()?;
-            'b2: {
-                let subject2 = Val::from(runtime::select_values(
+            match runtime::select_values(
                     ctx,
                     &[Val::from(
                         "Tell me a story, or sing something~:Your voice is...:No thanks. I appreciate it, though.",
                     )],
-                )?);
-                let mut matched2 = false;
-                let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                    && !subject2.loosely_equals(&Val::from(2))
-                    && !subject2.loosely_equals(&Val::from(3));
-                if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                )? {
+                1 => {
                     l_random = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
                     if l_random.clone() == 1 {
                         ctx.lines_as(
@@ -2181,10 +2147,7 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         return Err(Stop::End);
                     }
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                2 => {
                     ctx.lines_as("Kino Kitty", args!["Oh... Well, I have a chronic disease so I can't speak out loud. I, um, even cough up a little blood. But aside from that, I'm perfectly healthy."])?;
                     ctx.next()?;
                     ctx.mes("^3355FFA look of bitterness momentarily flashed across Kino Kitty's face. He then adjusted his guitar strings and began to play, humming a low tune.^000000")?;
@@ -2192,14 +2155,12 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
-                if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                    matched2 = true;
-                }
-                if matched2 {
+                3 => {
                     ctx.lines_as("Kino Kitty", args!["Hmm...?", "I wish everyone in the world were as kind and honest as you. If that were the case, there'd be no selfish fights. Hahahahaha~"])?;
                     ctx.close_window()?;
                     return Err(Stop::End);
                 }
+                _ => {}
             }
         } else {
             if (ctx.var("gef_bard_q").get()?.number()? > 12 && ctx.var("gef_bard_q").get()?.number()? < 16) {
@@ -2221,14 +2182,8 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                         ctx.next()?;
                         ctx.lines_as("Kino Kitty", args!["Here, let me give you a letter with the lyrics to Errende. I should also give you my seal so that Errende will know it's me. You don't mind, do you?"])?;
                         ctx.next()?;
-                        'b3: {
-                            let subject3 = Val::from(runtime::select_values(ctx, &[Val::from("Yes, I mind!:No, I don't mind.")])?);
-                            let mut matched3 = false;
-                            let no_case3 = !subject3.loosely_equals(&Val::from(1)) && !subject3.loosely_equals(&Val::from(2));
-                            if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                        match runtime::select_values(ctx, &[Val::from("Yes, I mind!:No, I don't mind.")])? {
+                            1 => {
                                 ctx.lines_as(
                                     "Kino Kitty",
                                     args![
@@ -2240,10 +2195,7 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
-                            if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                                matched3 = true;
-                            }
-                            if matched3 {
+                            2 => {
                                 ctx.lines_as(
                                     "Kino Kitty",
                                     args!["Now, let's see...", "How is it supposed to go?", "...Lu lu lu...", "...La la la..."],
@@ -2290,6 +2242,7 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                 ctx.close_window()?;
                                 return Err(Stop::End);
                             }
+                            _ => {}
                         }
                     } else {
                         ctx.lines_as(
@@ -2400,19 +2353,11 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                     ctx.close_window()?;
                                     return Err(Stop::End);
                                 } else {
-                                    'b4: {
-                                        let subject4 = Val::from(runtime::select_values(
+                                    match runtime::select_values(
                                             ctx,
                                             &[Val::from("Tell me a story.:Sing a song.:Nothing.")],
-                                        )?);
-                                        let mut matched4 = false;
-                                        let no_case4 = !subject4.loosely_equals(&Val::from(1))
-                                            && !subject4.loosely_equals(&Val::from(2))
-                                            && !subject4.loosely_equals(&Val::from(3));
-                                        if !matched4 && subject4.loosely_equals(&Val::from(1)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
+                                        )? {
+                                        1 => {
                                             ctx.lines_as(
                                                 "Kino Kitty",
                                                 args![
@@ -2445,22 +2390,17 @@ fn bard_3_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched4 && subject4.loosely_equals(&Val::from(2)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
+                                        2 => {
                                             ctx.lines_as("Kino Kitty", args!["Sorry, but I don't feel like singing at the moment. I hope you understand. I want to sing the last song of my life for Jorti..."])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
-                                        if !matched4 && subject4.loosely_equals(&Val::from(3)) {
-                                            matched4 = true;
-                                        }
-                                        if matched4 {
+                                        3 => {
                                             ctx.lines_as("Kino Kitty", args!["You have no", "business with me?", "What a shame."])?;
                                             ctx.close_window()?;
                                             return Err(Stop::End);
                                         }
+                                        _ => {}
                                     }
                                 }
                             } else {
@@ -2917,19 +2857,11 @@ fn luke_s_songs_vol_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
             ],
         )?;
         ctx.next()?;
-        'b1: {
-            let subject1 = Val::from(runtime::select_values(
+        match runtime::select_values(
                 ctx,
                 &[Val::from("Wedding Song:Life is a Water Mill:We")],
-            )?);
-            let mut matched1 = false;
-            let no_case1 = !subject1.loosely_equals(&Val::from(1))
-                && !subject1.loosely_equals(&Val::from(2))
-                && !subject1.loosely_equals(&Val::from(3));
-            if !matched1 && subject1.loosely_equals(&Val::from(1)) {
-                matched1 = true;
-            }
-            if matched1 {
+            )? {
+            1 => {
                 ctx.lines_as(
                     "Wedding Song",
                     args![
@@ -2990,10 +2922,7 @@ fn luke_s_songs_vol_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(2)) {
-                matched1 = true;
-            }
-            if matched1 {
+            2 => {
                 ctx.lines_as(
                     "Life is a Water Mill",
                     args![
@@ -3033,10 +2962,7 @@ fn luke_s_songs_vol_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
-            if !matched1 && subject1.loosely_equals(&Val::from(3)) {
-                matched1 = true;
-            }
-            if matched1 {
+            3 => {
                 ctx.lines_as(
                     "We",
                     args![
@@ -3070,6 +2996,7 @@ fn luke_s_songs_vol_1_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                 ctx.close_window()?;
                 return Err(Stop::End);
             }
+            _ => {}
         }
     } else {
         ctx.lines_as(
@@ -3361,252 +3288,218 @@ fn bard_4_body(ctx: &Ctx, args: Vec<Val>) -> Result<Val, Stop> {
                     matched1 = true;
                 }
                 if matched1 {
-                    'b2: {
-                        let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                        let mut matched2 = false;
-                        let no_case2 = !subject2.loosely_equals(&Val::from(1))
-                            && !subject2.loosely_equals(&Val::from(2))
-                            && !subject2.loosely_equals(&Val::from(3));
-                        if !matched2 && subject2.loosely_equals(&Val::from(1)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as(
-                                "Gunther Doubleharmony",
-                                args![
-                                    "Gunther sings!",
-                                    "Gunther dances!",
-                                    "The tile of this song is~",
-                                    "'The Rich Mr. Kim~!'"
-                                ],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Merchant of Payon",
-                                "So poooooooor~",
-                                "No money for armor",
-                                "No money to make."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Sold the",
-                                "Cotton Shirt",
-                                "Off his back",
-                                "No pity he'll take.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22First he only sold Red Pots",
-                                "At first, he only sold red pots.",
-                                "Then he moved up to Carrots, whoohoo~",
-                                "He could afford new armor",
-                                "and even wear it,",
-                                "whoohoo~^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22But one day, he was scammed",
-                                "Scammed by a wicked guild.",
-                                "Made poor once again.",
-                                "He decided to go to Ant Hell",
-                                "Right there",
-                                "And right then."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Bats, Dwarves, Eggs, Ants!",
-                                "He battled them all~",
-                                "Worm Peelings, Jellopy!",
-                                "He gathered loot great and small."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Then the glorious day came",
-                                "When he found a valuable card",
-                                "That'd bring great wealth to his naaaame~^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22But he kept it dear to him",
-                                "To remember his times of",
-                                "working so hard.",
-                                "He never sold it, never sold",
-                                "his precious card~^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["That's a very old story about rich Mr. Kim, and his rise from rags to riches to rags to riches. Is it true or is it fiction? Oh, please don't ask me! I've no clue!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(2)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as("Gunther Doubleharmony", args!["*Ahem*", "Gunther sings ", "of Yggdrasil~"])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Evergreen Yggdrasil~",
-                                "Giant ashen tree",
-                                "reaching for the sky.",
-                                "Crystal, morning dew",
-                                "From its leaves",
-                                "Formed Urd's Pond.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Three wise girls.",
-                                "Seated beneath its boughs.",
-                                "Urd of the past,",
-                                "Belldandy of the present",
-                                "Skuld the future.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Spinning, weaving",
-                                "Threads of destiny.",
-                                "Evergreen Yggdrasil~",
-                                "Giant ashen tree",
-                                "reaching for the sky.",
-                                "Its roots soaked with tears.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Death in Hvergelmir.",
-                                "An evil dragon",
-                                "Burning its roots",
-                                "With eternal flame.",
-                                "The evil dragon Nidhogg",
-                                "Living between Yggdrasil",
-                                "and Niffheim.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Evergreen Yggdrasil~",
-                                "Giant ashen tree",
-                                "reaching for the sky.",
-                                "Wisdom in its roots",
-                                "Roots reaching",
-                                "Mimir's pond.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22Guarded by a wise giant.",
-                                "Odin sacrificed one",
-                                "of his eyes for the wisdom.",
-                                "Heimdall's horn hidden",
-                                "In Yggdrasil's roots",
-                                "Will sound one last time",
-                                "Signaling Ragnarok.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as(
-                                "Gunther Doubleharmony",
-                                args![
-                                    "This is a very old story...",
-                                    "Is it truth or fiction? But please don't ask me, I have no idea~!"
-                                ],
-                            )?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched2 && subject2.loosely_equals(&Val::from(3)) {
-                            matched2 = true;
-                        }
-                        if matched2 {
-                            ctx.lines_as("Gunther Doubleharmony", args!["I will sing one of Luke's songs, you know, Luke, one of the greatest Bards of his time? But I changed the words a little bit."])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22I found it in a drawer.",
-                                "Old, worn letters",
-                                "Forming elaborate words.",
-                                "Sincere reflection",
-                                "Of a sincere mind.^000000"
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22I found it in a drawer.",
-                                "Was I really like that once?",
-                                "Was I really that childish?",
-                                "My memories are tarnished."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22I found it in a drawer.",
-                                "Love I had forgotten.",
-                                "She never got this letter.",
-                                "But both of us were too shy."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines(args![
-                                "^228B22I found it in a drawer.",
-                                "Love I had forgotten.",
-                                "I never gave her this letter.",
-                                "But both of us were too proud."
-                            ])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["Do you have anyone in mind? Do you? If you ever write a love letter, you must send it and express yourself."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["If you've written love letters that you'll never send, throw them away. Throw your goddamn pride away."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                    let subject2 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                    if subject2 == 1 {
+                        ctx.lines_as(
+                            "Gunther Doubleharmony",
+                            args![
+                                "Gunther sings!",
+                                "Gunther dances!",
+                                "The tile of this song is~",
+                                "'The Rich Mr. Kim~!'"
+                            ],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Merchant of Payon",
+                            "So poooooooor~",
+                            "No money for armor",
+                            "No money to make."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Sold the",
+                            "Cotton Shirt",
+                            "Off his back",
+                            "No pity he'll take.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22First he only sold Red Pots",
+                            "At first, he only sold red pots.",
+                            "Then he moved up to Carrots, whoohoo~",
+                            "He could afford new armor",
+                            "and even wear it,",
+                            "whoohoo~^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22But one day, he was scammed",
+                            "Scammed by a wicked guild.",
+                            "Made poor once again.",
+                            "He decided to go to Ant Hell",
+                            "Right there",
+                            "And right then."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Bats, Dwarves, Eggs, Ants!",
+                            "He battled them all~",
+                            "Worm Peelings, Jellopy!",
+                            "He gathered loot great and small."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Then the glorious day came",
+                            "When he found a valuable card",
+                            "That'd bring great wealth to his naaaame~^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22But he kept it dear to him",
+                            "To remember his times of",
+                            "working so hard.",
+                            "He never sold it, never sold",
+                            "his precious card~^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["That's a very old story about rich Mr. Kim, and his rise from rags to riches to rags to riches. Is it true or is it fiction? Oh, please don't ask me! I've no clue!"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject2 == 2 {
+                        ctx.lines_as("Gunther Doubleharmony", args!["*Ahem*", "Gunther sings ", "of Yggdrasil~"])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Evergreen Yggdrasil~",
+                            "Giant ashen tree",
+                            "reaching for the sky.",
+                            "Crystal, morning dew",
+                            "From its leaves",
+                            "Formed Urd's Pond.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Three wise girls.",
+                            "Seated beneath its boughs.",
+                            "Urd of the past,",
+                            "Belldandy of the present",
+                            "Skuld the future.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Spinning, weaving",
+                            "Threads of destiny.",
+                            "Evergreen Yggdrasil~",
+                            "Giant ashen tree",
+                            "reaching for the sky.",
+                            "Its roots soaked with tears.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Death in Hvergelmir.",
+                            "An evil dragon",
+                            "Burning its roots",
+                            "With eternal flame.",
+                            "The evil dragon Nidhogg",
+                            "Living between Yggdrasil",
+                            "and Niffheim.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Evergreen Yggdrasil~",
+                            "Giant ashen tree",
+                            "reaching for the sky.",
+                            "Wisdom in its roots",
+                            "Roots reaching",
+                            "Mimir's pond.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22Guarded by a wise giant.",
+                            "Odin sacrificed one",
+                            "of his eyes for the wisdom.",
+                            "Heimdall's horn hidden",
+                            "In Yggdrasil's roots",
+                            "Will sound one last time",
+                            "Signaling Ragnarok.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as(
+                            "Gunther Doubleharmony",
+                            args![
+                                "This is a very old story...",
+                                "Is it truth or fiction? But please don't ask me, I have no idea~!"
+                            ],
+                        )?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject2 == 3 {
+                        ctx.lines_as("Gunther Doubleharmony", args!["I will sing one of Luke's songs, you know, Luke, one of the greatest Bards of his time? But I changed the words a little bit."])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22I found it in a drawer.",
+                            "Old, worn letters",
+                            "Forming elaborate words.",
+                            "Sincere reflection",
+                            "Of a sincere mind.^000000"
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22I found it in a drawer.",
+                            "Was I really like that once?",
+                            "Was I really that childish?",
+                            "My memories are tarnished."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22I found it in a drawer.",
+                            "Love I had forgotten.",
+                            "She never got this letter.",
+                            "But both of us were too shy."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines(args![
+                            "^228B22I found it in a drawer.",
+                            "Love I had forgotten.",
+                            "I never gave her this letter.",
+                            "But both of us were too proud."
+                        ])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["Do you have anyone in mind? Do you? If you ever write a love letter, you must send it and express yourself."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["If you've written love letters that you'll never send, throw them away. Throw your goddamn pride away."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
                 if !matched1 && subject1.loosely_equals(&Val::from(2)) {
                     matched1 = true;
                 }
                 if matched1 {
-                    'b3: {
-                        let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
-                        let mut matched3 = false;
-                        let no_case3 = !subject3.loosely_equals(&Val::from(1))
-                            && !subject3.loosely_equals(&Val::from(2))
-                            && !subject3.loosely_equals(&Val::from(3));
-                        if !matched3 && subject3.loosely_equals(&Val::from(1)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Gunther Doubleharmony", args!["Um, have you ever", "tasted Comodo cheese?"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["You can only taste it in Comodo, but you need to have a good strong stomach to digest it. Oh! And the cheese has a secret!"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["You ^228B22might^000000 be invulnerable to the power of the doomed swords, which come from the other world, if you eat it!"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["Why don't you go taste it if you haven't yet? I tried to taste it once. It was kind of yummy, but then I fainted. Hahahaha~!"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(2)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as("Gunther Doubleharmony", args!["I was passing Prontera the other day at the place where it used to be the Swordman training ground."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["I saw some kid training really really hard and he didn't notice me watching him, so I guess he was really really serious!"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["He looked like he wanted to be a professional Swordman, but he was also giving his gear away to other Novices."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["I got bored watching him do the same thing over and over and over again, but I think the Monster Research Organization would like him if I introduced him."])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
-                        if !matched3 && subject3.loosely_equals(&Val::from(3)) {
-                            matched3 = true;
-                        }
-                        if matched3 {
-                            ctx.lines_as(
-                                "Gunther Doubleharmony",
-                                args!["Have you ever been in Lutie,", "land of year round snow?"],
-                            )?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["There is a snowman named", "SnowySnow and if you met him, you'd know all sorts of things about him like he can talk! It's so strange and mysterious~!"])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["He has a mysterious bag where endless gifts come out, and he's got a mysterious past involving some colder town and something about a nasty witch."])?;
-                            ctx.next()?;
-                            ctx.lines_as("Gunther Doubleharmony", args!["But it's okay because he was rescued by some Alchemist and came back to life, but you should go to Lutie if you wanna know more about him, okay?"])?;
-                            ctx.close_window()?;
-                            return Err(Stop::End);
-                        }
+                    let subject3 = ctx.call(Function::Rand, vec![Val::from(1), Val::from(3)])?;
+                    if subject3 == 1 {
+                        ctx.lines_as("Gunther Doubleharmony", args!["Um, have you ever", "tasted Comodo cheese?"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["You can only taste it in Comodo, but you need to have a good strong stomach to digest it. Oh! And the cheese has a secret!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["You ^228B22might^000000 be invulnerable to the power of the doomed swords, which come from the other world, if you eat it!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["Why don't you go taste it if you haven't yet? I tried to taste it once. It was kind of yummy, but then I fainted. Hahahaha~!"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject3 == 2 {
+                        ctx.lines_as("Gunther Doubleharmony", args!["I was passing Prontera the other day at the place where it used to be the Swordman training ground."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["I saw some kid training really really hard and he didn't notice me watching him, so I guess he was really really serious!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["He looked like he wanted to be a professional Swordman, but he was also giving his gear away to other Novices."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["I got bored watching him do the same thing over and over and over again, but I think the Monster Research Organization would like him if I introduced him."])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
+                    } else if subject3 == 3 {
+                        ctx.lines_as(
+                            "Gunther Doubleharmony",
+                            args!["Have you ever been in Lutie,", "land of year round snow?"],
+                        )?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["There is a snowman named", "SnowySnow and if you met him, you'd know all sorts of things about him like he can talk! It's so strange and mysterious~!"])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["He has a mysterious bag where endless gifts come out, and he's got a mysterious past involving some colder town and something about a nasty witch."])?;
+                        ctx.next()?;
+                        ctx.lines_as("Gunther Doubleharmony", args!["But it's okay because he was rescued by some Alchemist and came back to life, but you should go to Lutie if you wanna know more about him, okay?"])?;
+                        ctx.close_window()?;
+                        return Err(Stop::End);
                     }
                 }
                 if !matched1 && subject1.loosely_equals(&Val::from(3)) {
