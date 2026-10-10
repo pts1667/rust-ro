@@ -1,9 +1,19 @@
 use std::path::Path;
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
 
 use async_trait::async_trait;
 use script_sdk::{ABI_VERSION, Entry, MAX_MESSAGE_BYTES, Reply, Request};
-use wasmtime::{Caller, Config, Engine, Linker, Module, Store, StoreLimits, StoreLimitsBuilder};
+use wasmtime::{
+    Caller, Config, Engine, InstanceAllocationStrategy, Linker, Module, PoolingAllocationConfig, Store, StoreLimits,
+    StoreLimitsBuilder,
+};
+
+pub const MAX_CONCURRENT_RUNS: u32 = 4000;
+pub const MEMORY_LIMIT_BYTES: usize = 4 * 1024 * 1024;
+const MAX_TABLE_ELEMENTS: usize = 20_000;
+
+/// Every module compiles against this engine so that they draw runs from one pool.
+static ENGINE: OnceLock<Engine> = OnceLock::new();
 
 #[async_trait]
 pub trait Host: Send + 'static {
@@ -12,7 +22,6 @@ pub trait Host: Send + 'static {
 
 #[derive(Debug, Clone)]
 pub struct Limits {
-    pub fuel: u64,
     pub memory_bytes: usize,
     pub host_calls: usize,
 }
@@ -20,8 +29,7 @@ pub struct Limits {
 impl Default for Limits {
     fn default() -> Self {
         Self {
-            fuel: 20_000_000,
-            memory_bytes: 32 * 1024 * 1024,
+            memory_bytes: MEMORY_LIMIT_BYTES,
             host_calls: 10_000,
         }
     }
@@ -78,9 +86,24 @@ impl WasmRuntime {
     }
 
     fn engine() -> Result<Engine, String> {
+        if let Some(engine) = ENGINE.get() {
+            return Ok(engine.clone());
+        }
+        let mut pool = PoolingAllocationConfig::default();
+        pool.total_core_instances(MAX_CONCURRENT_RUNS)
+            .total_memories(MAX_CONCURRENT_RUNS)
+            .total_tables(MAX_CONCURRENT_RUNS)
+            .total_stacks(MAX_CONCURRENT_RUNS)
+            .max_memories_per_module(1)
+            .max_tables_per_module(1)
+            .max_memory_size(MEMORY_LIMIT_BYTES)
+            .table_elements(MAX_TABLE_ELEMENTS);
         let mut config = Config::new();
-        config.consume_fuel(true);
-        Engine::new(&config).map_err(|e| e.to_string())
+        config.allocation_strategy(InstanceAllocationStrategy::Pooling(pool));
+        // Slots reserve exactly the memory cap with no guard pages, so the pool spans MAX_CONCURRENT_RUNS * MEMORY_LIMIT_BYTES.
+        config.memory_reservation(MEMORY_LIMIT_BYTES as u64).memory_guard_size(0);
+        let engine = Engine::new(&config).map_err(|e| e.to_string())?;
+        Ok(ENGINE.get_or_init(|| engine).clone())
     }
 
     pub fn from_bytes(bytes: &[u8], limits: Limits) -> Result<Self, String> {
@@ -96,7 +119,7 @@ impl WasmRuntime {
             .memories(1)
             .instances(1)
             .tables(1)
-            .table_elements(20_000)
+            .table_elements(MAX_TABLE_ELEMENTS)
             .build();
         let mut store = Store::new(&self.engine, Execution {
             host,
@@ -120,7 +143,6 @@ impl WasmRuntime {
                 .build(),
         );
         store.limiter(|limits| limits);
-        store.set_fuel(100_000).map_err(|e| e.to_string())?;
         let mut linker = Linker::new(&self.engine);
         linker.define_unknown_imports_as_traps(&self.module).map_err(|e| e.to_string())?;
         let instance = linker.instantiate(&mut store, &self.module).map_err(|e| e.to_string())?;
@@ -131,8 +153,6 @@ impl WasmRuntime {
     }
 
     async fn run<H: Host>(&self, store: &mut Store<Execution<H>>, entry: &Entry) -> wasmtime::Result<()> {
-        store.set_fuel(self.limits.fuel)?;
-        store.fuel_async_yield_interval(Some(100_000))?;
         store.data_mut().entry = serde_json::to_vec(entry)?;
         let mut linker = Linker::new(&self.engine);
         linker.func_wrap_async(

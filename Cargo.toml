@@ -38,7 +38,7 @@ regex-lite = "0.1.6"
 tokio = { version = "1.33.0", features = ["full", "tracing"] }
 axum = { version = "0.8", default-features = false, features = ["http1", "json", "query", "tokio", "ws"] }
 futures = "0.3"
-wasmtime = { version = "43.0.2", default-features = false, features = ["async", "cranelift", "runtime", "std", "wat", "anyhow"] }
+wasmtime = { version = "43.0.2", default-features = false, features = ["async", "cranelift", "pooling-allocator", "runtime", "std", "wat", "anyhow"] }
 sled = "0.34.7"
 dashmap = "6.1.0"
 parking_lot = "0.12"

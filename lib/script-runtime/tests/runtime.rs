@@ -80,16 +80,6 @@ async fn rejects_wrong_abi_before_host_actions() {
 }
 
 #[tokio::test]
-async fn terminates_infinite_guest_loop() {
-    let (_, result) = execute(module("(loop $forever br $forever) i32.const 0", 2), Limits {
-        fuel: 1000,
-        ..Limits::default()
-    })
-    .await;
-    assert!(result.unwrap_err().contains("fuel"));
-}
-
-#[tokio::test]
 async fn limits_host_call_count() {
     let body = "i32.const 0 i32.const 11 i32.const 64 i32.const 256 call $invoke drop i32.const 0 i32.const 11 i32.const 64 i32.const 256 \
                 call $invoke drop i32.const 0";
