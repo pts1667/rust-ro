@@ -1,0 +1,303 @@
+{
+  "jobs_misc": {
+    "Alchemist Spirit#link7": [
+      6008
+    ],
+    "Book of Ymir": [
+      1000
+    ],
+    "Kid#link1": [
+      6005,
+      6006
+    ],
+    "Maia#link2": [
+      6007
+    ],
+    "Monk Spirit#link4": [
+      6008
+    ],
+    "Sage Spirit#link5": [
+      6008
+    ],
+    "Tzerero#sn": [
+      6010
+    ]
+  },
+  "jobs_pre_re_jobs_misc": {
+    "Summoner#cr5": [
+      3011
+    ]
+  },
+  "jobs_pre_re_jobs_s_1_1": {
+    "Archer Guildsman#archer": [
+      1004
+    ],
+    "Cleric#aco": [
+      1001,
+      1002,
+      1003
+    ],
+    "Mage Guildsman": [
+      1005,
+      1006,
+      1007,
+      1008
+    ],
+    "Swordman#swd_1": [
+      1014
+    ],
+    "Thief Guide": [
+      1013
+    ]
+  },
+  "jobs_s_1_1e": {
+    "Kuuga Gai#nq": [
+      6015,
+      6018
+    ],
+    "Master Miller": [
+      6020
+    ],
+    "Phoenix": [
+      6000,
+      6001,
+      6002
+    ],
+    "Suspicious Man#nq": [
+      6016,
+      6017
+    ],
+    "Wise Bull Horn": [
+      6021,
+      6022,
+      6023,
+      6024
+    ]
+  },
+  "jobs_s_2_1_misc": {
+    "Blacksmith Guildsman#moc": [
+      2015
+    ],
+    "Guildsman#BLS": [
+      2000,
+      2014,
+      2016
+    ],
+    "Guildsman#alberta": [
+      2001,
+      2002,
+      2003,
+      2004,
+      2005,
+      2006,
+      2007,
+      2008,
+      2009,
+      2010,
+      2011,
+      2012,
+      2013
+    ]
+  },
+  "jobs_s_2_1e": {
+    "Cheehee#job_star": [
+      7010,
+      7011
+    ],
+    "Moohyun#job_star": [
+      7007
+    ],
+    "Wandering Master#job_sta": [
+      7008,
+      7009
+    ]
+  },
+  "jobs_s_2_2_misc": {
+    "Aile#da": [
+      7000,
+      7001,
+      7002,
+      7003,
+      7004
+    ],
+    "Alchemist Guildsman#am": [
+      2028,
+      2029,
+      2030,
+      2031
+    ],
+    "Bijou#da": [
+      7005
+    ],
+    "Chief Researcher#am": [
+      2038,
+      2039
+    ],
+    "Experiment Expert#am": [
+      2036,
+      2037
+    ],
+    "Fastidious Alchemist#am": [
+      2032
+    ],
+    "Master Alchemist#am": [
+      2040
+    ],
+    "Studying Man#am": [
+      2033,
+      2034,
+      2035
+    ],
+    "Wandering Bard": [
+      3000,
+      3001,
+      3002,
+      3003,
+      3004
+    ],
+    "dance#return": [
+      7006
+    ]
+  },
+  "misc_events_misc_1": {
+    "#Hiddne01Easter": [
+      9123
+    ],
+    "Lonely Jee#xmas": [
+      15063
+    ],
+    "Lonely Kwami#xmas": [
+      15060
+    ],
+    "Lonely Marty#xmas": [
+      15064
+    ],
+    "Lonely Rinka#xmas": [
+      15062
+    ],
+    "Lonely Willer#xmas": [
+      15061
+    ],
+    "Rina#Easter": [
+      9117,
+      9118,
+      9119,
+      9120,
+      9121,
+      9122
+    ],
+    "Union Commander Cliff": [
+      15055,
+      15056,
+      15057,
+      15059
+    ]
+  },
+  "misc_events_misc_2": {
+    "RWC2011 Agent#2": [
+      13000,
+      13001
+    ],
+    "Suspicious Coffin#2013HE": [
+      11378
+    ]
+  },
+  "quests_first_class_misc": {
+    "Guarnien": [
+      8229,
+      8230,
+      8231,
+      8232,
+      8233,
+      8234,
+      8235,
+      8236,
+      8237,
+      8238,
+      8239,
+      8240
+    ]
+  },
+  "quests_misc_2": {
+    "Billik": [
+      11039
+    ],
+    "Erious#nif": [
+      11038
+    ],
+    "Feylin": [
+      11040,
+      11041,
+      11042,
+      11043
+    ]
+  },
+  "quests_newgears_misc": {
+    "Myu#08_hat": [
+      7054,
+      7055
+    ]
+  },
+  "quests_pre_re_quests_collection": {
+    "Cuir#Gator_Hunt": [
+      60119,
+      60120,
+      60121
+    ],
+    "Deadman": [
+      60173,
+      60176
+    ],
+    "Dragon Hunter": [
+      60182
+    ],
+    "Gregor#PecoPeco_Hunt": [
+      60101,
+      60102,
+      60103
+    ],
+    "Halgus#Pupa_Hunt": [
+      60110,
+      60111,
+      60112
+    ],
+    "Laertes#Creamy_Hunt": [
+      60122,
+      60123,
+      60124
+    ],
+    "Langry#Fabre_Hunt": [
+      60107,
+      60108,
+      60109
+    ],
+    "Lella#LeafCat_Hunt": [
+      60143,
+      60144,
+      60145
+    ],
+    "Lemly#Frilldora_Hunt": [
+      60134,
+      60135,
+      60136
+    ],
+    "Local Villager#hunt": [
+      60125,
+      60126,
+      60127
+    ],
+    "Mantis Researcher": [
+      60179
+    ],
+    "Vegetable Farmer#Goat": [
+      60137,
+      60138,
+      60139
+    ],
+    "Yullo#Caramel_Hunt": [
+      60116,
+      60117,
+      60118
+    ]
+  }
+}

@@ -9,8 +9,14 @@ use serde_json::{Value, json};
 use super::{DbError, Link, ListQuery, items, matches, mobs, not_found, to_json, with_fields};
 use crate::server::model::quest::{quest_catalog, quest_definition};
 
-/// What the server's quest data does not hold: the quest's giver, rewards and prerequisites are in the NPC scripts.
-const NOTES: &str = "Rewards, prerequisites and the NPC that gives the quest are not in the quest data. They are in the NPC                      scripts under scripts/quests. description, guide, recommended_level and level_basis come from                      config/quest_text.json, null for a quest not listed there; generated is false for text written by hand.                      A null mob matches any monster that fits the objective's other filters.";
+/// What the quest data does not hold. The giver NPCs are listed on the maps where they are placed.
+const NOTES: &str = concat!(
+    "Rewards are not in the quest data. They are only in the NPC scripts under scripts/quests. ",
+    "The NPCs that start a quest are listed on its maps, in their `quests`. ",
+    "description, guide, recommended_level, level_basis, prerequisites and level_override come from config/quest_text.json, ",
+    "null for a quest not listed there; generated is false for text written by hand. ",
+    "A null mob matches any monster that fits the objective's other filters.",
+);
 
 /// A quest that must be started or finished first, with the script line that checks it.
 #[derive(Deserialize, Serialize)]
@@ -40,6 +46,17 @@ static TEXTS: OnceLock<BTreeMap<String, QuestText>> = OnceLock::new();
 
 fn texts() -> &'static BTreeMap<String, QuestText> {
     TEXTS.get_or_init(|| serde_json::from_str(include_str!("../../../../../config/quest_text.json")).expect("Embedded quest text is invalid"))
+}
+
+static OFFERS: OnceLock<BTreeMap<String, BTreeMap<String, Vec<u32>>>> = OnceLock::new();
+
+/// The quests the NPC `name` of script `module` starts, from `config/quest_offers.json`.
+pub fn offered_by(module: &str, name: &str) -> &'static [u32] {
+    OFFERS
+        .get_or_init(|| serde_json::from_str(include_str!("../../../../../config/quest_offers.json")).expect("Embedded quest offers are invalid"))
+        .get(module)
+        .and_then(|npcs| npcs.get(name))
+        .map_or(&[], Vec::as_slice)
 }
 
 pub fn link(id: u32) -> Link {
@@ -96,6 +113,13 @@ mod tests {
     use super::*;
     use crate::server::reference::db::tests::get_json;
     use axum::http::StatusCode;
+
+    #[test]
+    fn an_npc_names_the_quests_it_starts_and_nothing_for_other_npcs() {
+        assert_eq!(offered_by("jobs_pre_re_jobs_s_1_1", "Cleric#aco"), &[1001, 1002, 1003]);
+        assert!(offered_by("jobs_pre_re_jobs_s_1_1", "Cleric#aco ").is_empty());
+        assert!(offered_by("no_such_module", "Cleric#aco").is_empty());
+    }
 
     #[test]
     fn every_text_is_for_a_catalog_quest_and_complete() {

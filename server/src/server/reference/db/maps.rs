@@ -1,11 +1,13 @@
-//! `/db/maps/<name>`: a map with its flags, warps, monster spawns and the NPCs placed on it.
+//! `/db/maps/<name>`: a map with its flags, warps, monster spawns, the NPCs placed on it and the quests they start.
 use std::collections::BTreeSet;
 
+use script_sdk::Entry;
 use serde_json::{Value, json};
 
-use super::{DbError, Link, ListQuery, index, matches, mobs, not_found, npcs, warps};
+use super::{DbError, Link, ListQuery, index, matches, mobs, not_found, npcs, quests, warps};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::model::warp::Warp;
+use crate::server::script::entries;
 use crate::server::service::global_config_service::GlobalConfigService;
 
 pub fn link(name: &str) -> Link {
@@ -76,6 +78,17 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         .iter()
         .map(|script| json!({ "npc": npcs::link(&script.map_name, &script.name), "x": script.x, "y": script.y, "shop": index::shop_offers(script).is_some() }))
         .collect();
+    let offered: BTreeSet<u32> = map
+        .scripts()
+        .iter()
+        .filter_map(|script| entries::resolve(script.entry_id))
+        .filter_map(|named| match named.entry {
+            Entry::Npc(name) => Some(quests::offered_by(&named.module, &name)),
+            _ => None,
+        })
+        .flatten()
+        .copied()
+        .collect();
     Ok(json!({
         "name": map.name(),
         "x_size": map.x_size(),
@@ -86,5 +99,6 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         "connected_maps": connected.into_iter().map(link).collect::<Vec<Link>>(),
         "mob_spawns": spawns,
         "npcs": placed,
+        "quests": offered.into_iter().map(quests::link).collect::<Vec<Link>>(),
     }))
 }

@@ -166,7 +166,7 @@ Timing is unmeasured for quests. A single item took 3–8 seconds. Quest prompts
 
 ## Not in this plan
 
-- Quest rewards, prerequisites and the giver NPC as structured links. The text covers them only where the excerpts show them.
+- Quest rewards as structured links. Prerequisites are structured in the `prerequisites` field, and the giver NPCs come from `config/quest_offers.json`.
 - Quests outside the 956 set, including the Merchant job-change quests 1009–1012 (filled by hand later).
 - Item descriptions of any kind, including the client item description table (see Scope).
 - Wiki text as input.
