@@ -1,6 +1,7 @@
 //! `/db/<category>` lists a category, `/db/<category>/<key>` answers one entry with everything linked to it. Entries name the
 //! things they relate to as `{ id, name, href }` links, so a client can walk from an item to the monsters that drop it and on to
 //! their spawns. Keys are the numeric id where there is one, otherwise the name; `/db/npcs/<map>/<name>` is keyed by placement.
+mod destinations;
 mod index;
 mod items;
 mod jobs;
@@ -11,6 +12,7 @@ mod pets;
 mod quests;
 mod skills;
 mod statuses;
+mod warps;
 
 use std::sync::OnceLock;
 
@@ -22,7 +24,7 @@ use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
-const CATEGORIES: [&str; 9] = ["items", "mobs", "quests", "skills", "maps", "npcs", "pets", "jobs", "statuses"];
+const CATEGORIES: [&str; 11] = ["items", "mobs", "quests", "skills", "maps", "warps", "destinations", "npcs", "pets", "jobs", "statuses"];
 const DEFAULT_LIMIT: usize = 50;
 const MAX_LIMIT: usize = 200;
 
@@ -102,6 +104,8 @@ async fn entry(Path((category, key)): Path<(String, String)>) -> Reply {
         "quests" => quests::entry(&key),
         "skills" => skills::entry(&key),
         "maps" => maps::entry(&key),
+        "warps" => warps::entry(&key),
+        "destinations" => destinations::entry(&key),
         "npcs" => npcs::entry(&key),
         "pets" => pets::entry(&key),
         "jobs" => jobs::entry(&key),
@@ -118,6 +122,8 @@ fn category_links(category: &str, query: &ListQuery) -> Option<Vec<Link>> {
         "quests" => quests::links(query),
         "skills" => skills::links(query),
         "maps" => maps::links(query),
+        "warps" => warps::links(query),
+        "destinations" => destinations::links(query),
         "npcs" => npcs::links(query),
         "pets" => pets::links(query),
         "jobs" => jobs::links(query),
@@ -289,5 +295,32 @@ mod tests {
         let href = listing["results"][0]["href"].as_str().unwrap();
         let (status, _) = get_json(href).await;
         assert_eq!(status, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn a_warper_destination_is_keyed_by_its_place_and_links_its_map() {
+        let (status, listing) = get_json("/db/destinations?q=prontera").await;
+        assert_eq!(status, StatusCode::OK);
+        let href = listing["results"][0]["href"].as_str().unwrap().to_string();
+        let (status, destination) = get_json(&href).await;
+        assert_eq!(status, StatusCode::OK, "{href}");
+        assert_eq!(destination["name"], "Prontera");
+        assert_eq!(destination["category"], "Towns");
+        assert_eq!(destination["map"]["href"], "/db/maps/prontera");
+        let (status, _) = get_json("/db/destinations/prontera/1,1").await;
+        assert_eq!(status, StatusCode::NOT_FOUND);
+        let (status, _) = get_json("/db/destinations/prontera").await;
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn a_warp_cell_is_refused_when_its_map_or_cell_is_unknown() {
+        let (status, _) = get_json("/db/warps/no_such_map/1,1").await;
+        assert_eq!(status, StatusCode::NOT_FOUND);
+        let (status, _) = get_json("/db/warps/prontera/1,1").await;
+        assert_eq!(status, StatusCode::NOT_FOUND);
+        let (status, body) = get_json("/db/warps/prontera/left").await;
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+        assert!(body["error"].as_str().unwrap().contains("<map>/<x>,<y>"));
     }
 }

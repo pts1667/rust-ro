@@ -27,7 +27,9 @@ Categories and keys:
 | `mobs` | id or name | The monster, `drops`, `mvp_drops`, `skills` (own and generic ones), `spawns`, `quests` that hunt it, `summoned_by`. |
 | `quests` | id (number) | The quest database entry with linked objectives and drops. Rewards, prerequisites and the giver are not in it (see below). |
 | `skills` | id or name | `config/skill.json` entry, `metadata` (route, cast time, cooldown, flags), `learned_by` (jobs), `cast_by` (monsters). |
-| `maps` | name | Flags, warps (with destination links), mob spawns, placed NPCs. |
+| `maps` | name | Flags, `warps` out (with destination links), `arrivals` (warp cells on other maps that land here), `connected_maps` (the other maps it links with, both ways), mob spawns, placed NPCs. |
+| `warps` | `<map>/<x>,<y>` | A warp cell of a loaded map (the tile that takes a character to another map): its size and where it leads. Listed by name, `q` filters. |
+| `destinations` | `<map>/<x>,<y>` | A place on the warper's menu (`config/wasm/warps.json`, the list every warper NPC offers): category, group and map. |
 | `npcs` | `<map>/<name>` | The placement, the script module and entry, and for shops the `shop` offers (`price` resolved from `-1`). |
 | `pets` | class id or name | The pet with its taming, egg, food and equip items. |
 | `jobs` | id or name | `config/job.json` entry with its `skill_tree`. |
@@ -66,5 +68,6 @@ and resolve to them.
   ones for every boss or every normal monster. The file is read from the working directory, as the server does.
 - Spawns and NPCs come from the maps the server loads (`config/maps`, `config/wasm/npcs.json`); NPCs spawned by scripts are not
   listed.
+- Warper destinations are one list, not one per warper NPC: every warper offers the same places, as the warper script does.
 - Shop items are read from the `systems` `shop` NPCs only; other scripts that sell items are compiled Wasm and are not inspected.
 - `constructor_args` of an NPC are the raw script values (`{"Number": 0}`).

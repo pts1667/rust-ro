@@ -11,6 +11,7 @@ use crate::server::model::item_combos;
 use crate::server::model::mob_spawn::MobType;
 use crate::server::model::quest::quest_catalog;
 use crate::server::model::script::Script;
+use crate::server::model::warp::Warp;
 use crate::server::script::entries;
 use crate::server::script::game_data;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -73,6 +74,8 @@ pub struct DbIndex {
     /// Summon group ids that can call the monster.
     pub mob_summons: HashMap<i32, Vec<i32>>,
     pub skill_mobs: HashMap<u32, Vec<i32>>,
+    /// Warp cells that land on a map, keyed by the map's name.
+    pub map_arrivals: HashMap<String, Vec<&'static Warp>>,
 }
 
 impl DbIndex {
@@ -81,6 +84,9 @@ impl DbIndex {
         let mut index = Self::default();
         index.add_mobs();
         for map in config.maps().values() {
+            for warp in map.warps() {
+                index.map_arrivals.entry(warp.dest_map_name.clone()).or_default().push(warp);
+            }
             for spawn in map.mob_spawns() {
                 index.mob_spawns.entry(i32::from(spawn.mob_id)).or_default().push(SpawnRef {
                     map: map.name().to_string(),

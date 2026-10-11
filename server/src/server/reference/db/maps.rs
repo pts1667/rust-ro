@@ -1,8 +1,11 @@
 //! `/db/maps/<name>`: a map with its flags, warps, monster spawns and the NPCs placed on it.
+use std::collections::BTreeSet;
+
 use serde_json::{Value, json};
 
-use super::{DbError, Link, ListQuery, index, matches, mobs, not_found, npcs};
+use super::{DbError, Link, ListQuery, index, matches, mobs, not_found, npcs, warps};
 use crate::server::model::map_flags::MapFlag;
+use crate::server::model::warp::Warp;
 use crate::server::service::global_config_service::GlobalConfigService;
 
 pub fn link(name: &str) -> Link {
@@ -24,11 +27,32 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         .map(|warp| {
             json!({
                 "name": warp.name,
+                "href": warps::href(warp),
                 "x": warp.x,
                 "y": warp.y,
                 "x_size": warp.x_size,
                 "y_size": warp.y_size,
                 "to": { "map": link(&warp.dest_map_name), "x": warp.to_x, "y": warp.to_y },
+            })
+        })
+        .collect();
+    let mut arriving: Vec<&Warp> = index::get().map_arrivals.get(map.name()).into_iter().flatten().copied().collect();
+    arriving.sort_by(|a, b| (&a.map_name, a.x, a.y).cmp(&(&b.map_name, b.x, b.y)));
+    let connected: BTreeSet<&str> = map
+        .warps()
+        .iter()
+        .map(|warp| warp.dest_map_name.as_str())
+        .chain(arriving.iter().map(|warp| warp.map_name.as_str()))
+        .filter(|name| *name != map.name())
+        .collect();
+    let arrivals: Vec<Value> = arriving
+        .iter()
+        .map(|warp| {
+            json!({
+                "name": warp.name,
+                "href": warps::href(warp),
+                "from": { "map": link(&warp.map_name), "x": warp.x, "y": warp.y },
+                "land": { "x": warp.to_x, "y": warp.to_y },
             })
         })
         .collect();
@@ -58,6 +82,8 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         "y_size": map.y_size(),
         "flags": flags,
         "warps": warps,
+        "arrivals": arrivals,
+        "connected_maps": connected.into_iter().map(link).collect::<Vec<Link>>(),
         "mob_spawns": spawns,
         "npcs": placed,
     }))
