@@ -19,3 +19,5 @@ graph.png
 /config/bots_api_key.txt
 # Extracted client data served under /data, built by the client-data-setup tool
 /config/client-data/
+# Quest text generation cache (tools/scripts-import/gen_quest_text.py)
+/tools/scripts-import/quest_text.cache.jsonl
