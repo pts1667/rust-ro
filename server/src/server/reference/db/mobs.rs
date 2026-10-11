@@ -2,7 +2,7 @@
 use serde_json::{Value, json};
 
 use super::index;
-use super::{DbError, Link, ListQuery, items, maps, matches, not_found, quests, skills, to_json, with_fields};
+use super::{DbError, Link, ListQuery, items, maps, matches, not_found, quests, skills, to_json, wiki_text, with_fields};
 use crate::server::script::game_data;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::mob_skill_ai::MobSkillDatabase;
@@ -74,6 +74,7 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
             ("spawns", json!(spawns)),
             ("quests", json!(quest_links)),
             ("summoned_by", json!(summoned_by)),
+            ("wiki", wiki_text("mobs", &id.to_string())),
         ],
     ))
 }

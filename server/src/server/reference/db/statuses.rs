@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 
 use serde_json::{Value, json};
 
-use super::{DbError, Link, ListQuery, embedded_json, matches, not_found};
+use super::{DbError, Link, ListQuery, embedded_json, matches, not_found, wiki_text, with_fields};
 
 static STATUSES: OnceLock<Value> = OnceLock::new();
 
@@ -23,5 +23,5 @@ pub fn links(query: &ListQuery) -> Vec<Link> {
 
 pub fn entry(key: &str) -> Result<Value, DbError> {
     let status = status_list().iter().find(|status| name_of(status).eq_ignore_ascii_case(key)).ok_or_else(|| not_found("status", key))?;
-    Ok(status.clone())
+    Ok(with_fields(status.clone(), [("wiki", wiki_text("statuses", name_of(status)))]))
 }

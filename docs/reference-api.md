@@ -45,6 +45,12 @@ the data (an item to the monsters that drop it, a monster to its spawn maps, a m
 
 Keys in a URL are percent-encoded per `/`-separated part, so `/db/npcs/prontera/Job%20Master%231` is the NPC `Job Master#1`.
 
+### Wiki text
+
+Items, monsters, skills and statuses carry `wiki`: `{ "page": "/wiki/<page>.md", "description": "..." }`, the Description section
+of the iRO Wiki page with the same English name, or `null` when no page has one. The text is copied into
+`config/wiki_descriptions.json` by `tools/scripts-import/extract_wiki_descriptions.py` and its links point into `/wiki/`.
+
 ### Errors
 
 `{ "error": "..." }` with 404 for an unknown category, entry or key, 400 for a key of the wrong shape (quests need their number,

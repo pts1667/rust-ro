@@ -14,6 +14,7 @@ mod skills;
 mod statuses;
 mod warps;
 
+use std::collections::BTreeMap;
 use std::sync::OnceLock;
 
 use axum::extract::{Path, Query};
@@ -179,6 +180,25 @@ fn embedded_json(cell: &'static OnceLock<Value>, text: &'static str) -> &'static
     cell.get_or_init(|| serde_json::from_str(text).expect("Embedded configuration file is invalid"))
 }
 
+/// The Description section of an iRO Wiki page, copied by `tools/scripts-import/extract_wiki_descriptions.py`.
+#[derive(Deserialize)]
+struct WikiText {
+    page: String,
+    description: String,
+}
+
+static WIKI_TEXTS: OnceLock<BTreeMap<String, BTreeMap<String, WikiText>>> = OnceLock::new();
+
+/// `{ page, description }` for the entry of `category` under `key`, `null` when no wiki page matches it.
+fn wiki_text(category: &str, key: &str) -> Value {
+    let texts = WIKI_TEXTS.get_or_init(|| {
+        serde_json::from_str(include_str!("../../../../../config/wiki_descriptions.json")).expect("Embedded wiki descriptions are invalid")
+    });
+    texts.get(category).and_then(|entries| entries.get(key)).map_or(Value::Null, |text| {
+        json!({ "page": format!("/wiki/{}", encode_path(&text.page)), "description": text.description })
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -246,6 +266,19 @@ mod tests {
         assert_eq!(mob["id"], 1002);
         assert!(mob["drops"].as_array().unwrap().iter().all(|drop| drop["item"]["href"].as_str().is_some()));
         assert!(mob["skills"].as_array().is_some());
+    }
+
+    #[tokio::test]
+    async fn an_entry_carries_the_description_of_its_wiki_page_or_null() {
+        let (status, skill) = get_json("/db/skills/5").await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(skill["wiki"]["page"], "/wiki/Bash.md");
+        let text = skill["wiki"]["description"].as_str().unwrap();
+        assert!(text.contains("ATK") && text.contains("](/wiki/Stats.md)"), "{text}");
+        let (_, base) = get_json("/db/skills/20").await;
+        assert!(base["wiki"].is_null());
+        let (_, status_effect) = get_json("/db/statuses/Angelus").await;
+        assert_eq!(status_effect["wiki"]["page"], "/wiki/Angelus.md");
     }
 
     #[tokio::test]

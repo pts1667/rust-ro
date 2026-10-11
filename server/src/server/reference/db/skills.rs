@@ -4,7 +4,7 @@ use std::sync::OnceLock;
 use serde_json::{Value, json};
 
 use super::index;
-use super::{DbError, Link, ListQuery, embedded_json, jobs, matches, mobs, not_found, to_json, with_fields};
+use super::{DbError, Link, ListQuery, embedded_json, jobs, matches, mobs, not_found, to_json, wiki_text, with_fields};
 
 static SKILLS: OnceLock<Value> = OnceLock::new();
 static METADATA: OnceLock<Vec<Value>> = OnceLock::new();
@@ -61,6 +61,7 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
             ("metadata", json!(metadata)),
             ("cast_by", json!(cast_by)),
             ("learned_by", to_json(&jobs::learners(name))),
+            ("wiki", wiki_text("skills", &id.to_string())),
         ],
     ))
 }

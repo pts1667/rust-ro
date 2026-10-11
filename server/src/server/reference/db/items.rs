@@ -2,7 +2,7 @@
 use serde_json::{Value, json};
 
 use super::index::{self, DbIndex};
-use super::{DbError, Link, ListQuery, matches, maps, mobs, not_found, npcs, pets, skills, to_json, with_fields};
+use super::{DbError, Link, ListQuery, matches, maps, mobs, not_found, npcs, pets, skills, to_json, wiki_text, with_fields};
 use crate::repository::model::item_model::ItemModel;
 use crate::server::model::item_combos;
 use crate::server::script::game_data::{self, Recipe};
@@ -43,6 +43,7 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         ("groups", groups(index, id)),
         ("combo_sets", combo_sets(index, id)),
         ("pet_items", pet_items(id)),
+        ("wiki", wiki_text("items", &id.to_string())),
     ];
     Ok(with_fields(to_json(item), fields))
 }
