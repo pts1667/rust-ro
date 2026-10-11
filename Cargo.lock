@@ -2841,6 +2841,7 @@ dependencies = [
  "map-cache",
  "md5",
  "metrics",
+ "mime",
  "models",
  "movement",
  "packets",

@@ -48,7 +48,16 @@ Useful options:
 The output is gitignored. Re-running the setup overwrites the files it writes; delete the output
 directory first when you change `--no-compress` or `--zstd-level` so files from the previous mode
 do not linger. `manifest.json` describes the result (`path`, `size`, `md5` per file) so a client can
-sync only what changed.
+sync only what changed. The same entries are written as `check.jsonl`, one JSON object per line sorted
+by path (plus `check.jsonl.zst` unless `--no-compress`), which is what `/data/check` serves:
+
+```jsonl
+{"path":"prontera.rsw","size":123456,"md5":"d41d8cd98f00b204e9800998ecf8427e"}
+{"path":"sprite/몬스터/poring.spr","size":9876,"md5":"…"}
+```
+
+`size` and `md5` describe the file as the client keeps it (the decompressed content), not the `.zst`
+the endpoint sends. A client re-fetches every path whose local file is missing or differs.
 
 ## Endpoint
 
@@ -61,6 +70,9 @@ sync only what changed.
   when the request accepts it; without `Accept-Encoding: zstd` they return 404, while the files
   stored as-is (audio, images) are served to every client.
 - `GET /data/manifest.json` returns the setup manifest.
+- `GET /data/check` returns the per-file checksum list (`application/x-ndjson`, zstd-encoded when the
+  request accepts it). It answers 404 when the tree was built before the list existed: run the setup
+  again.
 
 Configuration in `config.json` (defaults shown, also in `config.template.json`):
 

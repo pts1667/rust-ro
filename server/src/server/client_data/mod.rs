@@ -12,10 +12,13 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use axum::Router;
-use tower_http::services::ServeDir;
-use tracing::{error, info};
+use tower_http::services::{ServeDir, ServeFile};
+use tracing::{error, info, warn};
 
 use crate::server::Server;
+
+/// Written by the setup tool next to `manifest.json`, one JSON object per file.
+const CHECK_FILE: &str = "check.jsonl";
 
 /// How often the loop checks whether the game server stopped.
 const SHUTDOWN_POLL: Duration = Duration::from_millis(500);
@@ -32,6 +35,9 @@ pub fn serve(server: Arc<Server>) {
             config.root
         );
         return;
+    }
+    if !std::path::Path::new(&config.root).join(CHECK_FILE).is_file() {
+        warn!("{CHECK_FILE} is missing from {}, /data/check answers 404 until client-data-setup is run again", config.root);
     }
     let runtime = match tokio::runtime::Builder::new_multi_thread()
         .worker_threads(API_THREADS)
@@ -81,7 +87,12 @@ pub fn serve(server: Arc<Server>) {
 /// root. A compressible file exists only as `<path>.zst` and is sent with `Content-Encoding: zstd`
 /// when the request accepts it; files stored as-is stay available to every client.
 pub fn router(root: &str) -> Router {
-    Router::new().nest_service(
+    let check = ServeFile::new_with_mime(
+        std::path::Path::new(root).join(CHECK_FILE),
+        &"application/x-ndjson".parse::<mime::Mime>().expect("valid mime type"),
+    )
+    .precompressed_zstd();
+    Router::new().route_service("/data/check", check).nest_service(
         "/data",
         ServeDir::new(root)
             .append_index_html_on_directories(false)
@@ -124,6 +135,42 @@ mod tests {
 
         let response = app.oneshot(get("/data/../Cargo.toml")).await.unwrap();
         assert_ne!(response.status(), StatusCode::OK, "paths outside the root must not be served");
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[tokio::test]
+    async fn serves_check_list_as_jsonl_and_prefers_its_zstd_sibling() {
+        let root = test_root("check");
+        let app = router(root.to_str().unwrap());
+
+        let response = app.clone().oneshot(get("/data/check")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::NOT_FOUND, "no check list written yet");
+
+        let jsonl = b"{\"path\":\"sprite/poring.spr\",\"size\":3,\"md5\":\"abc\"}\n";
+        std::fs::write(root.join(CHECK_FILE), jsonl).unwrap();
+        let response = app.clone().oneshot(get("/data/check")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.headers().get("content-type").unwrap(), "application/x-ndjson");
+        assert!(response.headers().get("content-encoding").is_none());
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        assert_eq!(&body[..], jsonl);
+
+        std::fs::write(root.join(format!("{CHECK_FILE}.zst")), zstd::bulk::compress(jsonl, 3).unwrap()).unwrap();
+        let request = Request::builder()
+            .uri("/data/check")
+            .header("accept-encoding", "zstd")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.headers().get("content-encoding").unwrap(), "zstd");
+        assert_eq!(response.headers().get("content-type").unwrap(), "application/x-ndjson");
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        assert_eq!(zstd::bulk::decompress(&body, 1024).unwrap(), jsonl);
+
+        let response = app.oneshot(get("/data/sprite/poring.spr")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK, "the check route must not shadow other files");
 
         let _ = std::fs::remove_dir_all(&root);
     }

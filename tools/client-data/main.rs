@@ -42,6 +42,9 @@ usage: client-data-setup [--client <kRO folder>] [options]
 /// zstd level for the `.zst` siblings; 3 turns the multi-gigabyte tree around in a couple of minutes.
 const DEFAULT_ZSTD_LEVEL: i32 = 3;
 
+/// Per-file checksums served at `/data/check`.
+const CHECK_FILE: &str = "check.jsonl";
+
 struct Args {
     client: PathBuf,
     out: PathBuf,
@@ -63,6 +66,7 @@ struct Manifest {
 
 #[derive(serde::Serialize)]
 struct ManifestFile {
+    // Also one line of `check.jsonl`
     path: String,
     size: u64,
     md5: String,
@@ -213,6 +217,10 @@ fn run(args: &Args) -> Result<(), String> {
         return Ok(());
     }
 
+    let mut files = output.files;
+    files.sort_by(|a, b| a.path.cmp(&b.path));
+    write_check_list(&args.out, &files, args.zstd_level)?;
+
     let manifest = Manifest {
         source_client: args.client.display().to_string(),
         archives: archive_paths,
@@ -221,7 +229,7 @@ fn run(args: &Args) -> Result<(), String> {
             .duration_since(UNIX_EPOCH)
             .map(|since| since.as_secs())
             .unwrap_or(0),
-        files: output.files,
+        files,
     };
     let json = serde_json::to_vec_pretty(&manifest).map_err(|error| format!("manifest: {error}"))?;
     let manifest_path = args.out.join("manifest.json");
@@ -241,6 +249,26 @@ fn run(args: &Args) -> Result<(), String> {
         args.out.display(),
         skipped_maps
     );
+    Ok(())
+}
+
+/// One JSON object per line, sorted by path, so a client can stream it and diff it against its own
+/// files. `size` and `md5` describe the file as the client stores it, not the `.zst` the endpoint sends.
+/// The `.zst` sibling is what `/data/check` serves to a client that accepts zstd.
+fn write_check_list(out: &Path, files: &[ManifestFile], zstd_level: Option<i32>) -> Result<(), String> {
+    let mut jsonl = Vec::new();
+    for file in files {
+        serde_json::to_writer(&mut jsonl, file).map_err(|error| format!("{CHECK_FILE}: {error}"))?;
+        jsonl.push(b'\n');
+    }
+    let path = out.join(CHECK_FILE);
+    fs::write(&path, &jsonl).map_err(|error| format!("{}: {error}", path.display()))?;
+    if let Some(level) = zstd_level {
+        let compressed = zstd::bulk::compress(&jsonl, level)
+            .map_err(|error| format!("{}: {error}", path.display()))?;
+        let path = out.join(format!("{CHECK_FILE}.zst"));
+        fs::write(&path, compressed).map_err(|error| format!("{}: {error}", path.display()))?;
+    }
     Ok(())
 }
 
