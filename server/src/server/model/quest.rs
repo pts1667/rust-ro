@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 /// `MAX_QUEST_OBJECTIVES` of rathena.
 pub const MAX_QUEST_OBJECTIVES: usize = 3;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct QuestObjective {
     /// 0 targets any monster matching the filters below.
@@ -42,7 +42,7 @@ impl Default for QuestObjective {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct QuestDrop {
     /// 0 applies to every monster.
     pub mob: u16,
@@ -52,7 +52,7 @@ pub struct QuestDrop {
     pub rate: u16,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(default)]
 pub struct QuestDefinition {
     pub id: u32,

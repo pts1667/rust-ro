@@ -1,0 +1,6 @@
+# VIT
+
+Redirects to [Stats](Stats.md).
+
+---
+*Source: [iRO Wiki Classic](https://irowiki.org/classic/VIT) — GFDL 1.3+*

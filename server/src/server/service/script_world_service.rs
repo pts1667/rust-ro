@@ -15,7 +15,7 @@ use models::status_change::{StatusChangeKind, StatusChangeRequest};
 use movement::position::Position;
 use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyStandentry7, PacketZcNotifyVanish, PacketZcUseSkill};
 use script_sdk::{Function, Value};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::repository::Repository;
 use crate::server::Server;
@@ -87,7 +87,7 @@ pub struct ScriptWorldData {
     pub client_frames: BTreeMap<u32, BTreeMap<u16, i32>>,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct PetDefinition {
     pub class_id: u16,
     pub name: String,

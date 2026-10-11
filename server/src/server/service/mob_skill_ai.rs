@@ -6,7 +6,7 @@ use models::status_change::StatusChangeKind;
 use models::enums::cell::CellType;
 use models::enums::skill_enums::SkillEnum;
 use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 use crate::server::model::events::client_notification::{AreaNotification, AreaNotificationRangeType, Notification};
 use crate::server::model::events::game_event::{GameEvent, ScriptSkillCast};
@@ -33,7 +33,7 @@ const TRICKCASTING_SPEED_STEP: u16 = 250;
 const MIN_WALK_SPEED: u16 = 20;
 const SKILL_ELEMENT_FIRE: u32 = 3;
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MobSkillEntry {
     pub mob_id: i32,
     pub state: String,
@@ -177,8 +177,18 @@ impl MobSkillDatabase {
 
     fn entries_for<'a>(&'a self, mob: &'a Mob) -> impl Iterator<Item = &'a MobSkillEntry> {
         let boss = mob.mode & models::enums::mob::MobMode::Boss.as_flag() != 0;
+        self.entries_of(i32::from(mob.mob_id), boss)
+    }
+
+    /// Every entry, the generic ones (`mob_id` -1, -2, -3) included.
+    pub fn entries(&self) -> impl Iterator<Item = &MobSkillEntry> {
+        self.by_mob.values().flatten().chain(&self.boss).chain(&self.normal).chain(&self.all)
+    }
+
+    /// The entries a monster of this id uses: its own, then the generic ones for bosses or for normal monsters.
+    pub fn entries_of(&self, mob_id: i32, boss: bool) -> impl Iterator<Item = &MobSkillEntry> {
         self.by_mob
-            .get(&i32::from(mob.mob_id))
+            .get(&mob_id)
             .into_iter()
             .flatten()
             .chain(if boss { self.boss.iter() } else { self.normal.iter() })

@@ -144,6 +144,10 @@ impl GlobalConfigService {
         self.skills.get(&id)
     }
 
+    pub fn items(&self) -> impl Iterator<Item = &ItemModel> {
+        self.items.values()
+    }
+
     pub fn find_item(&self, id: i32) -> Option<&ItemModel> {
         self.items.get(&(id as u32))
     }

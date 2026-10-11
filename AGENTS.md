@@ -69,6 +69,7 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `server/src/server/request_handler/`: Packet handling controllers
 - `server/src/server/script/`: Host operations for compiled scripts running in Wasmtime
 - `server/src/server/bots/`: HTTP and WebSocket API (`/bots/*`) that lets an external program play characters; its endpoints are documented in `server/src/server/bots/SKILL.md`, keep that file in step with the actions. An action must answer with what the game did or why it refused: run the change in the game loop (the `BotCommand` handler has `&mut ServerState`) instead of queuing an event and answering `sent`
+- `server/src/server/reference/`: read-only `/db/*` (game data as JSON, see `docs/reference-api.md`) and `/wiki/*` (the iRO Wiki Classic copy in `wiki/`), served on their own port. They read the loaded configuration and script catalogs, never the game state
 - `server/src/server/state/`: Game state management (characters, maps, mobs)
 - `server/src/server/mod.rs`: Implementation of server threads
 - `server/src/server/game_loop.rs`: Implementation of the main game loop, latency of operation within the game loop should be low (<20ms) or server will lag. There is only one loop for the whole server. it handles action made by player

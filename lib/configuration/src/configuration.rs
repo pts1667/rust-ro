@@ -44,6 +44,8 @@ pub struct Config {
     pub bots: BotsConfig,
     #[serde(default)]
     pub client_data: ClientDataConfig,
+    #[serde(default)]
+    pub reference: ReferenceConfig,
 }
 
 /// HTTP and WebSocket API that lets external programs drive characters, see `server/src/server/bots`.
@@ -104,6 +106,28 @@ impl Default for ClientDataConfig {
             host: "127.0.0.1".into(),
             port: 6903,
             root: "config/client-data".into(),
+        }
+    }
+}
+
+/// Public read-only reference: `/db` (game data as JSON) and `/wiki` (the iRO Wiki Classic copy), see `server/src/server/reference`.
+#[derive(Deserialize, Debug, Clone)]
+#[serde(default)]
+pub struct ReferenceConfig {
+    pub enabled: bool,
+    pub host: String,
+    pub port: u16,
+    /// Directory of the wiki pages, every file in it is served at `/wiki/<relative path>`; without it `/wiki` answers 404.
+    pub wiki_root: String,
+}
+
+impl Default for ReferenceConfig {
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            host: "127.0.0.1".into(),
+            port: 6904,
+            wiki_root: "wiki".into(),
         }
     }
 }

@@ -19,32 +19,32 @@ pub struct ScriptGameData {
     pub item_aliases: HashMap<String, i32>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct AbraSkill {
     pub skill_id: u32,
     pub per: [u16; 10],
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ArrowRecipe {
     pub source: i32,
     pub make: Vec<ArrowProduct>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ArrowProduct {
     pub item_id: i32,
     pub amount: i16,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ItemGroup {
     pub id: i32,
     pub name: String,
     pub subgroups: Vec<ItemSubGroup>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ItemSubGroup {
     pub id: i32,
     pub algorithm: String,
@@ -156,7 +156,7 @@ pub fn tx_commit_pool_draws(
     Ok(())
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SummonGroup {
     pub id: i32,
     pub name: String,
@@ -164,13 +164,13 @@ pub struct SummonGroup {
     pub entries: Vec<SummonEntry>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct SummonEntry {
     pub mob_id: u32,
     pub rate: u32,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Recipe {
     pub id: u32,
     pub item_id: i32,
@@ -180,7 +180,7 @@ pub struct Recipe {
     pub materials: Vec<RecipeMaterial>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RecipeMaterial {
     pub item_id: i32,
     pub amount: i16,

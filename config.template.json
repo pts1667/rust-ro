@@ -310,5 +310,11 @@
     "host": "127.0.0.1",
     "port": 6903,
     "root": "config/client-data"
+  },
+  "reference": {
+    "enabled": true,
+    "host": "127.0.0.1",
+    "port": 6904,
+    "wiki_root": "wiki"
   }
 }

@@ -1,0 +1,6 @@
+# Wall of Fog
+
+Redirects to [Blinding Mist](Blinding_Mist.md).
+
+---
+*Source: [iRO Wiki Classic](https://irowiki.org/classic/Wall_of_Fog) — GFDL 1.3+*

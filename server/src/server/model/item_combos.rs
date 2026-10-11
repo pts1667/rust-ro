@@ -6,17 +6,20 @@ use std::sync::OnceLock;
 use models::enums::bonus::BonusType;
 use models::item::special_card_metadata;
 use models::status::Status;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 
 /// Script ids at and above this belong to combo sets, see `import_item_combos.py`.
 pub const FIRST_COMBO_SCRIPT_ID: u32 = 1_000_000;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ComboSet {
     /// Id of the compiled script, which also identifies the set.
     pub id: u32,
     /// Every entry that is fully worn applies the script once.
     pub combos: Vec<Vec<i32>>,
+    /// Script of the set in rathena syntax.
+    #[serde(default)]
+    pub script: String,
     /// Bonuses of a script that does not depend on the wearer, computed on first use.
     #[serde(skip)]
     pub static_bonuses: OnceLock<Vec<BonusType>>,
