@@ -23,7 +23,7 @@ Categories and keys:
 
 | Category | Key | Entry holds |
 | --- | --- | --- |
-| `items` | id or name | The item, its script metadata, `dropped_by`, `sold_by`, `recipes` (`made_by`, `used_in`), `arrow_crafting`, `groups` (boxes), `combo_sets`, `pet_items`. |
+| `items` | id or name | The item, its client `description`, its script metadata, `dropped_by`, `sold_by`, `recipes` (`made_by`, `used_in`), `arrow_crafting`, `groups` (boxes), `combo_sets`, `pet_items`. |
 | `mobs` | id or name | The monster, `drops`, `mvp_drops`, `skills` (own and generic ones), `spawns`, `quests` that hunt it, `summoned_by`. |
 | `quests` | id (number) | The quest database entry with linked objectives and drops, and its text: `description`, `guide`, `recommended_level` (the Base Level, or `"Unknown"`), `level_basis`, `level_override` (a BaseLevel gate, with its script line), `sources`, `prerequisites` (quests that must be started or finished first, with the checking line), `generated`. Rewards, prerequisites and the giver are not in it (see below). |
 | `skills` | id or name | `config/skill.json` entry, `metadata` (route, cast time, cooldown, flags), `learned_by` (jobs), `cast_by` (monsters). |
@@ -50,6 +50,12 @@ Keys in a URL are percent-encoded per `/`-separated part, so `/db/npcs/prontera/
 Items, monsters, skills and statuses carry `wiki`: `{ "page": "/wiki/<page>.md", "description": "..." }`, the Description section
 of the iRO Wiki page with the same English name, or `null` when no page has one. The text is copied into
 `config/wiki_descriptions.json` by `tools/scripts-import/extract_wiki_descriptions.py` and its links point into `/wiki/`.
+
+Items also carry `description`: `{ "identified": [...], "unidentified": [...] }`, the lines the client shows for the item
+(English, pre-renewal) or `null` when the client has none. The lines come from the ROenglishPRE translation's
+`data/idnum2itemdesctable.txt` and `data/num2itemdesctable.txt`, copied into `config/item_descriptions.json` by
+`tools/scripts-import/extract_item_descriptions.py <ROenglishPRE checkout>`. Colour codes are removed. The translation is
+a fan project that its author says is for educational use only.
 
 ### Errors
 

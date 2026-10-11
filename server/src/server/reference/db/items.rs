@@ -1,8 +1,10 @@
 //! `/db/items/<id or name>`: an item with the monsters that drop it, the shops that sell it and the recipes, combos and groups it takes part in.
+use std::sync::OnceLock;
+
 use serde_json::{Value, json};
 
 use super::index::{self, DbIndex};
-use super::{DbError, Link, ListQuery, matches, maps, mobs, not_found, npcs, pets, skills, to_json, wiki_text, with_fields};
+use super::{DbError, Link, ListQuery, embedded_json, matches, maps, mobs, not_found, npcs, pets, skills, to_json, wiki_text, with_fields};
 use crate::repository::model::item_model::ItemModel;
 use crate::server::model::item_combos;
 use crate::server::script::game_data::{self, Recipe};
@@ -43,12 +45,20 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         ("groups", groups(index, id)),
         ("combo_sets", combo_sets(index, id)),
         ("pet_items", pet_items(id)),
+        ("description", description(id)),
         ("wiki", wiki_text("items", &id.to_string())),
     ];
     Ok(with_fields(to_json(item), fields))
 }
 
 /// A name several items share answers with the lowest id, so the same key always gives the same item.
+static DESCRIPTIONS: OnceLock<Value> = OnceLock::new();
+
+/// `{ identified, unidentified }` lines of the client's item description, `null` for an item the client has none for.
+fn description(id: i32) -> Value {
+    embedded_json(&DESCRIPTIONS, include_str!("../../../../../config/item_descriptions.json")).get(id.to_string()).cloned().unwrap_or(Value::Null)
+}
+
 fn find(key: &str) -> Option<&'static ItemModel> {
     let config = GlobalConfigService::instance();
     match key.parse::<i32>() {

@@ -282,6 +282,16 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn an_item_carries_its_english_client_description_or_null() {
+        let (status, potion) = get_json("/db/items/501").await;
+        assert_eq!(status, StatusCode::OK);
+        assert_eq!(potion["description"]["identified"][0], "A potion made from grinded Red Herbs.");
+        assert_eq!(potion["description"]["identified"][2], "Heal: 45 - 65 HP");
+        let (_, abundance) = get_json("/db/items/6069").await;
+        assert!(abundance["description"].is_null());
+    }
+
+    #[tokio::test]
     async fn a_quest_is_keyed_by_its_number_and_refuses_others() {
         let id = crate::server::model::quest::quest_catalog().keys().min().copied().unwrap();
         let (status, quest) = get_json(&format!("/db/quests/{id}")).await;
