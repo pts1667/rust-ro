@@ -1,7 +1,9 @@
 //! What a bot sees: the whole map instance it stands on, nothing is hidden by a field of view.
 use models::enums::cell::CellType;
 use models::enums::class::JobName;
-use models::enums::{EnumWithMaskValueU16, EnumWithNumberValue};
+use models::enums::item::EquipmentLocation;
+use models::enums::mob::{MobClass, MobMode};
+use models::enums::{EnumWithMaskValueU16, EnumWithMaskValueU32, EnumWithMaskValueU64, EnumWithNumberValue};
 use serde::Serialize;
 
 use super::commerce::{CommerceView, commerce_view};
@@ -10,10 +12,12 @@ use super::interaction::target_kind;
 use super::menu::{CraftingView, SkillMenuView, crafting_view, skill_menu_view};
 use crate::server::Server;
 use crate::server::model::game_systems::PlayerTradePhase;
+use crate::server::model::map_regions::{self, MapRegions};
 use crate::server::service::status_service::StatusService;
 use crate::server::model::movement::Movable;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::character::{Character, CharacterAction};
+use crate::server::state::mob::{Mob, MobAction};
 use crate::server::state::server::ServerState;
 use crate::util::coordinate;
 
@@ -52,6 +56,47 @@ pub struct SelfView {
     pub moving: bool,
     pub attack_target: Option<u32>,
     pub dead: bool,
+    /// The walkable region of the map the bot stands in, see `/db/maps`: a warp of another region can not be walked to.
+    pub region: Option<u32>,
+    /// The most the bot can carry, in the units of `weight`. Above half of it HP and SP stop regenerating, above 90% it can
+    /// not attack.
+    pub max_weight: u32,
+    pub base_exp: u32,
+    /// Experience the next base level needs, 0 at the highest level.
+    pub next_base_exp: u32,
+    pub job_exp: u32,
+    pub next_job_exp: u32,
+    /// The figures of the status window, equipment and statuses included.
+    pub combat: CombatView,
+    /// Status effects on the bot (`Poison`, `Blessing`...), with the milliseconds they have left.
+    pub statuses: Vec<ActiveStatusView>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct CombatView {
+    /// The two parts of ATK the status window shows (`atk` + `atk2`): from stats, and from the weapon with its refine.
+    pub atk: i32,
+    pub atk2: i32,
+    pub matk_min: u16,
+    pub matk_max: u16,
+    /// Hard defense, a percentage of the damage taken off.
+    pub def: i16,
+    pub mdef: i16,
+    pub hit: i16,
+    pub flee: i16,
+    pub perfect_dodge: f64,
+    pub critical: f64,
+    pub aspd: f64,
+    /// Milliseconds per cell walked.
+    pub speed: u16,
+    pub element: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ActiveStatusView {
+    pub name: String,
+    /// `null` for a status that lasts until something ends it.
+    pub remaining_ms: Option<u64>,
 }
 
 #[derive(Debug, Serialize)]
@@ -81,6 +126,15 @@ pub struct MobView {
     pub y: u16,
     pub hp: u32,
     pub max_hp: u32,
+    pub level: u32,
+    /// Attacks characters it sees, without being attacked first.
+    pub aggressive: bool,
+    /// A boss or an MVP: immune to many statuses, and usually far stronger than its level says.
+    pub boss: bool,
+    /// `idle`, `moving`, `chasing`, `attacking`, `flinching` or `returning`.
+    pub action: &'static str,
+    /// The character or monster it chases or attacks, a bot's own id when it is after the bot.
+    pub target: Option<u32>,
 }
 
 #[derive(Debug, Serialize)]
@@ -89,6 +143,8 @@ pub struct NpcView {
     pub name: String,
     pub x: u16,
     pub y: u16,
+    /// The walkable region it is talked to from.
+    pub region: Option<u32>,
 }
 
 #[derive(Debug, Serialize)]
@@ -112,6 +168,8 @@ pub struct WarpView {
     pub to_map: String,
     pub to_x: u16,
     pub to_y: u16,
+    /// The walkable region the warp is used from, compare with `self.region`.
+    pub region: Option<u32>,
 }
 
 #[derive(Debug, Serialize)]
@@ -123,6 +181,30 @@ pub struct InventoryView {
     pub equipped: bool,
     /// `Healing`, `Weapon`, `Armor`, `Etc`... as the item database names it.
     pub kind: String,
+    /// Weight of one, in the units of `self.weight`.
+    pub weight: i32,
+    /// What an NPC shop pays for one, before the Overcharge skill.
+    pub sell_price: i32,
+    /// For equipment: where it goes and whether the bot can wear it.
+    pub equip: Option<EquipView>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct EquipView {
+    /// `HeadTop`, `HeadMid`, `HeadLow`, `Armor`, `HandRight` (weapon), `HandLeft` (shield), `Garment`, `Shoes`,
+    /// `AccessoryLeft`, `AccessoryRight`, `Ammo`: an item listing both hands takes both.
+    pub slots: Vec<&'static str>,
+    pub attack: Option<i16>,
+    pub defense: Option<i16>,
+    pub weapon_level: Option<i16>,
+    pub equip_level: Option<i16>,
+    pub refine: i16,
+    pub identified: bool,
+    /// Card item ids in its slots.
+    pub cards: Vec<i16>,
+    /// Whether `equip` would take it now; `why_not` says what is missing (`level`, `job` or `gender`).
+    pub can_equip: bool,
+    pub why_not: Option<&'static str>,
 }
 
 /// An item of the storage the bot has open, `index` is what withdrawing takes.
@@ -248,8 +330,97 @@ fn display_name(name: &str) -> String {
     name.split('#').next().unwrap_or(name).to_string()
 }
 
+/// Equipment slots of the item database, in the order the status window shows them.
+const EQUIPMENT_SLOTS: [(EquipmentLocation, &str); 11] = [
+    (EquipmentLocation::HeadTop, "HeadTop"),
+    (EquipmentLocation::HeadMid, "HeadMid"),
+    (EquipmentLocation::HeadLow, "HeadLow"),
+    (EquipmentLocation::Armor, "Armor"),
+    (EquipmentLocation::HandRight, "HandRight"),
+    (EquipmentLocation::HandLeft, "HandLeft"),
+    (EquipmentLocation::Garment, "Garment"),
+    (EquipmentLocation::Shoes, "Shoes"),
+    (EquipmentLocation::AccessoryLeft, "AccessoryLeft"),
+    (EquipmentLocation::AccessoryRight, "AccessoryRight"),
+    (EquipmentLocation::Ammo, "Ammo"),
+];
+
+/// Rounded in `f64`, which prints `135.2` where an `f32` prints `135.1999969482422`.
+fn tenths(value: f32) -> f64 {
+    (f64::from(value) * 10.0).round() / 10.0
+}
+
+fn mob_view(mob: &Mob) -> MobView {
+    let (action, target) = match mob.action {
+        MobAction::Idle => ("idle", None),
+        MobAction::Moving => ("moving", None),
+        MobAction::Chasing { target_id } => ("chasing", Some(target_id)),
+        MobAction::Attacking { target_id, .. } => ("attacking", Some(target_id)),
+        MobAction::Flinching { .. } => ("flinching", None),
+        MobAction::Returning => ("returning", None),
+    };
+    MobView {
+        id: mob.id,
+        name: mob.name_english.clone(),
+        mob_id: mob.mob_id,
+        x: mob.x(),
+        y: mob.y(),
+        hp: mob.status.hp(),
+        max_hp: mob.status.max_hp(),
+        level: mob.status.base_level(),
+        aggressive: mob.mode & MobMode::Aggressive.as_flag() != 0,
+        boss: mob.mode & MobMode::Boss.as_flag() != 0 || *mob.status.mob_class() == MobClass::Boss,
+        action,
+        target: target.or(mob.target_id),
+    }
+}
+
+fn inventory_view(server: &Server, character: &Character, index: usize, item: &crate::repository::model::item_model::InventoryItemModel) -> InventoryView {
+    let model = GlobalConfigService::instance().find_item(item.item_id);
+    let equip = model.filter(|model| model.location != 0).map(|model| {
+        let inventory = server.inventory_service();
+        let why_not = if !inventory.check_base_level_requirement(character, model) {
+            Some("level")
+        } else if !inventory.check_job_requirement(character, model) {
+            Some("job")
+        } else if !inventory.check_gender_requirement(character, model) {
+            Some("gender")
+        } else {
+            None
+        };
+        EquipView {
+            slots: EQUIPMENT_SLOTS
+                .iter()
+                .filter(|(location, _)| model.location & u64::from(location.as_flag()) != 0)
+                .map(|(_, name)| *name)
+                .collect(),
+            attack: model.attack,
+            defense: model.defense,
+            weapon_level: model.weapon_level,
+            equip_level: model.equip_level_min,
+            refine: item.refine,
+            identified: item.is_identified,
+            cards: [item.card0, item.card1, item.card2, item.card3].into_iter().filter(|card| *card > 0).collect(),
+            can_equip: why_not.is_none(),
+            why_not,
+        }
+    });
+    InventoryView {
+        index,
+        item_id: item.item_id,
+        name: item.name_english.clone(),
+        amount: item.amount,
+        equipped: item.equip != 0,
+        kind: format!("{:?}", item.item_type()),
+        weight: item.weight,
+        sell_price: model.map_or(0, |model| model.price_sell.unwrap_or(model.price_buy.unwrap_or(0) / 2)),
+        equip,
+    }
+}
+
 fn self_view(server: &Server, character: &Character, tick: u128) -> SelfView {
     let snapshot = server.server_service().get_status_snapshot(&character.status, tick);
+    let character_service = server.character_service();
     let job = JobName::try_from_value(character.status.job as usize)
         .map(|job| format!("{job:?}"))
         .unwrap_or_else(|_| character.status.job.to_string());
@@ -281,6 +452,37 @@ fn self_view(server: &Server, character: &Character, tick: u128) -> SelfView {
         moving: character.is_moving(),
         attack_target: character.is_attacking().then(|| character.attack().target),
         dead: character.is_dead(),
+        region: map_regions::of_map(character.current_map_name()).and_then(|regions| regions.at(character.x(), character.y())),
+        max_weight: character_service.max_weight(character),
+        base_exp: character.status.base_exp,
+        next_base_exp: character_service.next_base_level_required_exp(&character.status),
+        job_exp: character.status.job_exp,
+        next_job_exp: character_service.next_job_level_required_exp(&character.status),
+        combat: CombatView {
+            atk: snapshot.atk_left_side(),
+            atk2: snapshot.atk_right_side(),
+            matk_min: snapshot.matk_min(),
+            matk_max: snapshot.matk_max(),
+            def: snapshot.def(),
+            mdef: snapshot.mdef(),
+            hit: snapshot.hit(),
+            flee: snapshot.flee(),
+            perfect_dodge: tenths(snapshot.perfect_dodge()),
+            critical: tenths(snapshot.crit()),
+            aspd: tenths(snapshot.aspd()),
+            speed: snapshot.speed(),
+            element: format!("{:?}", snapshot.element()),
+        },
+        statuses: character
+            .status
+            .active_statuses
+            .iter()
+            .filter(|change| !change.expired(tick))
+            .map(|change| ActiveStatusView {
+                name: format!("{:?}", change.kind),
+                remaining_ms: change.expires_at.map(|end| end.saturating_sub(tick) as u64),
+            })
+            .collect(),
     }
 }
 
@@ -421,17 +623,7 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
         npcs: Vec::new(),
         items: Vec::new(),
         warps: Vec::new(),
-        inventory: character
-            .inventory_iter()
-            .map(|(index, item)| InventoryView {
-                index,
-                item_id: item.item_id,
-                name: item.name_english.clone(),
-                amount: item.amount,
-                equipped: item.equip != 0,
-                kind: format!("{:?}", item.item_type()),
-            })
-            .collect(),
+        inventory: character.inventory_iter().map(|(index, item)| inventory_view(server, character, index, item)).collect(),
         storage: storage_view(character),
         skills: Vec::new(),
         party: None,
@@ -467,27 +659,21 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
     let Some(instance) = instance else {
         return Ok(view);
     };
+    let regions: Option<std::sync::Arc<MapRegions>> = map_regions::of_map(character.current_map_name());
     let map_state = instance.state();
-    view.mobs = map_state
-        .mobs()
-        .values()
-        .filter(|mob| !mob.to_remove)
-        .map(|mob| MobView {
-            id: mob.id,
-            name: mob.name_english.clone(),
-            mob_id: mob.mob_id,
-            x: mob.x(),
-            y: mob.y(),
-            hp: mob.status.hp(),
-            max_hp: mob.status.max_hp(),
-        })
-        .collect();
+    view.mobs = map_state.mobs().values().filter(|mob| !mob.to_remove).map(mob_view).collect();
     view.npcs = map_state
         .script_skill_state
         .npcs
         .values()
         .filter(|npc| !npc.hidden && npc.sprite != INVISIBLE_NPC_SPRITE)
-        .map(|npc| NpcView { id: npc.id, name: display_name(&npc.script.name), x: npc.x, y: npc.y })
+        .map(|npc| NpcView {
+            id: npc.id,
+            name: display_name(&npc.script.name),
+            x: npc.x,
+            y: npc.y,
+            region: regions.as_ref().and_then(|regions| regions.landing(npc.x, npc.y)),
+        })
         .collect();
     view.items = map_state
         .dropped_items()
@@ -514,6 +700,7 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
             to_map: warp.dest_map_name.clone(),
             to_x: warp.to_x,
             to_y: warp.to_y,
+            region: regions.as_ref().and_then(|regions| regions.of_area(warp.x, warp.y, warp.x_size, warp.y_size)),
         })
         .collect();
     Ok(view)

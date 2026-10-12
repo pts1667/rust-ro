@@ -52,6 +52,9 @@ not be undone. Deleting bypasses the checks players have for deleting a characte
 2. Send one action. Most return when the action is done, with a result that says how it went.
 3. Observe again. Never reuse ids or positions from an old observation after a map change (`journey: "map_changed"`).
 
+What happened in between (what hit the bot, what it killed, the items it got) is in its events, see Events: read them with
+`GET /bots/{name}/events?after=<last seq>` or have the WebSocket push them.
+
 ## REST endpoints
 
 | Request | What it does |
@@ -62,8 +65,11 @@ not be undone. Deleting bypasses the checks players have for deleting a characte
 | `POST /bots/{name}/connect` | Puts a bot in the game, also one created before the server started |
 | `POST /bots/{name}/disconnect` | Logs the character out: saves it and takes it out of the game, the answer comes once it is gone |
 | `DELETE /bots/{name}` | Erases the character and its account for good, after logging it out. Answers `{name, char_id, deleted}` |
-| `GET /bots/{name}/observation` | Everything the bot sees, see below |
+| `GET /bots/{name}/observation` | Everything the bot sees, see below. `?fields=self,mobs` keeps only those parts (and `ready` and `map`) |
 | `GET /bots/{name}/map` | Walkable cells of the map. `?x=&y=&radius=` crops the square around a cell, to save space |
+| `GET /bots/{name}/path` | How far a cell (`?x=&y=`) or a target (`?target=`) is on foot, see Paths and regions |
+| `GET /bots/{name}/events` | What happened to the bot after `?after=` (a `seq`), see Events |
+| `GET /bots/{name}/messages` | The messages after `?after=` (a `seq`), the last 50 are kept |
 | `POST /bots/{name}/actions` | Runs one action, the JSON body is the action |
 | `GET /bots/server/settings` | How the server is set up, see "Server settings". Needs no bot |
 | `GET /bots/server/battle` | The rathena battle options with value, default and range. `?name=` keeps the options whose name contains the text |
@@ -89,16 +95,23 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
 {
   "ready": true,
   "self": {"name": "Scout", "char_id": 150001, "job": "Novice", "base_level": 1, "job_level": 1, "hp": 40, "max_hp": 40,
-           "sp": 11, "max_sp": 11, "zeny": 0, "weight": 0, "status_points": 48, "skill_points": 0,
-           "stats": {"str": 1, "agi": 1, "vit": 1, "int": 1, "dex": 1, "luk": 1}, "x": 156, "y": 191,
-           "action": "idle", "moving": false, "attack_target": null, "dead": false},
+           "sp": 11, "max_sp": 11, "zeny": 0, "weight": 0, "max_weight": 20300, "status_points": 48, "skill_points": 0,
+           "base_exp": 0, "next_base_exp": 9, "job_exp": 0, "next_job_exp": 10,
+           "stats": {"str": 1, "agi": 1, "vit": 1, "int": 1, "dex": 1, "luk": 1}, "x": 156, "y": 191, "region": 1,
+           "action": "idle", "moving": false, "attack_target": null, "dead": false,
+           "combat": {"atk": 2, "atk2": 17, "matk_min": 1, "matk_max": 1, "def": 0, "mdef": 0, "hit": 2, "flee": 2,
+                      "perfect_dodge": 1.0, "critical": 1.0, "aspd": 150.0, "speed": 150, "element": "Neutral"},
+           "statuses": [{"name": "Blessing", "remaining_ms": 59000}]},
   "map": {"name": "prontera", "instance": 0, "width": 312, "height": 392},
   "players": [{"id": 150002, "name": "Other", "x": 150, "y": 190, "attackable": false}],
-  "mobs":    [{"id": 400012, "name": "Poring", "mob_id": 1002, "x": 160, "y": 200, "hp": 50, "max_hp": 50}],
-  "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29}],
+  "mobs":    [{"id": 400012, "name": "Poring", "mob_id": 1002, "x": 160, "y": 200, "hp": 50, "max_hp": 50, "level": 1,
+               "aggressive": false, "boss": false, "action": "attacking", "target": 150001}],
+  "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29, "region": 1}],
   "items":   [{"id": 400301, "item_id": 909, "name": "Jellopy", "amount": 1, "x": 158, "y": 195}],
-  "warps":   [{"id": 100500, "x": 156, "y": 20, "half_width": 2, "half_height": 1, "to_map": "prt_fild08", "to_x": 170, "to_y": 380}],
-  "inventory": [{"index": 0, "item_id": 1201, "name": "Knife", "kind": "Weapon", "amount": 1, "equipped": true}],
+  "warps":   [{"id": 100500, "x": 156, "y": 20, "half_width": 2, "half_height": 1, "to_map": "prt_fild08", "to_x": 170, "to_y": 380, "region": 1}],
+  "inventory": [{"index": 0, "item_id": 1201, "name": "Knife", "kind": "Weapon", "amount": 1, "equipped": true, "weight": 40, "sell_price": 25,
+                 "equip": {"slots": ["HandRight"], "attack": 17, "defense": null, "weapon_level": 1, "equip_level": 1, "refine": 0,
+                           "identified": true, "cards": [], "can_equip": true, "why_not": null}}],
   "storage": null,
   "skills": [{"id": 28, "name": "AL_HEAL", "level": 3, "aim": "target", "range": 9}],
   "party": {"id": 1, "name": "Squad", "leader": 150001, "members": [{"char_id": 150001, "name": "Scout"}]},
@@ -121,6 +134,18 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
 ```
 
 `action` is one of `idle`, `moving`, `attacking`, `using_skill`, `sitting`, `dead`. `ready` is false for a moment after connecting.
+`self.combat` holds the figures of the status window, equipment and statuses included: `atk` + `atk2` is the ATK it shows,
+`def` is the share of damage taken off (in percent), `aspd` goes up to 190, `speed` is milliseconds per cell. `weight` and
+`max_weight` share their unit (`inventory[].weight` is one item's): above half of `max_weight` HP and SP stop regenerating,
+above 90% the bot can not attack. `next_base_exp` is the experience the next level needs (0 at the highest).
+`statuses` are the status effects on the bot, `remaining_ms` being `null` for one without an end.
+`mobs[]` tell whether the monster attacks on sight (`aggressive`), is a boss or MVP (`boss`), what it does (`action`: `idle`,
+`moving`, `chasing`, `attacking`, `flinching`, `returning`) and whom it is after (`target`, the bot's `char_id` when it is the bot):
+a monster `chasing` the bot is coming before it hits.
+`inventory[].sell_price` is what an NPC shop pays for one (before Overcharge). `equip` is `null` for what is not equipment,
+otherwise the `slots` it takes, its figures, `refine`, `cards` and whether `equip` would work now (`can_equip`, and `why_not`:
+`level`, `job` or `gender`).
+`region` (of `self`, `npcs` and `warps`) is explained in Paths and regions.
 `dialog` is what the NPC currently shows (see Dialogues). `messages` are the last ones the bot received, `channel` being `system`,
 `chat` (said by someone around the bot, as `Name : text`), `whisper` or `party`. What the bot says itself comes back as `system`.
 `inventory[].index` is what the item actions take. `skills` lists what the bot knows, see Skills. `storage` is `null` unless a Kafra opened
@@ -133,9 +158,9 @@ Send them as the body of `POST /bots/{name}/actions`, or over the WebSocket. `ty
 
 | Action | Parameters | Result |
 |---|---|---|
-| `move` | `x`, `y`, `wait` (default true) | Walks to the cell. `path_length`, and with `wait` a `journey` |
-| `use` | `target` | Walks to the target and uses it, see below |
-| `attack` | `target` (a monster or an `attackable` player), `wait` (default false) | Walks to the target and attacks it until it is dead. Without `wait` it returns at once and the fight goes on in the background; any other command of the bot ends it. With `wait`, `fight` tells how it ended: `over` (the monster is gone, killed or not), `dead` (the bot died), `stopped` (another command took over), `unreachable` or `timeout` |
+| `move` | `x`, `y`, `wait` (default true), `keep_walking` (default false) | Walks to the cell. `path_length`, and with `wait` a `journey` |
+| `use` | `target`, `keep_walking` (default false) | Walks to the target and uses it, see below |
+| `attack` | `target` (a monster or an `attackable` player), `wait` (default false) | Walks to the target and attacks it until it is dead. Without `wait` it returns at once and the fight goes on in the background; any other command of the bot ends it. With `wait`, `fight` tells how it ended: `over` (the monster is gone, killed or not), `dead` (the bot died), `stopped` (another command took over), `unreachable` or `timeout`; and what it cost and gave: `damage_taken`, `killed` (the bot had a share of the kill), `base_exp`, `job_exp` and `hp` |
 | `stop` | | Stops walking, attacking and any fight in the background |
 | `respawn` | | Returns to the save point after dying (`self.dead` is true) |
 | `dialog_next` | | Continues a dialogue that shows a Next button |
@@ -164,8 +189,11 @@ Send them as the body of `POST /bots/{name}/actions`, or over the WebSocket. `ty
 A walk can be as long as the map: routes the game cannot walk in one go (about 100 cells) are walked in legs, one after the other.
 Without `wait`, the first leg starts and the rest follows in the background until another command of the bot takes over.
 
-`journey` tells how a walk ended: `arrived`, `map_changed` (a warp was taken), `stopped` (the path was blocked or cancelled) or
-`timeout` (still walking after `bots.action_timeout_secs`, 30 by default, observe to see where the bot is).
+`journey` tells how a walk ended: `arrived`, `map_changed` (a warp was taken), `stopped`, `no_warp` (see `use`) or `timeout` (still
+walking after `bots.action_timeout_secs`, 30 by default, observe to see where the bot is). A `stopped` walk says why in
+`stop_reason`: `hit` (a hit stops a walking character, as it stops a player), `blocked` (no way on from there), `cancelled` (another
+command of the bot took over) or `dead`. With `keep_walking`, a walk a hit stopped starts again once the bot can move, and the
+answer counts those times in `resumed`; the bot does not fight back, watch its HP or its events meanwhile.
 
 ### `use`
 
@@ -175,6 +203,8 @@ Without `wait`, the first leg starts and the rest follows in the background unti
 - **Item on the ground**: walks to it and picks it up (`action: "pick_up"`). Observe the inventory to confirm. Items of a monster that
   another player killed stay locked to that player for a while.
 - **Warp**: walks onto it, the result is `journey: "map_changed"` and the bot stands on the other map. There is nothing else to call.
+  `journey: "no_warp"` means the bot stood on the warp and stayed on its map (a warp that is off). A warp in another region of the map
+  is refused with `No reachable cell from where target ... can be used`, see Paths and regions.
 - Monsters and players are fought with `attack`; `use` on a player is refused.
 
 ```json
@@ -427,6 +457,43 @@ observation. A command given a wrong argument answers with the line a player wou
 options of rathena are listed, but the server only reads some of them, a value that differs from its default is not proof that it has
 an effect.
 
+## Paths and regions
+
+A map is made of **regions**, the parts a character can walk between: an interior map such as `geffen_in` is several rooms, and a
+field can have closed-off parts. A warp can only be walked to from its own region. `self.region`, `npcs[].region` and
+`warps[].region` of the observation, and the `region` of warps, arrivals and NPCs in `/db/maps/<name>` (port 6904), number them the
+same way, so a route can be planned between regions instead of whole maps: a warp of the bot's map whose `region` differs from
+`self.region` is out of reach, and `/db/maps` gives each warp the `region` it lands in on the other map.
+
+`GET /bots/{name}/path?x=&y=` (or `?target=<id>`, the cells from where `use` or `attack` would act on the target) answers
+`{"kind", "from": {x, y, region}, "to": {x, y, region}, "reachable", "path_length"}`, the walk being found over the whole map like a long
+`move`: `reachable: false` means no walk leads there, whatever the distance. A cell that is not walkable also has `reason`.
+
+Ways between maps that are not warp cells (guards, sewer entrances, ship captains) are NPCs: `/db/maps/<name>` lists them as
+`transports` (and `transport_arrivals` on the map they lead to), with `touch` (walking into the NPC's area is enough) and `checks`
+(what the script reads first: `zeny`, `item`, `quest`, `level`, `job` or `variable`, a hint that the way has a condition). Warper NPCs
+have `warper: true` and offer every place of `/db/destinations`. Talk to the others with `use` and answer their dialogue.
+
+## Events
+
+Each bot keeps the last 500 things that happened to it, numbered by `seq`:
+
+| `event` | Fields |
+|---|---|
+| `damaged` | `source_id`, `source` (name), `source_kind` (`mob`, `player` or `other`), `mob_id`, `damage`, `skill`, `hp` and `max_hp` after it |
+| `missed` | An attack that did no damage: `source_id`, `source`, `source_kind`, `mob_id` |
+| `died` | `killer_id`, `killer`, `killer_kind`, `mob_id` (`null` when the game does not know who) |
+| `revived` | The bot is alive again (respawned or resurrected): `map`, `x`, `y` |
+| `killed` | A monster died and the bot had a share of it: `mob_id`, `name`, `x`, `y`, `base_exp`, `job_exp` (after the server's rates) |
+| `level_up` | `kind` (`base` or `job`), `level` |
+| `job_changed` | `from`, `to` |
+| `map_changed` | `from`, `to`, `x`, `y` |
+| `item_gained`, `item_lost` | `item_id`, `name`, `amount`: picked up, bought, sold, used, dropped, given, stored... |
+
+`GET /bots/{name}/events?after=12` answers `{"events": [{"seq": 13, "at": 1760000000000, "event": "damaged", ...}], "last": 13}`, `at`
+being milliseconds since the Unix epoch. Keep `last` and ask with it next time. Events are kept while the bot is out of the game too,
+until the server stops.
+
 ## WebSocket: `/bots/ws`
 
 Same key in the same header. Messages are JSON text. One connection controls any number of bots.
@@ -441,11 +508,13 @@ Same key in the same header. Messages are JSON text. One connection controls any
 ```
 
 - A command carries an `id` of your choice, which the answer repeats: `{"id", "ok": true, "result"}` or `{"id", "ok": false, "error"}`.
-- `type` is any action above, or `list`, `create` (the fields of `POST /bots`), `connect`, `disconnect`, `status`, `observe`, `map` (`x`, `y`,
-  `radius`), `subscribe`, `unsubscribe`, `delete`. Every command except `list` and `create` names its bot in `bot`.
+- `type` is any action above, or `list`, `create` (the fields of `POST /bots`), `connect`, `disconnect`, `status`, `observe` (`fields`), `map` (`x`, `y`,
+  `radius`), `path` (`x`, `y` or `target`), `events` (`after`), `messages` (`after`), `subscribe`, `unsubscribe`, `delete`. Every command except
+  `list` and `create` names its bot in `bot`.
 - Commands run concurrently: send `stop` while a long `move` is waiting, the `move` is answered with `journey: "stopped"`.
 - After `subscribe`, the server pushes events without being asked: `observation` every `interval_ms` (200 to 10000, default 1000), and
-  at once `dialog` (`dialog`, `null` when it closed) and `message` (`message: {seq, channel, text}`).
+  at once `dialog` (`dialog`, `null` when it closed), `message` (`message: {seq, channel, text}`) and the game events of Events, as
+  `{"event": "damaged", "bot": "Scout", "seq": 13, "at": ..., ...}`. They are checked every 100 ms.
 
 ## Limits of this version
 

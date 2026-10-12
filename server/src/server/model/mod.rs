@@ -29,6 +29,7 @@ pub mod map;
 pub mod map_flags;
 pub mod map_instance;
 pub mod map_item;
+pub mod map_regions;
 pub mod mob_spawn;
 pub use movement;
 pub use movement::path;

@@ -7,8 +7,11 @@ use dashmap::DashMap;
 use serde::Serialize;
 
 use super::dialog::{self, Decoded, Dialog};
+use super::events::{BotEvent, BotEventKind, BotSnapshot};
 
 const MESSAGE_BACKLOG: usize = 50;
+/// Events kept for a bot: a few minutes of a busy fight.
+const EVENT_BACKLOG: usize = 500;
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct BotMessage {
@@ -26,6 +29,22 @@ struct BotScreen {
     dialog_version: u64,
     messages: VecDeque<BotMessage>,
     next_seq: u64,
+    events: VecDeque<BotEvent>,
+    next_event_seq: u64,
+    /// The character at the previous game loop iteration, see `BotSnapshot`.
+    snapshot: Option<BotSnapshot>,
+    /// The death of the character was recorded with its killer since the last snapshot.
+    death_recorded: bool,
+}
+
+impl BotScreen {
+    fn push_event(&mut self, kind: BotEventKind) {
+        self.next_event_seq += 1;
+        self.events.push_back(BotEvent { seq: self.next_event_seq, at: now_millis(), kind });
+        if self.events.len() > EVENT_BACKLOG {
+            self.events.pop_front();
+        }
+    }
 }
 
 /// A character driven through the API, known by the name of its character.
@@ -57,6 +76,7 @@ impl BotHandle {
         self.connected.store(connected, Ordering::Release);
         if !connected {
             self.clear_dialog();
+            self.forget_snapshot();
         }
     }
 
@@ -98,6 +118,51 @@ impl BotHandle {
 
     pub fn messages_after(&self, seq: u64) -> Vec<BotMessage> {
         self.screen().messages.iter().filter(|message| message.seq > seq).cloned().collect()
+    }
+
+    /// The events numbered after `seq`, oldest first. The oldest are dropped past `EVENT_BACKLOG`.
+    pub fn events_after(&self, seq: u64) -> Vec<BotEvent> {
+        self.screen().events.iter().filter(|event| event.seq > seq).cloned().collect()
+    }
+
+    /// The name and monster class of the actor `id` from the last event that names it.
+    fn source_named(&self, id: u32) -> Option<(String, Option<i16>)> {
+        self.screen().events.iter().rev().find_map(|event| event.kind.source_named(id))
+    }
+
+    /// The number of the last event, 0 before the first one.
+    pub fn last_event(&self) -> u64 {
+        self.screen().next_event_seq
+    }
+
+    fn record(&self, kind: BotEventKind) {
+        self.screen().push_event(kind);
+    }
+
+    fn record_death(&self, kind: BotEventKind) {
+        let mut screen = self.screen();
+        screen.death_recorded = true;
+        screen.push_event(kind);
+    }
+
+    /// `loaded` is false between a map change and the client's answer to it. The first snapshot waits for it, as the
+    /// character is not all there before; later ones do not, or a warp taken right after another would go unseen.
+    fn sample(&self, now: BotSnapshot, loaded: bool) {
+        let mut screen = self.screen();
+        if let Some(before) = screen.snapshot.take() {
+            for kind in before.changes(&now, screen.death_recorded) {
+                screen.push_event(kind);
+            }
+        } else if !loaded {
+            return;
+        }
+        screen.death_recorded = false;
+        screen.snapshot = Some(now);
+    }
+
+    /// Forgets the character as it was, for a bot that left the game: its next snapshot starts over.
+    fn forget_snapshot(&self) {
+        self.screen().snapshot = None;
     }
 
     fn apply_packet(&self, packet: &[u8]) {
@@ -164,6 +229,37 @@ impl BotRegistry {
 
     pub fn is_bot(&self, char_id: u32) -> bool {
         self.0.by_char.contains_key(&char_id)
+    }
+
+    /// The characters of the bots that are in the game.
+    pub fn connected_char_ids(&self) -> Vec<u32> {
+        self.0.by_char.iter().filter(|entry| entry.is_connected()).map(|entry| *entry.key()).collect()
+    }
+
+    /// Adds an event to the bot of `char_id`; does nothing for characters that are not bots.
+    pub fn record(&self, char_id: u32, kind: BotEventKind) {
+        if let Some(bot) = self.0.by_char.get(&char_id) {
+            bot.record(kind);
+        }
+    }
+
+    /// Adds the death of the bot of `char_id`, so that the comparison of snapshots does not tell it again.
+    pub fn record_death(&self, char_id: u32, kind: BotEventKind) {
+        if let Some(bot) = self.0.by_char.get(&char_id) {
+            bot.record_death(kind);
+        }
+    }
+
+    /// The name and monster class of the actor `id` from the events of the bot of `char_id`.
+    pub fn source_named(&self, char_id: u32, id: u32) -> Option<(String, Option<i16>)> {
+        self.0.by_char.get(&char_id).and_then(|bot| bot.source_named(id))
+    }
+
+    /// Compares the bot of `char_id` with its previous snapshot, see `BotSnapshot::changes`.
+    pub fn sample(&self, char_id: u32, snapshot: BotSnapshot, loaded: bool) {
+        if let Some(bot) = self.0.by_char.get(&char_id) {
+            bot.sample(snapshot, loaded);
+        }
     }
 
     /// Feeds a packet the server sent to a character; does nothing for characters that are not bots.

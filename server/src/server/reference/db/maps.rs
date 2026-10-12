@@ -1,11 +1,13 @@
-//! `/db/maps/<name>`: a map with its flags, warps, monster spawns, the NPCs placed on it and the quests they start.
+//! `/db/maps/<name>`: a map with its flags, walkable regions, warps, the NPCs that send characters elsewhere, monster spawns,
+//! the NPCs placed on it and the quests they start.
 use std::collections::BTreeSet;
 
 use script_sdk::Entry;
 use serde_json::{Value, json};
 
-use super::{DbError, Link, ListQuery, index, matches, mobs, not_found, npcs, quests, warps};
+use super::{DbError, Link, ListQuery, index, matches, mobs, not_found, npcs, quests, transports, warps};
 use crate::server::model::map_flags::MapFlag;
+use crate::server::model::map_regions;
 use crate::server::model::warp::Warp;
 use crate::server::script::entries;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -23,6 +25,7 @@ pub fn links(query: &ListQuery) -> Vec<Link> {
 pub fn entry(key: &str) -> Result<Value, DbError> {
     let map = GlobalConfigService::instance().find_map(key).ok_or_else(|| not_found("map", key))?;
     let flags: Vec<&str> = MapFlag::CATALOGUE.iter().filter(|(flag, _)| map.flags().enabled(*flag)).map(|(_, name)| *name).collect();
+    let regions = map_regions::of_map(map.name());
     let warps: Vec<Value> = map
         .warps()
         .iter()
@@ -34,7 +37,13 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
                 "y": warp.y,
                 "x_size": warp.x_size,
                 "y_size": warp.y_size,
-                "to": { "map": link(&warp.dest_map_name), "x": warp.to_x, "y": warp.to_y },
+                "region": regions.as_ref().and_then(|regions| regions.of_area(warp.x, warp.y, warp.x_size, warp.y_size)),
+                "to": {
+                    "map": link(&warp.dest_map_name),
+                    "x": warp.to_x,
+                    "y": warp.to_y,
+                    "region": map_regions::of_map(&warp.dest_map_name).and_then(|regions| regions.landing(warp.to_x, warp.to_y)),
+                },
             })
         })
         .collect();
@@ -53,8 +62,13 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
             json!({
                 "name": warp.name,
                 "href": warps::href(warp),
-                "from": { "map": link(&warp.map_name), "x": warp.x, "y": warp.y },
-                "land": { "x": warp.to_x, "y": warp.to_y },
+                "from": {
+                    "map": link(&warp.map_name),
+                    "x": warp.x,
+                    "y": warp.y,
+                    "region": map_regions::of_map(&warp.map_name).and_then(|regions| regions.of_area(warp.x, warp.y, warp.x_size, warp.y_size)),
+                },
+                "land": { "x": warp.to_x, "y": warp.to_y, "region": regions.as_ref().and_then(|regions| regions.landing(warp.to_x, warp.to_y)) },
             })
         })
         .collect();
@@ -76,7 +90,16 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
     let placed: Vec<Value> = map
         .scripts()
         .iter()
-        .map(|script| json!({ "npc": npcs::link(&script.map_name, &script.name), "x": script.x, "y": script.y, "shop": index::shop_offers(script).is_some() }))
+        .map(|script| {
+            json!({
+                "npc": npcs::link(&script.map_name, &script.name),
+                "x": script.x,
+                "y": script.y,
+                // NPCs stand on walls too: the region is the one of the cells around, where a character talks from
+                "region": regions.as_ref().and_then(|regions| regions.landing(script.x, script.y)),
+                "shop": index::shop_offers(script).is_some(),
+            })
+        })
         .collect();
     let offered: BTreeSet<u32> = map
         .scripts()
@@ -94,8 +117,11 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         "x_size": map.x_size(),
         "y_size": map.y_size(),
         "flags": flags,
+        "regions": regions.as_ref().map(|regions| regions.sizes().iter().enumerate().map(|(index, cells)| json!({ "region": index + 1, "cells": cells })).collect::<Vec<Value>>()),
         "warps": warps,
         "arrivals": arrivals,
+        "transports": map.scripts().iter().filter_map(transports::transport).collect::<Vec<Value>>(),
+        "transport_arrivals": transports::arrivals(map.name()),
         "connected_maps": connected.into_iter().map(link).collect::<Vec<Link>>(),
         "mob_spawns": spawns,
         "npcs": placed,

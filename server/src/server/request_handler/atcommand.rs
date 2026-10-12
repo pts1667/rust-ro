@@ -248,54 +248,52 @@ fn send_chat_reply(server: &Server, char_id: u32, reply: PacketZcNotifyPlayercha
         .unwrap_or_else(|_| error!("Failed to send notification packet_zc_notify_playerchat to client"));
 }
 
-pub fn handle_go(server: &Server, state: &mut ServerState, char_id: u32, args: Vec<&str>) -> String {
-    let cities_len = server.configuration.maps.cities.len();
-    let cleaned_arg = args[0].trim();
+/// The city `@go` sends to for its argument (an index of `maps.cities` or a name), with the name of its map.
+fn go_destination(cities: &[CityConfig], argument: &str) -> Option<CityConfig> {
     let mut maybe_city: Option<&CityConfig> = None;
-    if let Ok(index) = cleaned_arg.parse::<i8>() {
-        if index < cities_len as i8 {
-            maybe_city = unsafe { Some(server.configuration.maps.cities.get_unchecked(index as usize)) } // it safe, bounds are checked
-        }
+    if let Ok(index) = argument.parse::<usize>() {
+        maybe_city = cities.get(index);
     }
     if maybe_city.is_none() {
         // aliases
-        let name = match cleaned_arg {
-            "old_moc" => "morroc".to_string(),
-            "morocc" => "morroc".to_string(),
-            "lutie" => "xmas".to_string(),
-            "juno" => "yuno".to_string(),
-            "kunlun" => "gornyun".to_string(),
-            "luoyang" => "louyang".to_string(),
-            "new1-1" => "novice".to_string(),
-            "startpoint" => "novice".to_string(),
-            "beginning" => "novice".to_string(),
-            "prison" => "jail".to_string(),
-            "sec_pri" => "jail".to_string(),
-            "rael" => "rachel".to_string(),
-            _ => cleaned_arg.to_string(),
+        let name = match argument {
+            "old_moc" => "morroc",
+            "morocc" => "morroc",
+            "xmas" => "lutie",
+            "juno" => "yuno",
+            "kunlun" => "gonryun",
+            "luoyang" => "louyang",
+            "new1-1" | "new_1-1" => "novice",
+            "startpoint" => "novice",
+            "beginning" => "novice",
+            "prison" => "jail",
+            "sec_pri" => "jail",
+            "rael" => "rachel",
+            _ => argument,
         };
-        maybe_city = server.configuration.maps.cities.iter().find(|city| city.name == name);
+        maybe_city = cities.iter().find(|city| city.name == name);
     }
-    if maybe_city.is_none() {
-        return format!("Can't find map by index or name with given argument: {cleaned_arg}");
-    }
-    let mut city = maybe_city.unwrap().clone();
-
+    let mut city = maybe_city?.clone();
     match city.name.as_str() {
-        // To match client side name
-        "morroc" => city.name = "old_moc".to_string(),
+        // The map names of pre-renewal; `old_moc` is the Morroc of renewal
+        "morroc" => city.name = "morocc".to_string(),
         "lutie" => city.name = "xmas".to_string(),
         "juno" => city.name = "yuno".to_string(),
-        "kunlun" => city.name = "gornyun".to_string(),
+        "kunlun" => city.name = "gonryun".to_string(),
         "luoyang" => city.name = "louyang".to_string(),
-        "novice" => city.name = "new1-1".to_string(),
-        "startpoint" => city.name = "new1-1".to_string(),
-        "beginning" => city.name = "new1-1".to_string(),
-        "prison" => city.name = "sec_pri".to_string(),
-        "jail" => city.name = "sec_pri".to_string(),
+        "novice" | "startpoint" | "beginning" => city.name = "new_1-1".to_string(),
+        "prison" | "jail" => city.name = "sec_pri".to_string(),
         "rael" => city.name = "rachel".to_string(),
         _ => (),
     }
+    Some(city)
+}
+
+pub fn handle_go(server: &Server, state: &mut ServerState, char_id: u32, args: Vec<&str>) -> String {
+    let cleaned_arg = args[0].trim();
+    let Some(city) = go_destination(&server.configuration.maps.cities, cleaned_arg) else {
+        return format!("Can't find map by index or name with given argument: {cleaned_arg}");
+    };
 
     if state.map_flags(&state.get_character_unsafe(char_id).map_instance_key).enabled(MapFlag::NoGo) {
         return "You cannot use @go on this map.".into();
@@ -567,5 +565,34 @@ fn handle_autolootitem(autoloot: &mut AutoLoot, args: &[&str]) -> String {
             }
             None => format!("Your autolootitem list is full. Remove some items first with @autolootitem -<item name or ID>."),
         },
+    }
+}
+
+#[cfg(test)]
+mod go_tests {
+    use super::*;
+
+    fn cities() -> Vec<CityConfig> {
+        let config: serde_json::Value = serde_json::from_str(include_str!("../../../../config.template.json")).unwrap();
+        serde_json::from_value(config["maps"]["cities"].clone()).unwrap()
+    }
+
+    #[test]
+    fn every_go_city_lands_on_a_map_of_pre_renewal() {
+        let maps = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/maps/pre-re");
+        for (index, city) in cities().iter().enumerate() {
+            let destination = go_destination(&cities(), &index.to_string()).unwrap();
+            assert!(maps.join(format!("{}.mcache", destination.name)).exists(), "@go {} leads to {}, which is not a map", city.name, destination.name);
+        }
+    }
+
+    #[test]
+    fn go_morroc_is_the_morocc_of_pre_renewal() {
+        for name in ["morroc", "morocc", "old_moc"] {
+            assert_eq!(go_destination(&cities(), name).unwrap().name, "morocc");
+        }
+        assert_eq!(go_destination(&cities(), "kunlun").unwrap().name, "gonryun");
+        assert_eq!(go_destination(&cities(), "xmas").unwrap().name, "xmas");
+        assert!(go_destination(&cities(), "nowhere").is_none());
     }
 }

@@ -12,6 +12,7 @@ mod pets;
 mod quests;
 mod skills;
 mod statuses;
+mod transports;
 mod warps;
 
 use std::collections::BTreeMap;

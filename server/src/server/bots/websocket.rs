@@ -2,7 +2,8 @@
 //!
 //! A command is `{"id": 1, "type": "move", "bot": "Name", ...}` and is answered by `{"id": 1, "ok": true, "result": ...}` or
 //! `{"id": 1, "ok": false, "error": "..."}`, whenever the command is done. Commands run side by side, so `stop` can interrupt a walk.
-//! Bots that were subscribed to are pushed as `{"event": "observation" | "dialog" | "message", "bot": ...}`.
+//! Bots that were subscribed to are pushed as `{"event": "observation" | "dialog" | "message", "bot": ...}`, and their game events
+//! (`damaged`, `killed`...) as `{"event": "<kind>", "bot", "seq", "at", ...}`.
 use std::collections::{HashMap, HashSet};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -13,6 +14,7 @@ use serde_json::{Value, json};
 use tokio::sync::mpsc;
 use tokio::time::{Instant, sleep};
 
+use super::command::PathQuery;
 use super::controller::{Action, BotController, BotError, CreateBot, ErrorKind};
 
 const OUTGOING_QUEUE: usize = 256;
@@ -26,6 +28,7 @@ struct Subscription {
     last_observation: Option<Instant>,
     dialog_version: u64,
     last_message: u64,
+    last_event: u64,
 }
 
 type Subscriptions = Arc<Mutex<HashMap<String, Subscription>>>;
@@ -90,6 +93,7 @@ async fn dispatch(controller: &BotController, subscriptions: &Subscriptions, own
             .ok_or_else(|| invalid("This command needs the name of the bot in \"bot\""))
     };
     let number = |field: &str| request.get(field).and_then(Value::as_u64).and_then(|value| u16::try_from(value).ok());
+    let after = || request.get("after").and_then(Value::as_u64).unwrap_or(0);
     match kind {
         "list" => Ok(controller.list()),
         "create" => {
@@ -119,7 +123,17 @@ async fn dispatch(controller: &BotController, subscriptions: &Subscriptions, own
             controller.delete(name).await
         }
         "status" => controller.status(bot()?).await,
-        "observe" => controller.observe(bot()?).await,
+        "observe" => controller.observe_fields(bot()?, request.get("fields").and_then(Value::as_str)).await,
+        "events" => controller.events(bot()?, after()),
+        "messages" => controller.messages(bot()?, after()),
+        "path" => {
+            let query = match (number("x"), number("y"), request.get("target").and_then(Value::as_u64)) {
+                (Some(x), Some(y), None) => PathQuery::Cell { x, y },
+                (None, None, Some(target)) => PathQuery::Target(u32::try_from(target).map_err(|_| invalid("No such target"))?),
+                _ => return Err(invalid("Give x and y, or a target")),
+            };
+            controller.path(bot()?, query).await
+        }
         "map" => {
             let center = number("x").zip(number("y")).map(|(x, y)| (x, y, number("radius").unwrap_or(20)));
             controller.map(bot()?, center).await
@@ -132,7 +146,7 @@ async fn dispatch(controller: &BotController, subscriptions: &Subscriptions, own
             let last_message = handle.messages_after(0).last().map_or(0, |message| message.seq);
             subscriptions.lock().unwrap_or_else(|poisoned| poisoned.into_inner()).insert(
                 handle.name.to_lowercase(),
-                Subscription { interval, last_observation: None, dialog_version: handle.dialog_version(), last_message },
+                Subscription { interval, last_observation: None, dialog_version: handle.dialog_version(), last_message, last_event: handle.last_event() },
             );
             Ok(json!({ "subscribed": handle.name, "interval_ms": interval.as_millis() as u64 }))
         }
@@ -169,6 +183,13 @@ async fn push_events(controller: Arc<BotController>, subscriptions: Subscription
             for message in bot.messages_after(subscription.last_message) {
                 subscription.last_message = message.seq;
                 events.push(json!({ "event": "message", "bot": bot.name, "message": message }));
+            }
+            for event in bot.events_after(subscription.last_event) {
+                subscription.last_event = event.seq;
+                if let Ok(mut pushed) = serde_json::to_value(&event) {
+                    pushed["bot"] = json!(bot.name);
+                    events.push(pushed);
+                }
             }
             if bot.is_connected() && subscription.last_observation.is_none_or(|at| at.elapsed() >= subscription.interval) {
                 subscription.last_observation = Some(Instant::now());

@@ -11,6 +11,7 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 
 use super::auth::{ApiKey, require_key};
+use super::command::PathQuery;
 use super::controller::{Action, BotController, BotError, CreateBot, ErrorKind};
 use super::settings;
 use super::websocket;
@@ -44,6 +45,34 @@ struct MapQuery {
     radius: Option<u16>,
 }
 
+#[derive(Deserialize)]
+struct AfterQuery {
+    #[serde(default)]
+    after: u64,
+}
+
+#[derive(Deserialize)]
+struct ObservationQuery {
+    fields: Option<String>,
+}
+
+#[derive(Deserialize)]
+struct PathParams {
+    x: Option<u16>,
+    y: Option<u16>,
+    target: Option<u32>,
+}
+
+impl PathParams {
+    fn query(&self) -> Result<PathQuery, BotError> {
+        match (self.x, self.y, self.target) {
+            (Some(x), Some(y), None) => Ok(PathQuery::Cell { x, y }),
+            (None, None, Some(target)) => Ok(PathQuery::Target(target)),
+            _ => Err(BotError { kind: ErrorKind::Invalid, message: "Give x and y, or a target".into() }),
+        }
+    }
+}
+
 async fn skill() -> impl IntoResponse {
     ([(header::CONTENT_TYPE, "text/markdown; charset=utf-8")], SKILL)
 }
@@ -73,8 +102,20 @@ async fn disconnect(State(controller): Controller, Path(name): Path<String>) -> 
     controller.disconnect(&name).await.map(Json)
 }
 
-async fn observation(State(controller): Controller, Path(name): Path<String>) -> Reply {
-    controller.observe(&name).await.map(Json)
+async fn observation(State(controller): Controller, Path(name): Path<String>, Query(query): Query<ObservationQuery>) -> Reply {
+    controller.observe_fields(&name, query.fields.as_deref()).await.map(Json)
+}
+
+async fn events(State(controller): Controller, Path(name): Path<String>, Query(query): Query<AfterQuery>) -> Reply {
+    controller.events(&name, query.after).map(Json)
+}
+
+async fn messages(State(controller): Controller, Path(name): Path<String>, Query(query): Query<AfterQuery>) -> Reply {
+    controller.messages(&name, query.after).map(Json)
+}
+
+async fn path(State(controller): Controller, Path(name): Path<String>, Query(query): Query<PathParams>) -> Reply {
+    controller.path(&name, query.query()?).await.map(Json)
 }
 
 async fn map(State(controller): Controller, Path(name): Path<String>, Query(query): Query<MapQuery>) -> Reply {
@@ -114,6 +155,9 @@ pub fn router(controller: Arc<BotController>, key: Arc<ApiKey>) -> Router {
         .route("/bots/{name}/disconnect", post(disconnect))
         .route("/bots/{name}/observation", get(observation))
         .route("/bots/{name}/map", get(map))
+        .route("/bots/{name}/path", get(path))
+        .route("/bots/{name}/events", get(events))
+        .route("/bots/{name}/messages", get(messages))
         .route("/bots/{name}/actions", post(action))
         .layer(middleware::from_fn_with_state(key, require_key));
     Router::new().route("/bots/SKILL.md", get(skill)).merge(protected).with_state(controller)

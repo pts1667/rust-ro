@@ -844,6 +844,9 @@ impl Server {
         }
         if damage.damage == 0 {
             damage.notify_admitted(&self.server_service().notification_sender(), 0, self.packetver());
+            if damage.battle_flags != 0 {
+                self.record_bot_damage(state, &damage, 0);
+            }
             return Ok(());
         }
         if damage.landed && damage.skill_id == 0 && damage.proc_depth < 8 && self.auto_counter_reaction(state, &damage, tick) {
@@ -1101,6 +1104,9 @@ impl Server {
         state.insert_character(character);
         if redirected.is_none() {
             original_damage.notify_admitted(&sender, reported, self.packetver());
+            if original_damage.healing == 0 && (reported > 0 || original_damage.battle_flags != 0) {
+                self.record_bot_damage(state, &damage, reported.max(0) as u32);
+            }
         }
         if state
             .characters()
@@ -1295,6 +1301,7 @@ impl Server {
             )
         };
         let mut guild_payouts: Vec<(u32, u64)> = Vec::new();
+        let mut bot_awards: Vec<(u32, u32, u32)> = Vec::new();
         let awards: Vec<_> = shares
             .into_iter()
             .filter(|(_, (base, job))| *base != 0 || *job != 0)
@@ -1305,14 +1312,12 @@ impl Server {
                 if tax > 0 {
                     guild_payouts.push((id, u64::from(tax)));
                 }
+                let scaled_job = (job as f32 * job_rate).ceil() as u32;
+                bot_awards.push((id, scaled_base - tax, scaled_job));
                 Ok(crate::repository::script_character_repository::ScriptExperienceAward {
                     char_id: id,
                     account_id: character.account_id,
-                    plan: super::script_character_service::plan_raw_experience(
-                        character,
-                        scaled_base - tax,
-                        (job as f32 * job_rate).ceil() as u32,
-                    )?,
+                    plan: super::script_character_service::plan_raw_experience(character, scaled_base - tax, scaled_job)?,
                 })
             })
             .collect::<Result<_, String>>()?;
@@ -1339,6 +1344,7 @@ impl Server {
                 }
             }
         }
+        self.record_bot_kill(&kill, &bot_awards);
         let owners: std::collections::BTreeSet<_> = if kill.contributions.is_empty() {
             [kill.char_id].into_iter().collect()
         } else {

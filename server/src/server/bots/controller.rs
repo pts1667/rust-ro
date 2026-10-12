@@ -7,10 +7,11 @@ use serde_json::{Value, json};
 use tokio::time::{Instant, sleep, timeout};
 
 use super::combat::DuelRequest;
-use super::command::{BotCommand, BotRequest, Deal, DialogInput};
+use super::command::{BotCommand, BotRequest, Deal, DialogInput, PathQuery};
 use super::commerce::{BuyingLine, CartMove, StoreAction, VendingLine};
 use super::companions::{CompanionAction, HomunculusAction, MercenaryAction, Order, PetAction};
 use super::dialog::Prompt;
+use super::events::{BotEvent, BotEventKind};
 use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, SkillRef, Stat, StorageAction, TradeAction};
 use super::menu::{CraftAction, MenuAnswer, SkillMenuAction};
 use super::lifecycle::{CreateError, NewBot, StoredBot, create_stored_bot, delete_stored_bot, find_stored_bot, load_bot_character};
@@ -40,6 +41,12 @@ const DIALOG_POLL: Duration = Duration::from_millis(40);
 const DIALOG_QUIET: Duration = Duration::from_millis(150);
 /// The map thread settles a capture within a few ticks.
 const CAPTURE_WAIT: Duration = Duration::from_secs(3);
+/// A hit keeps a character from walking for its damage motion, a few hundred milliseconds.
+const RESUME_DELAY: Duration = Duration::from_millis(300);
+/// Walks `keep_walking` starts again after hits, at most, in one action.
+const MAX_RESUMES: u32 = 30;
+/// The experience of a kill comes a few ticks after the monster is gone.
+const KILL_WAIT: Duration = Duration::from_secs(1);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ErrorKind {
@@ -160,10 +167,15 @@ pub enum Action {
         y: u16,
         #[serde(default = "default_true")]
         wait: bool,
+        /// Walks on after a hit stopped the bot, instead of answering `stop_reason: "hit"`.
+        #[serde(default)]
+        keep_walking: bool,
     },
     /// Walks to an NPC, a ground item or a warp and uses it: talks, picks up, or walks through.
     Use {
         target: u32,
+        #[serde(default)]
+        keep_walking: bool,
     },
     /// Attacks a monster, the bot chases it. With `wait` the call returns once the fight is over.
     Attack {
@@ -461,6 +473,8 @@ enum Journey {
     MapChanged,
     Stopped,
     Timeout,
+    /// The bot stood on a warp and stayed on its map: the warp needs something the bot does not have, or is off.
+    NoWarp,
 }
 
 impl Journey {
@@ -470,6 +484,30 @@ impl Journey {
             Journey::MapChanged => "map_changed",
             Journey::Stopped => "stopped",
             Journey::Timeout => "timeout",
+            Journey::NoWarp => "no_warp",
+        }
+    }
+}
+
+/// How a walk of several legs ended.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Walked {
+    journey: Journey,
+    /// For a `stopped` walk: `cancelled` (another command took over), `dead`, `hit` (an attack stops a walking character) or
+    /// `blocked` (no way on from there).
+    stop_reason: Option<&'static str>,
+    /// Walks started again after a hit, with `keep_walking`.
+    resumed: u32,
+}
+
+impl Walked {
+    fn write(&self, reply: &mut Value) {
+        reply["journey"] = self.journey.name().into();
+        if let Some(reason) = self.stop_reason {
+            reply["stop_reason"] = reason.into();
+        }
+        if self.resumed > 0 {
+            reply["resumed"] = self.resumed.into();
         }
     }
 }
@@ -714,6 +752,39 @@ impl BotController {
         Ok(observation)
     }
 
+    /// The events of the bot after `after`, also once it left the game, and the number of the last one.
+    pub fn events(&self, name: &str, after: u64) -> Result<Value, BotError> {
+        let bot = self.find(name)?;
+        bot.touch();
+        Ok(json!({ "events": bot.events_after(after), "last": bot.last_event() }))
+    }
+
+    /// The messages of the bot after `after` (the last 50 are kept).
+    pub fn messages(&self, name: &str, after: u64) -> Result<Value, BotError> {
+        let bot = self.find(name)?;
+        bot.touch();
+        Ok(json!({ "messages": bot.messages_after(after) }))
+    }
+
+    /// How far a cell or a target is on foot, see `BotRequest::Path`.
+    pub async fn path(&self, name: &str, query: PathQuery) -> Result<Value, BotError> {
+        let bot = self.connected(name)?;
+        self.run(&bot, BotRequest::Path(query)).await
+    }
+
+    /// The observation with only the parts named in `fields` (`self`, `mobs`, `inventory`...), and `ready` and `map`.
+    pub async fn observe_fields(&self, name: &str, fields: Option<&str>) -> Result<Value, BotError> {
+        let observation = self.observe(name).await?;
+        let Some(fields) = fields else { return Ok(observation) };
+        let wanted: Vec<&str> = fields.split(',').map(str::trim).filter(|field| !field.is_empty()).collect();
+        let Value::Object(all) = observation else { return Ok(observation) };
+        if let Some(unknown) = wanted.iter().find(|field| !all.contains_key(**field)) {
+            let known: Vec<&str> = all.keys().map(String::as_str).collect();
+            return Err(BotError::invalid(format!("No field {unknown} in an observation, they are: {}", known.join(", "))));
+        }
+        Ok(Value::Object(all.into_iter().filter(|(key, _)| key == "ready" || key == "map" || wanted.contains(&key.as_str())).collect()))
+    }
+
     pub async fn map(&self, name: &str, center: Option<(u16, u16, u16)>) -> Result<Value, BotError> {
         let bot = self.connected(name)?;
         self.run(&bot, BotRequest::Map(center)).await
@@ -722,34 +793,37 @@ impl BotController {
     pub async fn act(&self, name: &str, action: Action) -> Result<Value, BotError> {
         let bot = self.connected(name)?;
         match action {
-            Action::Move { x, y, wait } => {
+            Action::Move { x, y, wait, keep_walking } => {
                 let epoch = bot.next_command();
                 let first = self.run(&bot, BotRequest::Move { x, y }).await?;
                 let mut reply = json!({ "path_length": first["path_length"] });
                 if wait {
-                    let journey = self.follow_route(&bot, (x, y), first, epoch, self.action_timeout()).await?;
-                    reply["journey"] = journey.name().into();
-                } else if first.get("waypoint").is_some() {
+                    let walked = self.follow_route(&bot, (x, y), first, epoch, self.action_timeout(), keep_walking).await?;
+                    walked.write(&mut reply);
+                } else if first.get("waypoint").is_some() || keep_walking {
                     let controller = self.clone();
                     tokio::spawn(async move {
-                        let _ = controller.follow_route(&bot, (x, y), first, epoch, BACKGROUND_LIMIT).await;
+                        let _ = controller.follow_route(&bot, (x, y), first, epoch, BACKGROUND_LIMIT, keep_walking).await;
                     });
                 }
                 Ok(reply)
             }
-            Action::Use { target } => {
-                bot.next_command();
-                self.use_target(&bot, target).await
+            Action::Use { target, keep_walking } => {
+                let epoch = bot.next_command();
+                self.use_target(&bot, target, epoch, keep_walking).await
             }
             Action::Attack { target, wait } => {
                 let epoch = bot.next_command();
+                let events_before = bot.last_event();
                 let first = self.run(&bot, BotRequest::Attack { target_id: target }).await?;
                 if first["gone"] == json!(true) {
                     return Err(BotError::invalid(format!("No target {target} on this map")));
                 }
                 if wait {
                     let fight = self.follow_fight(&bot, target, epoch, self.action_timeout()).await?;
-                    return Ok(json!({ "action": "attack", "fight": fight }));
+                    let mut reply = json!({ "action": "attack", "fight": fight });
+                    self.fight_summary(&bot, fight, events_before, &mut reply).await?;
+                    return Ok(reply);
                 }
                 let controller = self.clone();
                 tokio::spawn(async move {
@@ -893,26 +967,91 @@ impl BotController {
     }
 
     /// Walks the legs of a route that is too long for the pathfinder, `leg` being the answer to the request that started the first.
-    async fn follow_route(&self, bot: &BotHandle, destination: (u16, u16), mut leg: Value, epoch: u64, limit: Duration) -> Result<Journey, BotError> {
+    /// With `keep_walking`, a walk a hit stopped starts again once the bot can move.
+    async fn follow_route(
+        &self,
+        bot: &BotHandle,
+        destination: (u16, u16),
+        mut leg: Value,
+        epoch: u64,
+        limit: Duration,
+        keep_walking: bool,
+    ) -> Result<Walked, BotError> {
         let deadline = Instant::now() + limit;
+        let mut resumed = 0;
+        let ended = |journey, stop_reason, resumed| Ok(Walked { journey, stop_reason, resumed });
         loop {
+            let events_before = bot.last_event();
             let waypoint = leg["waypoint"]["x"].as_u64().zip(leg["waypoint"]["y"].as_u64()).map(|(x, y)| (x as u16, y as u16));
             let journey = self.follow_walk(bot, Some(waypoint.unwrap_or(destination))).await?;
-            if journey != Journey::Arrived || waypoint.is_none() {
-                return Ok(journey);
+            if journey == Journey::Stopped {
+                let reason = self.stop_reason(bot, epoch, events_before).await?;
+                if reason != "hit" || !keep_walking || resumed >= MAX_RESUMES || Instant::now() > deadline {
+                    return ended(journey, Some(reason), resumed);
+                }
+                resumed += 1;
+                sleep(RESUME_DELAY).await;
+            } else if journey != Journey::Arrived || waypoint.is_none() {
+                return ended(journey, None, resumed);
             }
             if !bot.is_current_command(epoch) {
-                return Ok(Journey::Stopped);
+                return ended(Journey::Stopped, Some("cancelled"), resumed);
             }
             if Instant::now() > deadline {
-                return Ok(Journey::Timeout);
+                return ended(Journey::Timeout, None, resumed);
             }
             leg = match self.run(bot, BotRequest::Move { x: destination.0, y: destination.1 }).await {
                 Ok(next) => next,
-                Err(error) if error.kind == ErrorKind::Invalid => return Ok(Journey::Stopped),
+                Err(error) if error.kind == ErrorKind::Invalid => return ended(Journey::Stopped, Some("blocked"), resumed),
                 Err(error) => return Err(error),
             };
+            if leg["path_length"] == json!(0) {
+                return ended(Journey::Arrived, None, resumed);
+            }
         }
+    }
+
+    /// Why a walk stopped short, see `Walked::stop_reason`. `events_before` is the last event when the walk started.
+    async fn stop_reason(&self, bot: &BotHandle, epoch: u64, events_before: u64) -> Result<&'static str, BotError> {
+        if !bot.is_current_command(epoch) {
+            return Ok("cancelled");
+        }
+        if self.probe(bot).await?.dead {
+            return Ok("dead");
+        }
+        let hit = bot.events_after(events_before).iter().any(|event| matches!(event.kind, BotEventKind::Damaged { .. }));
+        Ok(if hit { "hit" } else { "blocked" })
+    }
+
+    /// Adds to the answer of a fight what it cost and gave: `damage_taken`, `killed` and the experience of the kill, and `hp`.
+    async fn fight_summary(&self, bot: &BotHandle, fight: &str, events_before: u64, reply: &mut Value) -> Result<(), BotError> {
+        let killed = |events: &[BotEvent]| events.iter().any(|event| matches!(event.kind, BotEventKind::Killed { .. }));
+        let mut events = bot.events_after(events_before);
+        if fight == "over" && !killed(&events) {
+            let deadline = Instant::now() + KILL_WAIT;
+            while !killed(&events) && Instant::now() < deadline {
+                sleep(POLL_INTERVAL).await;
+                events = bot.events_after(events_before);
+            }
+        }
+        let (mut damage_taken, mut base_exp, mut job_exp) = (0_u64, 0_u64, 0_u64);
+        for event in &events {
+            match &event.kind {
+                BotEventKind::Damaged { damage, .. } => damage_taken += u64::from(*damage),
+                BotEventKind::Killed { base_exp: base, job_exp: job, .. } => {
+                    base_exp += u64::from(*base);
+                    job_exp += u64::from(*job);
+                }
+                _ => {}
+            }
+        }
+        reply["damage_taken"] = damage_taken.into();
+        reply["killed"] = killed(&events).into();
+        reply["base_exp"] = base_exp.into();
+        reply["job_exp"] = job_exp.into();
+        let status = self.run(bot, BotRequest::Status).await?;
+        reply["hp"] = status["self"]["hp"].clone();
+        Ok(())
     }
 
     /// Follows the bot until it reaches `destination`, stops, or changes map.
@@ -958,7 +1097,10 @@ impl BotController {
                 match self.run(bot, BotRequest::Attack { target_id: target }).await {
                     Ok(step) if step["gone"] == json!(true) => return Ok("over"),
                     Ok(_) => {}
-                    Err(error) if error.kind == ErrorKind::Invalid => return Ok("unreachable"),
+                    // A bot that died since the probe can not attack either
+                    Err(error) if error.kind == ErrorKind::Invalid => {
+                        return Ok(if self.probe(bot).await?.dead { "dead" } else { "unreachable" });
+                    }
                     Err(error) => return Err(error),
                 }
             }
@@ -977,40 +1119,64 @@ impl BotController {
         Ok(Journey::Arrived)
     }
 
-    async fn use_target(&self, bot: &BotHandle, target: u32) -> Result<Value, BotError> {
+    async fn use_target(&self, bot: &BotHandle, target: u32, epoch: u64, keep_walking: bool) -> Result<Value, BotError> {
         let start_map = self.probe(bot).await?.map;
         let deadline = Instant::now() + self.action_timeout();
         let mut journey = None;
-        let mut approach;
+        let mut stop_reason = None;
+        let mut resumed = 0;
+        let mut kind = String::new();
         loop {
-            approach = self.run(bot, BotRequest::Approach { target_id: target }).await?;
+            let approach = match self.run(bot, BotRequest::Approach { target_id: target }).await {
+                Ok(approach) => approach,
+                // The last leg ended on (or crossed) a warp, which the game loop applied after the walk
+                Err(_) if journey.is_some() && self.probe(bot).await?.map != start_map => {
+                    journey = Some(Journey::MapChanged);
+                    stop_reason = None;
+                    break;
+                }
+                Err(error) => return Err(error),
+            };
+            kind = approach["kind"].as_str().unwrap_or_default().to_string();
             if approach["in_range"] != json!(false) {
                 break;
             }
             let destination = (approach["destination"]["x"].as_u64(), approach["destination"]["y"].as_u64());
             let destination = destination.0.zip(destination.1).map(|(x, y)| (x as u16, y as u16));
+            let events_before = bot.last_event();
             let leg = self.follow_walk(bot, destination).await?;
             journey = Some(leg);
+            if leg == Journey::Stopped {
+                let reason = self.stop_reason(bot, epoch, events_before).await?;
+                stop_reason = Some(reason);
+                if reason == "hit" && keep_walking && resumed < MAX_RESUMES && Instant::now() < deadline {
+                    resumed += 1;
+                    sleep(RESUME_DELAY).await;
+                    continue;
+                }
+            }
             if leg != Journey::Arrived {
                 break;
             }
+            stop_reason = None;
             if Instant::now() > deadline {
                 journey = Some(Journey::Timeout);
                 break;
             }
         }
-        let kind = approach["kind"].as_str().unwrap_or_default().to_string();
         let mut reply = json!({ "target": target, "kind": kind });
+        if kind == "warp" && journey.is_none_or(|journey| journey == Journey::Arrived) {
+            // Standing on the warp cell is the use; a bot that stays on its map stood on a warp that did nothing
+            journey = Some(match self.await_map_change(bot, &start_map).await? {
+                Journey::Arrived => Journey::NoWarp,
+                changed => changed,
+            });
+        }
         if let Some(journey) = journey {
-            let journey = if kind == "warp" && journey == Journey::Arrived { self.await_map_change(bot, &start_map).await? } else { journey };
-            reply["journey"] = journey.name().into();
+            Walked { journey, stop_reason, resumed }.write(&mut reply);
             if journey != Journey::Arrived {
                 return Ok(reply);
             }
-        }
-        if kind == "warp" {
-            // Standing on the warp cell is the use, the walk above ended on the other map
-            return Ok(reply);
         }
         bot.clear_dialog();
         let before = bot.dialog_version();

@@ -27,7 +27,7 @@ Categories and keys:
 | `mobs` | id or name | The monster, `drops`, `mvp_drops`, `skills` (own and generic ones), `spawns`, `quests` that hunt it, `summoned_by`. |
 | `quests` | id (number) | The quest database entry with linked objectives and drops, and its text: `description`, `guide`, `recommended_level` (the Base Level, or `"Unknown"`), `level_basis`, `level_override` (a BaseLevel gate, with its script line), `sources`, `prerequisites` (quests that must be started or finished first, with the checking line), `generated`. Rewards are not in it; the NPCs that start the quest are on the maps (see below). |
 | `skills` | id or name | `config/skill.json` entry, `metadata` (route, cast time, cooldown, flags), `learned_by` (jobs), `cast_by` (monsters). |
-| `maps` | name | Flags, `warps` out (with destination links), `arrivals` (warp cells on other maps that land here), `connected_maps` (the other maps it links with, both ways), mob spawns, placed NPCs, `quests` (the quests those NPCs start, see below). |
+| `maps` | name | Flags, `regions` (the walkable areas of the map: cells joined without a warp, numbered from 1, with their size), `warps` out (with destination links, the `region` the warp is used from and the `to.region` it lands in), `arrivals` (warp cells on other maps that land here, with both regions), `transports` (NPCs that send characters to other maps: guards, sewer entrances, the warpers, with `touch`, `checks` and destinations), `transport_arrivals` (NPCs of other maps that send characters here), `connected_maps` (the other maps it links with, both ways), mob spawns, placed NPCs (with their `region`), `quests` (the quests those NPCs start, see below). |
 | `warps` | `<map>/<x>,<y>` | A warp cell of a loaded map (the tile that takes a character to another map): its size and where it leads. Listed by name, `q` filters. |
 | `destinations` | `<map>/<x>,<y>` | A place on the warper's menu (`config/wasm/warps.json`, the list every warper NPC offers): category, group and map. |
 | `npcs` | `<map>/<name>` | The placement, the script module and entry, and for shops the `shop` offers (`price` resolved from `-1`). |
@@ -91,5 +91,11 @@ and resolve to them.
 - Spawns and NPCs come from the maps the server loads (`config/maps`, `config/wasm/npcs.json`); NPCs spawned by scripts are not
   listed.
 - Warper destinations are one list, not one per warper NPC: every warper offers the same places, as the warper script does.
+- Regions come from the map cache (`config/maps/pre-re`). Walking never cuts a corner, so cells are in one region when
+  orthogonal steps join them. A landing on a cell that is not walkable counts for the nearest walkable cell.
+- `transports` come from `config/npc_warps.json`, a static scan of the scripts by `tools/scripts-import/extract_npc_warps.py`.
+  It finds literal destinations only: Kafra teleports (a shared function with variable destinations) are not listed, and
+  `checks` (`zeny`, `item`, `quest`, `level`, `job`, `variable`) only say what the script reads on the way to the warp, not the
+  condition. A destination of `x` 0 lets the server pick a random cell.
 - Shop items are read from the `systems` `shop` NPCs only; other scripts that sell items are compiled Wasm and are not inspected.
 - `constructor_args` of an NPC are the raw script values (`{"Number": 0}`).

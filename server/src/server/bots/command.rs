@@ -73,6 +73,8 @@ pub enum BotRequest {
     Move { x: u16, y: u16 },
     /// Starts walking to where `target_id` can be used.
     Approach { target_id: u32 },
+    /// How far a cell, or the nearest cell from where a target can be used, is on foot.
+    Path(PathQuery),
     /// Uses `target_id` from where the bot stands: talks to an NPC, picks an item up or attacks a monster.
     Interact { target_id: u32 },
     /// One step of a fight against a monster, see `bot_attack`.
@@ -109,6 +111,7 @@ impl BotRequest {
             BotRequest::Map(_) => "Map",
             BotRequest::Move { .. } => "Move",
             BotRequest::Approach { .. } => "Approach",
+            BotRequest::Path(_) => "Path",
             BotRequest::Interact { .. } => "Interact",
             BotRequest::Attack { .. } => "Attack",
             BotRequest::Dialog(_) => "Dialog",
@@ -196,6 +199,13 @@ impl TargetKind {
     }
 }
 
+/// What `path` measures the walk to: a cell, or a target (the cells it can be used from, as `use` and `attack` walk to).
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PathQuery {
+    Cell { x: u16, y: u16 },
+    Target(u32),
+}
+
 pub(super) struct Target {
     kind: TargetKind,
     x: u16,
@@ -264,6 +274,7 @@ impl Server {
             BotRequest::Map(center) => to_json(observation::map_grid(state, char_id, *center)?),
             BotRequest::Move { x, y } => self.bot_move(state, char_id, *x, *y),
             BotRequest::Approach { target_id } => self.bot_approach(state, char_id, *target_id),
+            BotRequest::Path(query) => self.bot_path(state, char_id, query),
             BotRequest::Interact { target_id } => self.bot_interact(state, command.account_id, char_id, *target_id),
             BotRequest::Attack { target_id } => self.bot_attack(state, char_id, *target_id),
             BotRequest::Dialog(input) => bot_dialog(state, command.account_id, char_id, input),
@@ -409,6 +420,45 @@ impl Server {
         Err(format!("No reachable cell from where target {target_id} can be used"))
     }
 
+    /// The length of the walk to a cell or a target, found over the whole map like a long walk, so the answer holds for walks
+    /// the pathfinder takes in legs. A cell in another region, or behind a closed door, is `reachable: false`.
+    fn bot_path(&self, state: &ServerState, char_id: u32, query: &PathQuery) -> Result<Value, String> {
+        let character = state.get_character(char_id).ok_or("Character is not in game")?;
+        let instance = state.get_map_instance_from_character(character).ok_or("The map of the character is not loaded yet")?;
+        let (width, height) = (instance.x_size(), instance.y_size());
+        let here = (character.x(), character.y());
+        let regions = crate::server::model::map_regions::of_map(character.current_map_name());
+        let region = |(x, y): (u16, u16)| regions.as_ref().and_then(|regions| regions.landing(x, y));
+        let (kind, center, reach, warp) = match *query {
+            PathQuery::Cell { x, y } => {
+                if x >= width || y >= height {
+                    return Err(format!("({x},{y}) is outside the map, which is {width}x{height} cells"));
+                }
+                ("cell", (x, y), 0, false)
+            }
+            PathQuery::Target(target_id) => {
+                let target = locate(state, character, target_id).ok_or_else(|| format!("No target {target_id} on this map"))?;
+                let reach = match target.kind {
+                    TargetKind::Npc => NPC_TALK_DISTANCE,
+                    TargetKind::Item => ITEM_PICKUP_DISTANCE,
+                    TargetKind::Mob | TargetKind::Player => ATTACK_REACH,
+                    TargetKind::Warp => target.half_width.max(target.half_height),
+                };
+                (target.kind.name(), target.position(), reach, target.kind == TargetKind::Warp)
+            }
+        };
+        // Read after `locate`, which takes the lock of the map state too
+        let map_state = instance.state();
+        // The map flags the cells that really trigger a warp, which is narrower than its rectangle
+        let goal = |cell: (u16, u16)| distance(cell, center) <= reach && (!warp || map_state.is_warp_cell(cell.0, cell.1));
+        let found = nearest_on_grid(map_state.cells(), width, height, here, &goal);
+        let mut answer = path_answer(here, found, kind, &region, center);
+        if found.is_none() && kind == "cell" && !is_walkable(map_state.cells(), width, center.0, center.1) {
+            answer["reason"] = json!("not a walkable cell");
+        }
+        Ok(answer)
+    }
+
     /// One step of a fight: attacks when the monster or player is within reach, walks towards it otherwise. A walk cancels the
     /// attack, so the client side loop of a real player (walk, then attack again) is the caller's.
     pub(crate) fn bot_attack(&self, state: &ServerState, char_id: u32, target_id: u32) -> Result<Value, String> {
@@ -506,6 +556,55 @@ fn long_route_waypoint(state: &ServerState, character: &Character, x: u16, y: u1
         let waypoint = *route.get((*step).min(route.len() - 1))?;
         path_length(state, character, waypoint.0, waypoint.1).ok().map(|_| (waypoint, route.len()))
     })
+}
+
+/// The answer of `path`: where the bot is, the cell it would walk to and the length of the walk, with the regions of both.
+fn path_answer(
+    here: (u16, u16),
+    found: Option<((u16, u16), usize)>,
+    kind: &str,
+    region: &dyn Fn((u16, u16)) -> Option<u32>,
+    target: (u16, u16),
+) -> Value {
+    let to = found.map_or(target, |(cell, _)| cell);
+    json!({
+        "kind": kind,
+        "from": { "x": here.0, "y": here.1, "region": region(here) },
+        "to": { "x": to.0, "y": to.1, "region": region(to) },
+        "reachable": found.is_some(),
+        "path_length": found.map(|(_, length)| length),
+    })
+}
+
+/// The nearest cell on foot for which `goal` holds, and the steps to it, by the moves of `route_on_grid`.
+fn nearest_on_grid(cells: &[u16], width: u16, height: u16, from: (u16, u16), goal: &dyn Fn((u16, u16)) -> bool) -> Option<((u16, u16), usize)> {
+    let index = |(x, y): (u16, u16)| usize::from(y) * usize::from(width) + usize::from(x);
+    let walkable = |x: i32, y: i32| {
+        (0..i32::from(width)).contains(&x) && (0..i32::from(height)).contains(&y) && is_walkable(cells, width, x as u16, y as u16)
+    };
+    let mut steps: Vec<Option<usize>> = vec![None; usize::from(width) * usize::from(height)];
+    steps[index(from)] = Some(0);
+    let mut queue = std::collections::VecDeque::from([from]);
+    while let Some(current) = queue.pop_front() {
+        let taken = steps[index(current)]?;
+        if goal(current) {
+            return Some((current, taken));
+        }
+        let (cx, cy) = (i32::from(current.0), i32::from(current.1));
+        for (dx, dy) in [(-1, -1), (0, -1), (1, -1), (-1, 0), (1, 0), (-1, 1), (0, 1), (1, 1)] {
+            let (nx, ny) = (cx + dx, cy + dy);
+            let diagonal_blocked = dx != 0 && dy != 0 && !(walkable(cx + dx, cy) && walkable(cx, cy + dy));
+            if !walkable(nx, ny) || diagonal_blocked {
+                continue;
+            }
+            let next = (nx as u16, ny as u16);
+            if steps[index(next)].is_none() {
+                steps[index(next)] = Some(taken + 1);
+                queue.push_back(next);
+            }
+        }
+    }
+    None
 }
 
 /// Breadth first search over the walkable cells, diagonals included but not around a corner. Cells after `from`, up to `to`.

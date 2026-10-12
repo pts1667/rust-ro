@@ -1,0 +1,9707 @@
+{
+  "jobs_misc": {
+    "Book of Ymir": {
+      "checks": [
+        "job",
+        "quest",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "valkyrie",
+          "x": 48,
+          "y": 8
+        }
+      ]
+    },
+    "Heart of Ymir": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "valkyrie",
+          "x": 48,
+          "y": 8
+        }
+      ]
+    },
+    "Kid#link1": {
+      "checks": [
+        "quest",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_soul",
+          "x": 30,
+          "y": 30
+        }
+      ]
+    },
+    "Maia#link2": {
+      "checks": [
+        "quest",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 157,
+          "y": 47
+        }
+      ]
+    },
+    "Valkyrie#": {
+      "checks": [
+        "job",
+        "quest",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno_in02",
+          "x": 93,
+          "y": 205
+        }
+      ]
+    }
+  },
+  "jobs_pre_re_jobs_misc": {
+    "Monster Summon#cr5": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 35,
+          "y": 147
+        }
+      ]
+    },
+    "Summoner#cr5": {
+      "checks": [
+        "quest",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 164,
+          "y": 28
+        }
+      ]
+    }
+  },
+  "jobs_pre_re_jobs_novice": {
+    "Entrance Guard#nv": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_1-3",
+          "x": 96,
+          "y": 21
+        }
+      ]
+    },
+    "Hanson#nv": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude_in",
+          "x": 74,
+          "y": 167
+        },
+        {
+          "map": "geffen_in",
+          "x": 163,
+          "y": 98
+        },
+        {
+          "map": "alberta_in",
+          "x": 62,
+          "y": 44
+        },
+        {
+          "map": "moc_ruins",
+          "x": 155,
+          "y": 44
+        },
+        {
+          "map": "payon_in02",
+          "x": 64,
+          "y": 65
+        },
+        {
+          "map": "prt_church",
+          "x": 172,
+          "y": 19
+        },
+        {
+          "map": "prt_fild08",
+          "x": 170,
+          "y": 371
+        },
+        {
+          "map": "gef_fild07",
+          "x": 327,
+          "y": 188
+        },
+        {
+          "map": "pay_fild03",
+          "x": 388,
+          "y": 70
+        },
+        {
+          "map": "moc_fild07",
+          "x": 198,
+          "y": 39
+        },
+        {
+          "map": "pay_fild01",
+          "x": 334,
+          "y": 354
+        },
+        {
+          "map": "prt_fild08",
+          "x": 357,
+          "y": 212
+        }
+      ]
+    },
+    "Interfaces Tutor#nv1": {
+      "checks": [
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_1-2",
+          "x": 28,
+          "y": 178
+        },
+        {
+          "map": "new_1-2",
+          "x": 84,
+          "y": 107
+        },
+        {
+          "map": "new_1-2",
+          "x": 115,
+          "y": 107
+        }
+      ]
+    },
+    "Item Tutor#nv": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_1-2",
+          "x": 28,
+          "y": 178
+        },
+        {
+          "map": "new_1-2",
+          "x": 84,
+          "y": 107
+        }
+      ]
+    },
+    "Kafra Employee#nv1": {
+      "checks": [
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_1-2",
+          "x": 28,
+          "y": 178
+        }
+      ]
+    },
+    "Receptionist#nv1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_1-2",
+          "x": 100,
+          "y": 70
+        },
+        {
+          "map": "prontera",
+          "x": 273,
+          "y": 354
+        },
+        {
+          "map": "morocc",
+          "x": 160,
+          "y": 94
+        },
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 100
+        },
+        {
+          "map": "payon",
+          "x": 70,
+          "y": 100
+        },
+        {
+          "map": "alberta",
+          "x": 116,
+          "y": 57
+        },
+        {
+          "map": "izlude",
+          "x": 94,
+          "y": 103
+        }
+      ]
+    },
+    "Shion#nv1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_1-2",
+          "x": 99,
+          "y": 99
+        }
+      ]
+    },
+    "Skill Tutor#nv": {
+      "checks": [
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_1-2",
+          "x": 28,
+          "y": 178
+        }
+      ]
+    },
+    "Test Examiner#nv1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_1-4",
+          "x": 99,
+          "y": 10
+        }
+      ]
+    },
+    "Trainer#nv1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "new_2-3",
+          "x": 96,
+          "y": 21
+        },
+        {
+          "map": "new_3-3",
+          "x": 96,
+          "y": 21
+        },
+        {
+          "map": "new_1-3",
+          "x": 96,
+          "y": 21
+        },
+        {
+          "map": "new_4-3",
+          "x": 96,
+          "y": 21
+        },
+        {
+          "map": "new_5-3",
+          "x": 96,
+          "y": 21
+        }
+      ]
+    }
+  },
+  "jobs_pre_re_jobs_s_1_1": {
+    "1_blank_1_a": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "job_sword1",
+          "x": 65,
+          "y": 56
+        },
+        {
+          "map": "job_sword1",
+          "x": 29,
+          "y": 26
+        },
+        {
+          "map": "job_sword1",
+          "x": 43,
+          "y": 16
+        },
+        {
+          "map": "job_sword1",
+          "x": 23,
+          "y": 112
+        },
+        {
+          "map": "job_sword1",
+          "x": 58,
+          "y": 83
+        }
+      ]
+    },
+    "2_blank_1_a": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "job_sword1",
+          "x": 162,
+          "y": 120
+        },
+        {
+          "map": "job_sword1",
+          "x": 94,
+          "y": 120
+        },
+        {
+          "map": "job_sword1",
+          "x": 94,
+          "y": 85
+        },
+        {
+          "map": "job_sword1",
+          "x": 162,
+          "y": 85
+        },
+        {
+          "map": "job_sword1",
+          "x": 130,
+          "y": 47
+        }
+      ]
+    },
+    "3_blank_1_a": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "job_sword1",
+          "x": 195,
+          "y": 15
+        },
+        {
+          "map": "job_sword1",
+          "x": 195,
+          "y": 38
+        },
+        {
+          "map": "job_sword1",
+          "x": 231,
+          "y": 30
+        },
+        {
+          "map": "job_sword1",
+          "x": 198,
+          "y": 65
+        },
+        {
+          "map": "job_sword1",
+          "x": 196,
+          "y": 116
+        }
+      ]
+    },
+    "Kafra Employee#mer": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude",
+          "x": 94,
+          "y": 103
+        }
+      ]
+    },
+    "Mae#swd_1_success": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude_in",
+          "x": 66,
+          "y": 173
+        }
+      ]
+    },
+    "Mr. Irrelevant": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_thief1",
+          "x": 228,
+          "y": 106
+        },
+        {
+          "map": "job_thief1",
+          "x": 38,
+          "y": 50
+        },
+        {
+          "map": "job_thief1",
+          "x": 66,
+          "y": 331
+        },
+        {
+          "map": "job_thief1",
+          "x": 196,
+          "y": 331
+        },
+        {
+          "map": "job_thief1",
+          "x": 309,
+          "y": 234
+        }
+      ]
+    },
+    "Swordman#swd_2": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude_in",
+          "x": 39,
+          "y": 170
+        }
+      ]
+    },
+    "Test Hall Staff#swd_1": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude_in",
+          "x": 66,
+          "y": 170
+        },
+        {
+          "map": "job_sword1",
+          "x": 10,
+          "y": 245
+        }
+      ]
+    },
+    "Test Hall Staff#swd_8": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_sword1",
+          "x": 215,
+          "y": 205
+        }
+      ]
+    }
+  },
+  "jobs_s_1_1e": {
+    "Akagi": {
+      "checks": [
+        "job",
+        "level"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "amatsu",
+          "x": 170,
+          "y": 229
+        },
+        {
+          "map": "amatsu",
+          "x": 216,
+          "y": 188
+        },
+        {
+          "map": "amatsu",
+          "x": 178,
+          "y": 176
+        }
+      ]
+    },
+    "Suspicious Man#nq": {
+      "checks": [
+        "job",
+        "quest",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "amatsu",
+          "x": 113,
+          "y": 127
+        }
+      ]
+    }
+  },
+  "jobs_s_2_1_assassin": {
+    "01_1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 19,
+          "y": 161
+        }
+      ]
+    },
+    "Barcardi#ASN": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 181,
+          "y": 183
+        }
+      ]
+    },
+    "Beholder#ASNTEST": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 19,
+          "y": 161
+        }
+      ]
+    },
+    "Guildmaster#ASN2": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 17,
+          "y": 19
+        }
+      ]
+    },
+    "Guildsman#ASN2": {
+      "checks": [
+        "level",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 19,
+          "y": 144
+        },
+        {
+          "map": "c_tower4",
+          "x": 64,
+          "y": 76
+        },
+        {
+          "map": "moc_fild16",
+          "x": 206,
+          "y": 229
+        }
+      ]
+    },
+    "Guildsman#asn": {
+      "checks": [
+        "item",
+        "job",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 19,
+          "y": 76
+        },
+        {
+          "map": "in_moc_16",
+          "x": 18,
+          "y": 14
+        },
+        {
+          "map": "moc_fild16",
+          "x": 206,
+          "y": 229
+        }
+      ]
+    },
+    "Keeper of the Door#ASN": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 87,
+          "y": 102
+        }
+      ]
+    },
+    "Maze Assistant": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 181,
+          "y": 183
+        },
+        {
+          "map": "in_moc_16",
+          "x": 167,
+          "y": 113
+        }
+      ]
+    },
+    "Test Guide#ASN": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 19,
+          "y": 76
+        },
+        {
+          "map": "in_moc_16",
+          "x": 19,
+          "y": 13
+        }
+      ]
+    },
+    "Thomas#ASNTEST": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 18,
+          "y": 14
+        }
+      ]
+    },
+    "nameless_one": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "moc_fild16",
+          "x": 206,
+          "y": 151
+        },
+        {
+          "map": "in_moc_16",
+          "x": 19,
+          "y": 76
+        }
+      ]
+    },
+    "timestopper#1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "in_moc_16",
+          "x": 87,
+          "y": 102
+        }
+      ]
+    }
+  },
+  "jobs_s_2_1_hunter": {
+    "1-1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "job_hunte",
+          "x": 176,
+          "y": 22
+        }
+      ]
+    },
+    "57-4": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "job_hunte",
+          "x": 176,
+          "y": 22
+        }
+      ]
+    },
+    "Guide#hnt": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "payon_in02",
+          "x": 21,
+          "y": 27
+        }
+      ]
+    },
+    "Guild Receptionist#hnt": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "hugel",
+          "x": 208,
+          "y": 223
+        }
+      ]
+    },
+    "Hunter#htnGM": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_hunte",
+          "x": 176,
+          "y": 22
+        }
+      ]
+    },
+    "Hunter#htnGM2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_hunte",
+          "x": 176,
+          "y": 22
+        }
+      ]
+    },
+    "Manager#hnt": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_hunte",
+          "x": 176,
+          "y": 22
+        }
+      ]
+    },
+    "Switch#hnt": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "job_hunte",
+          "x": 176,
+          "y": 22
+        }
+      ]
+    },
+    "exit#hnttest": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "payon_in02",
+          "x": 21,
+          "y": 27
+        },
+        {
+          "map": "payon_in03",
+          "x": 128,
+          "y": 7
+        }
+      ]
+    }
+  },
+  "jobs_s_2_1_knight": {
+    "Knight Windsor#knt": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_in",
+          "x": 80,
+          "y": 100
+        }
+      ]
+    },
+    "Knight1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_knt",
+          "x": 43,
+          "y": 52
+        }
+      ]
+    },
+    "Knight2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_knt",
+          "x": 143,
+          "y": 152
+        }
+      ]
+    },
+    "Knight3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_in",
+          "x": 80,
+          "y": 100
+        }
+      ]
+    },
+    "Sir Edmond#knt": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_knt",
+          "x": 143,
+          "y": 57
+        }
+      ]
+    },
+    "Sir Windsor#knt": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_knt",
+          "x": 89,
+          "y": 101
+        }
+      ]
+    },
+    "Timer#knt": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_fild05",
+          "x": 353,
+          "y": 251
+        }
+      ]
+    },
+    "Warp#knt": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_in",
+          "x": 80,
+          "y": 100
+        }
+      ]
+    }
+  },
+  "jobs_s_2_1_misc": {
+    "Blacksmith Guildsman#gef": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude",
+          "x": 94,
+          "y": 103
+        }
+      ]
+    }
+  },
+  "jobs_s_2_1_priest": {
+    "Baphomet#prst": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "glast_01",
+          "x": 200,
+          "y": 203
+        }
+      ]
+    },
+    "Dark Lord#prst": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "gl_church",
+          "x": 145,
+          "y": 170
+        }
+      ]
+    },
+    "Deviruchi#prst": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "c_tower2",
+          "x": 168,
+          "y": 33
+        },
+        {
+          "map": "mjolnir_05",
+          "x": 200,
+          "y": 200
+        }
+      ]
+    },
+    "Doppelganger#prst": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "gef_dun02",
+          "x": 210,
+          "y": 177
+        }
+      ]
+    },
+    "High Bishop#prst": {
+      "checks": [
+        "item",
+        "job",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_prist",
+          "x": 26,
+          "y": 178
+        },
+        {
+          "map": "job_prist",
+          "x": 24,
+          "y": 180
+        }
+      ]
+    },
+    "Peter S. Alberto": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_prist",
+          "x": 24,
+          "y": 44
+        },
+        {
+          "map": "prontera",
+          "x": 234,
+          "y": 318
+        }
+      ]
+    },
+    "Peter S. Alberto#2": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 234,
+          "y": 318
+        }
+      ]
+    },
+    "prst1_1": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "job_prist",
+          "x": 168,
+          "y": 17
+        }
+      ]
+    },
+    "prst2_1": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "job_prist",
+          "x": 98,
+          "y": 40
+        }
+      ]
+    },
+    "prst3_1": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_church",
+          "x": 15,
+          "y": 36
+        },
+        {
+          "map": "prt_church",
+          "x": 16,
+          "y": 37
+        }
+      ]
+    }
+  },
+  "jobs_s_2_1_wizard": {
+    "Gloomy Wizard": {
+      "checks": [
+        "item",
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 110
+        },
+        {
+          "map": "job_wiz",
+          "x": 57,
+          "y": 154
+        }
+      ]
+    },
+    "Room of Earth#Door": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_wiz",
+          "x": 46,
+          "y": 99
+        }
+      ]
+    },
+    "Room of Earth#Failed": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 110
+        }
+      ]
+    },
+    "Room of Fire#Failed": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 110
+        }
+      ]
+    },
+    "Room of Water#Door": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_wiz",
+          "x": 116,
+          "y": 97
+        }
+      ]
+    },
+    "Room of Water#Failed": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 110
+        }
+      ]
+    },
+    "White Dog#wiz": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gef_dun00",
+          "x": 116,
+          "y": 102
+        }
+      ]
+    }
+  },
+  "jobs_s_2_1e": {
+    "Beeryu#job_star": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_star",
+          "x": 166,
+          "y": 29
+        },
+        {
+          "map": "payon",
+          "x": 164,
+          "y": 58
+        },
+        {
+          "map": "job_star",
+          "x": 34,
+          "y": 12
+        }
+      ]
+    },
+    "Cheehee#job_star": {
+      "checks": [
+        "job",
+        "quest",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "payon",
+          "x": 164,
+          "y": 58
+        }
+      ]
+    },
+    "Daru#job_star": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_star",
+          "x": 100,
+          "y": 13
+        },
+        {
+          "map": "job_star",
+          "x": 166,
+          "y": 29
+        },
+        {
+          "map": "payon",
+          "x": 164,
+          "y": 58
+        }
+      ]
+    },
+    "Wandering Master#job_sta": {
+      "checks": [
+        "job",
+        "quest",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_star",
+          "x": 34,
+          "y": 12
+        },
+        {
+          "map": "job_star",
+          "x": 100,
+          "y": 13
+        },
+        {
+          "map": "job_star",
+          "x": 166,
+          "y": 29
+        }
+      ]
+    }
+  },
+  "jobs_s_2_2_crusader": {
+    "Man in Anguish_": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_cru",
+          "x": 98,
+          "y": 40
+        }
+      ]
+    },
+    "Patron Knight_": {
+      "checks": [
+        "item",
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_cru",
+          "x": 24,
+          "y": 169
+        }
+      ]
+    },
+    "Summoner#cr1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_fild05",
+          "x": 353,
+          "y": 251
+        }
+      ]
+    },
+    "Summoner#cr2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_fild05",
+          "x": 353,
+          "y": 251
+        }
+      ]
+    },
+    "Summoner#cr3": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_fild05",
+          "x": 353,
+          "y": 251
+        }
+      ]
+    },
+    "Summoner#cr4": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_fild05",
+          "x": 353,
+          "y": 251
+        }
+      ]
+    }
+  },
+  "jobs_s_2_2_misc": {
+    "Bijou#da": {
+      "checks": [
+        "job",
+        "level",
+        "quest",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_duncer",
+          "x": 105,
+          "y": 109
+        }
+      ]
+    },
+    "Bor Robin#1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_duncer",
+          "x": 70,
+          "y": 49
+        }
+      ]
+    },
+    "dance#return": {
+      "checks": [
+        "quest",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 188,
+          "y": 162
+        }
+      ]
+    },
+    "dance#return#2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 188,
+          "y": 162
+        }
+      ]
+    },
+    "dance#return#3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 188,
+          "y": 162
+        }
+      ]
+    },
+    "dancestep": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 188,
+          "y": 162
+        }
+      ]
+    }
+  },
+  "jobs_s_2_2_monk": {
+    "Apprentice Monk#mk": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_monk",
+          "x": 194,
+          "y": 168
+        }
+      ]
+    },
+    "Bashu#mk": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_monk",
+          "x": 226,
+          "y": 175
+        },
+        {
+          "map": "monk_test",
+          "x": 386,
+          "y": 387
+        }
+      ]
+    },
+    "Guarding Monk#mk": {
+      "checks": [
+        "job",
+        "level",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_fild03",
+          "x": 357,
+          "y": 256
+        }
+      ]
+    },
+    "Hyunmoo#mk": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_monk",
+          "x": 194,
+          "y": 168
+        }
+      ]
+    },
+    "Proctor#btl#3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "monk_test",
+          "x": 230,
+          "y": 277
+        }
+      ]
+    },
+    "Proctor#mk": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "monk_test",
+          "x": 125,
+          "y": 277
+        }
+      ]
+    },
+    "Proctor#mk2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "monk_test",
+          "x": 125,
+          "y": 177
+        }
+      ]
+    },
+    "Supervisor#race_monk": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "monk_test",
+          "x": 385,
+          "y": 388
+        },
+        {
+          "map": "prt_monk",
+          "x": 194,
+          "y": 168
+        }
+      ]
+    },
+    "Tomoon#mk": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "monk_test",
+          "x": 88,
+          "y": 74
+        }
+      ]
+    },
+    "Trap#t_monk1_1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "monk_test",
+          "x": 387,
+          "y": 387
+        }
+      ]
+    },
+    "exit_monk#1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_monk",
+          "x": 196,
+          "y": 168
+        }
+      ]
+    },
+    "exit_monk#2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_monk",
+          "x": 196,
+          "y": 168
+        }
+      ]
+    },
+    "exit_monk#3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_monk",
+          "x": 196,
+          "y": 168
+        }
+      ]
+    }
+  },
+  "jobs_s_2_2_rogue": {
+    "Antonio junior#rg": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 15,
+          "y": 105
+        }
+      ]
+    },
+    "Aragham Junior#rg": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 15,
+          "y": 105
+        }
+      ]
+    },
+    "Hollgrehenn junior#rg": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 15,
+          "y": 105
+        }
+      ]
+    },
+    "Warp#1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 246,
+          "y": 25
+        }
+      ]
+    },
+    "Warp#2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 169,
+          "y": 34
+        }
+      ]
+    },
+    "Warp#3": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 164,
+          "y": 106
+        }
+      ]
+    },
+    "gen_ro#1": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "gen_ro#2": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "gen_ro#3": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "gen_ro#4": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "he_to_rogue#rg": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 10,
+          "y": 21
+        }
+      ]
+    },
+    "mob_rogue#1": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#10": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#11": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#12": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#13": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#14": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#15": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#16": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#2": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#3": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#4": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#5": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#6": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#7": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#8": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "mob_rogue#9": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mag_dun02",
+          "x": 181,
+          "y": 176
+        }
+      ]
+    },
+    "oneway_to_gu": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 367,
+          "y": 10
+        }
+      ]
+    },
+    "quest_out": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 378,
+          "y": 113
+        }
+      ]
+    }
+  },
+  "jobs_s_2_2_sage": {
+    "Practical Examination P": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "job_sage",
+          "x": 50,
+          "y": 154
+        }
+      ]
+    }
+  },
+  "misc_events_gdevent_aru": {
+    "Dwarf#aru_gd": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arug_que01",
+          "x": 103,
+          "y": 133
+        }
+      ]
+    }
+  },
+  "misc_events_gdevent_sch": {
+    "Dwarf#sch_gd": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "schg_que01",
+          "x": 103,
+          "y": 133
+        }
+      ]
+    }
+  },
+  "misc_events_misc_1": {
+    "Enjoy#enjoy": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 155,
+          "y": 230
+        }
+      ]
+    },
+    "Familiar#06_hw01": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "nif_in",
+          "x": 18,
+          "y": 20
+        }
+      ]
+    },
+    "Halloween Magician#iRO08": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "evt_zombie",
+          "x": 155,
+          "y": 246
+        }
+      ]
+    },
+    "Hoirin#06_hw": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "nif_fild01",
+          "x": 162,
+          "y": 113
+        }
+      ]
+    },
+    "zombiewarp001": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "payon",
+          "x": 28,
+          "y": 142
+        }
+      ]
+    },
+    "zombiewarp002": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "payon",
+          "x": 121,
+          "y": 40
+        }
+      ]
+    },
+    "zombiewarp003": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "payon",
+          "x": 253,
+          "y": 95
+        }
+      ]
+    }
+  },
+  "misc_events_misc_2": {
+    "Twin Towers#tt1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_fild01",
+          "x": 136,
+          "y": 368
+        },
+        {
+          "map": "gef_fild10",
+          "x": 67,
+          "y": 334
+        },
+        {
+          "map": "moc_fild04",
+          "x": 210,
+          "y": 329
+        },
+        {
+          "map": "mjolnir_02",
+          "x": 79,
+          "y": 361
+        },
+        {
+          "map": "moc_fild19",
+          "x": 105,
+          "y": 99
+        },
+        {
+          "map": "gef_fild06",
+          "x": 45,
+          "y": 304
+        },
+        {
+          "map": "cmd_fild01",
+          "x": 30,
+          "y": 317
+        }
+      ]
+    }
+  },
+  "misc_instances_endlesstower": {
+    "Captain Janssen": {
+      "checks": [
+        "level",
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "e_tower",
+          "x": 70,
+          "y": 114
+        }
+      ]
+    },
+    "Huge Vortex": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 223,
+          "y": 36
+        }
+      ]
+    },
+    "Lost Soul#102": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 223,
+          "y": 36
+        }
+      ]
+    },
+    "Lucid Crystal#102": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 223,
+          "y": 36
+        }
+      ]
+    },
+    "Purification Stone#et2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "e_tower",
+          "x": 75,
+          "y": 108
+        }
+      ]
+    },
+    "Tower Protection Stone": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 223,
+          "y": 36
+        }
+      ]
+    }
+  },
+  "misc_instances_misc": {
+    "#Warp Outside Orc Dun": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "gef_fild10",
+          "x": 240,
+          "y": 197
+        }
+      ]
+    }
+  },
+  "misc_instances_nydhoggsnest": {
+    "Murdered Yggdrasilid#1F": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mid_camp",
+          "x": 100,
+          "y": 100
+        }
+      ]
+    },
+    "World Tree Yggdrasil#2F": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "nyd_dun02",
+          "x": 98,
+          "y": 196
+        }
+      ]
+    },
+    "trap#edq2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "man_in01",
+          "x": 311,
+          "y": 54
+        }
+      ]
+    },
+    "trap#s_edq": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "spl_in01",
+          "x": 109,
+          "y": 58
+        }
+      ]
+    }
+  },
+  "misc_instances_sealedshrine": {
+    "Ancient Hero's Soul#2F": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "monk_test",
+          "x": 310,
+          "y": 150
+        }
+      ]
+    }
+  },
+  "misc_other_arena_aco": {
+    "Staff#aco-1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "Staff#aco-2": {
+      "checks": [
+        "job",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "arn_warp_aco": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "force_08_01#aco": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_5-1",
+          "x": 40,
+          "y": 26
+        }
+      ]
+    },
+    "onlyaco#arena": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 135,
+          "y": 129
+        }
+      ]
+    }
+  },
+  "misc_other_arena_lvl50": {
+    "Staff#50-1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "Staff#50-2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "force_01_02#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 25,
+          "y": 69
+        }
+      ]
+    },
+    "force_02_03#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 25,
+          "y": 159
+        }
+      ]
+    },
+    "force_03_04#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 69,
+          "y": 174
+        }
+      ]
+    },
+    "force_04_05#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 159,
+          "y": 174
+        }
+      ]
+    },
+    "force_05_06#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 174,
+          "y": 130
+        }
+      ]
+    },
+    "force_06_07#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 174,
+          "y": 40
+        }
+      ]
+    },
+    "force_07_08#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 132,
+          "y": 26
+        }
+      ]
+    },
+    "force_08_01#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 40,
+          "y": 26
+        }
+      ]
+    },
+    "force_08_09#50": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_1-1",
+          "x": 99,
+          "y": 82
+        }
+      ]
+    }
+  },
+  "misc_other_arena_lvl60": {
+    "Staff#60-1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "Staff#60-2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "force_01_02#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 25,
+          "y": 69
+        }
+      ]
+    },
+    "force_02_03#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 25,
+          "y": 159
+        }
+      ]
+    },
+    "force_03_04#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 69,
+          "y": 174
+        }
+      ]
+    },
+    "force_04_05#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 159,
+          "y": 174
+        }
+      ]
+    },
+    "force_05_06#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 174,
+          "y": 130
+        }
+      ]
+    },
+    "force_06_07#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 174,
+          "y": 40
+        }
+      ]
+    },
+    "force_07_08#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 132,
+          "y": 26
+        }
+      ]
+    },
+    "force_08_01#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 40,
+          "y": 26
+        }
+      ]
+    },
+    "force_08_09#60": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_2-1",
+          "x": 99,
+          "y": 82
+        }
+      ]
+    }
+  },
+  "misc_other_arena_lvl70": {
+    "Staff#70-1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "Staff#70-2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "force_01_02#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 25,
+          "y": 69
+        }
+      ]
+    },
+    "force_02_03#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 25,
+          "y": 159
+        }
+      ]
+    },
+    "force_03_04#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 69,
+          "y": 174
+        }
+      ]
+    },
+    "force_04_05#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 159,
+          "y": 174
+        }
+      ]
+    },
+    "force_05_06#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 174,
+          "y": 130
+        }
+      ]
+    },
+    "force_06_07#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 174,
+          "y": 40
+        }
+      ]
+    },
+    "force_07_08#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 132,
+          "y": 26
+        }
+      ]
+    },
+    "force_08_01#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 40,
+          "y": 26
+        }
+      ]
+    },
+    "force_08_09#70": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_3-1",
+          "x": 99,
+          "y": 82
+        }
+      ]
+    }
+  },
+  "misc_other_arena_lvl80": {
+    "Staff#80-1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "Staff#80-2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "force_01_02#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 25,
+          "y": 69
+        }
+      ]
+    },
+    "force_02_03#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 25,
+          "y": 159
+        }
+      ]
+    },
+    "force_03_04#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 69,
+          "y": 174
+        }
+      ]
+    },
+    "force_04_05#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 159,
+          "y": 174
+        }
+      ]
+    },
+    "force_05_06#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 174,
+          "y": 130
+        }
+      ]
+    },
+    "force_06_07#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 174,
+          "y": 40
+        }
+      ]
+    },
+    "force_07_08#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 132,
+          "y": 26
+        }
+      ]
+    },
+    "force_08_01#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 40,
+          "y": 26
+        }
+      ]
+    },
+    "force_08_09#80": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "force_4-1",
+          "x": 99,
+          "y": 82
+        }
+      ]
+    }
+  },
+  "misc_other_arena_misc": {
+    "Teleporter#arena": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_are_in",
+          "x": 60,
+          "y": 14
+        }
+      ]
+    }
+  },
+  "misc_other_arena_party": {
+    "Staff#party-1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "Staff#party-2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "arena_out": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    },
+    "force_09_exit": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_are_in",
+          "x": 73,
+          "y": 139
+        }
+      ]
+    },
+    "toarena#party": {
+      "checks": [
+        "zeny"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        },
+        {
+          "map": "force_1-2",
+          "x": 99,
+          "y": 26
+        }
+      ]
+    },
+    "toout#party": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "arena_room",
+          "x": 100,
+          "y": 75
+        }
+      ]
+    }
+  },
+  "misc_other_misc": {
+    "Acolyte#Junoclear": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "einbroch",
+          "x": 67,
+          "y": 195
+        },
+        {
+          "map": "lighthalzen",
+          "x": 159,
+          "y": 90
+        },
+        {
+          "map": "hugel",
+          "x": 98,
+          "y": 150
+        },
+        {
+          "map": "rachel",
+          "x": 119,
+          "y": 135
+        },
+        {
+          "map": "prontera",
+          "x": 116,
+          "y": 72
+        }
+      ]
+    },
+    "Acolyte#Prtclear": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude",
+          "x": 91,
+          "y": 105
+        },
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 39
+        },
+        {
+          "map": "payon",
+          "x": 161,
+          "y": 58
+        },
+        {
+          "map": "morocc",
+          "x": 156,
+          "y": 46
+        },
+        {
+          "map": "alberta",
+          "x": 117,
+          "y": 56
+        },
+        {
+          "map": "aldebaran",
+          "x": 168,
+          "y": 112
+        },
+        {
+          "map": "comodo",
+          "x": 209,
+          "y": 143
+        },
+        {
+          "map": "umbala",
+          "x": 100,
+          "y": 154
+        },
+        {
+          "map": "yuno",
+          "x": 158,
+          "y": 125
+        }
+      ]
+    },
+    "Administrator#gnp": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gon_test",
+          "x": 42,
+          "y": 86
+        }
+      ]
+    },
+    "ChowAnAn#gnp": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gon_test",
+          "x": 44,
+          "y": 4
+        }
+      ]
+    },
+    "Combat Square Staff#5": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "pvp_2vs2",
+          "x": 39,
+          "y": 7
+        },
+        {
+          "map": "pvp_2vs2",
+          "x": 39,
+          "y": 73
+        },
+        {
+          "map": "pvp_2vs2",
+          "x": 7,
+          "y": 39
+        },
+        {
+          "map": "pvp_2vs2",
+          "x": 73,
+          "y": 39
+        },
+        {
+          "map": "pvp_c_room",
+          "x": 84,
+          "y": 39
+        }
+      ]
+    },
+    "Combat Square Staff#dum": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "pvp_2vs2",
+          "x": 38,
+          "y": 38
+        },
+        {
+          "map": "pvp_room",
+          "x": 84,
+          "y": 39
+        }
+      ]
+    },
+    "Deviruchi#divorce": {
+      "checks": [
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "niflheim",
+          "x": 169,
+          "y": 162
+        }
+      ]
+    },
+    "Guide of field of fight": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gon_test",
+          "x": 25,
+          "y": 98
+        },
+        {
+          "map": "gonryun",
+          "x": 177,
+          "y": 112
+        }
+      ]
+    },
+    "Iron man#gnp": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gon_test",
+          "x": 53,
+          "y": 6
+        }
+      ]
+    },
+    "Spectator's Entrance#dum": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "pvp_2vs2",
+          "x": 39,
+          "y": 7
+        },
+        {
+          "map": "pvp_2vs2",
+          "x": 39,
+          "y": 73
+        },
+        {
+          "map": "pvp_2vs2",
+          "x": 7,
+          "y": 39
+        },
+        {
+          "map": "pvp_2vs2",
+          "x": 73,
+          "y": 39
+        }
+      ]
+    },
+    "The King of Rune-Midgarts": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_church",
+          "x": 101,
+          "y": 102
+        }
+      ]
+    },
+    "end1a#bingo": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_bingo",
+          "x": 45,
+          "y": 186
+        },
+        {
+          "map": "que_bingo",
+          "x": 40,
+          "y": 121
+        }
+      ]
+    },
+    "go3#bingo": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_bingo",
+          "x": 49,
+          "y": 125
+        },
+        {
+          "map": "que_bingo",
+          "x": 53,
+          "y": 121
+        },
+        {
+          "map": "que_bingo",
+          "x": 51,
+          "y": 116
+        },
+        {
+          "map": "que_bingo",
+          "x": 46,
+          "y": 116
+        },
+        {
+          "map": "que_bingo",
+          "x": 45,
+          "y": 121
+        }
+      ]
+    },
+    "out3#bingo": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_bingo",
+          "x": 40,
+          "y": 121
+        }
+      ]
+    }
+  },
+  "misc_other_monster_race": {
+    "Eckar Ellebird#single": {
+      "checks": [
+        "item",
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "p_track01",
+          "x": 75,
+          "y": 41
+        }
+      ]
+    },
+    "Eckar Erenes#double": {
+      "checks": [
+        "item",
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "p_track02",
+          "x": 75,
+          "y": 41
+        }
+      ]
+    },
+    "Exit Guide#double": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "hugel",
+          "x": 63,
+          "y": 73
+        }
+      ]
+    },
+    "Exit Guide#single": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "hugel",
+          "x": 63,
+          "y": 73
+        }
+      ]
+    }
+  },
+  "misc_other_poring_war": {
+    "#aroom_ingate_wop": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "poring_w02",
+          "x": 99,
+          "y": 49
+        }
+      ]
+    },
+    "#aroom_outgate_wop": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "poring_w02",
+          "x": 99,
+          "y": 54
+        }
+      ]
+    },
+    "#droom_ingate_wop": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "poring_w02",
+          "x": 98,
+          "y": 116
+        }
+      ]
+    },
+    "#droom_outgate_wop": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "poring_w02",
+          "x": 98,
+          "y": 111
+        }
+      ]
+    },
+    "#wop_warp_a": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "poring_w02",
+          "x": 57,
+          "y": 82
+        }
+      ]
+    },
+    "#wop_warp_d": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "poring_w02",
+          "x": 140,
+          "y": 82
+        }
+      ]
+    },
+    "#wop_warp_rtry": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "poring_w01",
+          "x": 112,
+          "y": 138
+        }
+      ]
+    },
+    "Deviruchi#wop_endmaster": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_fild08",
+          "x": 150,
+          "y": 370
+        }
+      ]
+    },
+    "Mr. Doppel#wop_team_a": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "poring_w02",
+          "x": 44,
+          "y": 82
+        }
+      ]
+    },
+    "Mr. Doppel#wop_team_d": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "poring_w02",
+          "x": 153,
+          "y": 82
+        }
+      ]
+    },
+    "Poring War Recruiter#wop": {
+      "checks": [
+        "item",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "poring_w01",
+          "x": 112,
+          "y": 138
+        }
+      ]
+    }
+  },
+  "misc_other_turbo_track": {
+    "Guide#TBT_n1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "turbo_room",
+          "x": 72,
+          "y": 89
+        }
+      ]
+    },
+    "WHelper#tt_main": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "turbo_room",
+          "x": 72,
+          "y": 89
+        }
+      ]
+    },
+    "cos_end2#tt_main": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "turbo_room",
+          "x": 72,
+          "y": 89
+        }
+      ]
+    },
+    "cos_end3#tt_main": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "turbo_room",
+          "x": 72,
+          "y": 89
+        }
+      ]
+    },
+    "en_turbo": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "alde_gld",
+          "x": 183,
+          "y": 199
+        },
+        {
+          "map": "turbo_room",
+          "x": 100,
+          "y": 65
+        }
+      ]
+    }
+  },
+  "quests_13_1": {
+    "#moc2_b1_gate": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "SavePoint",
+          "x": 0,
+          "y": 0
+        },
+        {
+          "map": "que_dan02",
+          "x": 91,
+          "y": 11
+        }
+      ]
+    },
+    "#moc2_event_on": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 100,
+          "y": 100
+        }
+      ]
+    },
+    "#room1_warp13": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#room2_1_warp": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#room2_2_warp": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "Camp Guard#man1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "man_fild01",
+          "x": 36,
+          "y": 235
+        },
+        {
+          "map": "spl_fild02",
+          "x": 379,
+          "y": 143
+        },
+        {
+          "map": "spl_fild02",
+          "x": 380,
+          "y": 217
+        }
+      ]
+    },
+    "Cat Paw Agent": {
+      "checks": [
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 117,
+          "y": 56
+        },
+        {
+          "map": "prontera",
+          "x": 116,
+          "y": 72
+        },
+        {
+          "map": "izlude",
+          "x": 91,
+          "y": 105
+        },
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 39
+        },
+        {
+          "map": "payon",
+          "x": 161,
+          "y": 58
+        },
+        {
+          "map": "morocc",
+          "x": 156,
+          "y": 46
+        },
+        {
+          "map": "aldebaran",
+          "x": 168,
+          "y": 112
+        },
+        {
+          "map": "yuno",
+          "x": 158,
+          "y": 125
+        },
+        {
+          "map": "einbroch",
+          "x": 158,
+          "y": 301
+        },
+        {
+          "map": "lighthalzen",
+          "x": 163,
+          "y": 64
+        },
+        {
+          "map": "spl_fild02",
+          "x": 32,
+          "y": 225
+        },
+        {
+          "map": "man_fild02",
+          "x": 129,
+          "y": 61
+        }
+      ]
+    },
+    "Corpse#moc2_dead01": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 104,
+          "y": 108
+        }
+      ]
+    },
+    "Diego#ep13bs_": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mid_campin",
+          "x": 291,
+          "y": 128
+        }
+      ]
+    },
+    "Guard#ep13_1-9": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild20",
+          "x": 342,
+          "y": 179
+        }
+      ]
+    },
+    "Man#moc2_crazyR01": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "SavePoint",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "Mr. Kidd#ep13_dan01": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_dan01",
+          "x": 32,
+          "y": 27
+        }
+      ]
+    },
+    "Munkenro#2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mid_camp",
+          "x": 210,
+          "y": 291
+        }
+      ]
+    },
+    "Research Official#ep131": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mid_camp",
+          "x": 165,
+          "y": 236
+        }
+      ]
+    },
+    "Rift Guard#1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild22b",
+          "x": 38,
+          "y": 195
+        }
+      ]
+    },
+    "Rift Guard#2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild20",
+          "x": 342,
+          "y": 179
+        }
+      ]
+    },
+    "Rift Guard#4": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild20",
+          "x": 342,
+          "y": 179
+        }
+      ]
+    },
+    "Time-Space Gap Guard": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild22b",
+          "x": 49,
+          "y": 195
+        }
+      ]
+    },
+    "que_job01#01": {
+      "checks": [
+        "job"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 9,
+          "y": 94
+        }
+      ]
+    },
+    "que_job01#04": {
+      "checks": [
+        "job",
+        "variable",
+        "zeny"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 61,
+          "y": 50
+        },
+        {
+          "map": "que_job01",
+          "x": 85,
+          "y": 77
+        }
+      ]
+    },
+    "que_job01#room1_out": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "que_job01#room2_1_out": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "que_job01#room2_2_out": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "que_job01#room_1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 11,
+          "y": 7
+        },
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "que_job01#room_2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 80,
+          "y": 21
+        },
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        },
+        {
+          "map": "que_job01",
+          "x": 144,
+          "y": 57
+        }
+      ]
+    }
+  },
+  "quests_13_2": {
+    "Cat Paw Agent#spl": {
+      "checks": [
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 117,
+          "y": 56
+        },
+        {
+          "map": "prontera",
+          "x": 116,
+          "y": 72
+        },
+        {
+          "map": "izlude",
+          "x": 91,
+          "y": 105
+        },
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 39
+        },
+        {
+          "map": "payon",
+          "x": 161,
+          "y": 58
+        },
+        {
+          "map": "morocc",
+          "x": 156,
+          "y": 46
+        },
+        {
+          "map": "aldebaran",
+          "x": 168,
+          "y": 112
+        },
+        {
+          "map": "yuno",
+          "x": 158,
+          "y": 125
+        },
+        {
+          "map": "einbroch",
+          "x": 158,
+          "y": 301
+        },
+        {
+          "map": "lighthalzen",
+          "x": 163,
+          "y": 64
+        },
+        {
+          "map": "spl_fild02",
+          "x": 32,
+          "y": 225
+        },
+        {
+          "map": "man_fild02",
+          "x": 129,
+          "y": 61
+        },
+        {
+          "map": "mid_camp",
+          "x": 62,
+          "y": 127
+        }
+      ]
+    },
+    "Strange Device#ep13_out": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "nyd_dun02",
+          "x": 139,
+          "y": 268
+        }
+      ]
+    },
+    "Trunk of a Tree#ep13": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "spl_fild01",
+          "x": 376,
+          "y": 65
+        }
+      ]
+    },
+    "ep13_warp_w_0": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "nyd_dun01",
+          "x": 214,
+          "y": 68
+        }
+      ]
+    },
+    "terrashome_in": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "spl_in02",
+          "x": 237,
+          "y": 89
+        }
+      ]
+    },
+    "to_dun01#ep13_2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "nyd_dun01",
+          "x": 72,
+          "y": 125
+        }
+      ]
+    },
+    "to_in013ep13mdwarp01": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "man_in01",
+          "x": 13,
+          "y": 125
+        },
+        {
+          "map": "man_in01",
+          "x": 68,
+          "y": 125
+        }
+      ]
+    }
+  },
+  "quests_alberta": {
+    "Knight#tur4": {
+      "checks": [
+        "level",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 241,
+          "y": 115
+        }
+      ]
+    },
+    "Sailor#tur2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 241,
+          "y": 115
+        }
+      ]
+    },
+    "Sailor_alberta": {
+      "checks": [
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "tur_dun01",
+          "x": 157,
+          "y": 39
+        }
+      ]
+    }
+  },
+  "quests_amatsu": {
+    "Assistant#ama": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "amatsu",
+          "x": 223,
+          "y": 230
+        }
+      ]
+    },
+    "Coach#after": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "amatsu",
+          "x": 223,
+          "y": 230
+        }
+      ]
+    },
+    "Coach#ama": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "amatsu",
+          "x": 223,
+          "y": 230
+        }
+      ]
+    },
+    "Grandma#ama2": {
+      "checks": [
+        "item",
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "amatsu",
+          "x": 167,
+          "y": 197
+        }
+      ]
+    },
+    "Publisher#ama": {
+      "checks": [
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ama_test",
+          "x": 52,
+          "y": 35
+        }
+      ]
+    },
+    "Soldier#ama10": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ama_dun01",
+          "x": 229,
+          "y": 10
+        }
+      ]
+    },
+    "Soldier#ama11": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ama_in02",
+          "x": 119,
+          "y": 181
+        }
+      ]
+    },
+    "backwarp#ama": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "amatsu",
+          "x": 115,
+          "y": 95
+        }
+      ]
+    }
+  },
+  "quests_ayothaya": {
+    "#2_dun_in": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ayo_dun02",
+          "x": 23,
+          "y": 26
+        },
+        {
+          "map": "ayo_dun02",
+          "x": 275,
+          "y": 26
+        }
+      ]
+    },
+    "Aik#thai": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ayo_fild01",
+          "x": 115,
+          "y": 200
+        }
+      ]
+    },
+    "Puraim#thai1": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ayo_fild02",
+          "x": 30,
+          "y": 135
+        }
+      ]
+    }
+  },
+  "quests_brasilis": {
+    "Curator#bra": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "bra_in01",
+          "x": 138,
+          "y": 176
+        }
+      ]
+    },
+    "Mirror#bra": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "bra_in01",
+          "x": 12,
+          "y": 183
+        },
+        {
+          "map": "bra_in01",
+          "x": 206,
+          "y": 100
+        }
+      ]
+    },
+    "Open Manhole#todunbra": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "bra_dun01",
+          "x": 87,
+          "y": 47
+        }
+      ]
+    },
+    "Pipe#bra": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "bra_in01",
+          "x": 206,
+          "y": 185
+        }
+      ]
+    },
+    "Pipe#brafild": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "bra_in01",
+          "x": 206,
+          "y": 182
+        }
+      ]
+    },
+    "Recluse#bra": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "this",
+          "x": 67,
+          "y": 215
+        }
+      ]
+    },
+    "Toilet#bra": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "bra_in01",
+          "x": 206,
+          "y": 102
+        }
+      ]
+    },
+    "Toucan#bra": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "bra_fild01",
+          "x": 68,
+          "y": 146
+        }
+      ]
+    },
+    "inbathroom#bra": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "bra_in01",
+          "x": 138,
+          "y": 176
+        }
+      ]
+    }
+  },
+  "quests_dandelion_request": {
+    "#Rabsent": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 144,
+          "y": 61
+        }
+      ]
+    },
+    "#mao_table": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 11,
+          "y": 4
+        }
+      ]
+    },
+    "#maobar1": {
+      "checks": [
+        "job",
+        "variable",
+        "zeny"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 9,
+          "y": 94
+        },
+        {
+          "map": "morocc",
+          "x": 45,
+          "y": 103
+        }
+      ]
+    },
+    "#maobar5": {
+      "checks": [
+        "variable",
+        "zeny"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 61,
+          "y": 50
+        },
+        {
+          "map": "que_job01",
+          "x": 85,
+          "y": 77
+        }
+      ]
+    },
+    "#maobar6": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#maobar7": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#maobar8": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#maoexit1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#maoexit2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#maoexit3": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#maogate1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 100,
+          "y": 100
+        }
+      ]
+    },
+    "#maogate2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 100,
+          "y": 100
+        }
+      ]
+    },
+    "#roombar1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 15,
+          "y": 8
+        },
+        {
+          "map": "que_job01",
+          "x": 11,
+          "y": 7
+        },
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        }
+      ]
+    },
+    "#roombar2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_job01",
+          "x": 52,
+          "y": 50
+        },
+        {
+          "map": "que_job01",
+          "x": 80,
+          "y": 21
+        },
+        {
+          "map": "que_job01",
+          "x": 144,
+          "y": 57
+        }
+      ]
+    },
+    "Bar Master": {
+      "checks": [
+        "item",
+        "job",
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 45,
+          "y": 106
+        }
+      ]
+    },
+    "Man": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_job02",
+          "x": 14,
+          "y": 182
+        },
+        {
+          "map": "que_job03",
+          "x": 14,
+          "y": 182
+        }
+      ]
+    }
+  },
+  "quests_ein": {
+    "Megass#EIN": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "einbroch",
+          "x": 112,
+          "y": 245
+        }
+      ]
+    },
+    "Security#ein": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ein_in01",
+          "x": 283,
+          "y": 25
+        }
+      ]
+    },
+    "Zelmeto": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "einbroch",
+          "x": 131,
+          "y": 83
+        }
+      ]
+    }
+  },
+  "quests_eye_of_hellion": {
+    "Hidden Cave#hellion": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "gef_dun03",
+          "x": 140,
+          "y": 119
+        }
+      ]
+    },
+    "Sage Welshyun#hellion": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gef_fild09",
+          "x": 368,
+          "y": 88
+        }
+      ]
+    }
+  },
+  "quests_first_class_misc": {
+    "Gloria#tu": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 116,
+          "y": 72
+        }
+      ]
+    },
+    "Guarnien": {
+      "checks": [
+        "quest",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 155,
+          "y": 46
+        }
+      ]
+    },
+    "New Mage Manager#M": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 182,
+          "y": 286
+        }
+      ]
+    },
+    "Priest Gardron#tu": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "payon",
+          "x": 161,
+          "y": 58
+        }
+      ]
+    },
+    "Priest Praupin": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_monk",
+          "x": 30,
+          "y": 250
+        }
+      ]
+    },
+    "Reidin Corse#tu": {
+      "checks": [
+        "item",
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 116,
+          "y": 72
+        },
+        {
+          "map": "mjolnir_11",
+          "x": 25,
+          "y": 221
+        }
+      ]
+    },
+    "Thief Trainer#T": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild12",
+          "x": 158,
+          "y": 373
+        },
+        {
+          "map": "moc_fild07",
+          "x": 203,
+          "y": 38
+        }
+      ]
+    }
+  },
+  "quests_first_class_tu_sword": {
+    "Dequ'ee": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude",
+          "x": 35,
+          "y": 78
+        },
+        {
+          "map": "moc_fild07",
+          "x": 359,
+          "y": 201
+        }
+      ]
+    },
+    "Shurank": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gef_fild07",
+          "x": 35,
+          "y": 192
+        }
+      ]
+    }
+  },
+  "quests_gonryun": {
+    "Blacksmith#SaYumMoon": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "geffen",
+          "x": 173,
+          "y": 169
+        }
+      ]
+    },
+    "Doctor#gnbs": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno",
+          "x": 246,
+          "y": 143
+        }
+      ]
+    },
+    "go away#gnbs": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "yuno",
+          "x": 246,
+          "y": 143
+        }
+      ]
+    }
+  },
+  "quests_guildrelay": {
+    "RelayDummy1": {
+      "checks": [
+        "item",
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alde_gld",
+          "x": 186,
+          "y": 157
+        }
+      ]
+    }
+  },
+  "quests_hugel": {
+    "A Spirit#HQuest": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "hugel",
+          "x": 78,
+          "y": 148
+        }
+      ]
+    },
+    "Boatman": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "hugel",
+          "x": 206,
+          "y": 109
+        }
+      ]
+    },
+    "Boatman#hugel": {
+      "checks": [
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "odin_tem01",
+          "x": 100,
+          "y": 146
+        }
+      ]
+    },
+    "Eukran": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_bingo",
+          "x": 37,
+          "y": 24
+        }
+      ]
+    },
+    "Laura": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "hu_in01",
+          "x": 15,
+          "y": 76
+        }
+      ]
+    },
+    "alex#warp": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "hu_in01",
+          "x": 15,
+          "y": 155
+        }
+      ]
+    },
+    "alex#warp2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "hu_in01",
+          "x": 102,
+          "y": 90
+        },
+        {
+          "map": "hu_in01",
+          "x": 173,
+          "y": 90
+        },
+        {
+          "map": "hu_in01",
+          "x": 33,
+          "y": 90
+        }
+      ]
+    },
+    "object#1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_hugel",
+          "x": 163,
+          "y": 31
+        }
+      ]
+    },
+    "object#3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "odin_tem03",
+          "x": 264,
+          "y": 260
+        }
+      ]
+    },
+    "warpinside#1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_hugel",
+          "x": 36,
+          "y": 179
+        }
+      ]
+    },
+    "warpinside#2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_hugel",
+          "x": 36,
+          "y": 179
+        }
+      ]
+    },
+    "warpinside#3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_hugel",
+          "x": 36,
+          "y": 179
+        }
+      ]
+    },
+    "warpinside#4": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_hugel",
+          "x": 36,
+          "y": 179
+        }
+      ]
+    },
+    "warpinside#5": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_hugel",
+          "x": 36,
+          "y": 179
+        }
+      ]
+    }
+  },
+  "quests_juperos": {
+    "LeverWarp#ufe": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_gate",
+          "x": 28,
+          "y": 30
+        }
+      ]
+    },
+    "LeverWarp#ufe2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_gate",
+          "x": 71,
+          "y": 29
+        }
+      ]
+    },
+    "Restricted Area#jupe": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_gate",
+          "x": 50,
+          "y": 167
+        }
+      ]
+    },
+    "Warp#1-1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_area1",
+          "x": 47,
+          "y": 259
+        }
+      ]
+    },
+    "Warp#1-2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_area1",
+          "x": 21,
+          "y": 191
+        }
+      ]
+    },
+    "Warp#1-3": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_area1",
+          "x": 33,
+          "y": 105
+        }
+      ]
+    },
+    "Warp#1-4": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_area1",
+          "x": 83,
+          "y": 157
+        }
+      ]
+    },
+    "Warp#2-1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_area2",
+          "x": 116,
+          "y": 259
+        }
+      ]
+    },
+    "Warp#2-2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_area2",
+          "x": 142,
+          "y": 191
+        }
+      ]
+    },
+    "Warp#2-3": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_area2",
+          "x": 130,
+          "y": 105
+        }
+      ]
+    },
+    "Warp#2-4": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "jupe_area2",
+          "x": 80,
+          "y": 157
+        }
+      ]
+    },
+    "gate#start": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "juperos_02",
+          "x": 128,
+          "y": 278
+        },
+        {
+          "map": "juperos_02",
+          "x": 130,
+          "y": 142
+        },
+        {
+          "map": "jupe_gate",
+          "x": 50,
+          "y": 168
+        }
+      ]
+    },
+    "gate#start#2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "juperos_02",
+          "x": 130,
+          "y": 142
+        }
+      ]
+    },
+    "jupe_goto#1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "juperos_02",
+          "x": 128,
+          "y": 278
+        },
+        {
+          "map": "juperos_01",
+          "x": 96,
+          "y": 91
+        }
+      ]
+    },
+    "jupe_goto#2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "juperos_02",
+          "x": 128,
+          "y": 278
+        }
+      ]
+    },
+    "jupe_goto2F": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "juperos_01",
+          "x": 120,
+          "y": 72
+        },
+        {
+          "map": "juperos_01",
+          "x": 120,
+          "y": 112
+        },
+        {
+          "map": "juperos_01",
+          "x": 79,
+          "y": 112
+        },
+        {
+          "map": "juperos_01",
+          "x": 79,
+          "y": 72
+        }
+      ]
+    }
+  },
+  "quests_kiel_hyre_quest": {
+    "Abduction_trigger": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_mansion",
+          "x": 30,
+          "y": 75
+        }
+      ]
+    },
+    "Beautiful Lady#kh1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_school",
+          "x": 120,
+          "y": 180
+        }
+      ]
+    },
+    "Beautiful Lady#kh6": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno_fild08",
+          "x": 73,
+          "y": 172
+        },
+        {
+          "map": "kh_dun01",
+          "x": 22,
+          "y": 216
+        }
+      ]
+    },
+    "Big_Door_1_Warp": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_kiehl01",
+          "x": 55,
+          "y": 33
+        }
+      ]
+    },
+    "Big_Door_2_Warp": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_kiehl01",
+          "x": 173,
+          "y": 35
+        },
+        {
+          "map": "kh_kiehl01",
+          "x": 173,
+          "y": 52
+        }
+      ]
+    },
+    "Big_Door_3_Warp": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_kiehl01",
+          "x": 82,
+          "y": 108
+        },
+        {
+          "map": "kh_kiehl01",
+          "x": 68,
+          "y": 108
+        }
+      ]
+    },
+    "Big_Door_4_Warp": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_kiehl01",
+          "x": 38,
+          "y": 178
+        },
+        {
+          "map": "kh_kiehl01",
+          "x": 47,
+          "y": 171
+        }
+      ]
+    },
+    "Big_Door_5_Warp": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_kiehl02",
+          "x": 50,
+          "y": 7
+        },
+        {
+          "map": "kh_kiehl01",
+          "x": 166,
+          "y": 183
+        }
+      ]
+    },
+    "Cookie Basket#kh": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno_fild08",
+          "x": 69,
+          "y": 183
+        }
+      ]
+    },
+    "Door#kh2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_vila",
+          "x": 188,
+          "y": 18
+        }
+      ]
+    },
+    "Elly": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno_fild08",
+          "x": 100,
+          "y": 100
+        }
+      ]
+    },
+    "Entrance Device#khd2": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_dun02",
+          "x": 41,
+          "y": 198
+        }
+      ]
+    },
+    "Grave#kh": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_dun01",
+          "x": 3,
+          "y": 230
+        }
+      ]
+    },
+    "Heavy Door#kh1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_school",
+          "x": 119,
+          "y": 144
+        }
+      ]
+    },
+    "Kiehl_Room_Exit": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lighthalzen",
+          "x": 193,
+          "y": 200
+        }
+      ]
+    },
+    "Kiehl_Room_Warp": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_kiehl01",
+          "x": 10,
+          "y": 31
+        }
+      ]
+    },
+    "Mechanical Device#kh": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_dun01",
+          "x": 170,
+          "y": 227
+        }
+      ]
+    },
+    "Mysterious Woman#kh": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "yuno",
+          "x": 54,
+          "y": 209
+        },
+        {
+          "map": "kh_mansion",
+          "x": 83,
+          "y": 50
+        }
+      ]
+    },
+    "Rosimmir_Entrance": {
+      "checks": [
+        "item"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_rossi",
+          "x": 20,
+          "y": 92
+        }
+      ]
+    },
+    "Security Guard#1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_school",
+          "x": 71,
+          "y": 155
+        }
+      ]
+    },
+    "Steward#kh": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lighthalzen",
+          "x": 188,
+          "y": 201
+        },
+        {
+          "map": "kh_mansion",
+          "x": 21,
+          "y": 14
+        },
+        {
+          "map": "kh_mansion",
+          "x": 20,
+          "y": 87
+        }
+      ]
+    },
+    "Sword Hilt#kh": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_vila",
+          "x": 178,
+          "y": 72
+        }
+      ]
+    },
+    "Vicious Dog#khp1": {
+      "checks": [
+        "item"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "kh_vila",
+          "x": 173,
+          "y": 182
+        },
+        {
+          "map": "kh_vila",
+          "x": 126,
+          "y": 70
+        }
+      ]
+    },
+    "Wall#kh": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_vila",
+          "x": 17,
+          "y": 177
+        }
+      ]
+    },
+    "Window#kh": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "kh_school",
+          "x": 185,
+          "y": 185
+        }
+      ]
+    },
+    "Window#kh2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno_fild08",
+          "x": 69,
+          "y": 183
+        }
+      ]
+    }
+  },
+  "quests_lighthalzen": {
+    "#Sneak": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 177,
+          "y": 35
+        },
+        {
+          "map": "lhz_in01",
+          "x": 191,
+          "y": 49
+        }
+      ]
+    },
+    "#kiz09": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_que01",
+          "x": 26,
+          "y": 27
+        }
+      ]
+    },
+    "#kiz10": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_que01",
+          "x": 98,
+          "y": 59
+        }
+      ]
+    },
+    "#li_Man": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 278,
+          "y": 162
+        }
+      ]
+    },
+    "#li_Varmunt": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 206,
+          "y": 129
+        }
+      ]
+    },
+    "#li_door": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_in03",
+          "x": 15,
+          "y": 162
+        }
+      ]
+    },
+    "#li_researcher": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 206,
+          "y": 129
+        }
+      ]
+    },
+    "#li_toend": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_que01",
+          "x": 97,
+          "y": 30
+        },
+        {
+          "map": "lhz_in01",
+          "x": 277,
+          "y": 130
+        }
+      ]
+    },
+    "Crippled Girl#li_tre": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lighthalzen",
+          "x": 322,
+          "y": 323
+        }
+      ]
+    },
+    "Door#cube": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lighthalzen",
+          "x": 310,
+          "y": 302
+        }
+      ]
+    },
+    "Door#sneak": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 177,
+          "y": 26
+        }
+      ]
+    },
+    "Esuna Trigger": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_fild01",
+          "x": 64,
+          "y": 223
+        }
+      ]
+    },
+    "Exit1#lt": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_cube",
+          "x": 231,
+          "y": 90
+        }
+      ]
+    },
+    "Experiment Tube#cube": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_cube",
+          "x": 177,
+          "y": 13
+        }
+      ]
+    },
+    "Fishbone": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_cube",
+          "x": 67,
+          "y": 193
+        },
+        {
+          "map": "lhz_cube",
+          "x": 66,
+          "y": 136
+        },
+        {
+          "map": "lhz_cube",
+          "x": 66,
+          "y": 74
+        }
+      ]
+    },
+    "Guard": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno_pre",
+          "x": 83,
+          "y": 22
+        },
+        {
+          "map": "yuno_pre",
+          "x": 78,
+          "y": 69
+        }
+      ]
+    },
+    "Guard#lhz01": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lighthalzen",
+          "x": 303,
+          "y": 229
+        }
+      ]
+    },
+    "Guard#lhz02": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lighthalzen",
+          "x": 260,
+          "y": 199
+        }
+      ]
+    },
+    "Mr. President": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno_pre",
+          "x": 83,
+          "y": 22
+        }
+      ]
+    },
+    "Ordinary Man": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lighthalzen",
+          "x": 217,
+          "y": 313
+        }
+      ]
+    },
+    "Researcher#1": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 283,
+          "y": 166
+        }
+      ]
+    },
+    "Secretary Slierre#li": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 228,
+          "y": 226
+        }
+      ]
+    },
+    "Secretary#1": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno_pre",
+          "x": 113,
+          "y": 53
+        }
+      ]
+    },
+    "Timer_Sneak": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 191,
+          "y": 49
+        }
+      ]
+    }
+  },
+  "quests_louyang": {
+    "#lou_drink2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 217,
+          "y": 278
+        }
+      ]
+    },
+    "#lou_path": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lou_in01",
+          "x": 119,
+          "y": 167
+        }
+      ]
+    },
+    "Chef#1-2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 280,
+          "y": 161
+        }
+      ]
+    },
+    "Employee#poison": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 270,
+          "y": 136
+        }
+      ]
+    },
+    "Jiu Lian Bu#1-1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lou_fild01",
+          "x": 180,
+          "y": 170
+        }
+      ]
+    },
+    "Jiu Lian Bu#1-2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lou_fild01",
+          "x": 200,
+          "y": 174
+        }
+      ]
+    },
+    "Lord#bailong": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Poison King#lou": {
+      "checks": [
+        "item",
+        "job",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 270,
+          "y": 136
+        }
+      ]
+    },
+    "Soldier#1": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lou_in01",
+          "x": 82,
+          "y": 141
+        }
+      ]
+    },
+    "Soldier#2": {
+      "checks": [
+        "item"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lou_in01",
+          "x": 47,
+          "y": 141
+        }
+      ]
+    },
+    "Soldier#bailong1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Soldier#bailong2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Soldier#bailong3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Soldier#bailong4": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Trap#lou_in1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Trap#lou_in2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Trap#lou_in3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Trap#lou_in4": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    },
+    "Trap#lou_in5": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 218,
+          "y": 246
+        }
+      ]
+    }
+  },
+  "quests_misc_2": {
+    "#!@#$%": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "umbala",
+          "x": 94,
+          "y": 181
+        }
+      ]
+    },
+    "#Skulldoor": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "um_in",
+          "x": 32,
+          "y": 71
+        }
+      ]
+    },
+    "Edgar_izlude": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 195,
+          "y": 164
+        }
+      ]
+    },
+    "Piano3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "nif_in",
+          "x": 179,
+          "y": 163
+        }
+      ]
+    },
+    "Utan Shaman": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "umbala",
+          "x": 217,
+          "y": 186
+        }
+      ]
+    },
+    "Witch#nif": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "umbala",
+          "x": 138,
+          "y": 208
+        }
+      ]
+    }
+  },
+  "quests_morocc": {
+    "#3room_barmunt": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "yuno_in04",
+          "x": 100,
+          "y": 3
+        },
+        {
+          "map": "que_ba",
+          "x": 53,
+          "y": 232
+        }
+      ]
+    },
+    "#barmunt_living": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "yuno_in04",
+          "x": 165,
+          "y": 122
+        }
+      ]
+    },
+    "#barmut_room1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "yuno_in04",
+          "x": 108,
+          "y": 57
+        }
+      ]
+    },
+    "#bpast_1_1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ama_dun03",
+          "x": 119,
+          "y": 110
+        }
+      ]
+    },
+    "#garas_f_yume": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "yuno_in04",
+          "x": 100,
+          "y": 3
+        }
+      ]
+    },
+    "Cave Settler#g1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "cave",
+          "x": 81,
+          "y": 92
+        },
+        {
+          "map": "cave",
+          "x": 82,
+          "y": 105
+        }
+      ]
+    },
+    "Continental Guard#01": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 160,
+          "y": 61
+        },
+        {
+          "map": "moc_fild21",
+          "x": 38,
+          "y": 193
+        },
+        {
+          "map": "moc_fild22",
+          "x": 38,
+          "y": 193
+        }
+      ]
+    },
+    "Female Researcher#bpast": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ama_dun03",
+          "x": 119,
+          "y": 110
+        },
+        {
+          "map": "yuno_in04",
+          "x": 100,
+          "y": 3
+        }
+      ]
+    },
+    "Hot Bestseller Corner": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_ba",
+          "x": 247,
+          "y": 33
+        }
+      ]
+    },
+    "Library Part-Timer#garas": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_ba",
+          "x": 264,
+          "y": 186
+        }
+      ]
+    },
+    "Suspicious Man#oliver_h": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_ba",
+          "x": 270,
+          "y": 270
+        }
+      ]
+    },
+    "Worn-out Book#garas": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_ba",
+          "x": 270,
+          "y": 270
+        }
+      ]
+    }
+  },
+  "quests_moscovia": {
+    "#findship": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mosk_fild01",
+          "x": 95,
+          "y": 93
+        }
+      ]
+    },
+    "1#rus27": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mosk_que",
+          "x": 49,
+          "y": 22
+        }
+      ]
+    },
+    "Aged Stranger#npc": {
+      "checks": [
+        "item",
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moscovia",
+          "x": 163,
+          "y": 54
+        },
+        {
+          "map": "moscovia",
+          "x": 162,
+          "y": 56
+        },
+        {
+          "map": "mosk_fild02",
+          "x": 204,
+          "y": 54
+        }
+      ]
+    },
+    "Baba Yaga#rus32": {
+      "checks": [
+        "item",
+        "job",
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mosk_dun02",
+          "x": 135,
+          "y": 163
+        }
+      ]
+    },
+    "Baba Yaga, the Horrible": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mosk_dun02",
+          "x": 53,
+          "y": 217
+        }
+      ]
+    },
+    "Find#ship": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mosk_fild01",
+          "x": 95,
+          "y": 93
+        }
+      ]
+    },
+    "Ghost Tree#rus45": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "pay_dun04",
+          "x": 46,
+          "y": 43
+        }
+      ]
+    },
+    "Gray Wolf#rus03": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mosk_dun01",
+          "x": 190,
+          "y": 47
+        },
+        {
+          "map": "mosk_dun01",
+          "x": 45,
+          "y": 257
+        }
+      ]
+    },
+    "Landlord#mos": {
+      "checks": [
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mosk_in",
+          "x": 215,
+          "y": 181
+        }
+      ]
+    },
+    "Mr. Ibanoff#npc": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mosk_ship",
+          "x": 94,
+          "y": 110
+        },
+        {
+          "map": "mosk_fild01",
+          "x": 93,
+          "y": 94
+        }
+      ]
+    },
+    "Mr. Ibanoff#npc2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mosk_fild01",
+          "x": 93,
+          "y": 94
+        },
+        {
+          "map": "moscovia",
+          "x": 163,
+          "y": 55
+        }
+      ]
+    },
+    "Mysterious Stone#rus02": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mosk_dun01",
+          "x": 190,
+          "y": 47
+        }
+      ]
+    },
+    "Old Bed#rus38": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "treasure01",
+          "x": 68,
+          "y": 28
+        }
+      ]
+    },
+    "Ryubaba#rus08": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moscovia",
+          "x": 220,
+          "y": 210
+        },
+        {
+          "map": "moscovia",
+          "x": 203,
+          "y": 80
+        }
+      ]
+    },
+    "rudder#ship": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moscovia",
+          "x": 162,
+          "y": 56
+        }
+      ]
+    }
+  },
+  "quests_nameless": {
+    "#em_sky_s": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "rachel",
+          "x": 142,
+          "y": 136
+        }
+      ]
+    },
+    "AideAmi#Aru": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "nameless_n",
+          "x": 158,
+          "y": 169
+        },
+        {
+          "map": "abbey01",
+          "x": 51,
+          "y": 15
+        }
+      ]
+    },
+    "Boat#Aru": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "nameless_i",
+          "x": 257,
+          "y": 217
+        },
+        {
+          "map": "nameless_n",
+          "x": 257,
+          "y": 217
+        }
+      ]
+    },
+    "Catfoii": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild17",
+          "x": 209,
+          "y": 235
+        }
+      ]
+    },
+    "Dead Crow#Aru": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "nameless_in",
+          "x": 15,
+          "y": 60
+        }
+      ]
+    },
+    "EntranceCheck#1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "moc_fild17",
+          "x": 209,
+          "y": 235
+        }
+      ]
+    },
+    "EntranceCheck#2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "moc_fild17",
+          "x": 209,
+          "y": 235
+        }
+      ]
+    },
+    "Larjes#Aru": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ve_fild07",
+          "x": 130,
+          "y": 130
+        }
+      ]
+    },
+    "Larjes#Boat1": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ve_fild07",
+          "x": 130,
+          "y": 130
+        }
+      ]
+    },
+    "Louis": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild17",
+          "x": 209,
+          "y": 235
+        }
+      ]
+    },
+    "Martha": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moc_fild17",
+          "x": 209,
+          "y": 235
+        }
+      ]
+    },
+    "Odd Slab": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "z_agit",
+          "x": 98,
+          "y": 40
+        }
+      ]
+    },
+    "Ordinary Man#pc1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "cmd_in02",
+          "x": 110,
+          "y": 53
+        }
+      ]
+    },
+    "Out_from_Monastery": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "nameless_n",
+          "x": 168,
+          "y": 252
+        }
+      ]
+    },
+    "Secret Agent#Aru": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "nameless_i",
+          "x": 257,
+          "y": 217
+        }
+      ]
+    },
+    "Waiter#pc": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ra_in01",
+          "x": 303,
+          "y": 43
+        },
+        {
+          "map": "ra_in01",
+          "x": 304,
+          "y": 43
+        },
+        {
+          "map": "ra_in01",
+          "x": 304,
+          "y": 39
+        },
+        {
+          "map": "ra_in01",
+          "x": 303,
+          "y": 39
+        }
+      ]
+    },
+    "outtoin_01#mo": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "nameless_in",
+          "x": 12,
+          "y": 41
+        }
+      ]
+    }
+  },
+  "quests_newgears_misc": {
+    "Orc Lady#2008hat03": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "gef_fild10",
+          "x": 223,
+          "y": 203
+        }
+      ]
+    }
+  },
+  "quests_newgears_s_2004_headgears": {
+    "Orc Warrior#1": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "gef_fild10",
+          "x": 100,
+          "y": 100
+        }
+      ]
+    }
+  },
+  "quests_obb_quest": {
+    "Old Man#thai": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 196,
+          "y": 255
+        }
+      ]
+    }
+  },
+  "quests_okolnir": {
+    "#to_agit_main_gate": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "arug_cas01",
+          "x": 157,
+          "y": 369
+        },
+        {
+          "map": "arug_cas02",
+          "x": 349,
+          "y": 355
+        },
+        {
+          "map": "arug_cas03",
+          "x": 321,
+          "y": 153
+        },
+        {
+          "map": "arug_cas04",
+          "x": 321,
+          "y": 153
+        },
+        {
+          "map": "arug_cas05",
+          "x": 321,
+          "y": 153
+        },
+        {
+          "map": "schg_cas01",
+          "x": 369,
+          "y": 306
+        },
+        {
+          "map": "schg_cas02",
+          "x": 177,
+          "y": 355
+        },
+        {
+          "map": "schg_cas03",
+          "x": 81,
+          "y": 95
+        },
+        {
+          "map": "schg_cas04",
+          "x": 369,
+          "y": 306
+        },
+        {
+          "map": "schg_cas05",
+          "x": 369,
+          "y": 306
+        }
+      ]
+    }
+  },
+  "quests_pre_re_quests_misc": {
+    "Personnel Record#book1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 94,
+          "y": 37
+        }
+      ]
+    }
+  },
+  "quests_pre_re_quests_morocc": {
+    "#eisen": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 318,
+          "y": 368
+        },
+        {
+          "map": "prt_castle",
+          "x": 318,
+          "y": 309
+        }
+      ]
+    },
+    "#erich": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 274,
+          "y": 368
+        }
+      ]
+    },
+    "#ern": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 368,
+          "y": 308
+        }
+      ]
+    },
+    "#helmut": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 290,
+          "y": 208
+        }
+      ]
+    },
+    "#peter": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 366,
+          "y": 368
+        }
+      ]
+    },
+    "#poe": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 390,
+          "y": 208
+        }
+      ]
+    },
+    "#urgen": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 340,
+          "y": 208
+        }
+      ]
+    },
+    "Guard#princein": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 220,
+          "y": 312
+        }
+      ]
+    },
+    "Inspector#prince": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 155,
+          "y": 353
+        }
+      ]
+    },
+    "Prince#another_ern1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 318,
+          "y": 273
+        }
+      ]
+    },
+    "Prince#eisen": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_castle",
+          "x": 318,
+          "y": 273
+        }
+      ]
+    }
+  },
+  "quests_prontera": {
+    "#gototomb": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_church",
+          "x": 21,
+          "y": 91
+        }
+      ]
+    },
+    "Culvert Guardian": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_sewb1",
+          "x": 131,
+          "y": 247
+        }
+      ]
+    },
+    "Father Biscuss#tomb": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_church",
+          "x": 178,
+          "y": 111
+        }
+      ]
+    },
+    "Recruiter": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_fild05",
+          "x": 274,
+          "y": 208
+        }
+      ]
+    }
+  },
+  "quests_rachel": {
+    "#ice_4f_1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ice_dun04",
+          "x": 33,
+          "y": 144
+        }
+      ]
+    },
+    "#ice_4f_2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ice_dun04",
+          "x": 33,
+          "y": 144
+        }
+      ]
+    },
+    "#ice_4f_3": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ice_dun04",
+          "x": 33,
+          "y": 144
+        }
+      ]
+    },
+    "#ice_4f_4": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ice_dun04",
+          "x": 33,
+          "y": 144
+        }
+      ]
+    },
+    "#rachel33": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_temsky",
+          "x": 99,
+          "y": 11
+        },
+        {
+          "map": "ra_temsky",
+          "x": 99,
+          "y": 11
+        }
+      ]
+    },
+    "High Priest Zhed#rachel": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 297,
+          "y": 156
+        }
+      ]
+    },
+    "Quest Temple Exit#ra_tem": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ra_temple",
+          "x": 119,
+          "y": 175
+        }
+      ]
+    },
+    "Temple Entrance#ra_tem": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 169,
+          "y": 23
+        }
+      ]
+    },
+    "Window#ra_temple": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ra_temple",
+          "x": 73,
+          "y": 208
+        }
+      ]
+    },
+    "gyoin1#rachel": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 276,
+          "y": 239
+        }
+      ]
+    },
+    "imir3#rachel": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "rachel",
+          "x": 163,
+          "y": 152
+        }
+      ]
+    },
+    "out1#rachel": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 300,
+          "y": 153
+        }
+      ]
+    },
+    "saint1#rachel": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_san01",
+          "x": 140,
+          "y": 135
+        }
+      ]
+    },
+    "zawa00": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_rachel",
+          "x": 62,
+          "y": 82
+        }
+      ]
+    }
+  },
+  "quests_seals_brisingamen_seal": {
+    "#brisindwarf2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_fild02",
+          "x": 165,
+          "y": 224
+        }
+      ]
+    },
+    "#brisindwarf4": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "mjo_dun02",
+          "x": 118,
+          "y": 56
+        }
+      ]
+    },
+    "#lowenone": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god02",
+          "x": 120,
+          "y": 52
+        }
+      ]
+    },
+    "#lowentrace1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god02",
+          "x": 47,
+          "y": 53
+        }
+      ]
+    },
+    "#monologue": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god02",
+          "x": 18,
+          "y": 127
+        }
+      ]
+    },
+    "Lowen Ellenen": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 101
+        }
+      ]
+    },
+    "Soldier#1_brising": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god02",
+          "x": 174,
+          "y": 49
+        },
+        {
+          "map": "que_god02",
+          "x": 51,
+          "y": 59
+        }
+      ]
+    },
+    "Valkyrie#1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 101
+        }
+      ]
+    }
+  },
+  "quests_seals_megingard_seal": {
+    "Librarian#megin": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 120,
+          "y": 264
+        }
+      ]
+    }
+  },
+  "quests_seals_misc": {
+    "Grunburti#1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 214,
+          "y": 63
+        }
+      ]
+    },
+    "Switch#God0": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 60,
+          "y": 88
+        }
+      ]
+    },
+    "Switch#God1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 62,
+          "y": 119
+        }
+      ]
+    },
+    "Switch#God2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 12,
+          "y": 119
+        }
+      ]
+    },
+    "Switch#God3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 12,
+          "y": 52
+        }
+      ]
+    },
+    "Switch#God4": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 50,
+          "y": 52
+        }
+      ]
+    },
+    "god_failwarp#1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 156,
+          "y": 324
+        }
+      ]
+    },
+    "god_sl_w0": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 60,
+          "y": 88
+        }
+      ]
+    },
+    "god_sl_w1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 62,
+          "y": 119
+        }
+      ]
+    },
+    "god_sl_w2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 12,
+          "y": 119
+        }
+      ]
+    },
+    "god_sl_w3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 12,
+          "y": 52
+        }
+      ]
+    },
+    "god_sl_w4": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_god01",
+          "x": 50,
+          "y": 52
+        }
+      ]
+    }
+  },
+  "quests_skills_misc_1": {
+    "Aelle#qsk_dan02": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 156,
+          "y": 272
+        }
+      ]
+    }
+  },
+  "quests_skills_misc_2": {
+    "Thor Greg#rogueguild": {
+      "checks": [
+        "job",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "in_rogue",
+          "x": 89,
+          "y": 114
+        }
+      ]
+    }
+  },
+  "quests_thana_quest": {
+    "#gateto_thanatos": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "thana_boss",
+          "x": 136,
+          "y": 116
+        }
+      ]
+    },
+    "3rdf_warp#tt": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "tha_t02",
+          "x": 227,
+          "y": 158
+        },
+        {
+          "map": "tha_t03",
+          "x": 219,
+          "y": 159
+        }
+      ]
+    },
+    "Tower Keeper": {
+      "checks": [
+        "variable",
+        "zeny"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "tha_scene01",
+          "x": 131,
+          "y": 220
+        }
+      ]
+    },
+    "to 7th Floor": {
+      "checks": [
+        "item",
+        "job",
+        "level"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "thana_step",
+          "x": 69,
+          "y": 369
+        }
+      ]
+    }
+  },
+  "quests_the_sign_quest": {
+    "#Cursed Soul": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "niflheim",
+          "x": 34,
+          "y": 162
+        }
+      ]
+    },
+    "#Switch": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_sign01",
+          "x": 115,
+          "y": 135
+        }
+      ]
+    },
+    "#Valkyrie Warp": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "himinn",
+          "x": 49,
+          "y": 10
+        }
+      ]
+    },
+    "#mazewarp": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_maze02",
+          "x": 90,
+          "y": 170
+        }
+      ]
+    },
+    "#movesign": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "prt_maze02",
+          "x": 11,
+          "y": 146
+        },
+        {
+          "map": "prt_maze03",
+          "x": 55,
+          "y": 8
+        },
+        {
+          "map": "prt_maze01",
+          "x": 62,
+          "y": 129
+        }
+      ]
+    },
+    "#witch": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "umbala",
+          "x": 132,
+          "y": 203
+        }
+      ]
+    },
+    "Depressing Man": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_sign01",
+          "x": 45,
+          "y": 20
+        }
+      ]
+    },
+    "Emergency Exit": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 187,
+          "y": 163
+        }
+      ]
+    },
+    "Examiner#sd": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "cmd_in01",
+          "x": 29,
+          "y": 33
+        }
+      ]
+    },
+    "Examiner#sign": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 187,
+          "y": 164
+        }
+      ]
+    },
+    "Fastidious-Looking Guy": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "umbala",
+          "x": 111,
+          "y": 121
+        }
+      ]
+    },
+    "Flaming Spirit Man": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mjo_dun02",
+          "x": 372,
+          "y": 346
+        },
+        {
+          "map": "mjo_dun02",
+          "x": 371,
+          "y": 344
+        }
+      ]
+    },
+    "Geffenia Warp": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "gefenia01",
+          "x": 58,
+          "y": 169
+        },
+        {
+          "map": "gefenia02",
+          "x": 116,
+          "y": 115
+        },
+        {
+          "map": "gefenia03",
+          "x": 130,
+          "y": 206
+        },
+        {
+          "map": "gefenia04",
+          "x": 133,
+          "y": 88
+        },
+        {
+          "map": "geffen",
+          "x": 116,
+          "y": 115
+        }
+      ]
+    },
+    "Gordon#sign": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "mjolnir_12",
+          "x": 44,
+          "y": 23
+        }
+      ]
+    },
+    "Pleasant-Featured Lady#s": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_sign01",
+          "x": 199,
+          "y": 36
+        }
+      ]
+    },
+    "Pleur#warp": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_maze02",
+          "x": 11,
+          "y": 146
+        },
+        {
+          "map": "prt_maze03",
+          "x": 55,
+          "y": 8
+        },
+        {
+          "map": "prt_maze01",
+          "x": 62,
+          "y": 129
+        }
+      ]
+    },
+    "Queen of the Dead": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "niflheim",
+          "x": 29,
+          "y": 154
+        }
+      ]
+    },
+    "Rogue#sign": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 279,
+          "y": 173
+        }
+      ]
+    },
+    "Serin#serin": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "umbala",
+          "x": 132,
+          "y": 203
+        },
+        {
+          "map": "que_sign01",
+          "x": 117,
+          "y": 137
+        },
+        {
+          "map": "niflheim",
+          "x": 30,
+          "y": 156
+        }
+      ]
+    },
+    "Serin#witch": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "umbala",
+          "x": 132,
+          "y": 203
+        },
+        {
+          "map": "que_sign01",
+          "x": 117,
+          "y": 137
+        },
+        {
+          "map": "niflheim",
+          "x": 30,
+          "y": 156
+        }
+      ]
+    },
+    "Steward#sign": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 150,
+          "y": 150
+        }
+      ]
+    },
+    "Strange Guy#sign": {
+      "checks": [
+        "item",
+        "level",
+        "variable",
+        "zeny"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 122,
+          "y": 100
+        },
+        {
+          "map": "cmd_in01",
+          "x": 33,
+          "y": 29
+        }
+      ]
+    },
+    "Valkyrie#sign": {
+      "checks": [
+        "item",
+        "level",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gef_fild07",
+          "x": 180,
+          "y": 242
+        },
+        {
+          "map": "geffen",
+          "x": 120,
+          "y": 100
+        }
+      ]
+    },
+    "Warp#serin": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "niflheim",
+          "x": 30,
+          "y": 156
+        }
+      ]
+    },
+    "Warp#witch": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "niflheim",
+          "x": 30,
+          "y": 156
+        }
+      ]
+    },
+    "Witch#s": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_sign01",
+          "x": 195,
+          "y": 189
+        },
+        {
+          "map": "que_sign02",
+          "x": 35,
+          "y": 313
+        }
+      ]
+    },
+    "sign_w6": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_sign01",
+          "x": 197,
+          "y": 190
+        }
+      ]
+    }
+  },
+  "quests_veins": {
+    "#Colonel1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "thor_camp",
+          "x": 156,
+          "y": 68
+        }
+      ]
+    },
+    "#Colonel2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "thor_camp",
+          "x": 156,
+          "y": 68
+        }
+      ]
+    },
+    "#totcamp": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "que_thor",
+          "x": 65,
+          "y": 55
+        },
+        {
+          "map": "que_thor",
+          "x": 182,
+          "y": 55
+        }
+      ]
+    },
+    "#tov_1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "thor_v02",
+          "x": 146,
+          "y": 84
+        }
+      ]
+    },
+    "#tov_2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "thor_v02",
+          "x": 146,
+          "y": 84
+        }
+      ]
+    },
+    "#vol_study1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "thor_camp",
+          "x": 156,
+          "y": 67
+        }
+      ]
+    },
+    "Cheerful Dancer#sch1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "airplane",
+          "x": 75,
+          "y": 55
+        }
+      ]
+    },
+    "Factory Manager": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "veins",
+          "x": 269,
+          "y": 221
+        }
+      ]
+    },
+    "Guard#goto": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "que_thor",
+          "x": 145,
+          "y": 60
+        }
+      ]
+    },
+    "Guard#vol": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "thor_camp",
+          "x": 248,
+          "y": 190
+        }
+      ]
+    },
+    "Ladder#vol1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 74,
+          "y": 136
+        }
+      ]
+    },
+    "Mature Looking Dancer#s1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "airplane",
+          "x": 75,
+          "y": 55
+        }
+      ]
+    },
+    "Mature Looking Dancer#s2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ein_in01",
+          "x": 278,
+          "y": 223
+        }
+      ]
+    },
+    "Mature Looking Dancer#s3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "comodo",
+          "x": 191,
+          "y": 146
+        }
+      ]
+    },
+    "Prison Ward#sch": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ra_in01",
+          "x": 48,
+          "y": 355
+        }
+      ]
+    },
+    "Rachel Guard#vol1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 85,
+          "y": 137
+        }
+      ]
+    },
+    "Rachel Guard#vol2": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 85,
+          "y": 137
+        }
+      ]
+    },
+    "Strange Old Man#ve": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ve_in",
+          "x": 262,
+          "y": 309
+        }
+      ]
+    },
+    "Upset Looking Bard#sch": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "morocc",
+          "x": 294,
+          "y": 153
+        }
+      ]
+    },
+    "Young Dancer#sch1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "airplane",
+          "x": 75,
+          "y": 55
+        }
+      ]
+    },
+    "path_vol1": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 85,
+          "y": 137
+        }
+      ]
+    },
+    "path_vol1#2": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 85,
+          "y": 137
+        }
+      ]
+    },
+    "path_vol1#3": {
+      "checks": [
+        "variable"
+      ],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_temin",
+          "x": 84,
+          "y": 124
+        }
+      ]
+    }
+  },
+  "towns_airports": {
+    "#AirshipWarp-1": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "yuno",
+          "x": 92,
+          "y": 260
+        },
+        {
+          "map": "einbroch",
+          "x": 92,
+          "y": 278
+        },
+        {
+          "map": "lighthalzen",
+          "x": 302,
+          "y": 75
+        },
+        {
+          "map": "hugel",
+          "x": 181,
+          "y": 146
+        }
+      ]
+    },
+    "#AirshipWarp-3": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "ra_fild12",
+          "x": 292,
+          "y": 204
+        },
+        {
+          "map": "izlude",
+          "x": 200,
+          "y": 56
+        },
+        {
+          "map": "yuno",
+          "x": 12,
+          "y": 261
+        }
+      ]
+    },
+    "Airport Staff#airport1a": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "airport",
+          "x": 148,
+          "y": 51
+        }
+      ]
+    },
+    "Airport Staff#lhz_air1a": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_airport",
+          "x": 148,
+          "y": 51
+        }
+      ]
+    },
+    "Airport Staff#y_air1a": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "y_airport",
+          "x": 148,
+          "y": 51
+        }
+      ]
+    },
+    "Airship_Staff_izlude": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "airplane_01",
+          "x": 244,
+          "y": 58
+        }
+      ]
+    },
+    "Arrival Staff#airport2a": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "airport",
+          "x": 142,
+          "y": 40
+        }
+      ]
+    },
+    "Arrival Staff#lhz_air2a": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_airport",
+          "x": 142,
+          "y": 40
+        }
+      ]
+    },
+    "Arrival Staff#y_air2a": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "y_airport",
+          "x": 142,
+          "y": 40
+        }
+      ]
+    },
+    "Domestic Boarding": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno",
+          "x": 59,
+          "y": 244
+        }
+      ]
+    },
+    "International Boarding": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "yuno",
+          "x": 47,
+          "y": 244
+        }
+      ]
+    },
+    "toairplane#hugel": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "airplane",
+          "x": 244,
+          "y": 58
+        }
+      ]
+    },
+    "toairplane#rachel": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "airplane_01",
+          "x": 245,
+          "y": 60
+        }
+      ]
+    }
+  },
+  "towns_cities_lighthalzen": {
+    "Regenschirm Guard#40": {
+      "checks": [
+        "item",
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_dun01",
+          "x": 149,
+          "y": 285
+        }
+      ]
+    },
+    "Rekenber Guard#li01": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 37,
+          "y": 225
+        }
+      ]
+    },
+    "Rekenber Guard#li02": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 33,
+          "y": 224
+        }
+      ]
+    },
+    "Rekenber Guard#li03": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 33,
+          "y": 224
+        }
+      ]
+    },
+    "Repairman#li_01": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 33,
+          "y": 224
+        }
+      ]
+    },
+    "Scientist#li_01": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 33,
+          "y": 224
+        }
+      ]
+    },
+    "Scientist#li_02": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 33,
+          "y": 224
+        }
+      ]
+    },
+    "Scientist#li_03": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in01",
+          "x": 33,
+          "y": 224
+        }
+      ]
+    }
+  },
+  "towns_cities_misc_1": {
+    "Aibakthing#ayo2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 235,
+          "y": 45
+        }
+      ]
+    },
+    "Aibakthing_ayothaya": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ayothaya",
+          "x": 149,
+          "y": 71
+        }
+      ]
+    },
+    "Crewman#bra1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 244,
+          "y": 115
+        }
+      ]
+    },
+    "Crewman_bra2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "brasilis",
+          "x": 314,
+          "y": 60
+        }
+      ]
+    },
+    "Fisk": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alb2trea",
+          "x": 43,
+          "y": 53
+        },
+        {
+          "map": "izlude",
+          "x": 176,
+          "y": 182
+        }
+      ]
+    },
+    "Fisk#a2t": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 192,
+          "y": 169
+        }
+      ]
+    },
+    "Khashurantze#ein": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "einbroch",
+          "x": 179,
+          "y": 63
+        }
+      ]
+    },
+    "Kunlun Envoy#gon2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 243,
+          "y": 67
+        }
+      ]
+    },
+    "Kunlun Envoy#gon4": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gon_fild01",
+          "x": 258,
+          "y": 82
+        }
+      ]
+    },
+    "Kunlun_Envoy_gonryun": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "gon_fild01",
+          "x": 258,
+          "y": 82
+        }
+      ]
+    },
+    "Mark#ein": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "einbroch",
+          "x": 181,
+          "y": 196
+        },
+        {
+          "map": "einbroch",
+          "x": 174,
+          "y": 204
+        }
+      ]
+    },
+    "Morei#ein": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "einbroch",
+          "x": 170,
+          "y": 229
+        },
+        {
+          "map": "einbroch",
+          "x": 216,
+          "y": 188
+        },
+        {
+          "map": "einbroch",
+          "x": 178,
+          "y": 167
+        }
+      ]
+    },
+    "Paul": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alb2trea",
+          "x": 62,
+          "y": 69
+        }
+      ]
+    },
+    "Sailor#2izlude": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude",
+          "x": 176,
+          "y": 182
+        }
+      ]
+    },
+    "Sailor_izlude": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlu2dun",
+          "x": 107,
+          "y": 50
+        },
+        {
+          "map": "alberta",
+          "x": 188,
+          "y": 169
+        }
+      ]
+    },
+    "Sea Captain#ama2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 243,
+          "y": 91
+        }
+      ]
+    },
+    "Sea_Captain_amatsu": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "amatsu",
+          "x": 197,
+          "y": 83
+        }
+      ]
+    },
+    "Serutero#cmd": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "cmd_fild08",
+          "x": 331,
+          "y": 319
+        }
+      ]
+    },
+    "Train Station Staff#ein1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "einbech",
+          "x": 43,
+          "y": 215
+        }
+      ]
+    },
+    "Train Station Staff#ein3": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "einbroch",
+          "x": 226,
+          "y": 276
+        }
+      ]
+    },
+    "Zain#cmd": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 192,
+          "y": 169
+        },
+        {
+          "map": "izlude",
+          "x": 176,
+          "y": 182
+        }
+      ]
+    }
+  },
+  "towns_cities_misc_2": {
+    "Cursed Spirit#nif": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "niflheim",
+          "x": 34,
+          "y": 162
+        }
+      ]
+    },
+    "Customer#SoloHan": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "jawaii_in",
+          "x": 44,
+          "y": 124
+        }
+      ]
+    },
+    "Employee#antroom": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "jawaii_in",
+          "x": 129,
+          "y": 110
+        }
+      ]
+    },
+    "Employee#horoom": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "jawaii_in",
+          "x": 86,
+          "y": 117
+        }
+      ]
+    },
+    "Employee#sroom": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "jawaii_in",
+          "x": 116,
+          "y": 64
+        }
+      ]
+    },
+    "Employee#villroom": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "jawaii_in",
+          "x": 87,
+          "y": 75
+        }
+      ]
+    },
+    "Exit#lou": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "louyang",
+          "x": 86,
+          "y": 269
+        },
+        {
+          "map": "lou_in01",
+          "x": 10,
+          "y": 18
+        }
+      ]
+    },
+    "Freya's Priest#play": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "Random",
+          "x": 0,
+          "y": 0
+        }
+      ]
+    },
+    "Friendly Looking Lady#lo": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lou_in01",
+          "x": 17,
+          "y": 19
+        }
+      ]
+    },
+    "Girl#1lou": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 235,
+          "y": 45
+        }
+      ]
+    },
+    "Girl_louyang": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lou_fild01",
+          "x": 190,
+          "y": 101
+        }
+      ]
+    },
+    "Honeymoon_Helper_Izlude": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "jawaii",
+          "x": 245,
+          "y": 125
+        }
+      ]
+    },
+    "Mariner#toalbe": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 192,
+          "y": 157
+        }
+      ]
+    },
+    "Mariner#toizu": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "izlude",
+          "x": 176,
+          "y": 182
+        }
+      ]
+    },
+    "Moscovia P.R. Officer#2": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta",
+          "x": 243,
+          "y": 67
+        }
+      ]
+    },
+    "Mr. Claus": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "xmas_fild01",
+          "x": 78,
+          "y": 68
+        }
+      ]
+    },
+    "PR_Officer_moscovia": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "moscovia",
+          "x": 163,
+          "y": 55
+        }
+      ]
+    }
+  },
+  "towns_cities_misc_3": {
+    "#jump": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "umbala",
+          "x": 145,
+          "y": 166
+        }
+      ]
+    },
+    "Bungee Jump": {
+      "checks": [],
+      "touch": true,
+      "warps": [
+        {
+          "map": "nif_in",
+          "x": 69,
+          "y": 15
+        }
+      ]
+    },
+    "Juno Despot#juno": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 182,
+          "y": 206
+        }
+      ]
+    },
+    "Juno Sage#juno": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prontera",
+          "x": 182,
+          "y": 206
+        },
+        {
+          "map": "pay_dun03",
+          "x": 200,
+          "y": 222
+        }
+      ]
+    }
+  },
+  "towns_merchants_misc": {
+    "Hotel Employee#01": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "lhz_in02",
+          "x": 219,
+          "y": 150
+        }
+      ]
+    },
+    "Hotel Employee#ein": {
+      "checks": [
+        "variable"
+      ],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ein_in01",
+          "x": 272,
+          "y": 167
+        }
+      ]
+    },
+    "Hotel Keeper#bra1": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "bra_in01",
+          "x": 144,
+          "y": 69
+        }
+      ]
+    },
+    "Inn Employee#Ahee": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "payon_in01",
+          "x": 132,
+          "y": 11
+        }
+      ]
+    },
+    "Inn Employee#Ahlma": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_in",
+          "x": 60,
+          "y": 166
+        }
+      ]
+    },
+    "Inn Employee#Cena": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "geffen_in",
+          "x": 31,
+          "y": 31
+        }
+      ]
+    },
+    "Inn Employee#Jennie": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "alberta_in",
+          "x": 18,
+          "y": 188
+        }
+      ]
+    },
+    "Inn Employee#Sammy": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "prt_in",
+          "x": 247,
+          "y": 104
+        }
+      ]
+    },
+    "Inn Keeper#Annie": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ra_in01",
+          "x": 384,
+          "y": 128
+        }
+      ]
+    },
+    "Inn Maid#Receptionist": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "hu_in01",
+          "x": 267,
+          "y": 5
+        }
+      ]
+    },
+    "Inn Maid#Rilim": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "aldeba_in",
+          "x": 92,
+          "y": 112
+        }
+      ]
+    },
+    "Inn Master#Receptionist": {
+      "checks": [],
+      "touch": false,
+      "warps": [
+        {
+          "map": "ve_in",
+          "x": 184,
+          "y": 228
+        }
+      ]
+    }
+  }
+}

@@ -181,6 +181,7 @@ impl Server {
                 server_state_mut.insert_character(character);
             }
         }
+        server_ref.sample_bots(&server_state_mut);
         for (_, map) in server_state_mut.map_instances().iter() {
             for instance in map.iter() {
                 let map_name = instance.key().map_name();

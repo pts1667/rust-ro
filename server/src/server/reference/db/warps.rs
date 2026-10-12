@@ -2,6 +2,7 @@
 use serde_json::{Value, json};
 
 use super::{DbError, Link, ListQuery, maps, matches, not_found};
+use crate::server::model::map_regions;
 use crate::server::model::warp::Warp;
 use crate::server::service::global_config_service::GlobalConfigService;
 
@@ -34,7 +35,7 @@ pub fn parse_cell(key: &str) -> Option<(&str, u16, u16)> {
 
 pub fn entry(key: &str) -> Result<Value, DbError> {
     let (map_name, x, y) = parse_cell(key).ok_or_else(|| DbError::Invalid("a warp is at /db/warps/<map>/<x>,<y>".into()))?;
-    let map =GlobalConfigService::instance().find_map(map_name).ok_or_else(|| not_found("map", map_name))?;
+    let map = GlobalConfigService::instance().find_map(map_name).ok_or_else(|| not_found("map", map_name))?;
     let warp = map.warps().iter().find(|warp| warp.x == x && warp.y == y).ok_or_else(|| not_found("warp", key))?;
     Ok(json!({
         "key": key,
@@ -44,6 +45,12 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         "y": warp.y,
         "x_size": warp.x_size,
         "y_size": warp.y_size,
-        "to": { "map": maps::link(&warp.dest_map_name), "x": warp.to_x, "y": warp.to_y },
+        "region": map_regions::of_map(&warp.map_name).and_then(|regions| regions.of_area(warp.x, warp.y, warp.x_size, warp.y_size)),
+        "to": {
+            "map": maps::link(&warp.dest_map_name),
+            "x": warp.to_x,
+            "y": warp.to_y,
+            "region": map_regions::of_map(&warp.dest_map_name).and_then(|regions| regions.landing(warp.to_x, warp.to_y)),
+        },
     }))
 }

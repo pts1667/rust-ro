@@ -11,6 +11,7 @@ mod commerce;
 mod companions;
 mod controller;
 mod dialog;
+mod events;
 mod http;
 mod interaction;
 mod lifecycle;
