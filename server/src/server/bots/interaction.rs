@@ -26,6 +26,8 @@ use crate::server::state::server::ServerState;
 const MAX_CHAT_LENGTH: usize = 200;
 /// Cells between two traders, as `player_trade_service` requires.
 const TRADE_REACH: u16 = 2;
+/// Basic Skill level a character needs to create a party (`PartyRequest::CreateParty`).
+const PARTY_CREATE_BASIC_SKILL: u8 = 7;
 const GUILD_SKILLS: RangeInclusive<u32> = 10000..=10015;
 /// Trade packets count the inventory from here, index 0 being the zeny.
 const TRADE_ITEM_INDEX_OFFSET: u16 = 2;
@@ -94,10 +96,13 @@ pub enum ChatAction {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PartyAction {
-    Create { name: String },
+    Create { name: String, item_pickup: bool, item_share: bool },
     Invite { name: String },
     Answer { accept: bool },
     Leave,
+    Options { exp_share: Option<bool>, item_pickup: Option<bool>, item_share: Option<bool> },
+    Leader { name: String },
+    Kick { name: String },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -412,11 +417,14 @@ impl Server {
         let character = character_of(state, char_id)?;
         let party = |request| GameEvent::ScriptWorld(ScriptWorld { char_id, request: ScriptWorldRequest::Party(request) });
         let event = match action {
-            PartyAction::Create { name } => {
+            PartyAction::Create { name, item_pickup, item_share } => {
                 if character.game_systems.party.is_some() {
                     return Err("The character is already in a party, leave it first".into());
                 }
-                party(PartyRequest::CreateParty { name: name.trim().to_string(), item_pickup: false, item_share: false })
+                if learned_level(&character.status, SkillEnum::NvBasic.id()) < PARTY_CREATE_BASIC_SKILL {
+                    return Err(format!("Creating a party needs Basic Skill level {PARTY_CREATE_BASIC_SKILL}; joining one needs none"));
+                }
+                party(PartyRequest::CreateParty { name: name.trim().to_string(), item_pickup: *item_pickup, item_share: *item_share })
             }
             PartyAction::Invite { name } => {
                 if character.game_systems.party.is_none() {
@@ -444,6 +452,35 @@ impl Server {
                     return Err("The character has no party".into());
                 }
                 party(PartyRequest::LeaveParty)
+            }
+            PartyAction::Options { exp_share, item_pickup, item_share } => {
+                let current = led_party(character)?;
+                party(PartyRequest::ChangePartyOptions {
+                    exp_share: exp_share.unwrap_or(current.exp_share),
+                    item_rules: Some((item_pickup.unwrap_or(current.item_pickup), item_share.unwrap_or(current.item_share))),
+                })
+            }
+            PartyAction::Leader { name } => {
+                let current = led_party(character)?;
+                let name = name.trim();
+                let member = player_named(state, name)?;
+                if member.char_id == char_id || !current.members.contains(&member.char_id) {
+                    return Err(format!("{name} is not another member of the party"));
+                }
+                if member.map_instance_key != character.map_instance_key {
+                    return Err(format!("{name} must be on the same map to lead the party"));
+                }
+                party(PartyRequest::ChangePartyLeader(member.account_id))
+            }
+            PartyAction::Kick { name } => {
+                let current = led_party(character)?;
+                let name = name.trim();
+                let records = self.script_world_service().repository.party_member_records(current.id).map_err(|error| error.to_string())?;
+                let member = records
+                    .iter()
+                    .find(|record| record.name.eq_ignore_ascii_case(name) && record.char_id as u32 != char_id)
+                    .ok_or_else(|| format!("{name} is not another member of the party"))?;
+                party(PartyRequest::ExpelParty { account_id: member.account_id as u32, name: member.name.clone() })
             }
         };
         self.add_to_next_tick(event);
@@ -499,4 +536,13 @@ impl Server {
         self.add_to_next_tick(GameEvent::PlayerTrade(PlayerTradeAction { char_id, account_id, auth_code: session.auth_code, request }));
         sent(Value::Null)
     }
+}
+
+/// The party of `character`, when it leads it.
+fn led_party(character: &Character) -> Result<&crate::server::model::game_systems::PartyRecord, String> {
+    let party = character.game_systems.party.as_ref().ok_or("The character has no party")?;
+    if party.leader_char_id != character.char_id {
+        return Err("Only the party leader can do this".into());
+    }
+    Ok(party)
 }

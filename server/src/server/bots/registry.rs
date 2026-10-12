@@ -8,6 +8,7 @@ use serde::Serialize;
 
 use super::dialog::{self, Decoded, Dialog};
 use super::events::{BotEvent, BotEventKind, BotSnapshot};
+use super::party_window::{self, PartyWindow};
 
 const MESSAGE_BACKLOG: usize = 50;
 /// Events kept for a bot: a few minutes of a busy fight.
@@ -35,6 +36,8 @@ struct BotScreen {
     snapshot: Option<BotSnapshot>,
     /// The death of the character was recorded with its killer since the last snapshot.
     death_recorded: bool,
+    /// The party as the client shows it, see `party_window`.
+    party: Option<PartyWindow>,
 }
 
 impl BotScreen {
@@ -160,13 +163,24 @@ impl BotHandle {
         screen.snapshot = Some(now);
     }
 
-    /// Forgets the character as it was, for a bot that left the game: its next snapshot starts over.
+    /// Forgets the character as it was, for a bot that left the game: its next snapshot starts over, and its party
+    /// window too, which the server sends again when the bot comes back.
     fn forget_snapshot(&self) {
-        self.screen().snapshot = None;
+        let mut screen = self.screen();
+        screen.snapshot = None;
+        screen.party = None;
+    }
+
+    /// The party window of the bot, `None` outside a party.
+    pub fn party_window(&self) -> Option<PartyWindow> {
+        self.screen().party.clone()
     }
 
     fn apply_packet(&self, packet: &[u8]) {
         let mut screen = self.screen();
+        if party_window::decode(&mut screen.party, self.account_id, packet) {
+            return;
+        }
         match dialog::decode(&mut screen.dialog, packet) {
             Decoded::Unrelated => {}
             Decoded::Dialog => screen.dialog_version += 1,

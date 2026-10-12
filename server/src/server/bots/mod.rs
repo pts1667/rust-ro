@@ -17,6 +17,7 @@ mod interaction;
 mod lifecycle;
 mod menu;
 mod observation;
+mod party_window;
 mod registry;
 mod settings;
 mod websocket;

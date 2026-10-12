@@ -14,6 +14,7 @@ use super::dialog::Prompt;
 use super::events::{BotEvent, BotEventKind};
 use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, SkillRef, Stat, StorageAction, TradeAction};
 use super::menu::{CraftAction, MenuAnswer, SkillMenuAction};
+use super::party_window::PartyWindow;
 use super::lifecycle::{CreateError, NewBot, StoredBot, create_stored_bot, delete_stored_bot, find_stored_bot, load_bot_character};
 use super::registry::BotHandle;
 use crate::server::Server;
@@ -250,8 +251,13 @@ pub enum Action {
     PartyChat {
         text: String,
     },
+    /// Creates a party. `item_pickup` lets members pick up each other's loot, `item_share` spreads the loot picked up.
     PartyCreate {
         name: String,
+        #[serde(default)]
+        item_pickup: bool,
+        #[serde(default)]
+        item_share: bool,
     },
     PartyInvite {
         name: String,
@@ -259,6 +265,20 @@ pub enum Action {
     PartyAccept,
     PartyDecline,
     PartyLeave,
+    /// Changes the sharing of the party (leader only); what is left out stays as it is.
+    PartyOptions {
+        exp_share: Option<bool>,
+        item_pickup: Option<bool>,
+        item_share: Option<bool>,
+    },
+    /// Hands the leadership to a member on the same map (leader only).
+    PartyLeader {
+        name: String,
+    },
+    /// Expels a member, online or not (leader only).
+    PartyKick {
+        name: String,
+    },
     TradeRequest {
         target: u32,
     },
@@ -427,6 +447,59 @@ fn one_unit() -> u16 {
 }
 
 /// `(listed, amount)` of every line of a purchase or a sale: a line the shop did not list ends the script with an error.
+/// The party as the client shows it (`PartyWindow`, built from the packets the server sent), with the party id and the
+/// character id of the members in the game. Until the first packets arrive, the server's list of members stands in.
+fn party_view(server: Value, window: Option<PartyWindow>) -> Value {
+    if server.is_null() {
+        return Value::Null;
+    }
+    let members = server["members"].as_array().cloned().unwrap_or_default();
+    let char_id_of = |name: &str| {
+        members
+            .iter()
+            .find(|member| !name.is_empty() && member["name"].as_str().is_some_and(|known| known.eq_ignore_ascii_case(name)))
+            .map_or(Value::Null, |member| member["char_id"].clone())
+    };
+    let Some(window) = window else {
+        let leader = server["leader"].clone();
+        let members: Vec<Value> = members
+            .iter()
+            .map(|member| {
+                let name = member["name"].as_str().unwrap_or_default();
+                json!({
+                    "name": name,
+                    "char_id": if name.is_empty() { Value::Null } else { member["char_id"].clone() },
+                    "map": "",
+                    "leader": member["char_id"] == leader,
+                    "online": !name.is_empty(),
+                    "x": null, "y": null, "hp": null, "max_hp": null,
+                })
+            })
+            .collect();
+        let leader_name = members.iter().find(|member| member["leader"] == json!(true)).map_or(Value::Null, |member| member["name"].clone());
+        return json!({
+            "id": server["id"],
+            "name": server["name"],
+            "leader": leader_name,
+            "exp_share": server["exp_share"],
+            "exp_share_denied": false,
+            "item_pickup": server["item_pickup"],
+            "item_share": server["item_share"],
+            "members": members,
+        });
+    };
+    let leader = window.members.iter().find(|member| member.leader).map(|member| member.name.clone());
+    let mut view = serde_json::to_value(&window).unwrap_or(Value::Null);
+    if let Some(listed) = view["members"].as_array_mut() {
+        for member in listed {
+            member["char_id"] = char_id_of(member["name"].as_str().unwrap_or_default());
+        }
+    }
+    view["id"] = server["id"].clone();
+    view["leader"] = json!(leader);
+    view
+}
+
 fn check_lines(lines: impl Iterator<Item = (bool, i16)>, what: &str) -> Result<(), BotError> {
     let mut count = 0;
     for (listed, amount) in lines {
@@ -748,6 +821,7 @@ impl BotController {
     async fn view(&self, bot: &BotHandle) -> Result<Value, BotError> {
         let mut observation = self.run(bot, BotRequest::Observe).await?;
         observation["dialog"] = serde_json::to_value(bot.dialog()).unwrap_or(Value::Null);
+        observation["party"] = party_view(observation["party"].take(), bot.party_window());
         observation["messages"] = serde_json::to_value(bot.recent_messages(RECENT_MESSAGES)).unwrap_or(Value::Null);
         Ok(observation)
     }
@@ -862,11 +936,18 @@ impl BotController {
             Action::Say { text } => self.send(&bot, BotRequest::Chat(ChatAction::Say(text))).await,
             Action::Whisper { to, text } => self.send(&bot, BotRequest::Chat(ChatAction::Whisper { to, text })).await,
             Action::PartyChat { text } => self.send(&bot, BotRequest::Chat(ChatAction::Party(text))).await,
-            Action::PartyCreate { name } => self.send(&bot, BotRequest::Party(PartyAction::Create { name })).await,
+            Action::PartyCreate { name, item_pickup, item_share } => {
+                self.send(&bot, BotRequest::Party(PartyAction::Create { name, item_pickup, item_share })).await
+            }
             Action::PartyInvite { name } => self.send(&bot, BotRequest::Party(PartyAction::Invite { name })).await,
             Action::PartyAccept => self.send(&bot, BotRequest::Party(PartyAction::Answer { accept: true })).await,
             Action::PartyDecline => self.send(&bot, BotRequest::Party(PartyAction::Answer { accept: false })).await,
             Action::PartyLeave => self.send(&bot, BotRequest::Party(PartyAction::Leave)).await,
+            Action::PartyOptions { exp_share, item_pickup, item_share } => {
+                self.send(&bot, BotRequest::Party(PartyAction::Options { exp_share, item_pickup, item_share })).await
+            }
+            Action::PartyLeader { name } => self.send(&bot, BotRequest::Party(PartyAction::Leader { name })).await,
+            Action::PartyKick { name } => self.send(&bot, BotRequest::Party(PartyAction::Kick { name })).await,
             Action::TradeRequest { target } => self.send(&bot, BotRequest::Trade(TradeAction::Request { target })).await,
             Action::TradeAccept => self.send(&bot, BotRequest::Trade(TradeAction::Answer { accept: true })).await,
             Action::TradeDecline => self.send(&bot, BotRequest::Trade(TradeAction::Answer { accept: false })).await,
@@ -1287,6 +1368,21 @@ mod tests {
         assert!(matches!(parse(r#"{"type":"mercenary_dismiss"}"#), Action::MercenaryDismiss));
         let Action::Command { text } = parse(r#"{"type":"command","text":"@go prontera"}"#) else { panic!("not a command") };
         assert_eq!(text, "@go prontera");
+    }
+
+    #[test]
+    fn the_party_actions_read_the_json_of_the_documentation() {
+        assert!(matches!(parse(r#"{"type":"party_create","name":"Wanderers"}"#), Action::PartyCreate { item_pickup: false, item_share: false, .. }));
+        assert!(matches!(
+            parse(r#"{"type":"party_create","name":"Wanderers","item_pickup":true,"item_share":true}"#),
+            Action::PartyCreate { item_pickup: true, item_share: true, .. }
+        ));
+        assert!(matches!(
+            parse(r#"{"type":"party_options","exp_share":true}"#),
+            Action::PartyOptions { exp_share: Some(true), item_pickup: None, item_share: None }
+        ));
+        assert!(matches!(parse(r#"{"type":"party_leader","name":"Beta"}"#), Action::PartyLeader { .. }));
+        assert!(matches!(parse(r#"{"type":"party_kick","name":"Beta"}"#), Action::PartyKick { .. }));
     }
 
     #[test]

@@ -17,6 +17,11 @@ const NOTIFY_PLAYER_CHAT: u16 = 0x008e;
 const NOTIFY_CHAT: u16 = 0x008d;
 const WHISPER: u16 = 0x0097;
 const NOTIFY_CHAT_PARTY: u16 = 0x0109;
+const PARTY_CREATED: u16 = 0x00FA;
+const PARTY_INVITE_RESULT: u16 = 0x02C5;
+/// Header, then the name of the invited character.
+const INVITED_NAME: std::ops::Range<usize> = 2..26;
+const INVITE_RESULT_CODE: std::ops::Range<usize> = 26..30;
 
 // Fixed packets are `id, npc id`; variable ones are `id, length, npc id, text`
 const FIXED_NPC_ID: std::ops::Range<usize> = 2..6;
@@ -203,6 +208,29 @@ pub fn decode(dialog: &mut Option<Dialog>, packet: &[u8]) -> Decoded {
         NOTIFY_PLAYER_CHAT => Decoded::Message { channel: "system", text: text_from(packet, CHAT_TEXT_START) },
         NOTIFY_CHAT => Decoded::Message { channel: "chat", text: text_from(packet, HEARD_CHAT_TEXT_START) },
         NOTIFY_CHAT_PARTY => Decoded::Message { channel: "party", text: text_from(packet, HEARD_CHAT_TEXT_START) },
+        PARTY_CREATED => {
+            let text = match packet.get(2) {
+                Some(0) => "Party created.",
+                Some(1) => "Party creation failed: the name is taken.",
+                Some(2) => "Party creation failed: already in a party.",
+                _ => "Party creation failed.",
+            };
+            Decoded::Message { channel: "system", text: text.to_string() }
+        }
+        PARTY_INVITE_RESULT => {
+            let name = packet.get(INVITED_NAME).map(|field| text_from(field, 0)).unwrap_or_default();
+            let code = packet.get(INVITE_RESULT_CODE).and_then(|field| field.try_into().ok()).map(u32::from_le_bytes);
+            let text = match code {
+                Some(0) => format!("{name} is already in a party or has an invitation to answer."),
+                Some(1) => format!("{name} declined the party invitation."),
+                Some(2) => format!("{name} joined the party."),
+                Some(3) => "The party is full.".to_string(),
+                Some(4) => format!("{name} is already a member of the party with another character."),
+                Some(5) => format!("{name} does not take party invitations."),
+                _ => "Nobody of that name is in the game.".to_string(),
+            };
+            Decoded::Message { channel: "system", text }
+        }
         WHISPER => {
             let sender = packet.get(WHISPER_SENDER).map(|field| text_from(field, 0)).unwrap_or_default();
             Decoded::Message { channel: "whisper", text: format!("{sender} : {}", text_from(packet, WHISPER_TEXT_START)) }

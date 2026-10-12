@@ -103,7 +103,8 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
                       "perfect_dodge": 1.0, "critical": 1.0, "aspd": 150.0, "speed": 150, "element": "Neutral"},
            "statuses": [{"name": "Blessing", "remaining_ms": 59000}]},
   "map": {"name": "prontera", "instance": 0, "width": 312, "height": 392},
-  "players": [{"id": 150002, "name": "Other", "x": 150, "y": 190, "attackable": false}],
+  "players": [{"id": 150002, "name": "Other", "x": 150, "y": 190, "attackable": false, "job": "Acolyte", "dead": false,
+               "attack_target": null, "party": true}],
   "mobs":    [{"id": 400012, "name": "Poring", "mob_id": 1002, "x": 160, "y": 200, "hp": 50, "max_hp": 50, "level": 1,
                "aggressive": false, "boss": false, "action": "attacking", "target": 150001}],
   "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29, "region": 1}],
@@ -114,7 +115,12 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
                            "identified": true, "cards": [], "can_equip": true, "why_not": null}}],
   "storage": null,
   "skills": [{"id": 28, "name": "AL_HEAL", "level": 3, "aim": "target", "range": 9}],
-  "party": {"id": 1, "name": "Squad", "leader": 150001, "members": [{"char_id": 150001, "name": "Scout"}]},
+  "party": {"id": 1, "name": "Squad", "leader": "Scout", "exp_share": true, "exp_share_denied": false, "item_pickup": true,
+            "item_share": false,
+            "members": [{"name": "Scout", "char_id": 150001, "map": "prt_fild08", "leader": true, "online": true,
+                         "x": null, "y": null, "hp": null, "max_hp": null},
+                        {"name": "Other", "char_id": 150002, "map": "prt_fild08", "leader": false, "online": true,
+                         "x": 150, "y": 190, "hp": 80, "max_hp": 120}]},
   "party_invitation": null,
   "trade": null,
   "skill_menu": null,
@@ -318,8 +324,26 @@ What others say arrives in `messages`.
 
 ### Parties
 
-`party_create` (`name`), `party_invite` (`name` of a character who is in the game), `party_accept` and `party_decline` (answers the
-`party_invitation` of the observation), `party_leave`. `party` in the observation lists the members, `name` is empty for those offline.
+| Action | What it does |
+|---|---|
+| `party_create` (`name`, `item_pickup`, `item_share`, both default false) | Creates a party led by the bot; it needs Basic Skill level 7 (joining needs none). `item_pickup`: members may pick up each other's loot; `item_share`: what a member picks up goes to a random member alive on the same map |
+| `party_invite` (`name`) | Invites a character who is in the game (leader only) |
+| `party_accept` / `party_decline` | Answers the `party_invitation` of the observation (or the `party_invited` event) |
+| `party_leave` | Leaves the party |
+| `party_options` (`exp_share`, `item_pickup`, `item_share`, each optional) | Changes the sharing (leader only). Experience is shared evenly among the members on the map of the kill, while the levels of the members in the game are at most 15 apart; otherwise the server refuses and `exp_share_denied` turns true |
+| `party_leader` (`name`) | Hands the lead to a member on the same map |
+| `party_kick` (`name`) | Expels a member, also one that is offline (leader only) |
+
+These actions return once the request is sent; the party view, the party events and the `system` messages (a taken party name, an
+invitation declined...) show the outcome.
+
+`party` in the observation is the party window of a game client, rebuilt from what the server sends to the bot's client: for every
+member its `name`, `map` (the last one for a member out of the game), `leader` and `online`; `x` and `y` for the members on the bot's map
+(the minimap marks), and `hp` and `max_hp` while they are in sight. `char_id` is set for the members in the game. `leader` is the
+leader's name. There is nothing more to know about the others: what a member does, it says in `party_chat`, which arrives in
+`messages` on the `party` channel as `Name : text`.
+
+`players[].party` marks the members on the map, `job`, `dead` and `attack_target` (what it is hitting) are what its sprite shows.
 
 ### Trades
 
@@ -329,7 +353,7 @@ Two characters standing close to each other can trade. The steps, in order:
 2. `trade_accept` (or `trade_decline`). The `phase` becomes `accepted`.
 3. `trade_offer` (`index` of an inventory item, `amount`) and `trade_zeny` (`amount`) put things on the table. What the partner offers is in
    `partner_items` and `partner_zeny`. Equipped items must be taken off first and the amounts must be held, both are refused otherwise.
-4. `trade_lock` when satisfied (`locked`), then `trade_confirm` once both are locked. When both confirmed, the items change hands and
+4. `trade_lock` when satisfied (`locked`), then `trade_confirm` once both are locked (`partner_phase` is the partner's). When both confirmed, the items change hands and
    `trade` becomes `null`. `trade_cancel` ends it at any time.
 
 ### Fighting players
@@ -484,11 +508,16 @@ Each bot keeps the last 500 things that happened to it, numbered by `seq`:
 | `missed` | An attack that did no damage: `source_id`, `source`, `source_kind`, `mob_id` |
 | `died` | `killer_id`, `killer`, `killer_kind`, `mob_id` (`null` when the game does not know who) |
 | `revived` | The bot is alive again (respawned or resurrected): `map`, `x`, `y` |
-| `killed` | A monster died and the bot had a share of it: `mob_id`, `name`, `x`, `y`, `base_exp`, `job_exp` (after the server's rates) |
+| `killed` | A monster died and the bot had a share of it: `mob_id`, `name`, `x`, `y`, `base_exp`, `job_exp` (after the server's rates), `shared` (a party member made the kill) |
 | `level_up` | `kind` (`base` or `job`), `level` |
 | `job_changed` | `from`, `to` |
 | `map_changed` | `from`, `to`, `x`, `y` |
 | `item_gained`, `item_lost` | `item_id`, `name`, `amount`: picked up, bought, sold, used, dropped, given, stored... |
+| `party_invited` | `inviter`, `party_id`: answer with `party_accept` or `party_decline` |
+| `party_joined`, `party_left` | `party` (its name): the bot created or joined one, or left, was expelled, or the party ended |
+| `party_member_joined`, `party_member_left` | `name` |
+| `party_leader_changed` | `name` of the new leader |
+| `trade_requested` | `from`: someone next to the bot asks for a trade, answer with `trade_accept` or `trade_decline` |
 
 `GET /bots/{name}/events?after=12` answers `{"events": [{"seq": 13, "at": 1760000000000, "event": "damaged", ...}], "last": 13}`, `at`
 being milliseconds since the Unix epoch. Keep `last` and ask with it next time. Events are kept while the bot is out of the game too,

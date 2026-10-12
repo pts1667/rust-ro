@@ -115,6 +115,12 @@ pub struct PlayerView {
     pub y: u16,
     /// Whether `attack` can hit the player here: in a duel, or on a map where players fight.
     pub attackable: bool,
+    /// What its sprite shows: the job, lying dead, and what it is hitting.
+    pub job: String,
+    pub dead: bool,
+    pub attack_target: Option<u32>,
+    /// A member of the bot's party (its name shows in the party colour).
+    pub party: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -271,6 +277,9 @@ pub struct PartyView {
     pub id: u32,
     pub name: String,
     pub leader: u32,
+    pub exp_share: bool,
+    pub item_pickup: bool,
+    pub item_share: bool,
     pub members: Vec<PartyMemberView>,
 }
 
@@ -296,6 +305,8 @@ pub struct TradeView {
     pub phase: &'static str,
     /// The request comes from the partner: answer it with `trade_accept` or `trade_decline`.
     pub incoming_request: bool,
+    /// The partner's phase, as the trade window shows its lock and confirm marks.
+    pub partner_phase: &'static str,
     pub my_items: Vec<TradeItemView>,
     pub my_zeny: u32,
     pub partner_items: Vec<TradeItemView>,
@@ -418,12 +429,14 @@ fn inventory_view(server: &Server, character: &Character, index: usize, item: &c
     }
 }
 
+fn job_name(job: u32) -> String {
+    JobName::try_from_value(job as usize).map(|job| format!("{job:?}")).unwrap_or_else(|_| job.to_string())
+}
+
 fn self_view(server: &Server, character: &Character, tick: u128) -> SelfView {
     let snapshot = server.server_service().get_status_snapshot(&character.status, tick);
     let character_service = server.character_service();
-    let job = JobName::try_from_value(character.status.job as usize)
-        .map(|job| format!("{job:?}"))
-        .unwrap_or_else(|_| character.status.job.to_string());
+    let job = job_name(character.status.job);
     SelfView {
         name: character.name.clone(),
         char_id: character.char_id,
@@ -538,12 +551,24 @@ fn party_view(state: &ServerState, character: &Character) -> Option<PartyView> {
         id: party.id,
         name: party.name.clone(),
         leader: party.leader_char_id,
+        exp_share: party.exp_share,
+        item_pickup: party.item_pickup,
+        item_share: party.item_share,
         members: party
             .members
             .iter()
             .map(|id| PartyMemberView { char_id: *id, name: state.get_character(*id).map(|member| member.name.clone()).unwrap_or_default() })
             .collect(),
     })
+}
+
+fn phase_name(phase: PlayerTradePhase) -> &'static str {
+    match phase {
+        PlayerTradePhase::Requested => "requested",
+        PlayerTradePhase::Accepted => "accepted",
+        PlayerTradePhase::Locked => "locked",
+        PlayerTradePhase::Confirmed => "confirmed",
+    }
 }
 
 fn trade_view(state: &ServerState, character: &Character) -> Option<TradeView> {
@@ -563,13 +588,9 @@ fn trade_view(state: &ServerState, character: &Character) -> Option<TradeView> {
     Some(TradeView {
         partner: trade.partner_id,
         partner_name: partner.map(|partner| partner.name.clone()).unwrap_or_default(),
-        phase: match trade.phase {
-            PlayerTradePhase::Requested => "requested",
-            PlayerTradePhase::Accepted => "accepted",
-            PlayerTradePhase::Locked => "locked",
-            PlayerTradePhase::Confirmed => "confirmed",
-        },
+        phase: phase_name(trade.phase),
         incoming_request: trade.phase == PlayerTradePhase::Requested && trade.requested_by != character.char_id,
+        partner_phase: partner_trade.map_or("requested", |other| phase_name(other.phase)),
         my_items: items(&trade.items),
         my_zeny: trade.zeny,
         partner_items: partner_trade.map(|other| items(&other.items)).unwrap_or_default(),
@@ -654,6 +675,10 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
             x: other.x(),
             y: other.y(),
             attackable: server.player_combat_target_allowed(state, character, other.char_id),
+            job: job_name(other.status.job),
+            dead: other.is_dead(),
+            attack_target: other.is_attacking().then(|| other.attack().target),
+            party: character.game_systems.party_id != 0 && other.game_systems.party_id == character.game_systems.party_id,
         })
         .collect();
     let Some(instance) = instance else {

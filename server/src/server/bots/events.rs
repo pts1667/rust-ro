@@ -12,6 +12,7 @@ use serde::Serialize;
 use crate::server::Server;
 use crate::server::model::action::Damage;
 use crate::server::model::events::game_event::CharacterKillMonster;
+use crate::server::model::game_systems::PlayerTradePhase;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
@@ -34,8 +35,9 @@ pub enum BotEventKind {
     Missed { source_id: u32, source: Option<String>, source_kind: &'static str, mob_id: Option<i16> },
     /// The bot died. `killer` is what dealt the last blow, when the game knows it.
     Died { killer_id: Option<u32>, killer: Option<String>, killer_kind: Option<&'static str>, mob_id: Option<i16> },
-    /// A monster died and the bot had a share of its experience (the experience is after the server's rates).
-    Killed { mob_id: i16, name: String, x: u16, y: u16, base_exp: u32, job_exp: u32 },
+    /// A monster died and the bot had a share of its experience (the experience is after the server's rates). `shared`
+    /// is true when a party member made the kill and the party shares experience.
+    Killed { mob_id: i16, name: String, x: u16, y: u16, base_exp: u32, job_exp: u32, shared: bool },
     LevelUp { kind: &'static str, level: u32 },
     JobChanged { from: String, to: String },
     MapChanged { from: String, to: String, x: u16, y: u16 },
@@ -43,6 +45,18 @@ pub enum BotEventKind {
     Revived { map: String, x: u16, y: u16 },
     ItemGained { item_id: i32, name: String, amount: i32 },
     ItemLost { item_id: i32, name: String, amount: i32 },
+    /// Someone invites the bot into their party: answer with `party_accept` or `party_decline`.
+    PartyInvited { inviter: String, party_id: u32 },
+    /// The bot is in a party now (it created one or accepted an invitation).
+    PartyJoined { party: String },
+    /// The bot is out of its party (it left, was expelled, or the party ended).
+    PartyLeft { party: String },
+    PartyMemberJoined { name: String },
+    PartyMemberLeft { name: String },
+    /// The party has a new leader.
+    PartyLeaderChanged { name: String },
+    /// Someone close by asks the bot for a trade: answer with `trade_accept` or `trade_decline`.
+    TradeRequested { from: String },
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -66,10 +80,19 @@ pub struct BotSnapshot {
     dead: bool,
     /// Amount held of each item id, with its name.
     items: BTreeMap<i32, (i32, String)>,
+    /// Id and name of the party.
+    party: Option<(u32, String)>,
+    /// The members of the party, with their name while they are in the game.
+    members: BTreeMap<u32, String>,
+    leader: u32,
+    /// The pending party invitation: party id and who sent it.
+    invitation: Option<(u32, String)>,
+    /// Who asks for a trade that the bot has not answered yet.
+    trade_request: Option<String>,
 }
 
 impl BotSnapshot {
-    pub fn of(character: &Character) -> Self {
+    pub fn of(state: &ServerState, character: &Character) -> Self {
         let mut items: BTreeMap<i32, (i32, String)> = BTreeMap::new();
         for (_, item) in character.inventory_iter() {
             let entry = items.entry(item.item_id).or_insert_with(|| (0, item.name_english.clone()));
@@ -84,6 +107,24 @@ impl BotSnapshot {
             job: job_name(character.status.job),
             dead: character.is_dead() || character.status.hp == 0,
             items,
+            party: character.game_systems.party.as_ref().map(|party| (party.id, party.name.clone())),
+            members: character
+                .game_systems
+                .party
+                .iter()
+                .flat_map(|party| party.members.iter())
+                .map(|id| (*id, state.get_character(*id).map(|member| member.name.clone()).unwrap_or_default()))
+                .collect(),
+            leader: character.game_systems.party.as_ref().map_or(0, |party| party.leader_char_id),
+            invitation: character.game_systems.party_invitation.as_ref().map(|invitation| {
+                (invitation.party_id, state.get_character(invitation.inviter_id).map(|inviter| inviter.name.clone()).unwrap_or_default())
+            }),
+            trade_request: character
+                .game_systems
+                .trade
+                .as_ref()
+                .filter(|trade| trade.phase == PlayerTradePhase::Requested && trade.requested_by != character.char_id)
+                .map(|trade| state.get_character(trade.partner_id).map(|partner| partner.name.clone()).unwrap_or_default()),
         }
     }
 
@@ -121,7 +162,40 @@ impl BotSnapshot {
                 events.push(BotEventKind::ItemLost { item_id: *item_id, name: name.clone(), amount: amount - after });
             }
         }
+        self.party_changes(now, &mut events);
+        if let Some(from) = now.trade_request.as_ref().filter(|_| self.trade_request.is_none()) {
+            events.push(BotEventKind::TradeRequested { from: from.clone() });
+        }
         events
+    }
+
+    fn party_changes(&self, now: &Self, events: &mut Vec<BotEventKind>) {
+        if let Some((party_id, inviter)) = now.invitation.as_ref().filter(|_| self.invitation.is_none()) {
+            events.push(BotEventKind::PartyInvited { inviter: inviter.clone(), party_id: *party_id });
+        }
+        let name_of = |id: &u32, snapshot: &Self| {
+            snapshot.members.get(id).filter(|name| !name.is_empty()).cloned().unwrap_or_else(|| format!("#{id}"))
+        };
+        match (&self.party, &now.party) {
+            (None, Some((_, party))) => events.push(BotEventKind::PartyJoined { party: party.clone() }),
+            (Some((_, party)), None) => events.push(BotEventKind::PartyLeft { party: party.clone() }),
+            (Some((before, _)), Some((after, party))) if before != after => {
+                events.push(BotEventKind::PartyLeft { party: self.party.as_ref().map(|(_, name)| name.clone()).unwrap_or_default() });
+                events.push(BotEventKind::PartyJoined { party: party.clone() });
+            }
+            (Some(_), Some(_)) => {
+                for id in now.members.keys().filter(|id| !self.members.contains_key(id)) {
+                    events.push(BotEventKind::PartyMemberJoined { name: name_of(id, now) });
+                }
+                for id in self.members.keys().filter(|id| !now.members.contains_key(id)) {
+                    events.push(BotEventKind::PartyMemberLeft { name: name_of(id, self) });
+                }
+                if now.leader != self.leader {
+                    events.push(BotEventKind::PartyLeaderChanged { name: name_of(&now.leader, now) });
+                }
+            }
+            (None, None) => {}
+        }
     }
 }
 
@@ -224,13 +298,21 @@ impl Server {
         for (char_id, base_exp, job_exp) in awards {
             credited |= *char_id == kill.char_id;
             if self.bots().is_bot(*char_id) {
-                let kind = BotEventKind::Killed { mob_id: kill.mob_id, name: name.clone(), x: kill.mob_x, y: kill.mob_y, base_exp: *base_exp, job_exp: *job_exp };
+                let kind = BotEventKind::Killed {
+                    mob_id: kill.mob_id,
+                    name: name.clone(),
+                    x: kill.mob_x,
+                    y: kill.mob_y,
+                    base_exp: *base_exp,
+                    job_exp: *job_exp,
+                    shared: *char_id != kill.char_id,
+                };
                 self.bots().record(*char_id, kind);
             }
         }
         // The killer of a monster that gave no experience (a PvP map, an event monster)
         if !credited && self.bots().is_bot(kill.char_id) {
-            self.bots().record(kill.char_id, BotEventKind::Killed { mob_id: kill.mob_id, name, x: kill.mob_x, y: kill.mob_y, base_exp: 0, job_exp: 0 });
+            self.bots().record(kill.char_id, BotEventKind::Killed { mob_id: kill.mob_id, name, x: kill.mob_x, y: kill.mob_y, base_exp: 0, job_exp: 0, shared: false });
         }
     }
 
@@ -238,7 +320,7 @@ impl Server {
     pub(crate) fn sample_bots(&self, state: &ServerState) {
         for char_id in self.bots().connected_char_ids() {
             if let Some(character) = state.characters().get(&char_id) {
-                self.bots().sample(char_id, BotSnapshot::of(character), character.loaded_from_client_side);
+                self.bots().sample(char_id, BotSnapshot::of(state, character), character.loaded_from_client_side);
             }
         }
     }
@@ -258,7 +340,46 @@ mod tests {
             job: "Novice".into(),
             dead: false,
             items: BTreeMap::from([(501, (3, "Red Potion".to_string())), (909, (1, "Jellopy".to_string()))]),
+            ..Default::default()
         }
+    }
+
+    #[test]
+    fn joining_a_party_and_its_members_coming_and_going_are_told() {
+        let alone = snapshot();
+        let mut invited = snapshot();
+        invited.invitation = Some((7, "Alpha".into()));
+        assert_eq!(alone.changes(&invited, false), vec![BotEventKind::PartyInvited { inviter: "Alpha".into(), party_id: 7 }]);
+        let mut joined = snapshot();
+        joined.party = Some((7, "Wanderers".into()));
+        joined.members = BTreeMap::from([(1, "Alpha".into()), (2, "Beta".into())]);
+        joined.leader = 1;
+        assert_eq!(invited.changes(&joined, false), vec![BotEventKind::PartyJoined { party: "Wanderers".into() }]);
+        let mut grown = joined.clone();
+        grown.members.insert(3, "Gamma".into());
+        grown.members.remove(&1);
+        grown.leader = 2;
+        assert_eq!(
+            joined.changes(&grown, false),
+            vec![
+                BotEventKind::PartyMemberJoined { name: "Gamma".into() },
+                BotEventKind::PartyMemberLeft { name: "Alpha".into() },
+                BotEventKind::PartyLeaderChanged { name: "Beta".into() },
+            ]
+        );
+        // A member who logs out keeps its place, without a name
+        let mut offline = grown.clone();
+        offline.members.insert(3, String::new());
+        assert!(grown.changes(&offline, false).is_empty());
+        assert_eq!(offline.changes(&alone, false), vec![BotEventKind::PartyLeft { party: "Wanderers".into() }]);
+    }
+
+    #[test]
+    fn a_trade_request_is_told_once() {
+        let mut asked = snapshot();
+        asked.trade_request = Some("Alpha".into());
+        assert_eq!(snapshot().changes(&asked, false), vec![BotEventKind::TradeRequested { from: "Alpha".into() }]);
+        assert!(asked.changes(&asked, false).is_empty());
     }
 
     #[test]
