@@ -545,12 +545,12 @@ mod tests {
         let path = std::env::temp_dir().join(format!("rust-ro-trade-session-{}-{}", std::process::id(),
             std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
         {
-            let repository = SledRepository { database: database::Database::open(&path).unwrap() };
+            let repository = SledRepository { database: database::Database::open(&path).unwrap(), forum_writes: Default::default() };
             assert_eq!(repository.allocate_player_trade_session_id().unwrap(), 1);
             assert_eq!(repository.allocate_player_trade_session_id().unwrap(), 2);
         }
         {
-            let repository = SledRepository { database: database::Database::open(&path).unwrap() };
+            let repository = SledRepository { database: database::Database::open(&path).unwrap(), forum_writes: Default::default() };
             assert_eq!(repository.allocate_player_trade_session_id().unwrap(), 3);
             repository.database.metadata.transaction(|metadata| tx_write(metadata, b"player_trade_session_id", &u64::MAX)).unwrap();
             let before = snapshot(&repository);

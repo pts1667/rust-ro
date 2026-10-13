@@ -40,7 +40,7 @@ impl ApiKey {
         key.len() == candidate.len() && key.iter().zip(candidate).fold(0u8, |difference, (left, right)| difference | (left ^ right)) == 0
     }
 
-    fn accepts(&self, headers: &HeaderMap) -> bool {
+    pub(crate) fn accepts(&self, headers: &HeaderMap) -> bool {
         let bearer = headers
             .get(header::AUTHORIZATION)
             .and_then(|value| value.to_str().ok())

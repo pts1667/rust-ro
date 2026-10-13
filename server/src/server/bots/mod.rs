@@ -24,9 +24,11 @@ mod social;
 mod social_window;
 mod websocket;
 
+use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
 
+pub(crate) use auth::{ApiKey, require_key};
 pub use command::BotCommand;
 #[cfg(test)]
 pub(crate) use combat::DuelRequest;
@@ -92,7 +94,8 @@ pub fn serve(server: Arc<Server>) {
                 idle_controller.logout_idle_bots().await;
             }
         });
-        let app = http::router(controller, key);
+        let forum = Arc::new(crate::server::forum::Forum::new(server.repository.clone(), server.configuration.login.clone()));
+        let app = http::router(controller, key.clone()).merge(crate::server::forum::router(forum, key));
         let stopped = {
             let server = server.clone();
             async move {
@@ -103,7 +106,7 @@ pub fn serve(server: Arc<Server>) {
         };
         // No graceful shutdown: an open WebSocket would keep the server from stopping
         tokio::select! {
-            result = axum::serve(listener, app) => {
+            result = axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>()) => {
                 if let Err(error) = result {
                     error!("The bot API stopped: {error}");
                 }

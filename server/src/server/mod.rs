@@ -55,6 +55,7 @@ use crate::util::tick::{delayed_tick, get_tick};
 pub mod boot;
 pub mod bots;
 pub mod client_data;
+pub mod forum;
 pub mod reference;
 mod game_loop;
 pub mod map_instance_loop;

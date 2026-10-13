@@ -21,6 +21,8 @@ pub mod quest_repository;
 pub use quest_repository::QuestRepository;
 pub mod mail_repository;
 pub use mail_repository::MailRepository;
+pub mod forum_repository;
+pub use forum_repository::ForumRepository;
 #[cfg(test)]
 mod tests;
 
@@ -42,12 +44,15 @@ use crate::server::script::Value;
 
 pub struct SledRepository {
     pub database: Database,
+    /// Forum writes read and move several records together, so they run one at a time.
+    forum_writes: std::sync::Mutex<()>,
 }
 
 impl SledRepository {
     pub fn open(configuration: &DatabaseConfig) -> Result<Self, Error> {
         let repository = Self {
             database: Database::open(&configuration.path)?,
+            forum_writes: Default::default(),
         };
         repository.seed_assets(configuration)?;
         repository.reset_item_group_pools()?;
@@ -59,6 +64,7 @@ impl SledRepository {
     pub fn temporary() -> Result<Self, Error> {
         Ok(Self {
             database: Database::temporary()?,
+            forum_writes: Default::default(),
         })
     }
 }
@@ -81,6 +87,7 @@ pub trait Repository:
     + SocialRepository
     + MailRepository
     + QuestRepository
+    + ForumRepository
 {
 }
 
