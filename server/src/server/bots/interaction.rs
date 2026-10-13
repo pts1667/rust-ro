@@ -142,7 +142,7 @@ pub(super) fn player_named<'a>(state: &'a ServerState, name: &str) -> Result<&'a
         .ok_or_else(|| format!("{} is not in the game", name.trim()))
 }
 
-fn sent(what: Value) -> Result<Value, String> {
+pub(super) fn sent(what: Value) -> Result<Value, String> {
     if what.is_null() { Ok(json!({ "sent": true })) } else { Ok(json!({ "sent": true, "request": what })) }
 }
 

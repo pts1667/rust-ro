@@ -112,6 +112,11 @@ impl PartyBookings {
     pub fn search(&self, level: i16, map_id: i16, job: i16, last_index: u32) -> (Vec<BookingAd>, bool) {
         self.board().search(level, map_id, job, last_index)
     }
+
+    /// The ad `char_id` put up.
+    pub fn ad_of(&self, char_id: u32) -> Option<BookingAd> {
+        self.board().ads.get(&char_id).cloned()
+    }
 }
 
 #[cfg(test)]

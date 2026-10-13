@@ -12,6 +12,7 @@ use super::commerce::StoreAction;
 use super::companions::CompanionAction;
 use super::interaction::{ChatAction, ItemAction, PartyAction, ProgressAction, SkillCast, StorageAction, TradeAction};
 use super::menu::{CraftAction, SkillMenuAction};
+use super::social::SocialRequest;
 use super::observation::{self, is_walkable};
 use crate::server::Server;
 use crate::server::model::character_lifecycle::{CharacterMapReady, CharacterRespawn, SelectedCharacter};
@@ -84,6 +85,8 @@ pub enum BotRequest {
     Skill(SkillCast),
     Chat(ChatAction),
     Party(PartyAction),
+    /// Sitting, emotes, guilds, friends, chat rooms and party bookings.
+    Social(SocialRequest),
     Trade(TradeAction),
     Progress(ProgressAction),
     Storage(StorageAction),
@@ -119,6 +122,7 @@ impl BotRequest {
             BotRequest::Skill(_) => "Skill",
             BotRequest::Chat(_) => "Chat",
             BotRequest::Party(_) => "Party",
+            BotRequest::Social(_) => "Social",
             BotRequest::Trade(_) => "Trade",
             BotRequest::Progress(_) => "Progress",
             BotRequest::Storage(_) => "Storage",
@@ -282,6 +286,7 @@ impl Server {
             BotRequest::Skill(cast) => self.bot_skill(state, char_id, cast, tick),
             BotRequest::Chat(action) => self.bot_chat(state, char_id, action),
             BotRequest::Party(action) => self.bot_party(state, char_id, action),
+            BotRequest::Social(request) => self.bot_social(state, char_id, request),
             BotRequest::Trade(action) => self.bot_trade(state, char_id, command.account_id, action),
             BotRequest::Progress(action) => self.bot_progress(state, char_id, action),
             BotRequest::Storage(action) => self.bot_storage(state, char_id, action),

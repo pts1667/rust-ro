@@ -104,7 +104,8 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
            "statuses": [{"name": "Blessing", "remaining_ms": 59000}]},
   "map": {"name": "prontera", "instance": 0, "width": 312, "height": 392},
   "players": [{"id": 150002, "name": "Other", "x": 150, "y": 190, "attackable": false, "job": "Acolyte", "dead": false,
-               "attack_target": null, "party": true}],
+               "attack_target": null, "party": true, "base_level": 14, "job_level": 9, "sex": "female", "action": "idle",
+               "party_name": "Squad", "guild_name": null, "hp": 80, "max_hp": 120, "chat_room": null}],
   "mobs":    [{"id": 400012, "name": "Poring", "mob_id": 1002, "x": 160, "y": 200, "hp": 50, "max_hp": 50, "level": 1,
                "aggressive": false, "boss": false, "action": "attacking", "target": 150001}],
   "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29, "region": 1}],
@@ -118,10 +119,17 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
   "party": {"id": 1, "name": "Squad", "leader": "Scout", "exp_share": true, "exp_share_denied": false, "item_pickup": true,
             "item_share": false,
             "members": [{"name": "Scout", "char_id": 150001, "map": "prt_fild08", "leader": true, "online": true,
-                         "x": null, "y": null, "hp": null, "max_hp": null},
+                         "job": "Novice", "base_level": 12, "x": null, "y": null, "hp": null, "max_hp": null},
                         {"name": "Other", "char_id": 150002, "map": "prt_fild08", "leader": false, "online": true,
-                         "x": 150, "y": 190, "hp": 80, "max_hp": 120}]},
+                         "job": "Acolyte", "base_level": 14, "x": 150, "y": 190, "hp": 80, "max_hp": 120}]},
   "party_invitation": null,
+  "booking": null,
+  "booking_results": null,
+  "guild": null,
+  "guild_invitation": null,
+  "friends": [{"char_id": 150002, "name": "Other", "online": true}],
+  "friend_request": null,
+  "chat_room": null,
   "trade": null,
   "skill_menu": null,
   "crafting": null,
@@ -153,9 +161,14 @@ otherwise the `slots` it takes, its figures, `refine`, `cards` and whether `equi
 `level`, `job` or `gender`).
 `region` (of `self`, `npcs` and `warps`) is explained in Paths and regions.
 `dialog` is what the NPC currently shows (see Dialogues). `messages` are the last ones the bot received, `channel` being `system`,
-`chat` (said by someone around the bot, as `Name : text`), `whisper` or `party`. What the bot says itself comes back as `system`.
+`chat` (said by someone around the bot or in its chat room, as `Name : text`), `whisper`, `party`, `guild`, or `emote` (an emote shown
+by a player or a monster in sight, as `id : /thx`). What the bot says itself comes back as `system`.
+`players[]` are the other characters on the map: what their sprite shows (`job`, `sex`, `dead`, `action`, what they hit in
+`attack_target`), what the client shows on a click (`base_level`, `job_level`, `party_name`, `guild_name`), the title of the chat room
+they opened (`chat_room`), and for the members of the bot's party (`party: true`) their HP bar (`hp`, `max_hp`, `null` for the others).
 `inventory[].index` is what the item actions take. `skills` lists what the bot knows, see Skills. `storage` is `null` unless a Kafra opened
-the storage, see Storage. `party`, `party_invitation` and `trade` are described in their sections, `skill_menu` and `crafting` in
+the storage, see Storage. `party`, `party_invitation`, `booking`, `booking_results` and `trade` are described in their sections,
+`guild`, `guild_invitation`, `friends`, `friend_request` and `chat_room` in Guilds, friends and chat rooms, `skill_menu` and `crafting` in
 Skills, `duel`, `duel_invitation` and `attackable` in Fighting players, `companions` in Pets, homunculus and mercenary, and `cart`, `vending`, `buying`, `buying_slots`, `vendors` and `buyers` in Carts and stores.
 
 ## Actions
@@ -180,7 +193,12 @@ Send them as the body of `POST /bots/{name}/actions`, or over the WebSocket. `ty
 | `skill` | `skill`, `level`, `target`, `x`, `y` | Uses a skill (also those of a homunculus or mercenary), see below |
 | `raise_stat` `learn_skill` | `stat`, `amount` / `skill` | Spends points, see Skills |
 | `say` `whisper` `party_chat` | `text` (`to` for a whisper) | Chat, see below |
-| `party_create` `party_invite` `party_accept` `party_decline` `party_leave` | `name` | Parties, see below |
+| `party_create` `party_invite` `party_accept` `party_decline` `party_leave` `party_options` `party_leader` `party_kick` | `name` | Parties, see below |
+| `booking_register` `booking_search` `booking_delete` | `level`, `map_id`, `jobs` / `job` | The party booking board, see Parties |
+| `sit` `stand` `emote` | `emotion` | Sitting and emotes, see Chat |
+| `guild_create` `guild_invite` `guild_accept` `guild_decline` `guild_leave` `guild_chat` | `name` / `text` | Guilds, see Guilds, friends and chat rooms |
+| `friend_add` `friend_accept` `friend_decline` `friend_remove` | `name` | Friends, see Guilds, friends and chat rooms |
+| `room_create` `room_join` `room_leave` | `title`, `limit`, `public`, `password` / `owner` | Chat rooms, see Guilds, friends and chat rooms |
 | `trade_request` `trade_accept` `trade_decline` `trade_offer` `trade_zeny` `trade_lock` `trade_confirm` `trade_cancel` | | Trades, see below |
 | `skill_choose` `skill_cancel` `craft` | `choice` / `item_id`, `additives` | The question or window a skill opened, see Skills |
 | `duel_create` `duel_invite` `duel_accept` `duel_decline` `duel_leave` | `limit` / `name` | Duels, see Fighting players |
@@ -318,9 +336,14 @@ as it grows) or the stat would pass 99. `self.status_points`, `self.skill_points
 
 ### Chat
 
-`say` speaks to everyone around, `whisper` (`to` is a character name) and `party_chat` (needs a party) send to one place. Messages that
-start with `@`, `#` or `%` are refused: `@` commands have their own action (see Commands), bots do not use `#` commands or channels.
-What others say arrives in `messages`.
+`say` speaks to everyone around (or to the chat room the bot is in), `whisper` (`to` is a character name), `party_chat` (needs a
+party) and `guild_chat` (needs a guild) send to one place. Messages that start with `@`, `#` or `%` are refused: `@` commands have their
+own action (see Commands), bots do not use `#` commands or channels. What others say arrives in `messages`.
+
+`emote` shows an emote over the bot, by the name of its client command (`thx` or `/thx`, `!`, `?`, `ho`, `lv`, `swt`, `ic`, `an`, `ag`,
+`$`, `...`, `scissors`, `rock`, `paper`, `flag`, `lv2`, `wah`, `sry`, `heh`, `swt2`, `hmm`, `no1`, `no`, `omg`, `oh`, `x`, `hlp`, `go`,
+`sob`, `gg`, `kis`, `kis2`, `pif`, `ok`) or its number (up to 87). One a second at most, and it needs Basic Skill level 2. `sit` and
+`stand` sit the bot down (`self.action` is `sitting`) and up again.
 
 ### Parties
 
@@ -343,7 +366,38 @@ member its `name`, `map` (the last one for a member out of the game), `leader` a
 leader's name. There is nothing more to know about the others: what a member does, it says in `party_chat`, which arrives in
 `messages` on the `party` channel as `Name : text`.
 
-`players[].party` marks the members on the map, `job`, `dead` and `attack_target` (what it is hitting) are what its sprite shows.
+`players[].party` marks the members on the map, with their HP bar.
+
+**Party booking** is the board of the game where parties look for members, seen by everyone in the game:
+
+| Action | What it does |
+|---|---|
+| `booking_register` (`level`, the bot's by default; `map_id`, a number of the client's list, default 0; `jobs`, up to 6 job names, none for anyone) | Puts up an ad of the bot, `booking` in the observation. One ad per character |
+| `booking_search` (`level`: the ads up to 15 levels under it, 0 or none for all; `map_id` or `job`, not both) | Fills `booking_results` with up to 10 ads (`index`, `name`, `level`, `map_id`, `jobs`, `started`) and `more` when there are others |
+| `booking_delete` | Takes the bot's ad down; it also goes when the bot leaves the game |
+
+Players answer an ad with a whisper to its `name`, who invites them.
+
+### Guilds, friends and chat rooms
+
+| Action | What it does |
+|---|---|
+| `guild_create` (`name`) | Creates a guild led by the bot, which takes an Emperium from the inventory |
+| `guild_invite` (`name`) | Invites a character in the game, when the bot's guild position may invite |
+| `guild_accept` / `guild_decline` | Answers the `guild_invitation` of the observation (`guild_id`, `guild_name`, `inviter`, `inviter_name`) |
+| `guild_leave` | Leaves the guild |
+| `guild_chat` (`text`) | Says something to the guild, it arrives on the `guild` channel |
+| `friend_add` (`name`) | Asks a character in the game to be friends |
+| `friend_accept` / `friend_decline` | Answers the `friend_request` of the observation (`char_id`, `name`) |
+| `friend_remove` (`name`) | Takes a friend in the game off the list |
+| `room_create` (`title`, `limit` from 2 to 20, default 20, `public` default true, `password`) | Opens a chat room, its title shows above the bot (`players[].chat_room` for the others). It needs Basic Skill level 4 |
+| `room_join` (`owner`, `password`) | Joins the chat room of a player on the same map |
+| `room_leave` | Leaves the chat room, which closes when its owner leaves |
+
+`guild` is `{"id", "name"}` while the bot is in one. `friends` lists the friend list, with the `name` of those in the game. `chat_room`
+is the room the bot is in: `id`, `title`, `owner`, `members` (names, the owner first), `limit`, `public`. While in a room, `say` and the
+`chat` messages are the room's. The results (a guild created, an invitation declined, a room full) arrive as
+`system` messages.
 
 ### Trades
 

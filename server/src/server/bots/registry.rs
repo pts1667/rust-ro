@@ -9,6 +9,7 @@ use serde::Serialize;
 use super::dialog::{self, Decoded, Dialog};
 use super::events::{BotEvent, BotEventKind, BotSnapshot};
 use super::party_window::{self, PartyWindow};
+use super::social_window::{self, SocialWindow};
 
 const MESSAGE_BACKLOG: usize = 50;
 /// Events kept for a bot: a few minutes of a busy fight.
@@ -18,7 +19,7 @@ const EVENT_BACKLOG: usize = 500;
 pub struct BotMessage {
     /// Grows with every message of the bot, lets a client skip the ones it has seen.
     pub seq: u64,
-    /// `system`, `chat` (heard around the bot), `whisper` or `party`.
+    /// `system`, `chat` (heard around the bot, or in its chat room), `whisper`, `party`, `guild`, or `emote`.
     pub channel: &'static str,
     pub text: String,
 }
@@ -38,6 +39,8 @@ struct BotScreen {
     death_recorded: bool,
     /// The party as the client shows it, see `party_window`.
     party: Option<PartyWindow>,
+    /// The friend request and party booking windows.
+    social: SocialWindow,
 }
 
 impl BotScreen {
@@ -169,6 +172,17 @@ impl BotHandle {
         let mut screen = self.screen();
         screen.snapshot = None;
         screen.party = None;
+        screen.social = SocialWindow::default();
+    }
+
+    /// The friend request and booking windows of the bot.
+    pub fn social_window(&self) -> SocialWindow {
+        self.screen().social.clone()
+    }
+
+    /// Closes the friend request window, once answered or gone.
+    pub fn clear_friend_request(&self) {
+        self.screen().social.friend_request = None;
     }
 
     /// The party window of the bot, `None` outside a party.
@@ -181,6 +195,8 @@ impl BotHandle {
         if party_window::decode(&mut screen.party, self.account_id, packet) {
             return;
         }
+        // These also tell something in the messages below
+        social_window::decode(&mut screen.social, packet);
         match dialog::decode(&mut screen.dialog, packet) {
             Decoded::Unrelated => {}
             Decoded::Dialog => screen.dialog_version += 1,

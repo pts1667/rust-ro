@@ -9,6 +9,7 @@ use serde::Serialize;
 use super::commerce::{CommerceView, commerce_view};
 use super::companions::{CompanionsView, companions_view};
 use super::interaction::target_kind;
+use super::social::BookingAdView;
 use super::menu::{CraftingView, SkillMenuView, crafting_view, skill_menu_view};
 use crate::server::Server;
 use crate::server::model::game_systems::PlayerTradePhase;
@@ -121,6 +122,20 @@ pub struct PlayerView {
     pub attack_target: Option<u32>,
     /// A member of the bot's party (its name shows in the party colour).
     pub party: bool,
+    pub base_level: u32,
+    pub job_level: u32,
+    /// `male` or `female`.
+    pub sex: &'static str,
+    /// `idle`, `moving`, `attacking`, `using_skill`, `sitting` or `dead`, as for the bot.
+    pub action: &'static str,
+    /// The names shown under its name when clicked, `null` when it has none.
+    pub party_name: Option<String>,
+    pub guild_name: Option<String>,
+    /// HP bar, only for members of the bot's party.
+    pub hp: Option<u32>,
+    pub max_hp: Option<u32>,
+    /// Title of the chat room it opened, shown above its head.
+    pub chat_room: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -240,6 +255,14 @@ pub struct GameView {
     pub skills: Vec<SkillView>,
     pub party: Option<PartyView>,
     pub party_invitation: Option<PartyInvitationView>,
+    /// The party booking ad the bot put up, see `booking_register`.
+    pub booking: Option<BookingAdView>,
+    pub guild: Option<GuildView>,
+    pub guild_invitation: Option<GuildInvitationView>,
+    /// The friend list: names show for the friends in the game.
+    pub friends: Vec<FriendView>,
+    /// The chat room the bot is in.
+    pub chat_room: Option<ChatRoomView>,
     pub trade: Option<TradeView>,
     /// A skill waiting for a choice (Teleport, Warp Portal, Arrow Crafting...): answer with `skill_choose`.
     pub skill_menu: Option<SkillMenuView>,
@@ -270,6 +293,9 @@ pub struct PartyMemberView {
     pub char_id: u32,
     /// Empty while the member is offline.
     pub name: String,
+    /// Job and base level, as the party window of newer clients lists them; `null` while offline.
+    pub job: Option<String>,
+    pub base_level: Option<u32>,
 }
 
 #[derive(Debug, Serialize)]
@@ -288,6 +314,39 @@ pub struct PartyInvitationView {
     pub party_id: u32,
     pub inviter: u32,
     pub inviter_name: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct GuildView {
+    pub id: u32,
+    pub name: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct GuildInvitationView {
+    pub guild_id: u32,
+    pub guild_name: String,
+    pub inviter: u32,
+    pub inviter_name: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct FriendView {
+    pub char_id: u32,
+    /// `null` while the friend is out of the game.
+    pub name: Option<String>,
+    pub online: bool,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ChatRoomView {
+    pub id: u32,
+    pub title: String,
+    /// The name of the owner, first of `members`.
+    pub owner: String,
+    pub members: Vec<String>,
+    pub limit: u16,
+    pub public: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -557,7 +616,15 @@ fn party_view(state: &ServerState, character: &Character) -> Option<PartyView> {
         members: party
             .members
             .iter()
-            .map(|id| PartyMemberView { char_id: *id, name: state.get_character(*id).map(|member| member.name.clone()).unwrap_or_default() })
+            .map(|id| {
+                let member = state.get_character(*id);
+                PartyMemberView {
+                    char_id: *id,
+                    name: member.map(|member| member.name.clone()).unwrap_or_default(),
+                    job: member.map(|member| job_name(member.status.job)),
+                    base_level: member.map(|member| member.status.base_level),
+                }
+            })
             .collect(),
     })
 }
@@ -649,6 +716,11 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
         skills: Vec::new(),
         party: None,
         party_invitation: None,
+        booking: None,
+        guild: None,
+        guild_invitation: None,
+        friends: Vec::new(),
+        chat_room: None,
         trade: None,
         skill_menu: skill_menu_view(server, state, character, tick),
         crafting: crafting_view(character),
@@ -665,20 +737,65 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
         inviter_name: state.get_character(invitation.inviter_id).map(|inviter| inviter.name.clone()).unwrap_or_default(),
     });
     view.trade = trade_view(state, character);
+    view.booking = server.script_world_service().party_bookings.ad_of(char_id).as_ref().map(BookingAdView::of);
+    let guild_id = character.game_systems.guild_id;
+    view.guild = (guild_id != 0).then(|| GuildView { id: guild_id, name: character.guild_name.clone() });
+    view.guild_invitation = character.game_systems.guild_invitation.as_ref().map(|invitation| {
+        let inviter = state.get_character(invitation.inviter_id);
+        GuildInvitationView {
+            guild_id: invitation.guild_id,
+            guild_name: inviter.map(|inviter| inviter.guild_name.clone()).unwrap_or_default(),
+            inviter: invitation.inviter_id,
+            inviter_name: inviter.map(|inviter| inviter.name.clone()).unwrap_or_default(),
+        }
+    });
+    view.friends = character
+        .game_systems
+        .friends
+        .iter()
+        .map(|friend| {
+            let online = state.get_character(friend.char_id);
+            FriendView { char_id: friend.char_id, name: online.map(|other| other.name.clone()), online: online.is_some() }
+        })
+        .collect();
+    view.chat_room = state.chat_rooms.room_of(char_id).map(|room| {
+        let name_of = |id: &u32| state.get_character(*id).map(|member| member.name.clone()).unwrap_or_default();
+        ChatRoomView {
+            id: room.id,
+            title: room.title.clone(),
+            owner: name_of(&room.owner()),
+            members: room.members.iter().map(name_of).collect(),
+            limit: room.limit,
+            public: room.public,
+        }
+    });
     view.players = state
         .characters()
         .values()
         .filter(|other| other.char_id != char_id && other.map_instance_key == character.map_instance_key)
-        .map(|other| PlayerView {
-            id: other.char_id,
-            name: other.name.clone(),
-            x: other.x(),
-            y: other.y(),
-            attackable: server.player_combat_target_allowed(state, character, other.char_id),
-            job: job_name(other.status.job),
-            dead: other.is_dead(),
-            attack_target: other.is_attacking().then(|| other.attack().target),
-            party: character.game_systems.party_id != 0 && other.game_systems.party_id == character.game_systems.party_id,
+        .map(|other| {
+            let party = character.game_systems.party_id != 0 && other.game_systems.party_id == character.game_systems.party_id;
+            let max_hp = party.then(|| server.server_service().get_status_snapshot(&other.status, tick).max_hp());
+            PlayerView {
+                id: other.char_id,
+                name: other.name.clone(),
+                x: other.x(),
+                y: other.y(),
+                attackable: server.player_combat_target_allowed(state, character, other.char_id),
+                job: job_name(other.status.job),
+                dead: other.is_dead(),
+                attack_target: other.is_attacking().then(|| other.attack().target),
+                party,
+                base_level: other.status.base_level,
+                job_level: other.status.job_level,
+                sex: if other.sex == 1 { "male" } else { "female" },
+                action: action_name(&other.action),
+                party_name: other.game_systems.party.as_ref().map(|party| party.name.clone()).filter(|name| !name.is_empty()),
+                guild_name: Some(other.guild_name.clone()).filter(|name| other.game_systems.guild_id != 0 && !name.is_empty()),
+                hp: party.then_some(other.status.hp),
+                max_hp,
+                chat_room: state.chat_rooms.owned_by(other.char_id).map(|room| room.title.clone()),
+            }
         })
         .collect();
     let Some(instance) = instance else {

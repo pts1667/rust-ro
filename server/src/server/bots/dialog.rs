@@ -18,6 +18,17 @@ const NOTIFY_CHAT: u16 = 0x008d;
 const WHISPER: u16 = 0x0097;
 const NOTIFY_CHAT_PARTY: u16 = 0x0109;
 const PARTY_CREATED: u16 = 0x00FA;
+const GUILD_CHAT: u16 = 0x017F;
+const EMOTION: u16 = 0x00C0;
+const GUILD_CREATED: u16 = 0x0167;
+const GUILD_INVITE_RESULT: u16 = 0x0169;
+const GUILD_INVITED: u16 = 0x016A;
+const FRIEND_REQUEST: u16 = 0x0207;
+const FRIEND_RESULT: u16 = 0x0209;
+const ROOM_CREATED: u16 = 0x00D6;
+const ROOM_REFUSED: u16 = 0x00DA;
+const BOOKING_REGISTERED: u16 = 0x0803;
+const BOOKING_DELETED: u16 = 0x0807;
 const PARTY_INVITE_RESULT: u16 = 0x02C5;
 /// Header, then the name of the invited character.
 const INVITED_NAME: std::ops::Range<usize> = 2..26;
@@ -230,6 +241,71 @@ pub fn decode(dialog: &mut Option<Dialog>, packet: &[u8]) -> Decoded {
                 _ => "Nobody of that name is in the game.".to_string(),
             };
             Decoded::Message { channel: "system", text }
+        }
+        GUILD_CHAT => Decoded::Message { channel: "guild", text: text_from(packet, CHAT_TEXT_START) },
+        EMOTION => {
+            let (Some(actor), Some(emote)) = (le_u32(packet, 2), packet.get(6)) else { return Decoded::Unrelated };
+            Decoded::Message { channel: "emote", text: format!("{actor} : /{}", super::social::emote_name(*emote)) }
+        }
+        GUILD_CREATED => {
+            let text = match packet.get(2) {
+                Some(0) => "Guild created.",
+                Some(1) => "Guild creation failed: already in a guild.",
+                Some(2) => "Guild creation failed: the name is taken.",
+                Some(3) => "Guild creation failed: it takes an Emperium.",
+                _ => "Guild creation failed.",
+            };
+            Decoded::Message { channel: "system", text: text.to_string() }
+        }
+        GUILD_INVITE_RESULT => {
+            let text = match packet.get(2) {
+                Some(0) => "The character is already in a guild or has an invitation to answer.",
+                Some(1) => "The guild invitation was declined.",
+                Some(2) => "The guild invitation was accepted.",
+                Some(3) => "The guild is full.",
+                _ => "The guild invitation failed.",
+            };
+            Decoded::Message { channel: "system", text: text.to_string() }
+        }
+        GUILD_INVITED => {
+            let guild = packet.get(6..30).map(|field| text_from(field, 0)).unwrap_or_default();
+            Decoded::Message { channel: "system", text: format!("Invited to the guild {guild}: answer with guild_accept or guild_decline.") }
+        }
+        FRIEND_REQUEST => {
+            let name = packet.get(10..34).map(|field| text_from(field, 0)).unwrap_or_default();
+            Decoded::Message { channel: "system", text: format!("{name} asks to be friends: answer with friend_accept or friend_decline.") }
+        }
+        FRIEND_RESULT => {
+            let name = packet.get(12..36).map(|field| text_from(field, 0)).unwrap_or_default();
+            let text = match le_u16(packet, 2) {
+                Some(0) => format!("{name} is now a friend."),
+                Some(1) => format!("{name} declined the friend request."),
+                Some(2) => "The friend list is full.".to_string(),
+                Some(3) => format!("The friend list of {name} is full."),
+                _ => "The friend request failed.".to_string(),
+            };
+            Decoded::Message { channel: "system", text }
+        }
+        ROOM_CREATED => {
+            let text = if packet.get(2) == Some(&0) { "Chat room created." } else { "The chat room could not be created." };
+            Decoded::Message { channel: "system", text: text.to_string() }
+        }
+        ROOM_REFUSED => {
+            let text = match packet.get(2) {
+                Some(0) => "The chat room is full, or out of reach.",
+                Some(1) => "Wrong chat room password.",
+                Some(2) => "Kicked from that chat room before.",
+                _ => "The chat room refused the bot.",
+            };
+            Decoded::Message { channel: "system", text: text.to_string() }
+        }
+        BOOKING_REGISTERED => {
+            let text = if le_u16(packet, 2) == Some(0) { "Party booking registered." } else { "A party booking is already registered." };
+            Decoded::Message { channel: "system", text: text.to_string() }
+        }
+        BOOKING_DELETED => {
+            let text = if le_u16(packet, 2) == Some(0) { "Party booking deleted." } else { "No party booking to delete." };
+            Decoded::Message { channel: "system", text: text.to_string() }
         }
         WHISPER => {
             let sender = packet.get(WHISPER_SENDER).map(|field| text_from(field, 0)).unwrap_or_default();

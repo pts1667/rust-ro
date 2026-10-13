@@ -17,6 +17,7 @@ use super::menu::{CraftAction, MenuAnswer, SkillMenuAction};
 use super::party_window::PartyWindow;
 use super::lifecycle::{CreateError, NewBot, StoredBot, create_stored_bot, delete_stored_bot, find_stored_bot, load_bot_character};
 use super::registry::BotHandle;
+use super::social::{EmoteRef, SocialRequest};
 use crate::server::Server;
 use crate::server::model::character_lifecycle::SelectedCharacter;
 use crate::server::model::events::game_event::GameEvent;
@@ -75,6 +76,11 @@ impl BotError {
 
 fn default_true() -> bool {
     true
+}
+
+/// Members of a chat room nobody limited.
+fn room_limit() -> u16 {
+    20
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
@@ -279,6 +285,68 @@ pub enum Action {
     PartyKick {
         name: String,
     },
+    Sit,
+    Stand,
+    /// Shows an emote over the bot: its name (`thx`, `/thx`) or its number.
+    Emote {
+        emotion: EmoteRef,
+    },
+    /// Creates a guild, which takes an Emperium.
+    GuildCreate {
+        name: String,
+    },
+    GuildInvite {
+        name: String,
+    },
+    GuildAccept,
+    GuildDecline,
+    GuildLeave,
+    GuildChat {
+        text: String,
+    },
+    /// Asks a player in the game to be friends.
+    FriendAdd {
+        name: String,
+    },
+    FriendAccept,
+    FriendDecline,
+    FriendRemove {
+        name: String,
+    },
+    /// Opens a chat room, its title shows above the bot.
+    RoomCreate {
+        title: String,
+        #[serde(default = "room_limit")]
+        limit: u16,
+        #[serde(default = "default_true")]
+        public: bool,
+        #[serde(default)]
+        password: String,
+    },
+    /// Joins the chat room of a player on the same map.
+    RoomJoin {
+        owner: String,
+        #[serde(default)]
+        password: String,
+    },
+    RoomLeave,
+    /// Puts up a party booking ad: the level (the bot's by default), a map number of the client's list, the jobs
+    /// looked for (none for anyone).
+    BookingRegister {
+        level: Option<u32>,
+        #[serde(default)]
+        map_id: i16,
+        #[serde(default)]
+        jobs: Vec<String>,
+    },
+    /// Searches the ads: by level (ads up to 15 levels under it), and by map or by job.
+    BookingSearch {
+        level: Option<u32>,
+        #[serde(default)]
+        map_id: i16,
+        job: Option<String>,
+    },
+    BookingDelete,
     TradeRequest {
         target: u32,
     },
@@ -454,12 +522,10 @@ fn party_view(server: Value, window: Option<PartyWindow>) -> Value {
         return Value::Null;
     }
     let members = server["members"].as_array().cloned().unwrap_or_default();
-    let char_id_of = |name: &str| {
-        members
-            .iter()
-            .find(|member| !name.is_empty() && member["name"].as_str().is_some_and(|known| known.eq_ignore_ascii_case(name)))
-            .map_or(Value::Null, |member| member["char_id"].clone())
+    let listed = |name: &str| {
+        members.iter().find(|member| !name.is_empty() && member["name"].as_str().is_some_and(|known| known.eq_ignore_ascii_case(name)))
     };
+    let field_of = |name: &str, field: &str| listed(name).map_or(Value::Null, |member| member[field].clone());
     let Some(window) = window else {
         let leader = server["leader"].clone();
         let members: Vec<Value> = members
@@ -472,6 +538,8 @@ fn party_view(server: Value, window: Option<PartyWindow>) -> Value {
                     "map": "",
                     "leader": member["char_id"] == leader,
                     "online": !name.is_empty(),
+                    "job": member["job"],
+                    "base_level": member["base_level"],
                     "x": null, "y": null, "hp": null, "max_hp": null,
                 })
             })
@@ -492,7 +560,10 @@ fn party_view(server: Value, window: Option<PartyWindow>) -> Value {
     let mut view = serde_json::to_value(&window).unwrap_or(Value::Null);
     if let Some(listed) = view["members"].as_array_mut() {
         for member in listed {
-            member["char_id"] = char_id_of(member["name"].as_str().unwrap_or_default());
+            let name = member["name"].as_str().unwrap_or_default().to_owned();
+            for field in ["char_id", "job", "base_level"] {
+                member[field] = field_of(&name, field);
+            }
         }
     }
     view["id"] = server["id"].clone();
@@ -822,6 +893,9 @@ impl BotController {
         let mut observation = self.run(bot, BotRequest::Observe).await?;
         observation["dialog"] = serde_json::to_value(bot.dialog()).unwrap_or(Value::Null);
         observation["party"] = party_view(observation["party"].take(), bot.party_window());
+        let social = bot.social_window();
+        observation["friend_request"] = serde_json::to_value(social.friend_request).unwrap_or(Value::Null);
+        observation["booking_results"] = serde_json::to_value(social.booking_results).unwrap_or(Value::Null);
         observation["messages"] = serde_json::to_value(bot.recent_messages(RECENT_MESSAGES)).unwrap_or(Value::Null);
         Ok(observation)
     }
@@ -948,6 +1022,31 @@ impl BotController {
             }
             Action::PartyLeader { name } => self.send(&bot, BotRequest::Party(PartyAction::Leader { name })).await,
             Action::PartyKick { name } => self.send(&bot, BotRequest::Party(PartyAction::Kick { name })).await,
+            Action::Sit => self.send(&bot, BotRequest::Social(SocialRequest::Sit)).await,
+            Action::Stand => self.send(&bot, BotRequest::Social(SocialRequest::Stand)).await,
+            Action::Emote { emotion } => self.send(&bot, BotRequest::Social(SocialRequest::Emote(emotion))).await,
+            Action::GuildCreate { name } => self.send(&bot, BotRequest::Social(SocialRequest::GuildCreate { name })).await,
+            Action::GuildInvite { name } => self.send(&bot, BotRequest::Social(SocialRequest::GuildInvite { name })).await,
+            Action::GuildAccept => self.send(&bot, BotRequest::Social(SocialRequest::GuildAnswer { accept: true })).await,
+            Action::GuildDecline => self.send(&bot, BotRequest::Social(SocialRequest::GuildAnswer { accept: false })).await,
+            Action::GuildLeave => self.send(&bot, BotRequest::Social(SocialRequest::GuildLeave)).await,
+            Action::GuildChat { text } => self.send(&bot, BotRequest::Social(SocialRequest::GuildChat(text))).await,
+            Action::FriendAdd { name } => self.send(&bot, BotRequest::Social(SocialRequest::FriendAdd { name })).await,
+            Action::FriendAccept => self.answer_friend(&bot, true).await,
+            Action::FriendDecline => self.answer_friend(&bot, false).await,
+            Action::FriendRemove { name } => self.send(&bot, BotRequest::Social(SocialRequest::FriendRemove { name })).await,
+            Action::RoomCreate { title, limit, public, password } => {
+                self.send(&bot, BotRequest::Social(SocialRequest::RoomCreate { title, limit, public, password })).await
+            }
+            Action::RoomJoin { owner, password } => self.send(&bot, BotRequest::Social(SocialRequest::RoomJoin { owner, password })).await,
+            Action::RoomLeave => self.send(&bot, BotRequest::Social(SocialRequest::RoomLeave)).await,
+            Action::BookingRegister { level, map_id, jobs } => {
+                self.send(&bot, BotRequest::Social(SocialRequest::BookingRegister { level, map_id, jobs })).await
+            }
+            Action::BookingSearch { level, map_id, job } => {
+                self.send(&bot, BotRequest::Social(SocialRequest::BookingSearch { level, map_id, job })).await
+            }
+            Action::BookingDelete => self.send(&bot, BotRequest::Social(SocialRequest::BookingDelete)).await,
             Action::TradeRequest { target } => self.send(&bot, BotRequest::Trade(TradeAction::Request { target })).await,
             Action::TradeAccept => self.send(&bot, BotRequest::Trade(TradeAction::Answer { accept: true })).await,
             Action::TradeDecline => self.send(&bot, BotRequest::Trade(TradeAction::Answer { accept: false })).await,
@@ -1041,6 +1140,14 @@ impl BotController {
     }
 
     /// Sends a request whose effect is in the state of the character, and gives the game loop the time to apply it.
+    /// Answers the friend request the window of the bot shows; the window closes either way.
+    async fn answer_friend(&self, bot: &BotHandle, accept: bool) -> Result<Value, BotError> {
+        let from = bot.social_window().friend_request.map(|request| (request.account_id, request.char_id));
+        let reply = self.send(bot, BotRequest::Social(SocialRequest::FriendAnswer { accept, from })).await;
+        bot.clear_friend_request();
+        reply
+    }
+
     async fn send(&self, bot: &BotHandle, request: BotRequest) -> Result<Value, BotError> {
         let reply = self.run(bot, request).await?;
         sleep(EFFECT_DELAY).await;
@@ -1383,6 +1490,25 @@ mod tests {
         ));
         assert!(matches!(parse(r#"{"type":"party_leader","name":"Beta"}"#), Action::PartyLeader { .. }));
         assert!(matches!(parse(r#"{"type":"party_kick","name":"Beta"}"#), Action::PartyKick { .. }));
+    }
+
+    #[test]
+    fn the_social_actions_read_the_json_of_the_documentation() {
+        assert!(matches!(parse(r#"{"type":"sit"}"#), Action::Sit));
+        assert!(matches!(parse(r#"{"type":"emote","emotion":"thx"}"#), Action::Emote { emotion: EmoteRef::Name(_) }));
+        assert!(matches!(parse(r#"{"type":"emote","emotion":15}"#), Action::Emote { emotion: EmoteRef::Number(15) }));
+        assert!(matches!(parse(r#"{"type":"guild_invite","name":"Beta"}"#), Action::GuildInvite { .. }));
+        assert!(matches!(parse(r#"{"type":"friend_accept"}"#), Action::FriendAccept));
+        assert!(matches!(
+            parse(r#"{"type":"room_create","title":"LF party"}"#),
+            Action::RoomCreate { limit: 20, public: true, .. }
+        ));
+        assert!(matches!(parse(r#"{"type":"room_join","owner":"Beta"}"#), Action::RoomJoin { .. }));
+        let Action::BookingRegister { level, map_id, jobs } = parse(r#"{"type":"booking_register","jobs":["Acolyte"]}"#) else {
+            panic!("not a booking")
+        };
+        assert_eq!((level, map_id, jobs), (None, 0, vec!["Acolyte".to_string()]));
+        assert!(matches!(parse(r#"{"type":"booking_search","level":12}"#), Action::BookingSearch { level: Some(12), map_id: 0, job: None }));
     }
 
     #[test]

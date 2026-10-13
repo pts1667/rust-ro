@@ -20,6 +20,8 @@ mod observation;
 mod party_window;
 mod registry;
 mod settings;
+mod social;
+mod social_window;
 mod websocket;
 
 use std::sync::Arc;
