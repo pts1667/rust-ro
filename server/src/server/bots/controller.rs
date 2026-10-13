@@ -323,9 +323,12 @@ pub enum Action {
         #[serde(default)]
         password: String,
     },
-    /// Joins the chat room of a player on the same map.
+    /// Joins the chat room of a player on the same map, or the waiting room of an NPC (`npc`, its id).
     RoomJoin {
+        #[serde(default)]
         owner: String,
+        #[serde(default)]
+        npc: Option<u32>,
         #[serde(default)]
         password: String,
     },
@@ -1038,7 +1041,9 @@ impl BotController {
             Action::RoomCreate { title, limit, public, password } => {
                 self.send(&bot, BotRequest::Social(SocialRequest::RoomCreate { title, limit, public, password })).await
             }
-            Action::RoomJoin { owner, password } => self.send(&bot, BotRequest::Social(SocialRequest::RoomJoin { owner, password })).await,
+            Action::RoomJoin { owner, npc, password } => {
+                self.send(&bot, BotRequest::Social(SocialRequest::RoomJoin { owner, npc, password })).await
+            }
             Action::RoomLeave => self.send(&bot, BotRequest::Social(SocialRequest::RoomLeave)).await,
             Action::BookingRegister { level, map_id, jobs } => {
                 self.send(&bot, BotRequest::Social(SocialRequest::BookingRegister { level, map_id, jobs })).await
@@ -1504,6 +1509,7 @@ mod tests {
             Action::RoomCreate { limit: 20, public: true, .. }
         ));
         assert!(matches!(parse(r#"{"type":"room_join","owner":"Beta"}"#), Action::RoomJoin { .. }));
+        assert!(matches!(parse(r#"{"type":"room_join","npc":110042}"#), Action::RoomJoin { npc: Some(110042), .. }));
         let Action::BookingRegister { level, map_id, jobs } = parse(r#"{"type":"booking_register","jobs":["Acolyte"]}"#) else {
             panic!("not a booking")
         };

@@ -504,3 +504,4 @@ gld_dun03,238,274,0	warp	gdun03a_prtg	1,1,prt_gld,252,247
 gld_dun03,42,30,0	warp	gdun03b_prtg	1,1,prt_gld,63,66
 gld_dun04,37,230,0	warp	gdun04_g13a	1,1,gef_fild13,42,331
 gld_dun04,110,20,0	warp	gdun04_g13b	1,1,gef_fild13,373,62
+prt_gld,159,25,0	warp	prtg02_Castle	1,1,prt_castle,102,178

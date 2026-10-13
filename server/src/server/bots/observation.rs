@@ -14,6 +14,8 @@ use super::menu::{CraftingView, SkillMenuView, crafting_view, skill_menu_view};
 use crate::server::Server;
 use crate::server::model::game_systems::PlayerTradePhase;
 use crate::server::model::map_regions::{self, MapRegions};
+use crate::server::model::quest::quest_definition;
+use crate::server::service::quest_service::quest_view;
 use crate::server::service::status_service::StatusService;
 use crate::server::model::movement::Movable;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -40,6 +42,8 @@ pub struct SelfView {
     pub name: String,
     pub char_id: u32,
     pub job: String,
+    /// `male` or `female`: some equipment (instruments, whips) and jobs (Bard, Dancer) go with one.
+    pub sex: &'static str,
     pub base_level: u32,
     pub job_level: u32,
     pub hp: u32,
@@ -166,6 +170,40 @@ pub struct NpcView {
     pub y: u16,
     /// The walkable region it is talked to from.
     pub region: Option<u32>,
+    /// A quest icon shows above it: it has a quest for the bot, or the next step of one.
+    pub quest_icon: bool,
+    /// Its waiting room, where players queue for what it runs (a job test): `room_join` with `npc`.
+    pub waiting_room: Option<NpcRoomView>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct NpcRoomView {
+    pub title: String,
+    /// Players in it, the NPC not counted.
+    pub waiting: usize,
+    /// Places, the NPC counted.
+    pub limit: u16,
+}
+
+/// A quest of the quest window: the ones started and not completed.
+#[derive(Debug, Serialize)]
+pub struct QuestLogView {
+    pub id: u32,
+    pub title: String,
+    /// Inactive quests stay in the window, greyed.
+    pub active: bool,
+    /// Seconds left before it times out, `null` when it never does.
+    pub expires_in: Option<u32>,
+    /// Monsters to hunt: `done` of `total`.
+    pub objectives: Vec<QuestObjectiveView>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct QuestObjectiveView {
+    pub mob_id: u32,
+    pub name: String,
+    pub done: u16,
+    pub total: u16,
 }
 
 #[derive(Debug, Serialize)]
@@ -253,6 +291,8 @@ pub struct GameView {
     /// The items of the storage while the bot has one open (a Kafra opened it), `null` otherwise.
     pub storage: Option<Vec<StorageItemView>>,
     pub skills: Vec<SkillView>,
+    /// The quest window.
+    pub quests: Vec<QuestLogView>,
     pub party: Option<PartyView>,
     pub party_invitation: Option<PartyInvitationView>,
     /// The party booking ad the bot put up, see `booking_register`.
@@ -347,6 +387,8 @@ pub struct ChatRoomView {
     pub members: Vec<String>,
     pub limit: u16,
     pub public: bool,
+    /// The NPC whose waiting room it is.
+    pub npc: Option<u32>,
 }
 
 #[derive(Debug, Serialize)]
@@ -500,6 +542,7 @@ fn self_view(server: &Server, character: &Character, tick: u128) -> SelfView {
         name: character.name.clone(),
         char_id: character.char_id,
         job,
+        sex: if character.sex == 1 { "male" } else { "female" },
         base_level: character.status.base_level,
         job_level: character.status.job_level,
         hp: character.status.hp,
@@ -698,6 +741,31 @@ fn storage_view(character: &Character) -> Option<Vec<StorageItemView>> {
     )
 }
 
+fn quest_log_view(character: &Character) -> Vec<QuestLogView> {
+    let now = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_or(0, |since| since.as_secs());
+    character
+        .game_systems
+        .quests
+        .open_entries()
+        .iter()
+        .filter_map(|entry| {
+            let definition = quest_definition(entry.quest_id)?;
+            let view = quest_view(entry, definition);
+            Some(QuestLogView {
+                id: entry.quest_id,
+                title: definition.title.clone(),
+                active: view.active,
+                expires_in: (entry.expires_at != 0).then(|| u64::from(entry.expires_at).saturating_sub(now) as u32),
+                objectives: view
+                    .objectives
+                    .into_iter()
+                    .map(|objective| QuestObjectiveView { mob_id: objective.mob_id, name: objective.name, done: objective.done, total: objective.total })
+                    .collect(),
+            })
+        })
+        .collect()
+}
+
 pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -> Result<GameView, String> {
     let character = state.get_character(char_id).ok_or("Character is not in game")?;
     let instance = state.get_map_instance_from_character(character);
@@ -714,6 +782,7 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
         inventory: character.inventory_iter().map(|(index, item)| inventory_view(server, character, index, item)).collect(),
         storage: storage_view(character),
         skills: Vec::new(),
+        quests: quest_log_view(character),
         party: None,
         party_invitation: None,
         booking: None,
@@ -767,8 +836,20 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
             members: room.members.iter().map(name_of).collect(),
             limit: room.limit,
             public: room.public,
+            npc: None,
         }
     });
+    if view.chat_room.is_none() {
+        view.chat_room = state.waiting_rooms.room_of(char_id).map(|room| ChatRoomView {
+            id: room.id,
+            title: room.title.clone(),
+            owner: String::new(),
+            members: room.members.iter().map(|id| state.get_character(*id).map(|member| member.name.clone()).unwrap_or_default()).collect(),
+            limit: room.limit,
+            public: true,
+            npc: Some(room.npc_id),
+        });
+    }
     view.players = state
         .characters()
         .values()
@@ -808,13 +889,20 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
         .script_skill_state
         .npcs
         .values()
-        .filter(|npc| !npc.hidden && npc.sprite != INVISIBLE_NPC_SPRITE)
+        // A hidden NPC still shows the waiting room it hosts (the queue of a job test).
+        .filter(|npc| (!npc.hidden && npc.sprite != INVISIBLE_NPC_SPRITE) || state.waiting_rooms.of_npc(npc.id).is_some())
         .map(|npc| NpcView {
             id: npc.id,
             name: display_name(&npc.script.name),
             x: npc.x,
             y: npc.y,
             region: regions.as_ref().and_then(|regions| regions.landing(npc.x, npc.y)),
+            quest_icon: character.game_systems.quest_icons.contains_key(&npc.id),
+            waiting_room: state.waiting_rooms.of_npc(npc.id).map(|room| NpcRoomView {
+                title: room.title.clone(),
+                waiting: room.members.len(),
+                limit: room.limit,
+            }),
         })
         .collect();
     view.items = map_state

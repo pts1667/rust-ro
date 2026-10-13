@@ -51,7 +51,7 @@ fn objective_view(objective: &QuestObjective, done: u16) -> ObjectiveView {
     }
 }
 
-fn quest_view(entry: &QuestEntry, definition: &QuestDefinition) -> QuestView {
+pub(crate) fn quest_view(entry: &QuestEntry, definition: &QuestDefinition) -> QuestView {
     QuestView {
         quest_id: entry.quest_id,
         active: entry.state != QuestState::Inactive,

@@ -30,6 +30,10 @@ const ROOM_REFUSED: u16 = 0x00DA;
 const BOOKING_REGISTERED: u16 = 0x0803;
 const BOOKING_DELETED: u16 = 0x0807;
 const PARTY_INVITE_RESULT: u16 = 0x02C5;
+const BROADCAST: u16 = 0x009A;
+const BROADCAST_COLORED: u16 = 0x01C3;
+/// Header, length, color, font type, size, alignment and position.
+const BROADCAST_COLORED_TEXT_START: usize = 16;
 /// Header, then the name of the invited character.
 const INVITED_NAME: std::ops::Range<usize> = 2..26;
 const INVITE_RESULT_CODE: std::ops::Range<usize> = 26..30;
@@ -243,6 +247,12 @@ pub fn decode(dialog: &mut Option<Dialog>, packet: &[u8]) -> Decoded {
             Decoded::Message { channel: "system", text }
         }
         GUILD_CHAT => Decoded::Message { channel: "guild", text: text_from(packet, CHAT_TEXT_START) },
+        // Announcements of the server and of the scripts (a test starting, the moves of a dance)
+        BROADCAST => {
+            let text = text_from(packet, CHAT_TEXT_START);
+            Decoded::Message { channel: "announce", text: text.strip_prefix("blue").map(str::to_string).unwrap_or(text) }
+        }
+        BROADCAST_COLORED => Decoded::Message { channel: "announce", text: text_from(packet, BROADCAST_COLORED_TEXT_START) },
         EMOTION => {
             let (Some(actor), Some(emote)) = (le_u32(packet, 2), packet.get(6)) else { return Decoded::Unrelated };
             Decoded::Message { channel: "emote", text: format!("{actor} : /{}", super::social::emote_name(*emote)) }
@@ -427,5 +437,12 @@ mod tests {
             decode(&mut None, &result.raw),
             Decoded::Message { channel: "system", text: "The purchase failed: not enough zeny".into() }
         );
+    }
+
+    #[test]
+    fn announcements_arrive_on_their_own_channel() {
+        use crate::server::service::social_packets::{broadcast, broadcast_colored};
+        assert_eq!(decode(&mut None, &broadcast("blueThe test begins")), Decoded::Message { channel: "announce", text: "The test begins".into() });
+        assert_eq!(decode(&mut None, &broadcast_colored(0xFF0000, "Left!")), Decoded::Message { channel: "announce", text: "Left!".into() });
     }
 }

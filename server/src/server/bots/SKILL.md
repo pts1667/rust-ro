@@ -94,7 +94,7 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
 ```json
 {
   "ready": true,
-  "self": {"name": "Scout", "char_id": 150001, "job": "Novice", "base_level": 1, "job_level": 1, "hp": 40, "max_hp": 40,
+  "self": {"name": "Scout", "char_id": 150001, "job": "Novice", "sex": "male", "base_level": 1, "job_level": 1, "hp": 40, "max_hp": 40,
            "sp": 11, "max_sp": 11, "zeny": 0, "weight": 0, "max_weight": 20300, "status_points": 48, "skill_points": 0,
            "base_exp": 0, "next_base_exp": 9, "job_exp": 0, "next_job_exp": 10,
            "stats": {"str": 1, "agi": 1, "vit": 1, "int": 1, "dex": 1, "luk": 1}, "x": 156, "y": 191, "region": 1,
@@ -108,7 +108,7 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
                "party_name": "Squad", "guild_name": null, "hp": 80, "max_hp": 120, "chat_room": null}],
   "mobs":    [{"id": 400012, "name": "Poring", "mob_id": 1002, "x": 160, "y": 200, "hp": 50, "max_hp": 50, "level": 1,
                "aggressive": false, "boss": false, "action": "attacking", "target": 150001}],
-  "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29, "region": 1}],
+  "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29, "region": 1, "quest_icon": false, "waiting_room": null}],
   "items":   [{"id": 400301, "item_id": 909, "name": "Jellopy", "amount": 1, "x": 158, "y": 195}],
   "warps":   [{"id": 100500, "x": 156, "y": 20, "half_width": 2, "half_height": 1, "to_map": "prt_fild08", "to_x": 170, "to_y": 380, "region": 1}],
   "inventory": [{"index": 0, "item_id": 1201, "name": "Knife", "kind": "Weapon", "amount": 1, "equipped": true, "weight": 40, "sell_price": 25,
@@ -116,6 +116,8 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
                            "identified": true, "cards": [], "can_equip": true, "why_not": null}}],
   "storage": null,
   "skills": [{"id": 28, "name": "AL_HEAL", "level": 3, "aim": "target", "range": 9}],
+  "quests": [{"id": 9015, "title": "Knight Test", "active": true, "expires_in": null,
+              "objectives": [{"mob_id": 1031, "name": "Poporing", "done": 3, "total": 10}]}],
   "party": {"id": 1, "name": "Squad", "leader": "Scout", "exp_share": true, "exp_share_denied": false, "item_pickup": true,
             "item_share": false,
             "members": [{"name": "Scout", "char_id": 150001, "map": "prt_fild08", "leader": true, "online": true,
@@ -161,8 +163,13 @@ otherwise the `slots` it takes, its figures, `refine`, `cards` and whether `equi
 `level`, `job` or `gender`).
 `region` (of `self`, `npcs` and `warps`) is explained in Paths and regions.
 `dialog` is what the NPC currently shows (see Dialogues). `messages` are the last ones the bot received, `channel` being `system`,
-`chat` (said by someone around the bot or in its chat room, as `Name : text`), `whisper`, `party`, `guild`, or `emote` (an emote shown
-by a player or a monster in sight, as `id : /thx`). What the bot says itself comes back as `system`.
+`chat` (said by someone around the bot or in its chat room, as `Name : text`, NPCs included), `whisper`, `party`, `guild`, `emote` (an
+emote shown by a player or a monster in sight, as `id : /thx`) or `announce` (an announcement of the server or of a script, to the
+map or to everyone: a test starting, the moves of a dance). What the bot says itself, and what a script shows at the bottom of
+the chat window, come back as `system`.
+`quests` is the quest window: the quests started and not completed, with their `title`, whether they are `active`, the seconds
+left in `expires_in` (`null` for no time limit) and the monsters still to hunt in `objectives` (`done` of `total`). `npcs[].quest_icon`
+is the icon a client shows above an NPC that has a quest, or the next step of one, for the bot.
 `players[]` are the other characters on the map: what their sprite shows (`job`, `sex`, `dead`, `action`, what they hit in
 `attack_target`), what the client shows on a click (`party_name`, `guild_name`), their levels (`base_level`, `job_level`, which a
 game client shows only for party members), the title of the chat room
@@ -199,7 +206,7 @@ Send them as the body of `POST /bots/{name}/actions`, or over the WebSocket. `ty
 | `sit` `stand` `emote` | `emotion` | Sitting and emotes, see Chat |
 | `guild_create` `guild_invite` `guild_accept` `guild_decline` `guild_leave` `guild_chat` | `name` / `text` | Guilds, see Guilds, friends and chat rooms |
 | `friend_add` `friend_accept` `friend_decline` `friend_remove` | `name` | Friends, see Guilds, friends and chat rooms |
-| `room_create` `room_join` `room_leave` | `title`, `limit`, `public`, `password` / `owner` | Chat rooms, see Guilds, friends and chat rooms |
+| `room_create` `room_join` `room_leave` | `title`, `limit`, `public`, `password` / `owner` or `npc` | Chat rooms, see Guilds, friends and chat rooms |
 | `trade_request` `trade_accept` `trade_decline` `trade_offer` `trade_zeny` `trade_lock` `trade_confirm` `trade_cancel` | | Trades, see below |
 | `skill_choose` `skill_cancel` `craft` | `choice` / `item_id`, `additives` | The question or window a skill opened, see Skills |
 | `duel_create` `duel_invite` `duel_accept` `duel_decline` `duel_leave` | `limit` / `name` | Duels, see Fighting players |
@@ -393,10 +400,12 @@ Players answer an ad with a whisper to its `name`, who invites them.
 | `friend_remove` (`name`) | Takes a friend in the game off the list |
 | `room_create` (`title`, `limit` from 2 to 20, default 20, `public` default true, `password`) | Opens a chat room, its title shows above the bot (`players[].chat_room` for the others). It needs Basic Skill level 4 |
 | `room_join` (`owner`, `password`) | Joins the chat room of a player on the same map |
+| `room_join` (`npc`) | Joins the waiting room of an NPC on the same map (`npcs[].waiting_room`: `title`, `waiting` players, `limit` with the NPC). Job tests queue players there; the script sends them on when their turn comes |
 | `room_leave` | Leaves the chat room, which closes when its owner leaves |
 
 `guild` is `{"id", "name"}` while the bot is in one. `friends` lists the friend list, with the `name` of those in the game. `chat_room`
-is the room the bot is in: `id`, `title`, `owner`, `members` (names, the owner first), `limit`, `public`. While in a room, `say` and the
+is the room the bot is in: `id`, `title`, `owner`, `members` (names, the owner first), `limit`, `public`, and `npc` for the
+waiting room of an NPC (no owner then). While in a room, `say` and the
 `chat` messages are the room's. The results (a guild created, an invitation declined, a room full) arrive as
 `system` messages.
 

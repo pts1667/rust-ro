@@ -76,7 +76,7 @@ pub enum SocialRequest {
     FriendAnswer { accept: bool, from: Option<(u32, u32)> },
     FriendRemove { name: String },
     RoomCreate { title: String, limit: u16, public: bool, password: String },
-    RoomJoin { owner: String, password: String },
+    RoomJoin { owner: String, npc: Option<u32>, password: String },
     RoomLeave,
     BookingRegister { level: Option<u32>, map_id: i16, jobs: Vec<String> },
     BookingSearch { level: Option<u32>, map_id: i16, job: Option<String> },
@@ -221,7 +221,17 @@ impl Server {
                 }
                 social(SocialAction::CreateRoom { title, password: password.clone(), limit: (*limit).clamp(2, 20), public: *public })
             }
-            SocialRequest::RoomJoin { owner, password } => {
+            SocialRequest::RoomJoin { npc: Some(npc), password, .. } => {
+                let room = state.waiting_rooms.of_npc(*npc).ok_or_else(|| format!("NPC {npc} has no waiting room"))?;
+                if room.map != *character.current_map_name() {
+                    return Err(format!("The waiting room of NPC {npc} is on {}", room.map));
+                }
+                if state.chat_rooms.room_of(char_id).is_some() || state.waiting_rooms.room_of(char_id).is_some() {
+                    return Err("The character is already in a chat room, leave it first".into());
+                }
+                social(SocialAction::EnterRoom { room_id: room.id, password: password.clone() })
+            }
+            SocialRequest::RoomJoin { owner, password, .. } => {
                 let owner = player_named(state, owner)?;
                 let room = state.chat_rooms.owned_by(owner.char_id).ok_or_else(|| format!("{} has no chat room", owner.name))?;
                 if owner.map_instance_key != character.map_instance_key {
@@ -233,7 +243,7 @@ impl Server {
                 social(SocialAction::EnterRoom { room_id: room.id, password: password.clone() })
             }
             SocialRequest::RoomLeave => {
-                if state.chat_rooms.room_of(char_id).is_none() {
+                if state.chat_rooms.room_of(char_id).is_none() && state.waiting_rooms.room_of(char_id).is_none() {
                     return Err("The character is in no chat room".into());
                 }
                 social(SocialAction::LeaveRoom)
