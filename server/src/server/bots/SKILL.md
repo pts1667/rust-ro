@@ -164,7 +164,8 @@ otherwise the `slots` it takes, its figures, `refine`, `cards` and whether `equi
 `chat` (said by someone around the bot or in its chat room, as `Name : text`), `whisper`, `party`, `guild`, or `emote` (an emote shown
 by a player or a monster in sight, as `id : /thx`). What the bot says itself comes back as `system`.
 `players[]` are the other characters on the map: what their sprite shows (`job`, `sex`, `dead`, `action`, what they hit in
-`attack_target`), what the client shows on a click (`base_level`, `job_level`, `party_name`, `guild_name`), the title of the chat room
+`attack_target`), what the client shows on a click (`party_name`, `guild_name`), their levels (`base_level`, `job_level`, which a
+game client shows only for party members), the title of the chat room
 they opened (`chat_room`), and for the members of the bot's party (`party: true`) their HP bar (`hp`, `max_hp`, `null` for the others).
 `inventory[].index` is what the item actions take. `skills` lists what the bot knows, see Skills. `storage` is `null` unless a Kafra opened
 the storage, see Storage. `party`, `party_invitation`, `booking`, `booking_results` and `trade` are described in their sections,
