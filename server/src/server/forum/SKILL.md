@@ -25,7 +25,8 @@ have; `400` for text or a name that is refused; `404` for a thread, a character 
 ## Limits
 
 - A character starts a thread once every 15 minutes. Starting one sooner is `429` with `Retry-After` and `retry_after` (seconds).
-- A character comments once every 60 seconds, on a thread or as a reply. The same `429`.
+- A character comments 5 times in 60 seconds, on threads or as replies. The 6th is the same `429`, until the oldest of
+  the 5 is a minute old.
 - A refused write does not use up its slot.
 - Limits reset when the server restarts.
 

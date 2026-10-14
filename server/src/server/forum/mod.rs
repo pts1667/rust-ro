@@ -8,7 +8,7 @@ mod websocket;
 
 pub use http::router;
 
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::net::Ipv4Addr;
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -32,6 +32,8 @@ const COMMENT_LENGTH: usize = 2_000;
 const SESSION_SECONDS: i64 = 24 * 60 * 60;
 const THREAD_INTERVAL: i64 = 15 * 60;
 const COMMENT_INTERVAL: i64 = 60;
+/// Comments a character may write within `COMMENT_INTERVAL`.
+const COMMENTS_PER_INTERVAL: usize = 5;
 
 /// The character a request writes as or reads the inbox of.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -55,30 +57,31 @@ enum Action {
 }
 
 impl Action {
-    fn interval(self) -> i64 {
+    /// How many times a character may do the action within how many seconds.
+    fn allowance(self) -> (usize, i64) {
         match self {
-            Action::Thread => THREAD_INTERVAL,
-            Action::Comment => COMMENT_INTERVAL,
+            Action::Thread => (1, THREAD_INTERVAL),
+            Action::Comment => (COMMENTS_PER_INTERVAL, COMMENT_INTERVAL),
         }
     }
 
     fn refusal(self, wait: i64) -> String {
         match self {
             Action::Thread => format!("A character starts a thread every 15 minutes, wait {wait} more seconds"),
-            Action::Comment => format!("A character comments every 60 seconds, wait {wait} more seconds"),
+            Action::Comment => format!("A character comments {COMMENTS_PER_INTERVAL} times in 60 seconds, wait {wait} more seconds"),
         }
     }
 }
 
-/// When each action of a character last went through, in seconds.
+/// When each action of a character went through lately, in seconds, the oldest first.
 #[derive(Default)]
 struct Limits {
-    thread: Option<i64>,
-    comment: Option<i64>,
+    thread: VecDeque<i64>,
+    comment: VecDeque<i64>,
 }
 
 impl Limits {
-    fn slot(&mut self, action: Action) -> &mut Option<i64> {
+    fn slot(&mut self, action: Action) -> &mut VecDeque<i64> {
         match action {
             Action::Thread => &mut self.thread,
             Action::Comment => &mut self.comment,
@@ -250,30 +253,31 @@ impl Forum {
         Ok(self.repository.forum_notices(&author.name, after, NOTICE_BATCH)?)
     }
 
-    /// Runs a write once the character may do this action, and gives the slot back when the write fails.
+    /// Runs a write once the character may do this action, and gives the place back when the write fails.
     fn limited<T>(&self, char_id: u32, action: Action, now: i64, write: impl FnOnce() -> Result<T, ForumError>) -> Result<T, ForumError> {
-        let previous = self.reserve(char_id, action, now)?;
-        write().inspect_err(|_| self.release(char_id, action, now, previous))
+        self.reserve(char_id, action, now)?;
+        write().inspect_err(|_| self.release(char_id, action, now))
     }
 
-    /// Takes the slot of the action for the character, or says how long to wait. Returns what the slot held before.
-    fn reserve(&self, char_id: u32, action: Action, now: i64) -> Result<Option<i64>, ForumError> {
+    /// Takes a place in the allowance of the action for the character, or says how long to wait.
+    fn reserve(&self, char_id: u32, action: Action, now: i64) -> Result<(), ForumError> {
+        let (count, interval) = action.allowance();
         let mut limits = lock(&self.limits);
-        let slot = limits.entry(char_id).or_default().slot(action);
-        if let Some(last) = *slot {
-            let wait = last + action.interval() - now;
-            if wait > 0 {
-                return Err(ForumError { kind: ErrorKind::RateLimited(wait as u64), message: action.refusal(wait) });
-            }
+        let done = limits.entry(char_id).or_default().slot(action);
+        done.retain(|at| at + interval > now);
+        if done.len() >= count {
+            let wait = done.iter().min().map_or(0, |oldest| oldest + interval - now);
+            return Err(ForumError { kind: ErrorKind::RateLimited(wait as u64), message: action.refusal(wait) });
         }
-        Ok(slot.replace(now))
+        done.push_back(now);
+        Ok(())
     }
 
-    fn release(&self, char_id: u32, action: Action, reserved_at: i64, previous: Option<i64>) {
+    fn release(&self, char_id: u32, action: Action, reserved_at: i64) {
         let mut limits = lock(&self.limits);
-        let slot = limits.entry(char_id).or_default().slot(action);
-        if *slot == Some(reserved_at) {
-            *slot = previous;
+        let done = limits.entry(char_id).or_default().slot(action);
+        if let Some(i) = done.iter().rposition(|at| *at == reserved_at) {
+            done.remove(i);
         }
     }
 
@@ -413,23 +417,27 @@ mod tests {
     }
 
     #[test]
-    fn a_character_starts_a_thread_once_in_fifteen_minutes_and_comments_once_a_minute() {
+    fn a_character_starts_a_thread_once_in_fifteen_minutes_and_comments_five_times_a_minute() {
         let forum = forum();
-        assert_eq!(forum.reserve(1, Action::Thread, 1000).unwrap(), None);
+        assert!(forum.reserve(1, Action::Thread, 1000).is_ok());
         let refused = forum.reserve(1, Action::Thread, 1000 + 899).unwrap_err();
         assert_eq!(refused.kind, ErrorKind::RateLimited(1));
         assert!(forum.reserve(1, Action::Thread, 1000 + 900).is_ok());
         assert!(forum.reserve(1, Action::Comment, 1000).is_ok(), "the thread limit does not hold back comments");
+        for at in 1001..1005 {
+            assert!(forum.reserve(1, Action::Comment, at).is_ok());
+        }
         assert_eq!(forum.reserve(1, Action::Comment, 1059).unwrap_err().kind, ErrorKind::RateLimited(1));
+        assert!(forum.reserve(1, Action::Comment, 1060).is_ok(), "the oldest comment left the minute");
         assert!(forum.reserve(2, Action::Thread, 1000).is_ok(), "another character is not held back");
     }
 
     #[test]
     fn a_write_that_fails_gives_its_slot_back() {
         let forum = forum();
-        let failed = forum.limited(1, Action::Comment, 500, || Err::<(), _>(ForumError::not_found("gone")));
+        let failed = forum.limited(1, Action::Thread, 500, || Err::<(), _>(ForumError::not_found("gone")));
         assert!(failed.is_err());
-        assert!(forum.reserve(1, Action::Comment, 501).is_ok());
+        assert!(forum.reserve(1, Action::Thread, 501).is_ok());
     }
 
     #[test]

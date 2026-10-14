@@ -161,12 +161,14 @@ impl Map {
     pub fn set_warp_cells(&self, cells: &mut [u16], map_items: &mut MapItems) {
         for warp in self.warps.iter() {
             map_items.insert(warp.id, warp.to_map_item());
-            let start_x = warp.x - warp.x_size;
-            let to_x = warp.x + warp.x_size;
-            let start_y = warp.y - warp.y_size;
-            let to_y = warp.y + warp.y_size;
-            for x in start_x..to_x {
-                for y in start_y..to_y {
+            // The whole rectangle `x ± x_size`, `y ± y_size`, as `get_warp_at` reads it: an exclusive end left the last
+            // column and row out, and a warp of size 0 without any cell.
+            let start_x = warp.x.saturating_sub(warp.x_size);
+            let to_x = warp.x.saturating_add(warp.x_size).min(self.x_size.saturating_sub(1));
+            let start_y = warp.y.saturating_sub(warp.y_size);
+            let to_y = warp.y.saturating_add(warp.y_size).min(self.y_size.saturating_sub(1));
+            for x in start_x..=to_x {
+                for y in start_y..=to_y {
                     let index = coordinate::get_cell_index_of(x, y, self.x_size);
                     let cell = cells.get_mut(index).unwrap();
                     *cell |= CellType::Warp.as_flag();
@@ -236,5 +238,29 @@ impl Map {
 
     pub fn scripts(&self) -> &Vec<Script> {
         &self.scripts
+    }
+}
+
+#[cfg(test)]
+mod warp_cell_tests {
+    use super::*;
+
+    fn warp(id: u32, x: u16, y: u16, size: u16) -> Warp {
+        Warp { id, x, y, x_size: size, y_size: size, ..Warp::new() }
+    }
+
+    #[test]
+    fn a_warp_marks_its_whole_rectangle_and_one_of_size_zero_its_cell() {
+        let map = Map::new(10, 10, 100, "m".into(), "m.gat".into(), vec![warp(1, 5, 5, 1), warp(2, 8, 1, 0), warp(3, 0, 9, 2)], vec![], vec![]);
+        let mut cells = vec![0u16; 100];
+        map.set_warp_cells(&mut cells, &mut MapItems::new(0));
+        let warp_flag = CellType::Warp.as_flag();
+        let marked: Vec<(u16, u16)> = (0..100u16).filter(|i| cells[usize::from(*i)] & warp_flag != 0).map(|i| (i % 10, i / 10)).collect();
+        let mut want: Vec<(u16, u16)> = (4..=6).flat_map(|y| (4..=6).map(move |x| (x, y))).collect();
+        want.push((8, 1));
+        // Cut at the edges of the map
+        want.extend((7..=9).flat_map(|y| (0..=2).map(move |x| (x, y))));
+        want.sort_by_key(|&(x, y)| (y, x));
+        assert_eq!(marked, want);
     }
 }

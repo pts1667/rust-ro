@@ -2,6 +2,8 @@
 use std::fmt::{Debug, Formatter};
 use std::sync::{Arc, Mutex};
 
+use models::enums::EnumWithMaskValueU16;
+use models::enums::cell::CellType;
 use movement::path::path_search_client_side_algorithm;
 use movement::position::Position;
 use serde_json::{Value, json};
@@ -340,6 +342,13 @@ impl Server {
         if (character.x(), character.y()) == (x, y) {
             return Ok(json!({ "path_length": 0 }));
         }
+        if let Some((waypoint, route_length)) = around_warps(state, character, (x, y), &|cell| cell == (x, y)) {
+            self.add_to_next_movement_tick(GameEvent::CharacterRequestMove(CharacterRequestMove {
+                char_id,
+                destination: Position { x: waypoint.0, y: waypoint.1, dir: 0 },
+            }));
+            return Ok(json!({ "path_length": route_length, "waypoint": { "x": waypoint.0, "y": waypoint.1 } }));
+        }
         let (destination, reply) = match path_length(state, character, x, y) {
             Ok(path_length) => ((x, y), json!({ "path_length": path_length })),
             Err(error) => {
@@ -388,10 +397,26 @@ impl Server {
                 })
                 .collect()
         };
+        // Only the cells of the warp walked to may be stepped on
+        let allowed = |(cx, cy): (u16, u16)| {
+            target.kind == TargetKind::Warp && cx.abs_diff(target.x) <= target.half_width && cy.abs_diff(target.y) <= target.half_height
+        };
         for cells in &candidates {
             for &(x, y) in cells.iter().take(APPROACH_CANDIDATES) {
                 if (x, y) == here {
                     return Ok(json!({ "kind": target.kind.name(), "in_range": true }));
+                }
+                if let Some((waypoint, route_length)) = around_warps(state, character, (x, y), &allowed) {
+                    self.add_to_next_movement_tick(GameEvent::CharacterRequestMove(CharacterRequestMove {
+                        char_id,
+                        destination: Position { x: waypoint.0, y: waypoint.1, dir: 0 },
+                    }));
+                    return Ok(json!({
+                        "kind": target.kind.name(),
+                        "in_range": false,
+                        "destination": { "x": waypoint.0, "y": waypoint.1 },
+                        "path_length": route_length,
+                    }));
                 }
                 if let Ok(path_length) = path_length(state, character, x, y) {
                     self.add_to_next_movement_tick(GameEvent::CharacterRequestMove(CharacterRequestMove {
@@ -612,6 +637,60 @@ fn nearest_on_grid(cells: &[u16], width: u16, height: u16, from: (u16, u16), goa
     None
 }
 
+/// Steps of the way around warps tried as the next cell to walk to, longest first.
+const AROUND_WARP_STEPS: [usize; 7] = [70, 40, 15, 8, 4, 2, 1];
+
+/// A cell to walk to first, on a way to `to` that steps on no warp cell outside `allowed`, when the walk straight there
+/// would step on one: the game loop sends a character through any warp cell it walks onto, and the pathfinder does not
+/// avoid them (a walk out of a house door to the town gate went back in through the next door). The cell and the length
+/// of the whole way. None when the walk straight there steps on no other warp, or when no way around exists.
+fn around_warps(state: &ServerState, character: &Character, to: (u16, u16), allowed: &dyn Fn((u16, u16)) -> bool) -> Option<((u16, u16), usize)> {
+    let instance = state.get_map_instance_from_character(character)?;
+    let (width, height) = (instance.x_size(), instance.y_size());
+    if to.0 >= width || to.1 >= height {
+        return None;
+    }
+    let map_state = instance.state();
+    way_around_warps(map_state.cells(), width, height, (character.x(), character.y()), to, allowed)
+}
+
+/// `around_warps` on the cells of a map.
+fn way_around_warps(
+    cells: &[u16],
+    width: u16,
+    height: u16,
+    here: (u16, u16),
+    to: (u16, u16),
+    allowed: &dyn Fn((u16, u16)) -> bool,
+) -> Option<((u16, u16), usize)> {
+    let warp = CellType::Warp.as_flag();
+    let index = |(x, y): (u16, u16)| usize::from(y) * usize::from(width) + usize::from(x);
+    let blocked = |cell: (u16, u16)| cell != here && cells.get(index(cell)).is_some_and(|c| c & warp == warp) && !allowed(cell);
+    let walk_steps_on_warp = |to: (u16, u16)| {
+        let path = path_search_client_side_algorithm(width, height, cells, here.0, here.1, to.0, to.1);
+        path.is_empty() || path.iter().any(|node| blocked((node.x, node.y)))
+    };
+    // A long walk the pathfinder does not find is walked in legs (`long_route_waypoint`)
+    let direct = path_search_client_side_algorithm(width, height, cells, here.0, here.1, to.0, to.1);
+    if direct.is_empty() || !direct.iter().any(|node| blocked((node.x, node.y))) {
+        return None;
+    }
+    let walkable = CellType::Walkable.as_flag();
+    let masked: Vec<u16> = cells
+        .iter()
+        .enumerate()
+        .map(|(i, cell)| {
+            let at = ((i % usize::from(width)) as u16, (i / usize::from(width)) as u16);
+            if blocked(at) { cell & !walkable } else { *cell }
+        })
+        .collect();
+    let route = route_on_grid(&masked, width, height, here, to)?;
+    AROUND_WARP_STEPS.iter().find_map(|step| {
+        let waypoint = *route.get((*step).min(route.len() - 1))?;
+        (!walk_steps_on_warp(waypoint)).then_some((waypoint, route.len()))
+    })
+}
+
 /// Breadth first search over the walkable cells, diagonals included but not around a corner. Cells after `from`, up to `to`.
 fn route_on_grid(cells: &[u16], width: u16, height: u16, from: (u16, u16), to: (u16, u16)) -> Option<Vec<(u16, u16)>> {
     let index = |(x, y): (u16, u16)| usize::from(y) * usize::from(width) + usize::from(x);
@@ -682,4 +761,38 @@ fn bot_dialog(state: &ServerState, account_id: u32, char_id: u32, input: &Dialog
         .ok_or("No conversation is waiting for an answer")?;
     sender.try_send(input).map_err(|error| format!("The conversation did not take the answer: {error}"))?;
     Ok(json!({ "sent": true }))
+}
+
+#[cfg(test)]
+mod walk_tests {
+    use super::*;
+
+    /// A 20x9 room, all walkable, with a door warp (cells 8..=10, 3..=5) in the middle of the straight line from
+    /// (2,4) to (17,4).
+    fn room() -> (Vec<u16>, u16, u16) {
+        let (width, height) = (20u16, 9u16);
+        let walkable = CellType::Walkable.as_flag();
+        let warp = CellType::Warp.as_flag();
+        let cells = (0..usize::from(width) * usize::from(height))
+            .map(|i| {
+                let (x, y) = (i % 20, i / 20);
+                if (8..=10).contains(&x) && (3..=5).contains(&y) { walkable | warp } else { walkable }
+            })
+            .collect();
+        (cells, width, height)
+    }
+
+    #[test]
+    fn a_walk_goes_around_a_warp_it_is_not_walking_to() {
+        let (cells, width, height) = room();
+        let (waypoint, length) = way_around_warps(&cells, width, height, (2, 4), (17, 4), &|_| false).expect("the walk crosses the door");
+        let path = path_search_client_side_algorithm(width, height, &cells, 2, 4, waypoint.0, waypoint.1);
+        let warp = CellType::Warp.as_flag();
+        assert!(!path.is_empty());
+        assert!(path.iter().all(|node| cells[usize::from(node.y) * 20 + usize::from(node.x)] & warp == 0), "the first leg steps on no warp");
+        assert!(length >= 15);
+        // Walking to the door itself, or along a line that misses it, is left alone
+        assert_eq!(way_around_warps(&cells, width, height, (2, 4), (9, 4), &|(x, y)| (8..=10).contains(&x) && (3..=5).contains(&y)), None);
+        assert_eq!(way_around_warps(&cells, width, height, (2, 0), (17, 0), &|_| false), None);
+    }
 }
