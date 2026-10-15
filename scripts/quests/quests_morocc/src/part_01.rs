@@ -278,7 +278,15 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                         ],
                     )?;
                     ctx.next()?;
-                    match runtime::select_values(ctx, &[Val::from("Cancel Conversation:Ask What Happened")])? {
+                    // Custom, after iRO (not in rAthena): the pair of guards at the north landing also send commoners
+                    // back to Sograt Desert 1, the way to Prontera. Without it nothing leads north out of the gorge.
+                    let l_north = ctx.call(Function::StrNpcInfo, vec![Val::from(2)])?;
+                    let l_menu = if l_north == "07" || l_north == "08" {
+                        "Cancel Conversation:Ask What Happened:Go to Prontera Field"
+                    } else {
+                        "Cancel Conversation:Ask What Happened"
+                    };
+                    match runtime::select_values(ctx, &[Val::from(l_menu)])? {
                         1 => {
                             ctx.close_window()?;
                             return Err(Stop::End);
@@ -330,6 +338,15 @@ fn continental_guard_01_run(ctx: &Ctx, mut step: ContinentalGuard01Step, args: V
                                 }
                                 _ => {}
                             }
+                        }
+                        3 => {
+                            ctx.lines_as(
+                                "Continental Guard",
+                                args!["Very well. I'll send you to the edge of Sograt Desert, on the way to Prontera Field."],
+                            )?;
+                            ctx.close_window()?;
+                            ctx.call(Function::Warp, vec![Val::from("moc_fild01"), Val::from(101), Val::from(24)])?;
+                            return Err(Stop::End);
                         }
                         _ => {}
                     }

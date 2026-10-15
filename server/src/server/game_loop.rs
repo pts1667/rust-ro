@@ -2,7 +2,7 @@ use std::borrow::Borrow;
 use std::sync::Arc;
 use std::sync::mpsc::SyncSender;
 use std::thread::sleep;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use movement::position::Position;
 use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyPlayermove};
@@ -17,7 +17,7 @@ use crate::server::model::path::path_search_client_side_algorithm;
 use crate::server::state::server::{ServerState, find_map_instance};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::npc_event_service::touched_npc_events;
-use crate::util::tick::{get_tick, real_duration};
+use crate::util::tick::{get_tick, real_duration, too_little_sleep};
 
 const MOVEMENT_TICK_RATE: u128 = 20;
 pub const GAME_TICK_RATE: u128 = 40;
@@ -34,7 +34,7 @@ impl Server {
             Self::game_loop_iteration(server_ref.clone().as_ref(), get_tick());
             let time_spent = started.elapsed();
             let sleep_duration = real_duration(GAME_TICK_RATE).saturating_sub(time_spent);
-            if sleep_duration < Duration::from_millis(5) {
+            if too_little_sleep(sleep_duration, real_duration(GAME_TICK_RATE)) {
                 warn!(
                     "Less than 5 milliseconds of sleep, game loop is too slow - {}ms because game loop took {}ms",
                     sleep_duration.as_millis(),
@@ -512,7 +512,7 @@ impl Server {
 
             let time_spent = started.elapsed();
             let sleep_duration = real_duration(MOVEMENT_TICK_RATE).saturating_sub(time_spent);
-            if sleep_duration < Duration::from_millis(5) {
+            if too_little_sleep(sleep_duration, real_duration(MOVEMENT_TICK_RATE)) {
                 warn!(
                     "Movement loop: less than 5 milliseconds of sleep, movement loop is too slow - {}ms because movement loop took {}ms",
                     sleep_duration.as_millis(),

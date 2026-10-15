@@ -178,7 +178,7 @@ async fn push_events(controller: Arc<BotController>, subscriptions: Subscription
             let version = bot.dialog_version();
             if version != subscription.dialog_version {
                 subscription.dialog_version = version;
-                events.push(json!({ "event": "dialog", "bot": bot.name, "dialog": bot.dialog() }));
+                events.push(json!({ "event": "dialog", "bot": bot.name, "dialog": bot.dialog(), "closed_dialog": bot.closed_dialog() }));
             }
             for message in bot.messages_after(subscription.last_message) {
                 subscription.last_message = message.seq;

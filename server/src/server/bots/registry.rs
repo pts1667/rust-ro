@@ -6,7 +6,7 @@ use std::sync::{Arc, Mutex, MutexGuard};
 use dashmap::DashMap;
 use serde::Serialize;
 
-use super::dialog::{self, Decoded, Dialog};
+use super::dialog::{self, ClosedDialog, Decoded, Dialog};
 use super::events::{BotEvent, BotEventKind, BotSnapshot};
 use super::party_window::{self, PartyWindow};
 use super::social_window::{self, SocialWindow};
@@ -27,6 +27,8 @@ pub struct BotMessage {
 #[derive(Default)]
 struct BotScreen {
     dialog: Option<Dialog>,
+    /// The page the NPC closed the last conversation on, until another one opens.
+    closed_dialog: Option<ClosedDialog>,
     /// Counts every change of the dialogue, so that a waiting call notices an answer that came and went.
     dialog_version: u64,
     messages: VecDeque<BotMessage>,
@@ -107,6 +109,10 @@ impl BotHandle {
         self.screen().dialog.clone()
     }
 
+    pub fn closed_dialog(&self) -> Option<ClosedDialog> {
+        self.screen().closed_dialog.clone()
+    }
+
     pub fn dialog_version(&self) -> u64 {
         self.screen().dialog_version
     }
@@ -114,6 +120,7 @@ impl BotHandle {
     pub fn clear_dialog(&self) {
         let mut screen = self.screen();
         screen.dialog = None;
+        screen.closed_dialog = None;
         screen.dialog_version += 1;
     }
 
@@ -197,7 +204,15 @@ impl BotHandle {
         }
         // These also tell something in the messages below
         social_window::decode(&mut screen.social, packet);
-        match dialog::decode(&mut screen.dialog, packet) {
+        if let Some(page) = dialog::closed_page(&screen.dialog, packet) {
+            screen.closed_dialog = Some(page);
+        }
+        let was_open = screen.dialog.is_some();
+        let decoded = dialog::decode(&mut screen.dialog, packet);
+        if !was_open && screen.dialog.is_some() {
+            screen.closed_dialog = None;
+        }
+        match decoded {
             Decoded::Unrelated => {}
             Decoded::Dialog => screen.dialog_version += 1,
             Decoded::Message { channel, text } => {

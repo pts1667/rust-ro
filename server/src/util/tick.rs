@@ -57,6 +57,12 @@ pub fn real_duration(game_ms: u128) -> Duration {
     real_time(game_ms, sim_clock().speed)
 }
 
+/// Sleep left in a loop of a `real_tick` period below which the loop is too slow: 5 ms, or a quarter of the period when
+/// the sim speed makes it shorter than 20 ms.
+pub fn too_little_sleep(sleep: Duration, real_tick: Duration) -> bool {
+    sleep < Duration::from_millis(5).min(real_tick / 4)
+}
+
 fn game_time_ms(elapsed: Duration, speed: f64) -> u128 {
     (elapsed.as_secs_f64() * 1000.0 * speed) as u128
 }
@@ -77,6 +83,13 @@ mod tests {
     fn game_time_runs_at_the_sim_speed() {
         assert_eq!(game_time_ms(Duration::from_millis(250), 1.0), 250);
         assert_eq!(game_time_ms(Duration::from_millis(250), 10.0), 2500);
+    }
+
+    #[test]
+    fn a_fast_sim_is_not_too_slow_for_its_short_ticks() {
+        assert!(too_little_sleep(Duration::from_millis(4), Duration::from_millis(20)));
+        assert!(!too_little_sleep(Duration::from_millis(3), real_time(20, 5.0)));
+        assert!(too_little_sleep(Duration::ZERO, real_time(20, 5.0)));
     }
 
     #[test]

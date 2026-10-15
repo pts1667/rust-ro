@@ -1,14 +1,14 @@
 use std::sync::Arc;
 use std::thread;
 use std::thread::sleep;
-use std::time::{Duration, Instant};
+use std::time::Instant;
 
 use crate::server::model::events::map_event::MapEventContext;
 use crate::server::model::map_instance::MapInstance;
 use crate::server::model::movement::{Movable, Movement};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_instance_service::MapInstanceService;
-use crate::util::tick::{get_tick, real_duration};
+use crate::util::tick::{get_tick, real_duration, too_little_sleep};
 
 pub struct MapInstanceLoop;
 
@@ -71,7 +71,7 @@ impl MapInstanceLoop {
                     map_instance_service_clone.tick_actor_skills(map_instance.state_mut().as_mut(), tick);
                     let time_spent = started.elapsed();
                     let sleep_duration = real_duration(MAP_LOOP_TICK_RATE).saturating_sub(time_spent);
-                    if sleep_duration < Duration::from_millis(5) {
+                    if too_little_sleep(sleep_duration, real_duration(MAP_LOOP_TICK_RATE)) {
                         warn!(
                             "Less than 5 milliseconds of sleep, map_instance_{}_loop is too slow - {}ms because game loop took {}ms",
                             map_instance.name(),
@@ -137,7 +137,7 @@ impl MapInstanceLoop {
                     drop(map_instance_state);
                     let time_spent = started.elapsed();
                     let sleep_duration = real_duration(MOVEMENT_TICK_RATE).saturating_sub(time_spent);
-                    if sleep_duration < Duration::from_millis(5) {
+                    if too_little_sleep(sleep_duration, real_duration(MOVEMENT_TICK_RATE)) {
                         warn!(
                             "Mob Movement loop: less than 5 milliseconds of sleep, movement loop is too slow - {}ms because movement loop \
                              took {}ms",

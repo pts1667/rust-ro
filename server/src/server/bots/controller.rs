@@ -895,6 +895,7 @@ impl BotController {
     async fn view(&self, bot: &BotHandle) -> Result<Value, BotError> {
         let mut observation = self.run(bot, BotRequest::Observe).await?;
         observation["dialog"] = serde_json::to_value(bot.dialog()).unwrap_or(Value::Null);
+        observation["closed_dialog"] = serde_json::to_value(bot.closed_dialog()).unwrap_or(Value::Null);
         observation["party"] = party_view(observation["party"].take(), bot.party_window());
         let social = bot.social_window();
         observation["friend_request"] = serde_json::to_value(social.friend_request).unwrap_or(Value::Null);
@@ -1378,6 +1379,7 @@ impl BotController {
         if used["action"] == json!("talk") {
             self.wait_for_dialog(bot, before).await;
             reply["dialog"] = serde_json::to_value(bot.dialog()).unwrap_or(Value::Null);
+            reply["closed_dialog"] = serde_json::to_value(bot.closed_dialog()).unwrap_or(Value::Null);
         }
         Ok(reply)
     }
@@ -1405,7 +1407,7 @@ impl BotController {
         let before = bot.dialog_version();
         self.run(bot, BotRequest::Dialog(input)).await?;
         self.wait_for_dialog(bot, before).await;
-        Ok(json!({ "dialog": bot.dialog() }))
+        Ok(json!({ "dialog": bot.dialog(), "closed_dialog": bot.closed_dialog() }))
     }
 
     /// Waits for the dialogue to change after `version`, then for it to stay quiet: a script says several lines in a row.

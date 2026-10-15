@@ -146,6 +146,7 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
   "vendors": [],
   "buyers": [],
   "dialog": null,
+  "closed_dialog": null,
   "messages": [{"seq": 1, "channel": "system", "text": "..."}]
 }
 ```
@@ -163,7 +164,7 @@ a monster `chasing` the bot is coming before it hits.
 otherwise the `slots` it takes, its figures, `refine`, `cards` and whether `equip` would work now (`can_equip`, and `why_not`:
 `level`, `job` or `gender`).
 `region` (of `self`, `npcs` and `warps`) is explained in Paths and regions.
-`dialog` is what the NPC currently shows (see Dialogues). `messages` are the last ones the bot received, `channel` being `system`,
+`dialog` is what the NPC currently shows, `closed_dialog` the last page of the conversation it closed (see Dialogues). `messages` are the last ones the bot received, `channel` being `system`,
 `chat` (said by someone around the bot or in its chat room, as `Name : text`, NPCs included), `whisper`, `party`, `guild`, `emote` (an
 emote shown by a player or a monster in sight, as `id : /thx`) or `announce` (an announcement of the server or of a script, to the
 map or to everyone: a test starting, the moves of a dance). What the bot says itself, and what a script shows at the bottom of
@@ -261,7 +262,11 @@ While a conversation is open the NPC waits for an answer. `dialog.lines` is the 
 | `buy` (with `items`) | `dialog_buy` with `items`: `[{"item_id": 1750, "amount": 3}]`, ids from the list |
 | `sell` (with `items`) | `dialog_sell` with `items`: `[{"index": 1, "amount": 3}]`, `index` being the one of the observation's `inventory` |
 
-Every answer returns the next `dialog`, or `null` when the conversation ended. A wrong kind of answer is refused with 400 and
+Every answer returns the next `dialog`, or `null` when the conversation ended. A script that ends with `close` shows its last page
+with a Close button and nothing to answer: the conversation is over (`dialog: null`), and that page comes as
+`closed_dialog: {"npc_id", "lines"}` in the answer, the result of `use` and the observations, until another conversation opens. It is
+`null` when the conversation ended on a page already answered. A guard that only says "Welcome to Prontera." has nothing but a
+`closed_dialog`, and the last words of a script are often what it asks for. A wrong kind of answer is refused with 400 and
 leaves the conversation alone. An NPC that never ends its conversation can always be left with `dialog_close`. While a conversation is
 open the bot is not blocked, but a new `use` on an NPC replaces it.
 
@@ -608,7 +613,7 @@ Same key in the same header. Messages are JSON text. One connection controls any
   `list` and `create` names its bot in `bot`.
 - Commands run concurrently: send `stop` while a long `move` is waiting, the `move` is answered with `journey: "stopped"`.
 - After `subscribe`, the server pushes events without being asked: `observation` every `interval_ms` (200 to 10000, default 1000), and
-  at once `dialog` (`dialog`, `null` when it closed), `message` (`message: {seq, channel, text}`) and the game events of Events, as
+  at once `dialog` (`dialog`, `null` when it closed, and `closed_dialog`), `message` (`message: {seq, channel, text}`) and the game events of Events, as
   `{"event": "damaged", "bot": "Scout", "seq": 13, "at": ..., ...}`. They are checked every 100 ms.
 
 ## Limits of this version

@@ -99,6 +99,24 @@ pub struct Dialog {
     pub prompt: Prompt,
 }
 
+/// The page an NPC was showing when it closed the conversation. The client keeps it up with a Close button, while the
+/// conversation itself is over (`dialog` is null): the last words of a script, often what it asks of the player.
+#[derive(Debug, Clone, PartialEq, Serialize)]
+pub struct ClosedDialog {
+    pub npc_id: u32,
+    pub lines: Vec<String>,
+}
+
+/// The page that `packet` closes, when it closes the conversation on lines the player has not answered yet.
+pub fn closed_page(dialog: &Option<Dialog>, packet: &[u8]) -> Option<ClosedDialog> {
+    if packet.get(..2) != Some(CLOSE_DIALOG.to_le_bytes().as_slice()) {
+        return None;
+    }
+    let current = dialog.as_ref()?;
+    (current.prompt == Prompt::Running && !current.lines.is_empty())
+        .then(|| ClosedDialog { npc_id: current.npc_id, lines: current.lines.clone() })
+}
+
 #[derive(Debug, PartialEq)]
 pub enum Decoded {
     Unrelated,
@@ -371,8 +389,27 @@ mod tests {
             Some(Dialog { npc_id: 7, lines: vec!["Choose".into()], prompt: Prompt::Menu { options: vec!["Yes".into(), "No".into()] } })
         );
 
+        // Closed on a page already answered: nothing new to show
+        assert_eq!(closed_page(&dialog, &close.raw), None);
         assert_eq!(decode(&mut dialog, &close.raw), Decoded::Dialog);
         assert_eq!(dialog, None);
+    }
+
+    #[test]
+    fn the_last_page_before_a_close_is_kept() {
+        let mut close = PacketZcCloseDialog::new(PACKETVER);
+        close.naid = 7;
+        close.fill_raw();
+        let mut dialog = None;
+        decode(&mut dialog, &say(7, "[Prontera Guard]"));
+        decode(&mut dialog, &say(7, "Welcome to Prontera."));
+        assert_eq!(
+            closed_page(&dialog, &close.raw),
+            Some(ClosedDialog { npc_id: 7, lines: vec!["[Prontera Guard]".into(), "Welcome to Prontera.".into()] })
+        );
+        assert_eq!(closed_page(&dialog, &say(7, "More")), None, "only a close closes the page");
+        decode(&mut dialog, &close.raw);
+        assert_eq!(closed_page(&dialog, &close.raw), None, "no conversation left to close");
     }
 
     fn conversation_with(npc: u32) -> Option<Dialog> {
