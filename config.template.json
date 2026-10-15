@@ -249,7 +249,8 @@
       "bl.blocklist.de",
       "socks.dnsbl.sorbs.net"
     ],
-    "subnets": []
+    "subnets": [],
+    "skip_account_ips": []
   },
   "char_server": {
     "server_name": "Rust ragnarok",

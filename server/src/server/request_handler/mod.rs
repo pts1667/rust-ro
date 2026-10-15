@@ -81,7 +81,11 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
             return;
         }
     }
-    if social::handle_raw(server.as_ref(), &context) || quest::handle_raw(server.as_ref(), &context) || instance::handle_raw(server.as_ref(), &context) {
+    if login::handle_raw(server.as_ref(), &context)
+        || social::handle_raw(server.as_ref(), &context)
+        || quest::handle_raw(server.as_ref(), &context)
+        || instance::handle_raw(server.as_ref(), &context)
+    {
         return;
     }
     match script_operations::handle_raw(server.as_ref(), &context) {

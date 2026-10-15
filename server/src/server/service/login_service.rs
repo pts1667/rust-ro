@@ -58,17 +58,64 @@ pub fn hash_password(config: &LoginConfig, password: &str) -> String {
     }
 }
 
-/// `name_M` / `name_F` in the user id field registers an account when `new_account` is on.
-pub fn registration_request(config: &LoginConfig, username: &str, password: &str) -> Option<(String, char)> {
-    if !config.new_account || password.is_empty() {
-        return None;
-    }
+/// `name_M` / `name_F`: the account name without the suffix, and the sex it names.
+fn split_sex_suffix(username: &str) -> Option<(&str, char)> {
     let bytes = username.as_bytes();
     if bytes.len() <= 2 || bytes[bytes.len() - 2] != b'_' {
         return None;
     }
     let sex = (bytes[bytes.len() - 1] as char).to_ascii_uppercase();
-    matches!(sex, 'M' | 'F').then(|| (username[..username.len() - 2].to_string(), sex))
+    matches!(sex, 'M' | 'F').then(|| (&username[..username.len() - 2], sex))
+}
+
+/// `name_M` / `name_F` in the user id field registers an account when `new_account` is on.
+pub fn registration_request(config: &LoginConfig, username: &str, password: &str) -> Option<(String, char)> {
+    if !config.new_account || password.is_empty() {
+        return None;
+    }
+    split_sex_suffix(username).map(|(name, sex)| (name.to_string(), sex))
+}
+
+/// Why a registration was refused; each caller maps it to its own result code.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RegisterError {
+    Flood,
+    NameLength,
+    PasswordLength,
+    NameTaken,
+    Storage,
+}
+
+/// Result codes of `AC_CREATE_ACCOUNT_RESULT`, `0` being success.
+#[repr(u8)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum CreateAccountError {
+    Disabled = 1,
+    InvalidName = 2,
+    InvalidPassword = 3,
+    InvalidSex = 4,
+    NameTaken = 5,
+    Limited = 6,
+    Failed = 7,
+    Banned = 8,
+}
+
+/// Names a client may create: letters, digits and `_`, and no `name_M` / `name_F` suffix that the login path would read as a sex.
+fn valid_account_name(name: &str) -> bool {
+    !name.is_empty() && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') && split_sex_suffix(name).is_none()
+}
+
+fn random_password() -> String {
+    use rand::{Rng, distributions::Alphanumeric};
+    rand::thread_rng().sample_iter(Alphanumeric).take(24).map(char::from).collect()
+}
+
+fn registration_refusal(error: RegisterError) -> u32 {
+    match error {
+        RegisterError::Flood => REFUSE_REJECTED,
+        RegisterError::Storage => REFUSE_UNREGISTERED_ID,
+        RegisterError::NameLength | RegisterError::PasswordLength | RegisterError::NameTaken => REFUSE_INCORRECT_PASSWORD,
+    }
 }
 
 fn dnsbl_listed(ip: Ipv4Addr, servers: &[String]) -> bool {
@@ -90,6 +137,15 @@ impl LoginService {
         if config.ipban_enable && repository.ip_ban_active(request.client_ip, request.now()).unwrap_or(true) {
             Self::log(repository, config, request, request.username, -3, "ip banned");
             return LoginOutcome::Refused { code: REFUSE_REJECTED, unblock_time: None };
+        }
+        if config.skips_account_system(request.client_ip) {
+            return match Self::skip_account_system(repository, config, request) {
+                Ok(account) => LoginOutcome::Accepted(account),
+                Err(code) => {
+                    Self::log(repository, config, request, request.username, code as i32, refusal_message(code));
+                    LoginOutcome::Refused { code, unblock_time: None }
+                }
+            };
         }
         match self.authenticate_account(repository, config, request) {
             Ok(account) => Self::admit(config, account),
@@ -188,7 +244,7 @@ impl LoginService {
         let mut username = request.username;
         let registered_name;
         if let Some((name, sex)) = registration_request(config, request.username, request.password) {
-            self.register(repository, config, request, &name, sex)?;
+            self.register(repository, config, request, &name, sex).map_err(registration_refusal)?;
             registered_name = name;
             username = &registered_name;
         }
@@ -215,20 +271,83 @@ impl LoginService {
         if account.state != 0 {
             return Err(account.state - 1);
         }
+        Self::record_login(repository, account.account_id, request)
+    }
+
+    /// Logins from `skip_account_ips` need no account: the password, bans, expiry and group gates are not checked. An unknown
+    /// name gets an account with a random password, so only the skipped addresses can use it.
+    fn skip_account_system(repository: &dyn LoginRepository, config: &LoginConfig, request: &LoginRequest) -> Result<AccountRecord, u32> {
+        let (name, sex) = split_sex_suffix(request.username).unwrap_or((request.username, 'M'));
+        if name.is_empty() {
+            return Err(REFUSE_UNREGISTERED_ID);
+        }
+        let account_id = match repository.account_by_name(name).map_err(|error| {
+            warn!("Account lookup failed: {error}");
+            REFUSE_REJECTED
+        })? {
+            Some(account) if account.sex == "S" => return Err(REFUSE_UNREGISTERED_ID),
+            Some(account) => account.account_id,
+            None => {
+                let template = AccountRecord {
+                    sex: sex.to_string(),
+                    last_ip: request.client_ip.to_string(),
+                    ..AccountRecord::new(0, name, hash_password(config, &random_password()))
+                };
+                match repository.account_create(template) {
+                    Ok(account_id) => account_id,
+                    Err(error) => repository.account_by_name(name).ok().flatten().map(|account| account.account_id).ok_or_else(|| {
+                        warn!("Account creation for a skipped login failed: {error}");
+                        REFUSE_REJECTED
+                    })?,
+                }
+            }
+        };
+        Self::record_login(repository, account_id, request)
+    }
+
+    fn record_login(repository: &dyn LoginRepository, account_id: u32, request: &LoginRequest) -> Result<AccountRecord, u32> {
+        let now = request.now();
         repository
-            .account_update(account.account_id, &|stored| {
+            .account_update(account_id, &|stored| {
                 stored.last_ip = request.client_ip.to_string();
                 stored.last_login = now;
                 stored.unban_time = 0;
                 stored.login_count = stored.login_count.saturating_add(1);
             })
             .map_err(|error| {
-                warn!("Failed to record the login of account {}: {error}", account.account_id);
+                warn!("Failed to record the login of account {account_id}: {error}");
                 REFUSE_REJECTED
             })
     }
 
-    fn register(&self, repository: &dyn LoginRepository, config: &LoginConfig, request: &LoginRequest, name: &str, sex: char) -> Result<(), u32> {
+    /// `CA_CREATE_ACCOUNT`: registers an account without logging in. Uses the same switch, name and password rules and flood
+    /// limit as the registration in the login id.
+    pub fn create_account(&self, repository: &dyn LoginRepository, config: &LoginConfig, request: &LoginRequest, sex: char) -> Result<u32, CreateAccountError> {
+        if !config.new_account {
+            return Err(CreateAccountError::Disabled);
+        }
+        if config.ipban_enable && repository.ip_ban_active(request.client_ip, request.now()).unwrap_or(true) {
+            return Err(CreateAccountError::Banned);
+        }
+        if !matches!(sex, 'M' | 'F') {
+            return Err(CreateAccountError::InvalidSex);
+        }
+        if !valid_account_name(request.username) {
+            return Err(CreateAccountError::InvalidName);
+        }
+        if request.password.is_empty() {
+            return Err(CreateAccountError::InvalidPassword);
+        }
+        self.register(repository, config, request, request.username, sex).map_err(|error| match error {
+            RegisterError::Flood => CreateAccountError::Limited,
+            RegisterError::NameLength => CreateAccountError::InvalidName,
+            RegisterError::PasswordLength => CreateAccountError::InvalidPassword,
+            RegisterError::NameTaken => CreateAccountError::NameTaken,
+            RegisterError::Storage => CreateAccountError::Failed,
+        })
+    }
+
+    fn register(&self, repository: &dyn LoginRepository, config: &LoginConfig, request: &LoginRequest, name: &str, sex: char) -> Result<u32, RegisterError> {
         {
             let mut limiter = self.registrations.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
             if !limiter.started {
@@ -237,15 +356,18 @@ impl LoginService {
             }
             if request.now_ms < limiter.window_end_ms && limiter.registrations >= config.allowed_regs {
                 warn!("Account registration denied (registration limit exceeded)");
-                return Err(REFUSE_REJECTED);
+                return Err(RegisterError::Flood);
             }
         }
-        if name.len() < config.acc_name_min_length || request.password.len() < config.password_min_length {
-            return Err(REFUSE_INCORRECT_PASSWORD);
+        if name.len() < config.acc_name_min_length {
+            return Err(RegisterError::NameLength);
         }
-        if repository.account_by_name(name).map_err(|_| REFUSE_UNREGISTERED_ID)?.is_some() {
+        if request.password.len() < config.password_min_length {
+            return Err(RegisterError::PasswordLength);
+        }
+        if repository.account_by_name(name).map_err(|_| RegisterError::Storage)?.is_some() {
             info!("Attempt of creation of an already existent account (account: {name}, sex: {sex})");
-            return Err(REFUSE_INCORRECT_PASSWORD);
+            return Err(RegisterError::NameTaken);
         }
         let now = request.now();
         let account = AccountRecord {
@@ -256,7 +378,7 @@ impl LoginService {
         };
         let account_id = repository.account_create(account).map_err(|error| {
             warn!("Account creation failed: {error}");
-            REFUSE_UNREGISTERED_ID
+            RegisterError::Storage
         })?;
         info!("Account creation (account {name}, id: {account_id}, sex: {sex})");
         let mut limiter = self.registrations.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
@@ -265,7 +387,7 @@ impl LoginService {
             limiter.window_end_ms = request.now_ms + i64::from(config.time_allowed) * 1000;
         }
         limiter.registrations += 1;
-        Ok(())
+        Ok(account_id)
     }
 }
 
@@ -479,5 +601,82 @@ mod tests {
         assert_eq!(registration_request(&enabled, "bob_m", ""), None);
         assert_eq!(registration_request(&enabled, "_m", "pw"), None);
         assert_eq!(registration_request(&config(), "bob_m", "pw"), None);
+    }
+
+    fn request_from<'a>(ip: &str, username: &'a str, password: &'a str, now: i64) -> LoginRequest<'a> {
+        LoginRequest { username, password, client_ip: ip.parse().unwrap(), now_ms: now * 1000 }
+    }
+
+    fn skipping_10_0_0_7() -> LoginConfig {
+        LoginConfig { skip_account_ips: vec!["10.0.0.7".parse().unwrap()], ..config() }
+    }
+
+    #[test]
+    fn created_accounts_follow_the_registration_rules_and_can_log_in() {
+        let repository = SledRepository::temporary().unwrap();
+        let service = LoginService::new();
+        let enabled = LoginConfig { new_account: true, ..config() };
+        let id = service.create_account(&repository, &enabled, &request("maker", "secret", 1000), 'F').unwrap();
+        let stored = repository.account_by_name("maker").unwrap().unwrap();
+        assert_eq!((stored.account_id, stored.sex.as_str()), (id, "F"));
+        assert!(matches!(service.authenticate(&repository, &enabled, &request("maker", "secret", 1001)), LoginOutcome::Accepted(_)));
+        assert_eq!(service.create_account(&repository, &enabled, &request("maker", "other", 1002), 'M'), Err(CreateAccountError::NameTaken));
+    }
+
+    #[test]
+    fn account_creation_refuses_disabled_servers_bad_fields_and_banned_addresses() {
+        let repository = SledRepository::temporary().unwrap();
+        let service = LoginService::new();
+        assert_eq!(service.create_account(&repository, &config(), &request("maker", "secret", 1), 'M'), Err(CreateAccountError::Disabled));
+        let enabled = LoginConfig { new_account: true, ..config() };
+        assert_eq!(service.create_account(&repository, &enabled, &request("maker", "secret", 1), 'S'), Err(CreateAccountError::InvalidSex));
+        assert_eq!(service.create_account(&repository, &enabled, &request("ab", "secret", 1), 'M'), Err(CreateAccountError::InvalidName));
+        assert_eq!(service.create_account(&repository, &enabled, &request("bad name", "secret", 1), 'M'), Err(CreateAccountError::InvalidName));
+        assert_eq!(service.create_account(&repository, &enabled, &request("suffix_m", "secret", 1), 'M'), Err(CreateAccountError::InvalidName));
+        assert_eq!(service.create_account(&repository, &enabled, &request("maker", "abc", 1), 'M'), Err(CreateAccountError::InvalidPassword));
+        assert_eq!(service.create_account(&repository, &enabled, &request("maker", "", 1), 'M'), Err(CreateAccountError::InvalidPassword));
+        assert!(repository.account_by_name("maker").unwrap().is_none());
+        repository
+            .ip_ban_add(IpBanRecord { list: "10.0.0.7".into(), begin: 0, release: i64::MAX, reason: String::new() })
+            .unwrap();
+        assert_eq!(service.create_account(&repository, &enabled, &request("maker", "secret", 1), 'M'), Err(CreateAccountError::Banned));
+    }
+
+    #[test]
+    fn skipped_addresses_log_in_without_a_password_and_get_an_account() {
+        let repository = SledRepository::temporary().unwrap();
+        let service = LoginService::new();
+        let skip = skipping_10_0_0_7();
+        let LoginOutcome::Accepted(first) = service.authenticate(&repository, &skip, &request("bot_f", "anything", 1000)) else {
+            panic!("skipped login refused")
+        };
+        assert_eq!((first.username.as_str(), first.sex.as_str(), first.last_ip.as_str()), ("bot", "F", "10.0.0.7"));
+        let LoginOutcome::Accepted(again) = service.authenticate(&repository, &skip, &request("bot", "wrong", 1001)) else {
+            panic!("skipped login refused")
+        };
+        assert_eq!(again.account_id, first.account_id);
+        assert_eq!(refused(service.authenticate(&repository, &config(), &request_from("192.168.0.1", "bot", "anything", 1002))), REFUSE_INCORRECT_PASSWORD);
+    }
+
+    #[test]
+    fn skipped_logins_ignore_bans_expiry_and_group_gates_but_not_server_accounts() {
+        let repository = SledRepository::temporary().unwrap();
+        let service = LoginService::new();
+        repository.account_create(AccountRecord { unban_time: 5000, expiration_time: 500, group_id: 99, ..AccountRecord::new(0, "locked", "secret") }).unwrap();
+        repository.account_create(AccountRecord { sex: "S".into(), ..AccountRecord::new(0, "server", "p") }).unwrap();
+        let gated = LoginConfig { group_id_to_connect: 0, ..skipping_10_0_0_7() };
+        assert!(matches!(service.authenticate(&repository, &gated, &request("locked", "x", 1000)), LoginOutcome::Accepted(_)));
+        assert_eq!(refused(service.authenticate(&repository, &gated, &request("server", "p", 1000))), REFUSE_UNREGISTERED_ID);
+        assert_eq!(refused(service.authenticate(&repository, &gated, &request("", "x", 1000))), REFUSE_UNREGISTERED_ID);
+    }
+
+    #[test]
+    fn ip_bans_still_apply_to_skipped_addresses() {
+        let repository = SledRepository::temporary().unwrap();
+        let service = LoginService::new();
+        repository
+            .ip_ban_add(IpBanRecord { list: "10.0.0.7".into(), begin: 0, release: i64::MAX, reason: String::new() })
+            .unwrap();
+        assert_eq!(refused(service.authenticate(&repository, &skipping_10_0_0_7(), &request("bot", "x", 1))), REFUSE_REJECTED);
     }
 }

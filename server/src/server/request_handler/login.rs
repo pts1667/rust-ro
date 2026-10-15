@@ -10,16 +10,27 @@ use packets::packets::{
 };
 use rand::Rng;
 
+use super::framing::FrameLength;
 use crate::server::Server;
 use crate::server::model::client_socket::ClientSocket;
 use crate::server::model::request::Request;
 use crate::server::model::session::{AccountSession, Session};
-use crate::server::service::login_service::{LoginOutcome, LoginRequest, LoginService};
+use crate::server::service::login_service::{CreateAccountError, LoginOutcome, LoginRequest, LoginService};
 
 /// `SC_NOTIFY_BAN` results sent to a client that is turned away after a successful authentication.
 pub const NOTIFY_SERVER_CLOSED: u8 = 1;
 pub const NOTIFY_ALREADY_ONLINE: u8 = 8;
 pub const NOTIFY_DISCONNECTED: u8 = 15;
+
+/// Not a client packet: user id (24), password (24) and sex (`M` or `F`) after the header.
+const CA_CREATE_ACCOUNT: u16 = 0x0A10;
+/// Not a client packet: result code (`0` when created), then the account id (`0` when refused).
+const AC_CREATE_ACCOUNT_RESULT: u16 = 0x0A11;
+const CREATE_ACCOUNT_LENGTH: usize = 2 + 24 + 24 + 1;
+/// Not a client packet: no body. Answered with `AC_SERVER_INFO`.
+const CA_SERVER_INFO: u16 = 0x0A27;
+/// Not a client packet: accounts required (`1`/`0`), account creation on (`1`/`0`), then the packet version.
+const AC_SERVER_INFO: u16 = 0x0A28;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ListedServer {
@@ -162,6 +173,77 @@ pub(crate) fn handle_login(server: Arc<Server>, context: Request) {
             socket_send_raw!(context, response);
         }
     }
+}
+
+pub fn frame_length(id: u16) -> Option<FrameLength> {
+    Some(FrameLength::Fixed(match id {
+        CA_CREATE_ACCOUNT => CREATE_ACCOUNT_LENGTH,
+        CA_SERVER_INFO => 2,
+        _ => return None,
+    }))
+}
+
+/// Routes the custom login packets; returns false for any other packet.
+pub fn handle_raw(server: &Server, context: &Request) -> bool {
+    let raw = context.packet().raw();
+    if raw.len() < 2 {
+        return false;
+    }
+    match u16::from_le_bytes([raw[0], raw[1]]) {
+        CA_CREATE_ACCOUNT => {
+            handle_create_account(server, context, raw);
+            true
+        }
+        CA_SERVER_INFO => {
+            let packet = server_info_packet(&server.configuration.login, client_ip(&context.socket()), server.packetver());
+            socket_send_raw!(context, packet);
+            true
+        }
+        _ => false,
+    }
+}
+
+fn handle_create_account(server: &Server, context: &Request, raw: &[u8]) {
+    if raw.len() != CREATE_ACCOUNT_LENGTH {
+        warn!("Rejected a malformed account creation packet of {} bytes", raw.len());
+        return;
+    }
+    let username = c_string(&raw[2..26]);
+    let password = c_string(&raw[26..50]);
+    let sex = char::from(raw[50]).to_ascii_uppercase();
+    let request = LoginRequest {
+        username: &username,
+        password: &password,
+        client_ip: client_ip(&context.socket()),
+        now_ms: chrono::Utc::now().timestamp_millis(),
+    };
+    let result = server.login_service().create_account(server.repository.as_ref(), &server.configuration.login, &request, sex);
+    socket_send_raw!(context, create_account_result_packet(result));
+}
+
+/// What a client on `client` must do to log in, and the packet version the server runs.
+pub fn server_info_packet(login: &LoginConfig, client: Ipv4Addr, packetver: u32) -> Vec<u8> {
+    let mut packet = AC_SERVER_INFO.to_le_bytes().to_vec();
+    packet.push(u8::from(!login.skips_account_system(client)));
+    packet.push(u8::from(login.new_account));
+    packet.extend_from_slice(&packetver.to_le_bytes());
+    packet
+}
+
+fn c_string(bytes: &[u8]) -> String {
+    let end = bytes.iter().position(|byte| *byte == 0).unwrap_or(bytes.len());
+    String::from_utf8_lossy(&bytes[..end]).into_owned()
+}
+
+pub fn create_account_result_packet(result: Result<u32, CreateAccountError>) -> Vec<u8> {
+    let (code, account_id) = match result {
+        Ok(account_id) => (0, account_id),
+        Err(error) => (error as u8, 0),
+    };
+    let mut packet = AC_CREATE_ACCOUNT_RESULT.to_le_bytes().to_vec();
+    packet.push(code);
+    packet.extend_from_slice(&account_id.to_le_bytes());
+    packet
 }
 
 pub fn notify_ban_packet(packetver: u32, result: u8) -> Vec<u8> {
@@ -326,5 +408,31 @@ mod tests {
     #[test]
     fn notify_ban_packet_is_the_three_byte_auth_result() {
         assert_eq!(notify_ban_packet(20120307, 8), vec![0x81, 0x00, 8]);
+    }
+
+    #[test]
+    fn create_account_request_is_framed_at_its_fixed_length() {
+        let mut packet = CA_CREATE_ACCOUNT.to_le_bytes().to_vec();
+        packet.resize(CREATE_ACCOUNT_LENGTH, 0);
+        assert_eq!(crate::server::request_handler::framing::ClientFrames::new(20120307).push(&packet).unwrap(), vec![packet]);
+    }
+
+    #[test]
+    fn create_account_result_is_a_code_and_the_new_account_id() {
+        assert_eq!(create_account_result_packet(Ok(2_000_001)), vec![0x11, 0x0A, 0, 0x81, 0x84, 0x1E, 0x00]);
+        assert_eq!(create_account_result_packet(Err(CreateAccountError::NameTaken)), vec![0x11, 0x0A, 5, 0, 0, 0, 0]);
+    }
+
+    #[test]
+    fn server_info_request_is_framed_and_answers_with_the_account_mode_of_the_caller() {
+        let request = CA_SERVER_INFO.to_le_bytes().to_vec();
+        assert_eq!(crate::server::request_handler::framing::ClientFrames::new(20120307).push(&request).unwrap(), vec![request]);
+        let open = LoginConfig { new_account: true, ..LoginConfig::default() };
+        let packet = server_info_packet(&open, Ipv4Addr::LOCALHOST, 20120307);
+        assert_eq!(&packet[..4], &[0x28, 0x0A, 1, 1]);
+        assert_eq!(&packet[4..], &20120307u32.to_le_bytes());
+        let skipping = LoginConfig { skip_account_ips: vec!["127.0.0.1".parse().unwrap()], ..LoginConfig::default() };
+        assert_eq!(&server_info_packet(&skipping, Ipv4Addr::LOCALHOST, 20120307)[2..4], &[0, 0]);
+        assert_eq!(&server_info_packet(&skipping, "10.0.0.1".parse().unwrap(), 20120307)[2..4], &[1, 0]);
     }
 }

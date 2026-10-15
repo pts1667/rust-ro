@@ -126,6 +126,7 @@ impl ClientFrames {
                 .or_else(|| super::char_requests::frame_length(id, self.packetver))
                 .or_else(|| super::script_operations::frame_length(id, self.packetver))
                 .or_else(|| super::social::frame_length(id))
+                .or_else(|| super::login::frame_length(id))
                 .or_else(|| super::quest::frame_length(id))
                 .or_else(|| super::instance::frame_length(id))
                 .or_else(|| crate::server::service::script_world_service::client_frame_length(id, self.packetver))

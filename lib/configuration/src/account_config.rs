@@ -1,4 +1,5 @@
 use std::net::Ipv4Addr;
+use std::str::FromStr;
 
 use serde::{Deserialize, Deserializer};
 
@@ -30,6 +31,9 @@ pub struct LoginConfig {
     pub use_dnsbl: bool,
     pub dnsbl_servers: Vec<String>,
     pub subnets: Vec<SubnetConfig>,
+    /// Clients from these addresses log in without the account system, see `skips_account_system`.
+    #[serde(deserialize_with = "deserialize_ip_patterns")]
+    pub skip_account_ips: Vec<IpPattern>,
 }
 
 impl Default for LoginConfig {
@@ -56,6 +60,7 @@ impl Default for LoginConfig {
             use_dnsbl: false,
             dnsbl_servers: vec!["bl.blocklist.de".into(), "socks.dnsbl.sorbs.net".into()],
             subnets: Vec::new(),
+            skip_account_ips: Vec::new(),
         }
     }
 }
@@ -68,6 +73,40 @@ impl LoginConfig {
             slots => slots.min(MAX_CHARS),
         }
     }
+
+    pub fn skips_account_system(&self, client: Ipv4Addr) -> bool {
+        self.skip_account_ips.iter().any(|pattern| pattern.matches(client))
+    }
+}
+
+/// An IPv4 address with `*` for any octet, such as `127.0.0.1`, `10.0.0.*` or `10.*.*.*`, the same syntax as IP bans.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct IpPattern([Option<u8>; 4]);
+
+impl IpPattern {
+    pub fn matches(&self, client: Ipv4Addr) -> bool {
+        self.0.iter().zip(client.octets()).all(|(part, octet)| part.is_none_or(|expected| expected == octet))
+    }
+}
+
+impl FromStr for IpPattern {
+    type Err = String;
+
+    fn from_str(text: &str) -> Result<Self, String> {
+        let parts: Vec<&str> = text.trim().split('.').collect();
+        let [a, b, c, d] = parts.as_slice() else {
+            return Err(format!("IP pattern \"{text}\" must look like 1.2.3.4 or 1.2.*.*"));
+        };
+        let octet = |part: &str| match part {
+            "*" => Ok(None),
+            _ => part.parse::<u8>().map(Some).map_err(|_| format!("IP pattern \"{text}\" has an invalid octet \"{part}\"")),
+        };
+        Ok(Self([octet(a)?, octet(b)?, octet(c)?, octet(d)?]))
+    }
+}
+
+fn deserialize_ip_patterns<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Vec<IpPattern>, D::Error> {
+    Vec::<String>::deserialize(deserializer)?.iter().map(|text| text.parse().map_err(serde::de::Error::custom)).collect()
 }
 
 /// `conf/subnet_athena.conf`: clients inside `mask` are sent `char_ip` as the char server address and `map_ip` as the map server address.
@@ -324,5 +363,27 @@ mod tests {
         };
         assert!(subnet.matches("192.168.1.77".parse().unwrap()));
         assert!(!subnet.matches("192.168.2.77".parse().unwrap()));
+    }
+
+    #[test]
+    fn ip_patterns_match_exact_addresses_and_wildcard_octets() {
+        let local: IpPattern = "127.0.0.1".parse().unwrap();
+        assert!(local.matches(Ipv4Addr::LOCALHOST));
+        assert!(!local.matches("127.0.0.2".parse().unwrap()));
+        let lan: IpPattern = " 10.0.*.* ".parse().unwrap();
+        assert!(lan.matches("10.0.200.3".parse().unwrap()));
+        assert!(!lan.matches("10.1.0.3".parse().unwrap()));
+        assert!("10.0.0".parse::<IpPattern>().is_err());
+        assert!("10.0.0.256".parse::<IpPattern>().is_err());
+    }
+
+    #[test]
+    fn skip_account_ips_come_from_the_login_config() {
+        let login: LoginConfig = serde_json::from_str(r#"{"skip_account_ips": ["127.0.0.1", "10.*.*.*"]}"#).unwrap();
+        assert!(login.skips_account_system(Ipv4Addr::LOCALHOST));
+        assert!(login.skips_account_system("10.9.9.9".parse().unwrap()));
+        assert!(!login.skips_account_system("192.168.0.1".parse().unwrap()));
+        assert!(!LoginConfig::default().skips_account_system(Ipv4Addr::LOCALHOST));
+        assert!(serde_json::from_str::<LoginConfig>(r#"{"skip_account_ips": ["localhost"]}"#).is_err());
     }
 }

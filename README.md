@@ -124,7 +124,7 @@ To provision another account, set `ACCOUNT_PASSWORD` and run:
 cargo run --package tools --bin account-setup -- create player
 ```
 
-`create` accepts `--sex M|F` and `--group ID`. Accounts are also created in-game when `login.new_account` is enabled, by logging in with a user name ending in `_M` or `_F`. Other commands of the tool:
+`create` accepts `--sex M|F` and `--group ID`. Accounts are also created in-game when `login.new_account` is enabled, by logging in with a user name ending in `_M` or `_F`. A custom client can register without logging in through the `CA_CREATE_ACCOUNT` packet, see [docs/custom-login-packets.md](docs/custom-login-packets.md). Other commands of the tool:
 
 ```shell
 cargo run --package tools --bin account-setup -- group player 99   # permission group of an account
@@ -141,7 +141,7 @@ A database created before permission groups existed has no group on its accounts
 
 The `login` and `char_server` sections of `config.json` mirror `login_athena.conf` and `char_athena.conf` of rathena (pre-renewal values); the template lists every key with its default. Highlights:
 
-- `login`: account registration (`new_account`, `allowed_regs`, `time_allowed`), minimum lengths, `group_id_to_connect`/`min_group_id_to_connect`, IP ban and DNSBL, login log, server list `subnets`.
+- `login`: account registration (`new_account`, `allowed_regs`, `time_allowed`), minimum lengths, `group_id_to_connect`/`min_group_id_to_connect`, IP ban and DNSBL, login log, server list `subnets`, and `skip_account_ips` (clients from these addresses, `1.2.3.4` or `10.0.*.*`, log in without the account system).
 - `char_server`: server name, `max_connect_user`, `char_maintenance`, character creation rules (`start_point`, `start_items`, name checks), deletion rules (`char_del_*`), `pincode`, rename and slot move, `default_map` and fame list sizes. PIN code verification is disabled by default.
 - `server.groups_path` (`config/groups.json`) defines the permission groups and the commands each group may use. It is generated from rathena's `groups.yml` and `atcommands.yml` by `tools/scripts-import/import_groups.py`. A command a group may not use answers like an unknown command.
 - `server.motd_path` (`config/motd.txt`) is sent to each player on map entry; `@reloadmotd` rereads it.
