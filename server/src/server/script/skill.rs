@@ -1,6 +1,5 @@
 use std::sync::mpsc::SyncSender;
 use std::sync::{Arc, Mutex};
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use configuration::configuration::SkillConfig;
 use models::enums::skill::SkillType;
@@ -363,10 +362,7 @@ impl ScriptSkillService {
         if character.status.hp == 0 {
             return Err("Dead characters cannot start item skills".into());
         }
-        let tick = SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| error.to_string())?
-            .as_millis();
+        let tick = crate::util::tick::get_tick();
         if character.is_using_skill() || character.script_skill_state.casting_until > tick {
             return Err("Cannot activate an item skill while casting another skill".into());
         }

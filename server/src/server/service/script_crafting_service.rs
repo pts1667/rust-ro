@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use models::enums::class::JobName;
 use models::enums::element::Element;
@@ -77,7 +76,7 @@ impl ItemService {
             packet.extend_from_slice(&(recipe.item_id as u16).to_le_bytes());
             if !cooking { packet.extend_from_slice(&[0; 6]); }
         }
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|error| error.to_string())?.as_millis();
+        let now = crate::util::tick::get_tick();
         character.pending_craft = (!recipes.is_empty()).then(|| CraftSession { trigger, cooking, recipes: recipes.iter().map(|recipe| recipe.id).collect(), expires_at: now + 120_000 });
         self.client_notification_sender.send(Notification::Char(CharNotification::new(character.char_id, packet))).map_err(|error| error.to_string())
     }

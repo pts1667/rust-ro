@@ -540,7 +540,8 @@ observation. A command given a wrong argument answers with the line a player wou
   (`heal`, `use`, `equip`, `card`, `common`) and monster (`normal`, `boss`, `mvp`), 100 meaning unchanged.
 - `limits` (`max_base_level`, `max_stat_level`, `max_inventory`, `default_char_speed`, item use intervals), `vending` (`max_value`,
   `tax` in hundredths of a percent of a sale from `tax_min` zeny), `guild`, `pet_support`, `damage_rates_percent` of GvG and battleground,
-  `packetver`, `tick_ms`.
+  `packetver`, `tick_ms` (game milliseconds per tick), `sim_speed` (game time per real time, 1 for the real pace: a timer of 10 s
+  ends after 10 s / `sim_speed` of real time, while the bot's own timeouts stay real).
 
 `GET /bots/server/battle?name=exp` lists the battle options containing `exp`: `{options: [{name, value, default, min, max}]}`. All
 options of rathena are listed, but the server only reads some of them, a value that differs from its default is not proof that it has

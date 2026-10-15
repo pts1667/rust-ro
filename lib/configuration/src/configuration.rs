@@ -255,6 +255,10 @@ fn default_item_use_interval() -> u32 {
     100
 }
 
+fn default_sim_speed() -> f32 {
+    1.0
+}
+
 fn default_groups_path() -> String {
     "config/groups.json".to_string()
 }
@@ -308,6 +312,10 @@ pub struct GameConfig {
     pub drop_rate_card: f32,
     pub base_exp_rate: f32,
     pub job_exp_rate: f32,
+    /// Game time per real time: 10.0 runs timers, mobs and skills ten times faster, for bot testing. The loops take
+    /// proportionally less real time per tick, so a slow machine cannot keep up beyond its tick budget.
+    #[serde(default = "default_sim_speed")]
+    pub sim_speed: f32,
     #[serde(default)]
     pub pvp_exp: bool,
     /// `vending_max_value` of rathena: the highest price of an item in a vending store, in zeny.

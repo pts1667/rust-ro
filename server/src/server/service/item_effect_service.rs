@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::time::{SystemTime, UNIX_EPOCH};
 
 use models::enums::class::{EquipClassFlag, JobName};
 use models::enums::item::{ItemFlag, ItemType};
@@ -113,7 +112,7 @@ impl ItemService {
             return Ok(());
         }
         let model = self.configuration_service.get_item(item.item_id);
-        let now = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|error| error.to_string())?.as_millis();
+        let now = crate::util::tick::get_tick();
         if character.game_systems.item_next_use_at > now {
             return Err("Items cannot be used that fast".into());
         }
@@ -415,7 +414,7 @@ impl ItemService {
 
     fn commit_effects(&self, server: &Server, state: &mut ServerState, _runtime: &Runtime, character: &mut Character, effects: Vec<ItemEffect>, consumption: Option<&ScriptItemConsumption>) -> Result<(), String> {
         self.validate_effects(&effects)?;
-        let tick = SystemTime::now().duration_since(UNIX_EPOCH).map_err(|error| error.to_string())?.as_millis();
+        let tick = crate::util::tick::get_tick();
         let mut grants = vec![];
         let mut removals = vec![];
         let mut variables = vec![];

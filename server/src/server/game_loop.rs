@@ -2,7 +2,7 @@ use std::borrow::Borrow;
 use std::sync::Arc;
 use std::sync::mpsc::SyncSender;
 use std::thread::sleep;
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant};
 
 use movement::position::Position;
 use packets::packets::{Packet, PacketZcNotifyMove, PacketZcNotifyPlayermove};
@@ -17,6 +17,7 @@ use crate::server::model::path::path_search_client_side_algorithm;
 use crate::server::state::server::{ServerState, find_map_instance};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::npc_event_service::touched_npc_events;
+use crate::util::tick::{get_tick, real_duration};
 
 const MOVEMENT_TICK_RATE: u128 = 20;
 pub const GAME_TICK_RATE: u128 = 40;
@@ -29,17 +30,18 @@ impl Server {
             if !server_ref.is_alive() {
                 break;
             }
-            let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
-            Self::game_loop_iteration(server_ref.clone().as_ref(), tick);
-            let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
-            let sleep_duration = (GAME_TICK_RATE as i128 - time_spent as i128).max(0) as u64;
-            if sleep_duration < 5 {
+            let started = Instant::now();
+            Self::game_loop_iteration(server_ref.clone().as_ref(), get_tick());
+            let time_spent = started.elapsed();
+            let sleep_duration = real_duration(GAME_TICK_RATE).saturating_sub(time_spent);
+            if sleep_duration < Duration::from_millis(5) {
                 warn!(
                     "Less than 5 milliseconds of sleep, game loop is too slow - {}ms because game loop took {}ms",
-                    sleep_duration, time_spent
+                    sleep_duration.as_millis(),
+                    time_spent.as_millis()
                 );
             }
-            sleep(Duration::from_millis(sleep_duration));
+            sleep(sleep_duration);
         }
     }
 
@@ -250,7 +252,7 @@ impl Server {
             destination.x,
             destination.y,
         );
-        let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+        let tick = get_tick();
         let canmove_tick = character.get_canmove_tick();
         let start_at = if tick < canmove_tick {
             debug!("Character movement delayed until canmove_tick: {}ms", canmove_tick - tick);
@@ -273,7 +275,8 @@ impl Server {
             if !server_ref.is_alive() {
                 break;
             }
-            let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
+            let started = Instant::now();
+            let tick = get_tick();
             let mut server_state_mut = server_ref.lock_state();
             if let Some(tasks) = server_ref.pop_movement_task() {
                 for task in tasks {
@@ -507,15 +510,16 @@ impl Server {
             server_state_mut.publish_directory();
             drop(server_state_mut);
 
-            let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
-            let sleep_duration = (MOVEMENT_TICK_RATE as i128 - time_spent as i128).max(0) as u64;
-            if sleep_duration < 5 {
+            let time_spent = started.elapsed();
+            let sleep_duration = real_duration(MOVEMENT_TICK_RATE).saturating_sub(time_spent);
+            if sleep_duration < Duration::from_millis(5) {
                 warn!(
                     "Movement loop: less than 5 milliseconds of sleep, movement loop is too slow - {}ms because movement loop took {}ms",
-                    sleep_duration, time_spent
+                    sleep_duration.as_millis(),
+                    time_spent.as_millis()
                 );
             }
-            sleep(Duration::from_millis(sleep_duration));
+            sleep(sleep_duration);
         }
     }
 }

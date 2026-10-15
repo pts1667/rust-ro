@@ -66,6 +66,11 @@ pub async fn main() {
     CONFIGS.set(config).unwrap_or_else(|_| unreachable!("configuration is loaded once"));
 
     setup_logger(configs(), options.debug_log);
+    let sim_speed = f64::from(configs().game.sim_speed);
+    assert!(sim_speed.is_finite() && sim_speed > 0.0, "game.sim_speed must be a positive number, not {sim_speed}");
+    if !util::tick::set_sim_speed(sim_speed) {
+        warn!("The game clock was read before the sim speed was set, game.sim_speed is ignored");
+    }
     let char_server = &configs().char_server;
     repository::fame_repository::configure_list_sizes(
         usize::from(char_server.fame_list_blacksmith),

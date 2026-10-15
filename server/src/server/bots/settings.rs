@@ -52,6 +52,7 @@ pub fn server_settings() -> Value {
     json!({
         "packetver": config.server.packetver,
         "tick_ms": GAME_TICK_RATE,
+        "sim_speed": game.sim_speed,
         "experience": {
             "base": rate(game.base_exp_rate, battle, "base_exp_rate"),
             "job": rate(game.job_exp_rate, battle, "job_exp_rate"),

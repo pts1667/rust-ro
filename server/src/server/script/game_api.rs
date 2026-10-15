@@ -191,7 +191,7 @@ impl ScriptService {
             server.send_raw(context.char_id, packet);
         }
         server.runtime().spawn(async move {
-            tokio::time::sleep(std::time::Duration::from_millis(milliseconds)).await;
+            tokio::time::sleep(crate::util::tick::real_duration(u128::from(milliseconds))).await;
             let _ = response.send(Ok(Value::default()));
         });
     }

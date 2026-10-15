@@ -1,14 +1,14 @@
 use std::sync::Arc;
 use std::thread;
 use std::thread::sleep;
-use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, Instant};
 
 use crate::server::model::events::map_event::MapEventContext;
 use crate::server::model::map_instance::MapInstance;
 use crate::server::model::movement::{Movable, Movement};
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_instance_service::MapInstanceService;
-use crate::util::tick::get_tick;
+use crate::util::tick::{get_tick, real_duration};
 
 pub struct MapInstanceLoop;
 
@@ -25,14 +25,14 @@ impl MapInstanceLoop {
             .name(format!("map_instance_{}_loop_thread", map_instance.name()))
             .spawn(move || {
                 let map_instance = map_instance_clone_for_thread;
-                let mut last_mobs_spawn = Instant::now();
-                let mut last_mobs_action = Instant::now();
+                let mut last_mobs_spawn = get_tick();
+                let mut last_mobs_action = get_tick();
                 loop {
                     if !map_instance.is_alive() {
                         break;
                     }
-                    let tick = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis();
-                    let now = Instant::now();
+                    let started = Instant::now();
+                    let tick = get_tick();
                     map_instance_service_clone.tick_npc_statuses(map_instance.state_mut().as_mut(), tick);
                     map_instance_service_clone.tick_mob_statuses(
                         map_instance.state_mut().as_mut(),
@@ -40,20 +40,20 @@ impl MapInstanceLoop {
                         tick,
                     );
                     if !map_instance.state().mob_movement_paused()
-                        && last_mobs_action.elapsed().as_millis()
+                        && tick.saturating_sub(last_mobs_action)
                             >= (GlobalConfigService::instance().config().game.mob_action_refresh_frequency * 1000.0) as u128
                     {
                         let mut map_instance_guard = map_instance.state_mut();
                         let map_instance_state = map_instance_guard.as_mut();
                         map_instance_service_clone.mobs_action(map_instance_state, map_instance.task_queue(), tick);
                         map_instance_service_clone.mobs_skill_ai(map_instance_state, tick);
-                        last_mobs_action = now;
+                        last_mobs_action = tick;
                     }
-                    if last_mobs_spawn.elapsed().as_millis()
+                    if tick.saturating_sub(last_mobs_spawn)
                         >= (GlobalConfigService::instance().config().game.mob_spawn_refresh_frequency * 1000.0) as u128
                     {
                         map_instance_service_clone.spawn_mobs(map_instance.map(), map_instance.state_mut().as_mut());
-                        last_mobs_spawn = now;
+                        last_mobs_spawn = tick;
                     }
 
                     if let Some(tasks) = map_instance.pop_task() {
@@ -69,17 +69,17 @@ impl MapInstanceLoop {
                         }
                     }
                     map_instance_service_clone.tick_actor_skills(map_instance.state_mut().as_mut(), tick);
-                    let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
-                    let sleep_duration = (MAP_LOOP_TICK_RATE as i128 - time_spent as i128).max(0) as u64;
-                    if sleep_duration < 5 {
+                    let time_spent = started.elapsed();
+                    let sleep_duration = real_duration(MAP_LOOP_TICK_RATE).saturating_sub(time_spent);
+                    if sleep_duration < Duration::from_millis(5) {
                         warn!(
                             "Less than 5 milliseconds of sleep, map_instance_{}_loop is too slow - {}ms because game loop took {}ms",
                             map_instance.name(),
-                            sleep_duration,
-                            time_spent
+                            sleep_duration.as_millis(),
+                            time_spent.as_millis()
                         );
                     }
-                    sleep(Duration::from_millis(sleep_duration));
+                    sleep(sleep_duration);
                 }
                 info!("Shutdown map_instance_{}_loop_thread", map_instance.name());
             })
@@ -91,6 +91,7 @@ impl MapInstanceLoop {
                     if !map_instance.is_alive() {
                         break;
                     }
+                    let started = Instant::now();
                     let tick = get_tick();
                     let mut map_instance_state = map_instance.state_mut();
 
@@ -134,16 +135,17 @@ impl MapInstanceLoop {
                         }
                     }
                     drop(map_instance_state);
-                    let time_spent = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_millis() - tick;
-                    let sleep_duration = (MOVEMENT_TICK_RATE as i128 - time_spent as i128).max(0) as u64;
-                    if sleep_duration < 5 {
+                    let time_spent = started.elapsed();
+                    let sleep_duration = real_duration(MOVEMENT_TICK_RATE).saturating_sub(time_spent);
+                    if sleep_duration < Duration::from_millis(5) {
                         warn!(
                             "Mob Movement loop: less than 5 milliseconds of sleep, movement loop is too slow - {}ms because movement loop \
                              took {}ms",
-                            sleep_duration, time_spent
+                            sleep_duration.as_millis(),
+                            time_spent.as_millis()
                         );
                     }
-                    sleep(Duration::from_millis(sleep_duration));
+                    sleep(sleep_duration);
                 }
                 info!("Shutdown map_instance_{}_mob_movement_thread", map_instance.name());
             })
