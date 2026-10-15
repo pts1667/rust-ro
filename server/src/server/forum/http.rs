@@ -13,7 +13,7 @@ use serde_json::{Value, json};
 
 use super::websocket;
 use super::{Author, ErrorKind, Forum, ForumError, now};
-use crate::server::bots::{ApiKey, require_key};
+use crate::server::bots::ApiKey;
 
 const SKILL: &str = include_str!("SKILL.md");
 /// The character a request carrying the bot API key writes as.
@@ -144,17 +144,20 @@ async fn socket(State(forum): ForumState, Extension(author): Extension<Author>, 
     upgrade.on_upgrade(move |socket| websocket::serve(socket, forum, author, query.after))
 }
 
-/// `/forum/SKILL.md` is open. `/forum/auth` takes the bot API key. Everything else takes a token, or the key and a name.
+/// `/forum/SKILL.md` and `/forum/auth` are open. Everything else takes a token, or the bot key and a name.
 pub fn router(forum: Arc<Forum>, key: Arc<ApiKey>) -> Router {
-    let guard: Guard = (forum.clone(), key.clone());
+    let guard: Guard = (forum.clone(), key);
     let members = Router::new()
         .route("/forum/threads", get(threads).post(create_thread))
         .route("/forum/threads/{id}", get(thread))
         .route("/forum/threads/{id}/comments", post(comment))
         .route("/forum/ws", get(socket))
         .layer(middleware::from_fn_with_state(guard, require_member));
-    let signing_in = Router::new().route("/forum/auth", post(sign_in)).layer(middleware::from_fn_with_state(key, require_key));
-    Router::new().route("/forum/SKILL.md", get(skill)).merge(signing_in).merge(members).with_state(forum)
+    Router::new()
+        .route("/forum/SKILL.md", get(skill))
+        .route("/forum/auth", post(sign_in))
+        .merge(members)
+        .with_state(forum)
 }
 
 #[cfg(test)]
@@ -217,7 +220,7 @@ mod tests {
     }
 
     async fn sign_in_as_hero(app: &Router) -> String {
-        let (status, issued) = send(app, Method::POST, "/forum/auth", &[("x-api-key", BOT_KEY)], Some(r#"{"account":"alice","password":"secret","character":"hero"}"#)).await;
+        let (status, issued) = send(app, Method::POST, "/forum/auth", &[], Some(r#"{"account":"alice","password":"secret","character":"hero"}"#)).await;
         assert_eq!(status, StatusCode::OK);
         issued["token"].as_str().unwrap().to_string()
     }
@@ -268,9 +271,10 @@ mod tests {
         assert_eq!(send(&app, Method::GET, "/forum/threads", &[], None).await.0, StatusCode::UNAUTHORIZED);
         assert_eq!(send(&app, Method::GET, "/forum/threads", &[("authorization", "Bearer not-a-token")], None).await.0, StatusCode::UNAUTHORIZED);
         assert_eq!(send(&app, Method::GET, "/forum/threads", &[("x-api-key", BOT_KEY), ("x-forum-as", "Hero")], None).await.0, StatusCode::OK);
-        let (status, _) = send(&app, Method::POST, "/forum/auth", &[("x-api-key", BOT_KEY)], Some(r#"{"account":"alice","password":"wrong","character":"Hero"}"#)).await;
+        let (status, _) = send(&app, Method::POST, "/forum/auth", &[], Some(r#"{"account":"alice","password":"wrong","character":"Hero"}"#)).await;
         assert_eq!(status, StatusCode::UNAUTHORIZED);
-        assert_eq!(send(&app, Method::POST, "/forum/auth", &[], Some(r#"{"account":"alice","password":"secret","character":"Hero"}"#)).await.0, StatusCode::UNAUTHORIZED);
+        let (status, _) = send(&app, Method::POST, "/forum/auth", &[], Some(r#"{"account":"alice","password":"secret","character":"Nobody"}"#)).await;
+        assert_eq!(status, StatusCode::UNAUTHORIZED);
         assert_eq!(send(&app, Method::GET, "/forum/SKILL.md", &[], None).await.0, StatusCode::OK);
     }
 

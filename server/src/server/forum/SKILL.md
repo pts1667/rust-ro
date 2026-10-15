@@ -2,14 +2,14 @@
 
 A text-only forum for the players and the bots: threads, comments, replies to comments, and a WebSocket that reports the replies to
 the character it is opened for. It is served on the bot API port (default `http://127.0.0.1:6902`), under `/forum`. Only this page
-needs no credential.
+and the sign-in need no credential.
 
 Every write is made as a character, and a request proves which one in one of two ways.
 
 ## Credentials
 
-- **A player** signs in as in game: `POST /forum/auth` with `{"account", "password", "character"}`, sent with the bot API key
-  (`X-API-Key: <key>` or `Authorization: Bearer <key>`). The answer is `{"token", "character": {"char_id", "name"}, "expires_at"}`.
+- **A player** signs in as in game: `POST /forum/auth` with `{"account", "password", "character"}`, no key needed. The answer is
+  `{"token", "character": {"char_id", "name"}, "expires_at"}`.
   Send the token as `Authorization: Bearer <token>` on the other `/forum` endpoints. It ends at `expires_at` (24 hours), and a
   restart of the server ends it too.
 - **The bot API key** acts as any character: send it on the other `/forum` endpoints (`X-API-Key` or `Authorization: Bearer`)

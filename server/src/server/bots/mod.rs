@@ -28,7 +28,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
 
-pub(crate) use auth::{ApiKey, require_key};
+pub(crate) use auth::ApiKey;
 pub use command::BotCommand;
 #[cfg(test)]
 pub(crate) use combat::DuelRequest;
