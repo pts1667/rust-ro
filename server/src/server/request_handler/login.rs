@@ -23,14 +23,14 @@ pub const NOTIFY_ALREADY_ONLINE: u8 = 8;
 pub const NOTIFY_DISCONNECTED: u8 = 15;
 
 /// Not a client packet: user id (24), password (24) and sex (`M` or `F`) after the header.
-const CA_CREATE_ACCOUNT: u16 = 0x0A10;
+const CA_CREATE_ACCOUNT: u16 = 0xC3E0;
 /// Not a client packet: result code (`0` when created), then the account id (`0` when refused).
-const AC_CREATE_ACCOUNT_RESULT: u16 = 0x0A11;
+const AC_CREATE_ACCOUNT_RESULT: u16 = 0xC3E1;
 const CREATE_ACCOUNT_LENGTH: usize = 2 + 24 + 24 + 1;
 /// Not a client packet: no body. Answered with `AC_SERVER_INFO`.
-const CA_SERVER_INFO: u16 = 0x0A27;
+const CA_SERVER_INFO: u16 = 0xC3E2;
 /// Not a client packet: accounts required (`1`/`0`), account creation on (`1`/`0`), then the packet version.
-const AC_SERVER_INFO: u16 = 0x0A28;
+const AC_SERVER_INFO: u16 = 0xC3E3;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ListedServer {
@@ -419,8 +419,8 @@ mod tests {
 
     #[test]
     fn create_account_result_is_a_code_and_the_new_account_id() {
-        assert_eq!(create_account_result_packet(Ok(2_000_001)), vec![0x11, 0x0A, 0, 0x81, 0x84, 0x1E, 0x00]);
-        assert_eq!(create_account_result_packet(Err(CreateAccountError::NameTaken)), vec![0x11, 0x0A, 5, 0, 0, 0, 0]);
+        assert_eq!(create_account_result_packet(Ok(2_000_001)), vec![0xE1, 0xC3, 0, 0x81, 0x84, 0x1E, 0x00]);
+        assert_eq!(create_account_result_packet(Err(CreateAccountError::NameTaken)), vec![0xE1, 0xC3, 5, 0, 0, 0, 0]);
     }
 
     #[test]
@@ -429,7 +429,7 @@ mod tests {
         assert_eq!(crate::server::request_handler::framing::ClientFrames::new(20120307).push(&request).unwrap(), vec![request]);
         let open = LoginConfig { new_account: true, ..LoginConfig::default() };
         let packet = server_info_packet(&open, Ipv4Addr::LOCALHOST, 20120307);
-        assert_eq!(&packet[..4], &[0x28, 0x0A, 1, 1]);
+        assert_eq!(&packet[..4], &[0xE3, 0xC3, 1, 1]);
         assert_eq!(&packet[4..], &20120307u32.to_le_bytes());
         let skipping = LoginConfig { skip_account_ips: vec!["127.0.0.1".parse().unwrap()], ..LoginConfig::default() };
         assert_eq!(&server_info_packet(&skipping, Ipv4Addr::LOCALHOST, 20120307)[2..4], &[0, 0]);

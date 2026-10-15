@@ -1,23 +1,23 @@
 # Custom login packets
 
-These packets are not part of the client. A custom client or bot sends them to the login port, the same connection that takes `CA_LOGIN` (`0x0064`). The official client never sends them.
+These packets are not part of the client. Their ids (`0xC3E0`–`0xC3E3`) lie in a range that a scan of the rathena source and this repo's packet table found unused, so a client that knows only the stock packets never sends them. A custom client or bot sends them to the login port, the same connection that takes `CA_LOGIN` (`0x0064`). The official client never sends them.
 
-## `CA_CREATE_ACCOUNT` (`0x0A10`, client to login)
+## `CA_CREATE_ACCOUNT` (`0xC3E0`, client to login)
 
 | Offset | Size | Field                                        |
 |--------|------|----------------------------------------------|
-| 0      | 2    | packet id, `10 0A`                           |
+| 0      | 2    | packet id, `E0 C3`                           |
 | 2      | 24   | user id, NUL padded                          |
 | 26     | 24   | password, NUL padded                         |
 | 50     | 1    | sex, `M` or `F` (lower case is accepted)     |
 
 Total 51 bytes, no length field. The packet creates an account without logging in and uses the same rules as the `name_M` registration: `login.new_account` must be on, the name and password minimum lengths apply, and `allowed_regs` / `time_allowed` limit the flood. A name may only use letters, digits and `_`, and it may not end in `_M` or `_F`, because the login path would read that suffix as a sex.
 
-## `AC_CREATE_ACCOUNT_RESULT` (`0x0A11`, login to client)
+## `AC_CREATE_ACCOUNT_RESULT` (`0xC3E1`, login to client)
 
 | Offset | Size | Field                                                 |
 |--------|------|-------------------------------------------------------|
-| 0      | 2    | packet id, `11 0A`                                    |
+| 0      | 2    | packet id, `E1 C3`                                    |
 | 2      | 1    | result code, `0` when created                         |
 | 3      | 4    | account id (little endian), `0` when refused          |
 
@@ -35,13 +35,13 @@ Result codes:
 | 7    | storage failure                                                      |
 | 8    | the address is IP banned (`ipban_enable`)                            |
 
-## `CA_SERVER_INFO` (`0x0A27`, client to login) and `AC_SERVER_INFO` (`0x0A28`, login to client)
+## `CA_SERVER_INFO` (`0xC3E2`, client to login) and `AC_SERVER_INFO` (`0xC3E3`, login to client)
 
-The request has no body, only the 2-byte header. The answer describes the connection that asked:
+The request has no body, only the 2-byte header (`E2 C3`). The answer describes the connection that asked:
 
 | Offset | Size | Field                                                              |
 |--------|------|--------------------------------------------------------------------|
-| 0      | 2    | packet id, `28 0A`                                                 |
+| 0      | 2    | packet id, `E3 C3`                                                 |
 | 2      | 1    | accounts required, `1` unless the caller's address is in `skip_account_ips` |
 | 3      | 1    | account creation on, `1` when `login.new_account` is on           |
 | 4      | 4    | packet version of the server (little endian)                       |
