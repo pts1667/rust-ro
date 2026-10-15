@@ -94,7 +94,7 @@ pub fn server_settings() -> Value {
             "battleground": damage_rates(&game.battleground_damage_rates),
         },
         "mobs": { "density": game.mob_density },
-        "bots": { "max_bots": config.bots.max_bots, "idle_logout_secs": config.bots.idle_logout_secs, "command_group": config.bots.command_group },
+        "bots": { "max_bots": config.bots.max_bots, "max_registered_bots": config.bots.max_registered_bots, "idle_logout_secs": config.bots.idle_logout_secs, "command_group": config.bots.command_group },
     })
 }
 

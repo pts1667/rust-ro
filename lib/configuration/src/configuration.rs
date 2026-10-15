@@ -61,7 +61,10 @@ pub struct BotsConfig {
     pub start_map: String,
     pub start_x: u16,
     pub start_y: u16,
+    /// Bots in the game at once: a connect is refused past this.
     pub max_bots: usize,
+    /// Bots registered at all, connected or not: a create is refused past this.
+    pub max_registered_bots: usize,
     /// Longest wait for one blocking action (walking to an NPC, a dialogue answer).
     pub action_timeout_secs: u64,
     /// A bot nobody sent a request for in this time leaves the game, 0 keeps bots in the game until they are told to leave.
@@ -81,6 +84,7 @@ impl Default for BotsConfig {
             start_x: 156,
             start_y: 191,
             max_bots: 20,
+            max_registered_bots: 200,
             action_timeout_secs: 30,
             idle_logout_secs: 1200,
             command_group: 1,

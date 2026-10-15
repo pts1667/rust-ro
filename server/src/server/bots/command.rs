@@ -670,9 +670,10 @@ fn way_around_warps(
         let path = path_search_client_side_algorithm(width, height, cells, here.0, here.1, to.0, to.1);
         path.is_empty() || path.iter().any(|node| blocked((node.x, node.y)))
     };
-    // A long walk the pathfinder does not find is walked in legs (`long_route_waypoint`)
+    // A walk the pathfinder does not find (it gives up after about 100 cells) goes around the warps on the grid too:
+    // it used to be walked in legs over the whole map (`long_route_waypoint`), through the door cells
     let direct = path_search_client_side_algorithm(width, height, cells, here.0, here.1, to.0, to.1);
-    if direct.is_empty() || !direct.iter().any(|node| blocked((node.x, node.y))) {
+    if !direct.is_empty() && !direct.iter().any(|node| blocked((node.x, node.y))) {
         return None;
     }
     let walkable = CellType::Walkable.as_flag();
@@ -794,5 +795,24 @@ mod walk_tests {
         // Walking to the door itself, or along a line that misses it, is left alone
         assert_eq!(way_around_warps(&cells, width, height, (2, 4), (9, 4), &|(x, y)| (8..=10).contains(&x) && (3..=5).contains(&y)), None);
         assert_eq!(way_around_warps(&cells, width, height, (2, 0), (17, 0), &|_| false), None);
+    }
+
+    #[test]
+    fn a_long_walk_goes_around_a_warp_it_is_not_walking_to() {
+        // 200 cells long, 3 high: the door takes the two top rows at x = 100, so the walk goes by the bottom row
+        let (width, height) = (200u16, 3u16);
+        let walkable = CellType::Walkable.as_flag();
+        let warp = CellType::Warp.as_flag();
+        let cells: Vec<u16> = (0..usize::from(width) * usize::from(height))
+            .map(|i| {
+                let (x, y) = (i % 200, i / 200);
+                if x == 100 && y < 2 { walkable | warp } else { walkable }
+            })
+            .collect();
+        let (waypoint, length) = way_around_warps(&cells, width, height, (2, 1), (197, 1), &|_| false).expect("the long walk goes around the door");
+        assert!(waypoint.0 < 100, "the waypoint is before the door: {waypoint:?}");
+        assert_eq!(length, 195, "the whole way round is walked");
+        let path = path_search_client_side_algorithm(width, height, &cells, 2, 1, waypoint.0, waypoint.1);
+        assert!(!path.is_empty() && path.iter().all(|node| cells[usize::from(node.y) * 200 + usize::from(node.x)] & warp == 0));
     }
 }

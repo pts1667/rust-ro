@@ -301,6 +301,7 @@
     "start_x": 156,
     "start_y": 191,
     "max_bots": 20,
+    "max_registered_bots": 200,
     "action_timeout_secs": 30,
     "idle_logout_secs": 1200,
     "command_group": 1

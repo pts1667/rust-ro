@@ -86,7 +86,8 @@ POST /bots
 
 Only `name` is required. `sex` is `"M"` or `"F"` (default `"M"`), `hair_style` goes from 0 to 23 (default 1), `hair_color` from 0 to 8
 (default 0), `connect` (default true) puts the new character in the game at once. The answer is `{name, char_id, connected}`.
-Errors: 400 for a name or look the server refuses, 409 when a bot of this name exists or `bots.max_bots` bots are registered.
+Errors: 400 for a name or look the server refuses, 409 when a bot of this name exists or `bots.max_registered_bots` bots are registered. A bot that connects while
+`bots.max_bots` bots are in the game is refused with 409 too.
 
 
 ### Observation

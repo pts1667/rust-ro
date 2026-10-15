@@ -726,9 +726,9 @@ impl BotController {
 
     /// Creates the account and character of a new bot, and brings it into the game unless `connect` is false.
     pub async fn create(&self, new_bot: NewBot, connect: bool) -> Result<Value, BotError> {
-        let bots = self.server.bots();
-        if bots.list().len() >= self.server.configuration.bots.max_bots {
-            return Err(BotError::new(ErrorKind::Conflict, "The limit of bots was reached"));
+        let max = self.server.configuration.bots.max_registered_bots;
+        if self.server.bots().list().len() >= max {
+            return Err(BotError::new(ErrorKind::Conflict, format!("At most {max} bots can be registered")));
         }
         let server = self.server.clone();
         let stored = tokio::task::spawn_blocking(move || create_stored_bot(&server, &new_bot))
