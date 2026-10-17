@@ -807,6 +807,15 @@ pub fn skill_failed(skill_id: u32, cause: models::enums::skill::UseSkillFailure)
     packet.extend_from_slice(&[0, cause.value() as u8]);
     packet
 }
+/// Basic Skill too low for a feature; `btype` picks the client message (0 trade, 2 sit, 3 chat room, 4 party).
+pub fn basic_skill_required(btype: u16) -> Vec<u8> {
+    let mut packet = header(0x0110);
+    packet.extend_from_slice(&1u16.to_le_bytes());
+    packet.extend_from_slice(&btype.to_le_bytes());
+    packet.extend_from_slice(&0u16.to_le_bytes());
+    packet.extend_from_slice(&[0, models::enums::skill::UseSkillFailure::Level.value() as u8]);
+    packet
+}
 pub fn set_length(packet: &mut [u8]) {
     let length = packet.len() as u16;
     packet[2..4].copy_from_slice(&length.to_le_bytes());

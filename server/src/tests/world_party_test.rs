@@ -222,7 +222,9 @@ fn party_creation_checks_basic_skill_and_installs_committed_state_even_if_notifi
     }))
     .unwrap();
     assert_eq!(repository.character_game_systems(150_000).unwrap().party_id, 0);
-    assert_eq!(wait_packet(&context, 150_000, 0x0110).len(), 10);
+    let refusal = wait_packet(&context, 150_000, 0x0110);
+    assert_eq!(refusal.len(), 10);
+    assert_eq!(u16::from_le_bytes([refusal[4], refusal[5]]), 4, "btype 4 is the party message, 0 would read as trade");
     context
         .server
         .state_mut()

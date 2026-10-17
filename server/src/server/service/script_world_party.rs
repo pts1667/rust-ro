@@ -1,5 +1,4 @@
 use database::model::CharacterRecord;
-use models::enums::skill::UseSkillFailure;
 
 use super::{ScriptWorldService, install_state, protocol};
 use crate::server::Server;
@@ -12,6 +11,8 @@ use crate::server::state::character::Character;
 use crate::server::state::server::ServerState;
 
 const PARTY_SHARE_LEVEL: u32 = 15;
+const BASIC_SKILL_PARTY_LEVEL: u8 = 7;
+const BASIC_SKILL_PARTY_BTYPE: u16 = 4;
 
 fn cached_party(character: &Character) -> Option<&PartyRecord> {
     character
@@ -352,14 +353,10 @@ impl ScriptWorldService {
                 item_pickup,
                 item_share,
             } => {
-                if character
-                    .status
-                    .known_skills
-                    .iter()
-                    .find(|skill| skill.value.id() == 1)
-                    .is_none_or(|skill| skill.level < 7)
+                if self.configuration.config().game.basic_skill_check
+                    && Server::basic_skill_level(character) < BASIC_SKILL_PARTY_LEVEL
                 {
-                    return self.send(character.char_id, protocol::skill_failed(1, UseSkillFailure::Level));
+                    return self.send(character.char_id, protocol::basic_skill_required(BASIC_SKILL_PARTY_BTYPE));
                 }
                 if character.game_systems.party_id != 0 {
                     return self.send(character.char_id, vec![0xFA, 0, 2]);
