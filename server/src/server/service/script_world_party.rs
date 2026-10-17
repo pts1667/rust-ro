@@ -601,7 +601,7 @@ impl ScriptWorldService {
 
     fn install_party_change(
         &self,
-        _server: &Server,
+        server: &Server,
         state: &mut ServerState,
         character: &mut Character,
         change: PartyChange,
@@ -616,7 +616,11 @@ impl ScriptWorldService {
                 state.characters_mut().get_mut(&id)
             };
             if let Some(actor) = actor {
+                let previous_party = actor.game_systems.party_id;
                 install_state(actor, saved);
+                if actor.game_systems.party_id != previous_party {
+                    server.queue_hook(script_sdk::Hook::PartyChanged { char_id: id, party_id: actor.game_systems.party_id });
+                }
                 actor.game_systems.party = change.party.as_ref().filter(|party| party.members.contains(&id)).cloned();
                 actor.game_systems.party_position = None;
                 actor.game_systems.party_health = None;

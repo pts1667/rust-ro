@@ -186,6 +186,22 @@ fn red_potion(item: &ItemUse) -> Script {
 
 The item layer is `lib/script-sdk-2/src/item.rs`. Every item is in the items module, `scripts/items`, which `scripts/items/src/generated.rs` generates from the item sources with `tools/scripts-import/import_items.py`. A body without effects is an `ItemBonus` function and the rest are `ItemUse` functions. `item_module!` registers them by item id, and the server runs an item through `Entry::Item(id)`, which falls back to the bonus table for passive items.
 
+## Plugin scripts
+
+A plugin is declared with `plugin_module!` instead of `script_module!`, and gets more than an ordinary module: an `init` run, hooks (`fn(&Ctx, &Hook) -> Script`, run after something happened to a character) and interceptors (`fn(&Interception) -> Verdict`, pure functions the game loop waits for). Its NPC and event bodies are written exactly as above. What it adds to `Ctx`:
+
+```rust
+let settings: Settings = ctx.plugin_config()?;   // the plugin's config.json, through serde
+ctx.rates().set(Rate::BaseExp, 150)?;            // this plugin's share of a server rate, in percent
+let drops = ctx.rates().get(Rate::Drop)?;        // the effective rate, all plugins together
+```
+
+- Calls are checked against the capabilities the plugin declared; one outside them stops the run.
+- `$`, `$@`, `#` and `##` variables are stored under the plugin's name, character variables are shared.
+- Interceptors cannot call the host at all. They read their settings with `script_sdk_2::configured::<T>()`.
+
+The plugin layer is `lib/script-sdk-2/src/plugin.rs`; packaging, hooks, interceptors and the operator side are in [plugins.md](plugins.md).
+
 ## Not covered yet
 
 - `Function` variants that only an item script can use. The item script queues them, and the server applies them when the item is used. An NPC script that calls one gets `Unsupported game request`, so they have no wrapper here:

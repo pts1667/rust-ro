@@ -4,6 +4,7 @@ use std::process::Command;
 
 /// Builds the `scripts` workspace and installs every module as `config/wasm/modules/<name>.wasm`.
 /// A module is a crate under `scripts/` that builds a `cdylib`; its directory name is its module name.
+/// Crates under `scripts/plugins/` are plugins instead, installed as `config/plugins/<name>/plugin.wasm` next to their manifests.
 fn main() {
     let root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
     let scripts = root.join("scripts");
@@ -21,8 +22,17 @@ fn main() {
 
     let built = scripts.join("target/wasm32-unknown-unknown/release");
     let mut installed = BTreeSet::new();
+    let mut plugins = 0;
     for directory in module_directories(&scripts) {
         let name = directory.file_name().unwrap().to_string_lossy().into_owned();
+        if directory.parent().is_some_and(|parent| parent.ends_with("plugins")) {
+            let folder = root.join("config/plugins").join(&name);
+            std::fs::create_dir_all(&folder).expect("Cannot create the plugin directory");
+            std::fs::copy(built.join(format!("{name}.wasm")), folder.join("plugin.wasm"))
+                .unwrap_or_else(|error| panic!("Cannot install plugin {name}: {error}"));
+            plugins += 1;
+            continue;
+        }
         std::fs::copy(built.join(format!("{name}.wasm")), destination.join(format!("{name}.wasm")))
             .unwrap_or_else(|error| panic!("Cannot install {name}: {error}"));
         installed.insert(name);
@@ -33,7 +43,7 @@ fn main() {
             std::fs::remove_file(&stale).unwrap_or_else(|error| panic!("Cannot remove {}: {error}", stale.display()));
         }
     }
-    println!("Built {} modules into config/wasm/modules", installed.len());
+    println!("Built {} modules into config/wasm/modules and {plugins} plugins into config/plugins", installed.len());
 }
 
 /// Crates one or two levels below `scripts/` whose manifest declares a `cdylib`.

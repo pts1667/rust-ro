@@ -287,7 +287,9 @@ impl GameEventHandler for CharacterChangeMap {
             char_id: character.char_id,
         }));
         let account_id = character.account_id;
+        let entered = script_sdk::Hook::MapEnter { char_id: character.char_id, map: event.new_map_name.clone(), x: character.x, y: character.y };
         state.insert_map_item(account_id, char_map_item);
+        server.queue_hook(entered);
         Ok(())
     }
 }

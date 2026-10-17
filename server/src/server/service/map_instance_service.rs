@@ -2020,9 +2020,9 @@ impl MapInstanceService {
         let factor = if treasure_chest {
             1.0
         } else if drop.is_card {
-            config.game.drop_rate_card
+            config.game.drop_rate_card * crate::server::plugins::rates::factor(script_sdk::Rate::CardDrop)
         } else {
-            config.game.drop_rate
+            config.game.drop_rate * crate::server::plugins::rates::factor(script_sdk::Rate::Drop)
         };
         if table.unchanged || drop.rate == 0 {
             return (f64::from(drop.rate) * f64::from(factor)).round() as u16;

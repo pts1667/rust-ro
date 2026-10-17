@@ -150,6 +150,58 @@ pub struct ScriptingConfig {
     pub items_path: String,
     pub conversation_timeout_secs: u64,
     pub map_flags_path: String,
+    /// Directory of the plugins: each is a folder `<name>/` with `plugin.wasm` and optional `npcs.json`, `events.json` and
+    /// `config.json` (`docs/plugins.md`).
+    pub plugins_dir: String,
+    /// The plugins to load, in order. A plugin in `plugins_dir` that is not listed, or listed with `"enabled": false`, is not loaded.
+    pub plugins: Vec<PluginSetting>,
+    /// CPU time a script or plugin run may spend in its own code, host calls excluded, before it traps.
+    pub cpu_budget_ms: u64,
+    /// Time the game loop waits on one plugin interceptor; a later answer is ignored and counts as a failure.
+    pub interceptor_deadline_us: u64,
+    /// Failures (traps, overruns, answers that do not decode) after which an interceptor is turned off until restart.
+    pub interceptor_failures: u32,
+}
+
+/// A plugin of `scripting.plugins`: its name, or `{ "name": ..., "enabled": false, "capabilities": [...] }`.
+#[derive(Deserialize, Debug, Clone, PartialEq, Eq)]
+#[serde(untagged)]
+pub enum PluginSetting {
+    Name(String),
+    Detailed {
+        name: String,
+        #[serde(default = "enabled_by_default")]
+        enabled: bool,
+        /// Narrows the capabilities the plugin declares; a capability it did not declare is never granted.
+        #[serde(default)]
+        capabilities: Option<Vec<String>>,
+    },
+}
+
+fn enabled_by_default() -> bool {
+    true
+}
+
+impl PluginSetting {
+    pub fn name(&self) -> &str {
+        match self {
+            Self::Name(name) | Self::Detailed { name, .. } => name,
+        }
+    }
+
+    pub fn enabled(&self) -> bool {
+        match self {
+            Self::Name(_) => true,
+            Self::Detailed { enabled, .. } => *enabled,
+        }
+    }
+
+    pub fn capabilities(&self) -> Option<&[String]> {
+        match self {
+            Self::Name(_) => None,
+            Self::Detailed { capabilities, .. } => capabilities.as_deref(),
+        }
+    }
 }
 
 impl Default for ScriptingConfig {
@@ -162,6 +214,11 @@ impl Default for ScriptingConfig {
             items_path: "config/wasm/items.json".into(),
             conversation_timeout_secs: 120,
             map_flags_path: "config/wasm/map_flags.json".into(),
+            plugins_dir: "config/plugins".into(),
+            plugins: Vec::new(),
+            cpu_budget_ms: 2000,
+            interceptor_deadline_us: 200,
+            interceptor_failures: 10,
         }
     }
 }
@@ -1585,6 +1642,18 @@ mod tests {
         assert_eq!(config.modules_dir, "config/wasm/modules");
         assert_eq!(config.modules["towns_airports"], "custom/towns_airports.wasm");
         assert_eq!(config.modules.len(), 1);
+    }
+
+    #[test]
+    fn plugins_are_listed_by_name_or_with_their_settings() {
+        let config: ScriptingConfig = serde_json::from_str(
+            r#"{"plugins": ["double_xp", {"name": "shop", "enabled": false}, {"name": "events", "capabilities": ["Broadcast"]}]}"#,
+        )
+        .unwrap();
+        assert_eq!(config.plugins_dir, "config/plugins");
+        let summary: Vec<_> = config.plugins.iter().map(|plugin| (plugin.name(), plugin.enabled(), plugin.capabilities().map(<[String]>::len))).collect();
+        assert_eq!(summary, [("double_xp", true, None), ("shop", false, None), ("events", true, Some(1))]);
+        assert!(ScriptingConfig::default().plugins.is_empty(), "no plugin loads unless listed");
     }
 
     fn server_config(extra: &str) -> ServerConfig {

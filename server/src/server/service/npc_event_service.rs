@@ -123,6 +123,7 @@ impl Server {
         self.broadcast_npc_event(state, "OnInit");
         self.broadcast_npc_event(state, "OnAgitInit");
         self.add_to_next_tick(GameEvent::CastleLifecycle(crate::server::model::events::game_event::CastleLifecycle::Init));
+        self.add_to_next_tick(GameEvent::PluginInitialization(crate::server::model::events::game_event::PluginInitialization));
     }
 
     /// Fires the `OnMinute`, `OnClock`, weekday, `OnHour` and `OnDay` labels the wall clock just reached.
@@ -409,7 +410,14 @@ impl Server {
         function: Function,
         arguments: &[Value],
     ) -> Reply {
-        let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("NPC source is unavailable")?;
+        let source = crate::server::script::unit_data::script_actor(state, context)?;
+        if function == Function::Announce && source.is_none() {
+            if announcement_scope(arguments)? != 0 {
+                return Err("Without an NPC, an announcement can only address the whole server".into());
+            }
+            return self.announce_to(state, arguments, |_| true);
+        }
+        let npc = source.ok_or("NPC source is unavailable")?;
         if function == Function::Monster {
             let request = self.item_service().spawn_request(arguments, context.char_id)?;
             self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
@@ -460,28 +468,32 @@ impl Server {
             self.spawn_script_monster(state, context, arguments[0].string_value()?, request)?;
             return Ok(Value::default());
         }
+        self.announce_to(state, arguments, |character| match announcement_scope(arguments).unwrap_or(u32::MAX) {
+            0 => true,
+            value if value == BroadcastFlag::Map.as_flag() => {
+                character.current_map_name() == &npc.map && character.current_map_instance() == npc.instance
+            }
+            value if value == BroadcastFlag::Area.as_flag() => {
+                character.current_map_name() == &npc.map
+                    && character.current_map_instance() == npc.instance
+                    && character.x.abs_diff(npc.x) <= crate::server::PLAYER_FOV
+                    && character.y.abs_diff(npc.y) <= crate::server::PLAYER_FOV
+            }
+            _ => false,
+        })
+    }
+
+    /// Sends an `announce` to the characters `audience` picks.
+    fn announce_to(&self, state: &ServerState, arguments: &[Value], audience: impl Fn(&crate::server::state::character::Character) -> bool) -> Reply {
         let packet = super::script_presentation_service::announcement_packet(arguments)?;
-        let scope = arguments[1].number_value()? as u32
-            & (BroadcastFlag::Map.as_flag() | BroadcastFlag::Area.as_flag() | BroadcastFlag::ReservedTarget.as_flag());
+        let scope = announcement_scope(arguments)?;
         if scope == BroadcastFlag::Map.as_flag() | BroadcastFlag::Area.as_flag() {
             return Err("Self announcement requires an attached player".into());
         }
         let recipients = state
             .characters()
             .values()
-            .filter(|character| match scope {
-                0 => true,
-                value if value == BroadcastFlag::Map.as_flag() => {
-                    character.current_map_name() == &npc.map && character.current_map_instance() == npc.instance
-                }
-                value if value == BroadcastFlag::Area.as_flag() => {
-                    character.current_map_name() == &npc.map
-                        && character.current_map_instance() == npc.instance
-                        && character.x.abs_diff(npc.x) <= crate::server::PLAYER_FOV
-                        && character.y.abs_diff(npc.y) <= crate::server::PLAYER_FOV
-                }
-                _ => false,
-            })
+            .filter(|character| audience(character))
             .map(|character| character.char_id)
             .collect::<Vec<_>>();
         self.map_notifications.extend(
@@ -492,6 +504,11 @@ impl Server {
         self.drain_map_notifications();
         Ok(Value::default())
     }
+}
+
+fn announcement_scope(arguments: &[Value]) -> Result<u32, String> {
+    Ok(arguments.get(1).ok_or("Announcement needs a target flag")?.number_value()? as u32
+        & (BroadcastFlag::Map.as_flag() | BroadcastFlag::Area.as_flag() | BroadcastFlag::ReservedTarget.as_flag()))
 }
 
 #[cfg(test)]

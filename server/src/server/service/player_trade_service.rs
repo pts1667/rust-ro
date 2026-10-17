@@ -267,6 +267,11 @@ impl Server {
         if !close_enough(actor, target) {
             return self.trade_response(state, char_id, TradeResponse::TooFar, Some(target_id));
         }
+        let decision = script_sdk::Interception::TradeRequest { char_id, target_char_id: target_id, map: actor.current_map_name().clone() };
+        if !self.intercept_allowed(char_id, decision) {
+            return self.trade_response(state, char_id, TradeResponse::Failed, Some(target_id));
+        }
+        let actor = state.characters().get(&char_id).unwrap();
         let id = self
             .repository
             .allocate_player_trade_session_id()
@@ -544,6 +549,8 @@ impl Server {
                 warn!("Trade committed but client refresh failed: {error}");
             }
         }
+        self.queue_hook(script_sdk::Hook::TradeCompleted { char_id, partner_char_id: partner_id });
+        self.queue_hook(script_sdk::Hook::TradeCompleted { char_id: partner_id, partner_char_id: char_id });
         Ok(())
     }
 

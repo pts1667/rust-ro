@@ -5,6 +5,7 @@ use serde::Deserialize;
 
 use crate::server::model::map_item::{MapItem, MapItemType, ToMapItem};
 use crate::server::model::script::Script;
+use crate::server::plugins::Plugins;
 use crate::server::script::constant::load_constant;
 use crate::server::script::entries::intern;
 
@@ -90,16 +91,7 @@ impl ScriptLoader {
                 continue;
             }
             let entry_id = intern(&definition.module, Entry::Npc(definition.entry));
-            let sprite = definition
-                .sprite
-                .parse::<u16>()
-                .ok()
-                .or_else(|| {
-                    load_constant(&definition.sprite)
-                        .and_then(|v| v.number_value().ok())
-                        .and_then(|id| u16::try_from(id).ok())
-                })
-                .ok_or_else(|| format!("Unknown NPC sprite {}", definition.sprite))?;
+            let sprite = sprite_id(&definition.sprite)?;
             scripts.entry(definition.map_name.clone()).or_default().push(Script {
                 id: 0,
                 scope_instance: 0,
@@ -117,6 +109,59 @@ impl ScriptLoader {
         }
         Ok(scripts)
     }
+
+    /// Places the NPCs of every plugin, in load order, after the base ones. A plugin NPC whose name is already placed is an
+    /// error unless it `replaces` it; it then takes that NPC's place and keeps the fields it leaves out.
+    pub fn place_plugin_npcs(scripts: &mut HashMap<String, Vec<Script>>, plugins: &Plugins, test_npcs: bool) -> Result<(), String> {
+        for plugin in plugins.iter() {
+            for npc in &plugin.npcs {
+                let refuse = |reason: &str| format!("Plugin {} cannot place NPC {}: {reason}", plugin.name(), npc.name);
+                let placed = scripts.values_mut().find_map(|map| {
+                    let index = map.iter().position(|script| script.name == npc.name)?;
+                    Some(map.remove(index))
+                });
+                let base = match (placed, npc.replaces) {
+                    (Some(_), false) => return Err(refuse("the name is already placed, set \"replaces\": true to take its place")),
+                    (placed, _) => placed,
+                };
+                if npc.test && !test_npcs {
+                    continue;
+                }
+                let required = |field: &str| refuse(&format!("{field} is required"));
+                let map_name = npc.map_name.clone().or_else(|| base.as_ref().map(|script| script.map_name.clone())).ok_or_else(|| required("map_name"))?;
+                let sprite = match (&npc.sprite, &base) {
+                    (Some(sprite), _) => sprite_id(sprite)?,
+                    (None, Some(base)) => base.sprite,
+                    (None, None) => return Err(required("sprite")),
+                };
+                let field = |value: Option<u16>, base_value: Option<u16>, name: &str| value.or(base_value).ok_or_else(|| required(name));
+                let script = Script {
+                    id: 0,
+                    scope_instance: 0,
+                    name: npc.name.clone(),
+                    sprite,
+                    x: field(npc.x, base.as_ref().map(|script| script.x), "x")?,
+                    y: field(npc.y, base.as_ref().map(|script| script.y), "y")?,
+                    dir: npc.dir.or(base.as_ref().map(|script| script.dir)).unwrap_or(0),
+                    x_size: npc.x_size.or(base.as_ref().map(|script| script.x_size)).unwrap_or(0),
+                    y_size: npc.y_size.or(base.as_ref().map(|script| script.y_size)).unwrap_or(0),
+                    entry_id: intern(&plugin.module, Entry::Npc(npc.entry.clone().unwrap_or_else(|| npc.name.clone()))),
+                    constructor_args: npc.constructor_args.clone().or_else(|| base.as_ref().map(|script| script.constructor_args.clone())).unwrap_or_default(),
+                    map_name: map_name.clone(),
+                };
+                scripts.entry(map_name).or_default().push(script);
+            }
+        }
+        Ok(())
+    }
+}
+
+fn sprite_id(sprite: &str) -> Result<u16, String> {
+    sprite
+        .parse::<u16>()
+        .ok()
+        .or_else(|| load_constant(&sprite.to_string()).and_then(|v| v.number_value().ok()).and_then(|id| u16::try_from(id).ok()))
+        .ok_or_else(|| format!("Unknown NPC sprite {sprite}"))
 }
 
 impl ToMapItem for Script {

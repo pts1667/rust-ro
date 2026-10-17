@@ -31,17 +31,54 @@ pub struct ScriptService {
     pub(crate) npc_variables: Mutex<HashMap<(u32, u8, u32, String, u32), Value>>,
 }
 
+static COMPILED_EVENTS: std::sync::OnceLock<HashMap<String, u32>> = std::sync::OnceLock::new();
+/// Event labels of the plugins, set at boot before the first event is looked up.
+static PLUGIN_EVENTS: std::sync::OnceLock<Vec<(String, u32)>> = std::sync::OnceLock::new();
+
 impl ScriptService {
+    fn base_events() -> HashMap<String, EventManifestEntry> {
+        serde_json::from_str(include_str!("../../../../config/wasm/events.json")).expect("Invalid compiled script event registry")
+    }
+
     fn compiled_events() -> &'static HashMap<String, u32> {
-        static EVENTS: std::sync::OnceLock<HashMap<String, u32>> = std::sync::OnceLock::new();
-        EVENTS.get_or_init(|| {
-            let manifest: HashMap<String, EventManifestEntry> =
-                serde_json::from_str(include_str!("../../../../config/wasm/events.json")).expect("Invalid compiled script event registry");
-            manifest
+        COMPILED_EVENTS.get_or_init(|| {
+            let mut events: HashMap<String, u32> = Self::base_events()
                 .into_iter()
                 .map(|(label, entry)| (label, intern(&entry.module, Entry::Event(entry.entry))))
-                .collect()
+                .collect();
+            events.extend(PLUGIN_EVENTS.get().into_iter().flatten().cloned());
+            events
         })
+    }
+
+    /// Adds the labels of the plugins' `events.json`, in load order. A label the base game or an earlier plugin already has
+    /// is an error unless the plugin's entry `replaces` it.
+    pub fn install_plugin_events(plugins: &crate::server::plugins::Plugins) -> Result<(), String> {
+        let events = Self::plugin_event_handles(plugins, Self::base_events().into_keys().collect())?;
+        if COMPILED_EVENTS.get().is_some() {
+            return Err("Plugin events must be installed before the first event lookup".into());
+        }
+        PLUGIN_EVENTS.set(events).map_err(|_| "Plugin events are already installed".to_string())
+    }
+
+    /// The handles of the plugins' event labels, refusing a label already in `known` (the base labels) that is not `replaces`.
+    pub(crate) fn plugin_event_handles(
+        plugins: &crate::server::plugins::Plugins,
+        mut known: std::collections::HashSet<String>,
+    ) -> Result<Vec<(String, u32)>, String> {
+        let mut events = Vec::new();
+        for plugin in plugins.iter() {
+            for (label, event) in &plugin.events {
+                if !label.contains("::") {
+                    return Err(format!("Plugin {} event {label} must be written <npc name>::<label>", plugin.name()));
+                }
+                if !known.insert(label.clone()) && !event.replaces {
+                    return Err(format!("Plugin {} event {label} is already defined, set \"replaces\": true to take it over", plugin.name()));
+                }
+                events.push((label.clone(), intern(&plugin.module, Entry::Event(event.entry.clone().unwrap_or_else(|| label.clone())))));
+            }
+        }
+        Ok(events)
     }
 
     pub fn event_entry(label: &str) -> Option<u32> {

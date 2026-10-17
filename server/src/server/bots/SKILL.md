@@ -109,7 +109,7 @@ Errors: 400 for a name or look the server refuses, 409 when a bot of this name e
                "party_name": "Squad", "guild_name": null, "hp": 80, "max_hp": 120, "chat_room": null}],
   "mobs":    [{"id": 400012, "name": "Poring", "mob_id": 1002, "x": 160, "y": 200, "hp": 50, "max_hp": 50, "level": 1,
                "aggressive": false, "boss": false, "action": "attacking", "target": 150001}],
-  "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29, "region": 1, "quest_icon": false, "waiting_room": null}],
+  "npcs":    [{"id": 100123, "name": "Kafra Employee", "x": 151, "y": 29, "region": 1, "quest_icon": false, "invisible": false, "waiting_room": null}],
   "items":   [{"id": 400301, "item_id": 909, "name": "Jellopy", "amount": 1, "x": 158, "y": 195}],
   "warps":   [{"id": 100500, "x": 156, "y": 20, "half_width": 2, "half_height": 1, "to_map": "prt_fild08", "to_x": 170, "to_y": 380, "region": 1}],
   "inventory": [{"index": 0, "item_id": 1201, "name": "Knife", "kind": "Weapon", "amount": 1, "equipped": true, "weight": 40, "sell_price": 25,
@@ -171,7 +171,9 @@ map or to everyone: a test starting, the moves of a dance). What the bot says it
 the chat window, come back as `system`.
 `quests` is the quest window: the quests started and not completed, with their `title`, whether they are `active`, the seconds
 left in `expires_in` (`null` for no time limit) and the monsters still to hunt in `objectives` (`done` of `total`). `npcs[].quest_icon`
-is the icon a client shows above an NPC that has a quest, or the next step of one, for the bot.
+is the icon a client shows above an NPC that has a quest, or the next step of one, for the bot. `npcs[].invisible` marks an NPC
+with the invisible sprite: a client shows nothing there but a click still talks to it (a machine, a switch, a blackboard). Some
+only run timers and answer nothing. Invisible NPCs with a touch area are left out: they are stepped on, not talked to.
 `players[]` are the other characters on the map: what their sprite shows (`job`, `sex`, `dead`, `action`, what they hit in
 `attack_target`), what the client shows on a click (`party_name`, `guild_name`), their levels (`base_level`, `job_level`, which a
 game client shows only for party members), the title of the chat room

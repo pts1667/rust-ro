@@ -291,6 +291,12 @@ impl Server {
     pub(crate) fn handle_character_skill(&self, state: &mut ServerState, event: CharacterUseSkill, tick: u128) -> Result<(), String> {
         let mut character = state.characters_mut().remove(&event.char_id).ok_or("Skill source disconnected")?;
         let previous_pending = character.pending_item_skill.clone();
+        let used = script_sdk::Hook::SkillUsed {
+            char_id: event.char_id,
+            skill_id: event.skill_id,
+            level: u32::from(event.skill_level),
+            target_id: (event.target_id != 0).then_some(event.target_id),
+        };
         let result = (|| {
             if character.is_dead()
                 || character.status.blocks_casting()
@@ -442,6 +448,9 @@ impl Server {
             character.script_skill_state.deferred_requirements = None;
         }
         state.insert_character(character);
+        if result.is_ok() {
+            self.queue_hook(used);
+        }
         result
     }
 
@@ -1122,8 +1131,11 @@ impl Server {
             let killer_account = state.characters().get(&killer_id).filter(|killer| killer.char_id != damage.target_id).map(|killer| killer.account_id);
             let victim_account = state.characters().get(&damage.target_id).map(|victim| victim.account_id);
             self.broadcast_player_npc_event(state, damage.target_id, "OnPCDieEvent", killer_account.map(|account| ("killerrid", account as i32)));
+            let map = state.characters().get(&damage.target_id).map(|victim| victim.current_map_name().clone()).unwrap_or_default();
+            self.queue_hook(script_sdk::Hook::Die { char_id: damage.target_id, killer_id: (killer_id != 0 && killer_id != damage.target_id).then_some(killer_id), map: map.clone() });
             if let (Some(_), Some(victim_account)) = (killer_account, victim_account) {
                 self.broadcast_player_npc_event(state, killer_id, "OnPCKillEvent", Some(("killedrid", victim_account as i32)));
+                self.queue_hook(script_sdk::Hook::Kill { char_id: killer_id, victim_char_id: damage.target_id, map });
             }
         }
         if damage.damage > 0
@@ -1285,9 +1297,19 @@ impl Server {
         );
         self.transfer_castle_on_emperium_break(state, &kill);
         self.reward_mvp(state, &kill);
+        self.queue_hook(script_sdk::Hook::MobKilled {
+            char_id: kill.char_id,
+            mob_id: kill.mob_id as u32,
+            map: kill.map_instance_key.map_name().clone(),
+            x: kill.mob_x,
+            y: kill.mob_y,
+        });
         let config = &GlobalConfigService::instance().config().game;
         let battle = &GlobalConfigService::instance().config().battle;
-        let (base_rate, job_rate) = (config.base_exp_rate * battle.get("base_exp_rate") as f32 / 100.0, config.job_exp_rate * battle.get("job_exp_rate") as f32 / 100.0);
+        let (base_rate, job_rate) = (
+            config.base_exp_rate * battle.get("base_exp_rate") as f32 / 100.0 * crate::server::plugins::rates::factor(script_sdk::Rate::BaseExp),
+            config.job_exp_rate * battle.get("job_exp_rate") as f32 / 100.0 * crate::server::plugins::rates::factor(script_sdk::Rate::JobExp),
+        );
         let flags = state.map_flags(&kill.map_instance_key);
         let shares = if flags.enabled(crate::server::model::map_flags::MapFlag::Pvp) && !config.pvp_exp {
             Default::default()
@@ -1307,12 +1329,16 @@ impl Server {
             .filter(|(_, (base, job))| *base != 0 || *job != 0)
             .map(|(id, (base, job))| {
                 let character = state.characters().get(&id).ok_or("Experience recipient is unavailable")?;
-                let scaled_base = (base as f32 * base_rate).ceil() as u32;
+                let (scaled_base, scaled_job) = self.intercepted_experience(
+                    id,
+                    kill.mob_id,
+                    (base as f32 * base_rate).ceil() as u32,
+                    (job as f32 * job_rate).ceil() as u32,
+                );
                 let tax = self.guild_experience_tax(character, scaled_base);
                 if tax > 0 {
                     guild_payouts.push((id, u64::from(tax)));
                 }
-                let scaled_job = (job as f32 * job_rate).ceil() as u32;
                 bot_awards.push((id, scaled_base - tax, scaled_job));
                 Ok(crate::repository::script_character_repository::ScriptExperienceAward {
                     char_id: id,
@@ -1369,6 +1395,15 @@ impl Server {
             }
         }
         first_error.map_or(Ok(()), Err)
+    }
+
+    /// The experience a character gets for a monster after the plugins' `ExpGain` interceptors; none when one refuses it.
+    fn intercepted_experience(&self, char_id: u32, mob_id: i16, base: u32, job: u32) -> (u32, u32) {
+        let decision = script_sdk::Interception::ExpGain { char_id, mob_id: mob_id as u32, base, job };
+        match self.intercept(decision) {
+            Ok(script_sdk::Interception::ExpGain { base, job, .. }) => (base, job),
+            _ => (0, 0),
+        }
     }
 
     fn reward_mvp(&self, state: &mut ServerState, kill: &crate::server::model::events::game_event::CharacterKillMonster) {

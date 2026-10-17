@@ -182,6 +182,7 @@ impl Server {
         );
         self.add_to_next_tick(GameEvent::CharacterJoinGame(CharacterJoinGame { char_id }));
         self.send_motd(char_id);
+        self.queue_hook(script_sdk::Hook::Login { char_id, account_id: character.account_id, map: map.clone() });
         self.server_service().schedule_warp_to_walkable_cell(state, &map, x, y, char_id);
         self.add_to_next_tick(GameEvent::CharacterInitInventory(CharacterInitInventory { char_id }));
     }
@@ -366,6 +367,7 @@ impl Server {
             return;
         };
         let account_id = character.account_id;
+        self.queue_hook(script_sdk::Hook::Logout { char_id, account_id });
         let owner = state
             .character_logins
             .get(&char_id)

@@ -1,20 +1,42 @@
 use std::collections::{BTreeMap, HashMap};
+use std::future::Future;
 use std::path::Path;
+use std::pin::Pin;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, OnceLock};
+use std::task::{Context, Poll};
+use std::time::{Duration, Instant};
 
 use async_trait::async_trait;
-use script_sdk::{ABI_VERSION, Entry, MAX_MESSAGE_BYTES, Reply, Request};
+use script_sdk::{ABI_VERSION, Capabilities, Entry, Function, MAX_MESSAGE_BYTES, Reply, Request, Value};
 use wasmtime::{
     Caller, Config, Engine, InstanceAllocationStrategy, Linker, Module, PoolingAllocationConfig, Store, StoreLimits,
-    StoreLimitsBuilder,
+    StoreLimitsBuilder, UpdateDeadline,
 };
+
+mod sandbox;
+pub use sandbox::PluginSandbox;
 
 pub const MAX_CONCURRENT_RUNS: u32 = 4000;
 pub const MEMORY_LIMIT_BYTES: usize = 1024 * 1024;
 const MAX_TABLE_ELEMENTS: usize = 20_000;
+const DEFAULT_CPU_BUDGET_MS: u64 = 2000;
 
 /// Every module compiles against this engine so that they draw runs from one pool.
 static ENGINE: OnceLock<Engine> = OnceLock::new();
+/// Milliseconds since the epoch ticker started; the engine epoch advances with it.
+static EPOCH_MS: AtomicU64 = AtomicU64::new(0);
+static CPU_BUDGET_MS: AtomicU64 = AtomicU64::new(DEFAULT_CPU_BUDGET_MS);
+
+/// The CPU time a run may spend in its own code, host calls excluded, before it traps (`scripting.cpu_budget_ms`). Runs that
+/// start afterwards use it.
+pub fn set_cpu_budget_ms(milliseconds: u64) {
+    CPU_BUDGET_MS.store(milliseconds.max(1), Ordering::Relaxed);
+}
+
+fn epoch_ms() -> u64 {
+    EPOCH_MS.load(Ordering::Relaxed)
+}
 
 #[async_trait]
 pub trait Host: Send + 'static {
@@ -25,6 +47,7 @@ pub trait Host: Send + 'static {
 pub struct Limits {
     pub memory_bytes: usize,
     pub host_calls: usize,
+    pub cpu_ms: u64,
 }
 
 impl Default for Limits {
@@ -32,7 +55,36 @@ impl Default for Limits {
         Self {
             memory_bytes: MEMORY_LIMIT_BYTES,
             host_calls: 10_000,
+            cpu_ms: CPU_BUDGET_MS.load(Ordering::Relaxed),
         }
+    }
+}
+
+/// What a plugin module may do: the server checks every request of its runs against it.
+#[derive(Debug, Clone)]
+pub struct PluginPolicy {
+    pub name: String,
+    pub capabilities: Capabilities,
+    /// The plugin's `config.json`, answered to `PluginConfig` without a round trip to the game loop.
+    pub config: String,
+}
+
+impl PluginPolicy {
+    /// Refuses what the plugin did not declare and moves its shared variables under its name.
+    pub fn admit(&self, request: Request) -> Result<Request, String> {
+        if let Some(capability) = request.capability() {
+            if !self.capabilities.contains(capability) {
+                return Err(format!("Plugin {} has not declared the {capability:?} capability", self.name));
+            }
+        }
+        Ok(match request.for_plugin(&self.name) {
+            Request::Call { function: Function::SetRate, mut arguments } => {
+                arguments.truncate(2);
+                arguments.push(Value::String(self.name.clone()));
+                Request::Call { function: Function::SetRate, arguments }
+            }
+            request => request,
+        })
     }
 }
 
@@ -40,6 +92,7 @@ pub struct WasmRuntime {
     engine: Engine,
     module: Module,
     limits: Limits,
+    plugin: Option<Arc<PluginPolicy>>,
 }
 
 struct Execution<H> {
@@ -48,18 +101,78 @@ struct Execution<H> {
     calls_remaining: usize,
     abi_verified: bool,
     entry: Vec<u8>,
+    cpu: CpuMeter,
+}
+
+/// Counts the time a run spends executing guest code. Each epoch tick that finds the guest running adds the time since the
+/// guest last resumed (after a host call or a yield), so time spent waiting on the game loop is not counted.
+struct CpuMeter {
+    used_ms: u64,
+    budget_ms: u64,
+    resumed_at: Arc<AtomicU64>,
+}
+
+impl CpuMeter {
+    fn new(budget_ms: u64) -> Self {
+        Self { used_ms: 0, budget_ms, resumed_at: Arc::new(AtomicU64::new(epoch_ms())) }
+    }
+
+    fn resume(&self) {
+        self.resumed_at.store(epoch_ms(), Ordering::Relaxed);
+    }
+
+    fn tick(&mut self) -> wasmtime::Result<UpdateDeadline> {
+        let now = epoch_ms();
+        self.used_ms += now.saturating_sub(self.resumed_at.swap(now, Ordering::Relaxed));
+        wasmtime::ensure!(self.used_ms <= self.budget_ms, "Script exceeded its CPU budget of {} ms", self.budget_ms);
+        Ok(UpdateDeadline::YieldCustom(1, Box::pin(YieldOnce { yielded: false, resumed_at: self.resumed_at.clone() })))
+    }
+}
+
+/// Gives the thread back to the executor once, then marks the run as resumed.
+struct YieldOnce {
+    yielded: bool,
+    resumed_at: Arc<AtomicU64>,
+}
+
+impl Future for YieldOnce {
+    type Output = ();
+
+    fn poll(mut self: Pin<&mut Self>, context: &mut Context<'_>) -> Poll<()> {
+        if self.yielded {
+            self.resumed_at.store(epoch_ms(), Ordering::Relaxed);
+            return Poll::Ready(());
+        }
+        self.yielded = true;
+        context.waker().wake_by_ref();
+        Poll::Pending
+    }
 }
 
 impl WasmRuntime {
     /// Compiling the generated NPC module takes seconds, so the machine code is cached next to it and reused while it is newer than the module.
     pub fn from_file(path: impl AsRef<Path>) -> Result<Arc<Self>, String> {
-        let path = path.as_ref();
+        Self::load(path.as_ref()).map(Arc::new)
+    }
+
+    /// Loads a module without sharing it yet, so a plugin can be asked for its info before [`with_plugin`](Self::with_plugin).
+    pub fn open(path: impl AsRef<Path>) -> Result<Self, String> {
+        Self::load(path.as_ref())
+    }
+
+    /// Holds the runs of this module to `policy`.
+    pub fn with_plugin(mut self, policy: PluginPolicy) -> Self {
+        self.plugin = Some(Arc::new(policy));
+        self
+    }
+
+    fn load(path: &Path) -> Result<Self, String> {
         let cache = path.with_extension("cwasm");
         let fresh = |file: &Path| std::fs::metadata(file).and_then(|meta| meta.modified()).ok();
         if let (Some(module_time), Some(cache_time)) = (fresh(path), fresh(&cache)) {
             if cache_time >= module_time {
                 if let Some(runtime) = Self::from_precompiled(&cache) {
-                    return Ok(Arc::new(runtime));
+                    return Ok(runtime);
                 }
             }
         }
@@ -76,7 +189,7 @@ impl WasmRuntime {
                 let _ = std::fs::rename(&partial, &cache);
             }
         }
-        Ok(Arc::new(runtime))
+        Ok(runtime)
     }
 
     /// Loads every `<name>.wasm` of `directory` as the module `name`; `replacements` name other files for some of them, or add modules.
@@ -126,7 +239,7 @@ impl WasmRuntime {
         let engine = Self::engine().ok()?;
         // SAFETY: the file is produced by `module.serialize()` of this same build and rejected by wasmtime when it comes from another version or configuration.
         let module = unsafe { Module::deserialize_file(&engine, cache) }.ok()?;
-        Some(Self { engine, module, limits: Limits::default() })
+        Some(Self { engine, module, limits: Limits::default(), plugin: None })
     }
 
     fn engine() -> Result<Engine, String> {
@@ -146,14 +259,43 @@ impl WasmRuntime {
         config.allocation_strategy(InstanceAllocationStrategy::Pooling(pool));
         // Slots reserve exactly the memory cap with no guard pages, so the pool spans MAX_CONCURRENT_RUNS * MEMORY_LIMIT_BYTES.
         config.memory_reservation(MEMORY_LIMIT_BYTES as u64).memory_guard_size(0);
+        config.epoch_interruption(true);
         let engine = Engine::new(&config).map_err(|e| e.to_string())?;
-        Ok(ENGINE.get_or_init(|| engine).clone())
+        let mut started = false;
+        let engine = ENGINE
+            .get_or_init(|| {
+                started = true;
+                engine
+            })
+            .clone();
+        if started {
+            Self::start_epoch_ticker(engine.clone());
+        }
+        Ok(engine)
+    }
+
+    /// Advances the epoch about every millisecond. `EPOCH_MS` follows the clock, not the number of wakeups, so a coarse sleep
+    /// granularity makes budgets checked less often, not longer.
+    fn start_epoch_ticker(engine: Engine) {
+        let started = Instant::now();
+        std::thread::Builder::new()
+            .name("wasm-epoch".into())
+            .spawn(move || loop {
+                std::thread::sleep(Duration::from_millis(1));
+                EPOCH_MS.store(started.elapsed().as_millis() as u64, Ordering::Relaxed);
+                engine.increment_epoch();
+            })
+            .expect("Cannot start the Wasm epoch ticker");
     }
 
     pub fn from_bytes(bytes: &[u8], limits: Limits) -> Result<Self, String> {
         let engine = Self::engine()?;
         let module = Module::new(&engine, bytes).map_err(|e| e.to_string())?;
-        Ok(Self { engine, module, limits })
+        Ok(Self { engine, module, limits, plugin: None })
+    }
+
+    pub fn plugin(&self) -> Option<&PluginPolicy> {
+        self.plugin.as_deref()
     }
 
     /// Runs the script `entry` of a module.
@@ -171,8 +313,11 @@ impl WasmRuntime {
             calls_remaining: self.limits.host_calls,
             abi_verified: false,
             entry: Vec::new(),
+            cpu: CpuMeter::new(self.limits.cpu_ms),
         });
         store.limiter(|execution| &mut execution.limits);
+        store.epoch_deadline_callback(|mut context| context.data_mut().cpu.tick());
+        store.set_epoch_deadline(1);
         let result = self.run(&mut store, entry).await;
         (store.into_data().host, result.map_err(|error| format!("{error:#}")))
     }
@@ -187,6 +332,7 @@ impl WasmRuntime {
                 .build(),
         );
         store.limiter(|limits| limits);
+        store.set_epoch_deadline(self.limits.cpu_ms);
         let mut linker = Linker::new(&self.engine);
         linker.define_unknown_imports_as_traps(&self.module).map_err(|e| e.to_string())?;
         let instance = linker.instantiate(&mut store, &self.module).map_err(|e| e.to_string())?;
@@ -196,14 +342,26 @@ impl WasmRuntime {
             .map_err(|e| e.to_string())
     }
 
+    /// The request a run may send on, or the reply it gets without reaching the host.
+    fn admit(plugin: Option<&PluginPolicy>, request: Request) -> Result<Request, Reply> {
+        match (plugin, request) {
+            (Some(plugin), Request::Call { function: Function::PluginConfig, .. }) => Err(Ok(Value::String(plugin.config.clone()))),
+            (None, Request::Call { function: Function::PluginConfig, .. }) => Err(Err("Only plugins have a configuration".into())),
+            (Some(plugin), request) => plugin.admit(request).map_err(Err),
+            (None, request) => Ok(request),
+        }
+    }
+
     async fn run<H: Host>(&self, store: &mut Store<Execution<H>>, entry: &Entry) -> wasmtime::Result<()> {
         store.data_mut().entry = serde_json::to_vec(entry)?;
         let mut linker = Linker::new(&self.engine);
+        let plugin = self.plugin.clone();
         linker.func_wrap_async(
             "rust_ro",
             "invoke",
-            |mut caller: Caller<'_, Execution<H>>,
-             (request_pointer, request_length, response_pointer, response_capacity): (u32, u32, u32, u32)| {
+            move |mut caller: Caller<'_, Execution<H>>,
+                  (request_pointer, request_length, response_pointer, response_capacity): (u32, u32, u32, u32)| {
+                let plugin = plugin.clone();
                 Box::new(async move {
                     wasmtime::ensure!(caller.data().abi_verified, "Host calls are unavailable before ABI verification");
                     wasmtime::ensure!(
@@ -223,7 +381,11 @@ impl WasmRuntime {
                     let mut bytes = vec![0u8; request_length as usize];
                     memory.read(&caller, request_pointer as usize, &mut bytes)?;
                     let request: Request = serde_json::from_slice(&bytes)?;
-                    let reply = caller.data_mut().host.invoke(request).await;
+                    let reply = match Self::admit(plugin.as_deref(), request) {
+                        Ok(request) => caller.data_mut().host.invoke(request).await,
+                        Err(reply) => reply,
+                    };
+                    caller.data().cpu.resume();
                     let bytes = serde_json::to_vec(&reply)?;
                     wasmtime::ensure!(bytes.len() <= response_capacity as usize, "Host response exceeds guest buffer");
                     memory.write(&mut caller, response_pointer as usize, &bytes)?;
@@ -264,3 +426,6 @@ impl WasmRuntime {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests;

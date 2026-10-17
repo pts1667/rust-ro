@@ -57,6 +57,7 @@ pub(crate) mod npc_timer_service;
 pub(crate) mod script_presentation_service;
 pub(crate) mod script_crafting_service;
 mod script_game_loop;
+mod plugin_service;
 pub(crate) mod script_experience_service;
 pub mod script_character_service;
 pub mod item_healing_service;

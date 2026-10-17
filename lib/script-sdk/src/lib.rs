@@ -2,6 +2,9 @@ use std::fmt::{Display, Formatter};
 
 use serde::{Deserialize, Serialize};
 
+mod plugin;
+pub use plugin::{Capabilities, Capability, Hook, HookKind, Interception, InterceptorKind, LevelKind, PluginInfo, Rate, Verdict, PLUGIN_BUFFER_BYTES};
+
 /// ABI of script modules. The host passes the script as an [`Entry`] and the module exports `script_run`. Version 1, which
 /// exported one function per script id, is retired.
 pub const ABI_VERSION: u32 = 2;
@@ -24,6 +27,10 @@ pub enum Entry {
     PetSupport(u32),
     /// An automatic bonus program of a pet, by program id.
     PetProgram(u32),
+    /// A plugin's initialisation, run once at boot after the base `OnInit` events.
+    PluginInit,
+    /// A hook a plugin declared, with what happened.
+    Hook(Hook),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -440,6 +447,12 @@ pub enum Function {
     RequestGuildInfo,
     Wedding,
     IsLoggedIn,
+    /// The plugin's `config.json`, as its JSON text.
+    PluginConfig,
+    /// `SetRate(rate name, percent)`: scales a server rate for as long as the server runs (see [`Rate`]).
+    SetRate,
+    /// `GetRate(rate name)`: the percent the plugins together apply to a rate.
+    GetRate,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

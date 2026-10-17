@@ -251,6 +251,11 @@ fn grant_level_experience(mut level: u32, exp: u32, gain: u32, max_level: u32, r
 pub fn apply_experience(server: &Server, character: &mut Character, plan: &ScriptExperiencePlan) {
     let base_up = plan.base_level > character.status.base_level;
     let job_up = plan.job_level > character.status.job_level;
+    for (up, kind, level) in [(base_up, script_sdk::LevelKind::Base, plan.base_level), (job_up, script_sdk::LevelKind::Job, plan.job_level)] {
+        if up {
+            server.queue_hook(script_sdk::Hook::LevelUp { char_id: character.char_id, kind, level });
+        }
+    }
     character.status.base_level = plan.base_level;
     character.status.job_level = plan.job_level;
     character.status.base_exp = plan.base_exp;

@@ -153,6 +153,11 @@ impl Host for NpcScriptHost {
                 _ => {},
             }
         }
+        if self.script.id == 0
+            && matches!(&request, Request::Call { function: Function::Shop | Function::Mes | Function::Close | Function::Next | Function::Select | Function::InputNumber | Function::InputString, .. })
+        {
+            return Err("Plugin initialisation and hooks have no dialogue window; use Message".into());
+        }
         if self.session.char_id == Some(0) && self.attached.is_none() && matches!(&request, Request::Call { function: Function::Shop | Function::Mes | Function::Close | Function::Next | Function::Select | Function::InputNumber | Function::InputString | Function::Message | Function::DispBottom | Function::Cutin, .. }) {
             return Err("NPC interaction requires an attached player".into());
         }

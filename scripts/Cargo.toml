@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["shared", "items", "pets", "systems", "towns/*", "misc/*", "jobs/*", "quests/*"]
+members = ["shared", "items", "pets", "systems", "towns/*", "misc/*", "jobs/*", "quests/*", "plugins/*"]
 
 [workspace.package]
 version = "0.1.0"

@@ -23,7 +23,14 @@
     "test_npcs": false,
     "items_path": "config/wasm/items.json",
     "map_flags_path": "config/wasm/map_flags.json",
-    "conversation_timeout_secs": 120
+    "conversation_timeout_secs": 120,
+    "cpu_budget_ms": 2000,
+    "plugins_dir": "config/plugins",
+    "plugins": [
+      { "name": "double_xp", "enabled": false }
+    ],
+    "interceptor_deadline_us": 200,
+    "interceptor_failures": 10
   },
   "game": {
     "default_char_speed": 150,

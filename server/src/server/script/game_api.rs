@@ -19,6 +19,20 @@ use crate::server::service::script_service::ScriptService;
 use models::enums::EnumWithMaskValueU64;
 use crate::server::state::server::ServerState;
 
+/// `SetRate(rate, percent, owner)`: the runtime appends the plugin's name as the owner; base modules have none.
+fn rate_call(function: Function, arguments: &[Value]) -> Reply {
+    use crate::server::plugins::rates;
+    let name = arguments.first().ok_or("Missing rate")?.text();
+    let rate = script_sdk::Rate::from_name(&name).ok_or_else(|| format!("Unknown rate {name}"))?;
+    if function == Function::GetRate {
+        return Ok(Value::Number(rates::percent(rate) as i32));
+    }
+    let percent = u32::try_from(arguments.get(1).ok_or("Missing rate percent")?.number_value()?).map_err(|_| "Rate percent cannot be negative")?;
+    let owner = arguments.get(2).map_or_else(|| "base".to_string(), Value::text);
+    rates::set(&owner, rate, percent)?;
+    Ok(Value::default())
+}
+
 fn variable_name(name: &str) -> (VariableScope, String) {
     crate::server::service::item_effect_service::script_variable_name(name)
 }
@@ -150,6 +164,7 @@ impl ScriptService {
             false
         } else if context.background && context.char_id == 0 && context.account_id == 0 {
             super::unit_data::script_actor(state, &context).is_ok_and(|npc| npc.is_some())
+                || (context.npc_id == 0 && server.plugins().by_init_handle(context.npc_entry).is_some())
         } else { state.find_session(context.account_id).is_some_and(|session| {
             (context.background || session.script_generation.load(Ordering::Acquire) == context.generation) && session.char_id == Some(context.char_id)
         }) && state.characters().contains_key(&context.char_id) };
@@ -427,6 +442,9 @@ impl ScriptService {
                 }
                 if matches!(function, Function::ArrayGet | Function::ArraySet) {
                     return self.array_call(server, context, function, &arguments);
+                }
+                if matches!(function, Function::SetRate | Function::GetRate) {
+                    return rate_call(function, &arguments);
                 }
                 if function == Function::Print {
                     debug!("NPC {}: {}", context.npc_id, arguments.iter().map(|value| value.text()).collect::<Vec<_>>().join(" "));

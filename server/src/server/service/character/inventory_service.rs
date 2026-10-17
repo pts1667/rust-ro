@@ -103,6 +103,12 @@ impl InventoryService {
                 .await
         });
         if let Ok(added_items) = result {
+            for item in &add_items.items {
+                crate::server::plugins::queue_hook(
+                    &self.server_task_queue,
+                    script_sdk::Hook::ItemObtained { char_id: character.char_id, item_id: item.item_id as u32, amount: item.amount.max(0) as u32 },
+                );
+            }
             let mut packets = vec![];
             character.add_items(added_items).iter().for_each(|(index, item)| {
                 let item_info = self.configuration_service.get_item(item.item_id);

@@ -15,6 +15,7 @@ use crate::server::Server;
 use crate::server::model::game_systems::PlayerTradePhase;
 use crate::server::model::map_regions::{self, MapRegions};
 use crate::server::model::quest::quest_definition;
+use crate::server::script::skill::actor::NpcSkillState;
 use crate::server::service::quest_service::quest_view;
 use crate::server::service::status_service::StatusService;
 use crate::server::model::movement::Movable;
@@ -24,8 +25,15 @@ use crate::server::state::mob::{Mob, MobAction};
 use crate::server::state::server::ServerState;
 use crate::util::coordinate;
 
-/// Sprite of the NPCs that only exist to run a script (event timers, touch areas), nobody can click them.
+/// Sprite a client draws as nothing. NPCs with it are still clicked (machines, switches) unless they only run timers or a
+/// touch area.
 const INVISIBLE_NPC_SPRITE: u16 = 111;
+
+/// Whether the bot lists `npc`: what a player can talk to, and hidden NPCs that host a waiting room (the queue of a job test).
+fn listed_npc(npc: &NpcSkillState, hosts_waiting_room: bool) -> bool {
+    let touch_only = npc.sprite == INVISIBLE_NPC_SPRITE && (npc.script.x_size > 0 || npc.script.y_size > 0);
+    (!npc.hidden && !touch_only) || hosts_waiting_room
+}
 
 #[derive(Debug, Serialize)]
 pub struct StatsView {
@@ -172,6 +180,8 @@ pub struct NpcView {
     pub region: Option<u32>,
     /// A quest icon shows above it: it has a quest for the bot, or the next step of one.
     pub quest_icon: bool,
+    /// It has the invisible sprite: a client draws nothing, yet a click talks to it.
+    pub invisible: bool,
     /// Its waiting room, where players queue for what it runs (a job test): `room_join` with `npc`.
     pub waiting_room: Option<NpcRoomView>,
 }
@@ -889,8 +899,7 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
         .script_skill_state
         .npcs
         .values()
-        // A hidden NPC still shows the waiting room it hosts (the queue of a job test).
-        .filter(|npc| (!npc.hidden && npc.sprite != INVISIBLE_NPC_SPRITE) || state.waiting_rooms.of_npc(npc.id).is_some())
+        .filter(|npc| listed_npc(npc, state.waiting_rooms.of_npc(npc.id).is_some()))
         .map(|npc| NpcView {
             id: npc.id,
             name: display_name(&npc.script.name),
@@ -898,6 +907,7 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
             y: npc.y,
             region: regions.as_ref().and_then(|regions| regions.landing(npc.x, npc.y)),
             quest_icon: character.game_systems.quest_icons.contains_key(&npc.id),
+            invisible: npc.sprite == INVISIBLE_NPC_SPRITE,
             waiting_room: state.waiting_rooms.of_npc(npc.id).map(|room| NpcRoomView {
                 title: room.title.clone(),
                 waiting: room.members.len(),
@@ -963,4 +973,37 @@ pub fn map_grid(state: &ServerState, char_id: u32, center: Option<(u16, u16, u16
         y_max,
         rows,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::server::model::script::Script;
+
+    fn npc(sprite: u16, touch_area: u16) -> NpcSkillState {
+        NpcSkillState::uninitialized(&Script {
+            id: 1,
+            scope_instance: 0,
+            map_name: "geffen_in".into(),
+            name: "Mixing Machine".into(),
+            sprite,
+            x: 164,
+            y: 112,
+            dir: 0,
+            x_size: touch_area,
+            y_size: touch_area,
+            entry_id: 0,
+            constructor_args: Vec::new(),
+        })
+    }
+
+    #[test]
+    fn invisible_npcs_are_listed_unless_they_are_a_touch_area() {
+        assert!(listed_npc(&npc(INVISIBLE_NPC_SPRITE, 0), false), "a client clicks the Mixing Machine");
+        assert!(!listed_npc(&npc(INVISIBLE_NPC_SPRITE, 2), false), "a touch area is stepped on");
+        assert!(listed_npc(&npc(86, 2), false));
+        let hidden = NpcSkillState { hidden: true, ..npc(86, 0) };
+        assert!(!listed_npc(&hidden, false));
+        assert!(listed_npc(&hidden, true), "a hidden job test still shows its queue");
+    }
 }

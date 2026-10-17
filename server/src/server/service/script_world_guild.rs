@@ -163,7 +163,7 @@ impl ScriptWorldService {
                         return Err(error.to_string());
                     }
                 };
-                self.reload_guild_member(character)?;
+                self.reload_guild_member(server, character)?;
                 character.guild_name = guild.name.clone();
                 server
                     .inventory_service()
@@ -240,7 +240,7 @@ impl ScriptWorldService {
                     .repository
                     .join_guild(character.char_id, guild_id)
                     .map_err(|error| error.to_string())?;
-                self.reload_guild_member(character)?;
+                self.reload_guild_member(server, character)?;
                 character.guild_name = guild.name.clone();
                 self.send(invitation.inviter_id, vec![0x69, 0x01, 2])?;
                 self.send(character.char_id, belong_packet(character, Some(&guild)))?;
@@ -320,11 +320,11 @@ impl ScriptWorldService {
                 for member in &guild.members {
                     self.send(*member, vec![0x5E, 0x01, 0, 0, 0, 0])?;
                     if *member == character.char_id {
-                        self.reload_guild_member(character)?;
+                        self.reload_guild_member(server, character)?;
                         character.guild_name.clear();
                         self.area(character, guild_actor_packet(*member, 0))?;
                     } else if let Some(other) = state.characters_mut().get_mut(member) {
-                        self.reload_guild_member(other)?;
+                        self.reload_guild_member(server, other)?;
                         other.guild_name.clear();
                         self.area(other, guild_actor_packet(*member, 0))?;
                     }
@@ -546,13 +546,17 @@ impl ScriptWorldService {
         Ok(())
     }
 
-    fn reload_guild_member(&self, character: &mut Character) -> Result<(), String> {
+    fn reload_guild_member(&self, server: &Server, character: &mut Character) -> Result<(), String> {
         let saved = self
             .repository
             .character_game_systems(character.char_id)
             .map_err(|error| error.to_string())?;
         if character.game_systems.guild_storage_open.is_some_and(|guild_id| guild_id != saved.guild_id) { self.close_storage(character)?; }
+        let previous_guild = character.game_systems.guild_id;
         install_state(character, saved);
+        if character.game_systems.guild_id != previous_guild {
+            server.queue_hook(script_sdk::Hook::GuildChanged { char_id: character.char_id, guild_id: character.game_systems.guild_id });
+        }
         Ok(())
     }
 
@@ -693,12 +697,12 @@ impl ScriptWorldService {
             self.send(*recipient, packet.clone())?;
         }
         if member == character.char_id {
-            self.reload_guild_member(character)?;
+            self.reload_guild_member(server, character)?;
             character.guild_name.clear();
             self.send(member, belong_packet(character, None))?;
             self.area(character, guild_actor_packet(member, 0))?;
         } else if let Some(other) = state.characters_mut().get_mut(&member) {
-            self.reload_guild_member(other)?;
+            self.reload_guild_member(server, other)?;
             other.guild_name.clear();
             self.send(member, belong_packet(other, None))?;
             self.area(other, guild_actor_packet(member, 0))?;

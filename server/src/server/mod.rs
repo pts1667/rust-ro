@@ -61,6 +61,7 @@ mod game_loop;
 pub mod map_instance_loop;
 pub mod model;
 pub mod persistence;
+pub mod plugins;
 pub mod request_handler;
 pub mod script;
 pub mod service;

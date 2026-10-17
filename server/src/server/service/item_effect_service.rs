@@ -186,6 +186,8 @@ impl ItemService {
     pub(crate) fn use_item_in_state(&self, server: &Server, state: &mut ServerState, runtime: &Runtime, action: CharacterUseItem, character: &mut Character) {
         let Some(item) = character.get_item_from_inventory(action.index).cloned().filter(|item| item.item_type().is_consumable() && item.amount > 0) else { return; };
         if character.is_dead() || self.validate_item_in_state(server, state, character, &item).is_err() || self.start_item_use(state, character, &item).is_err() { self.notify_use(character, &action, item.amount, false); return; }
+        let decision = script_sdk::Interception::ItemUse { char_id: character.char_id, item_id: item.item_id as u32, map: character.current_map_name().clone() };
+        if !server.intercept_allowed(character.char_id, decision) { self.notify_use(character, &action, item.amount, false); return; }
         let mut host = self.prepare_host(server, character, item.item_id as u32, true);
         if Self::script_metadata(item.item_id as u32).is_some_and(|metadata| metadata.calls.iter().any(|call| call == "getcharid")) {
             for character in state.characters().values().chain(std::iter::once(&*character)) {
@@ -206,6 +208,9 @@ impl ItemService {
         if let Err(error) = &result { error!("Wasm item {} failed: {}", item.item_id, host.error.as_deref().unwrap_or(error)); }
         let count = character.get_item_from_inventory(action.index).filter(|current| current.id == item.id).map_or(0, |current| current.amount);
         self.notify_use(character, &action, count, result.is_ok());
+        if result.is_ok() {
+            server.queue_hook(script_sdk::Hook::ItemUsed { char_id: character.char_id, item_id: item.item_id as u32 });
+        }
     }
 
     pub(crate) fn finish_item_effects_in_state(&self, server: &Server, state: &mut ServerState, runtime: &Runtime, character: &mut Character, action: &CharacterUseItem, item: &InventoryItemModel, effects: Vec<ItemEffect>) -> Result<(), String> {

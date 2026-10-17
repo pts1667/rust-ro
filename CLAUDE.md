@@ -99,6 +99,14 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - `lib/script-runtime` runs the modules from one pooling allocator shared by all of them (4000 concurrent runs, 1 MiB of linear memory each, a 256 KiB guest stack). Guests have no WASI.
 - A script request that needs the server goes through `server/src/server/script/game_api.rs` to a handler in `server/src/server/service/script_*.rs`. Behavior the server only partly implements is listed in `docs/script-server-gaps.md`: read it before relying on a command.
 - `tools/scripts-import/convert_npcs.py --write` targets the layout from before the module split and must not be run until it is ported. `gen_sdk2_constants.py` and `gen_sdk2_bonus.py` still work.
+- Every script run has a CPU budget (`scripting.cpu_budget_ms`, guest time only) enforced by Wasmtime epoch interruption; do not use fuel, it slows every guest instruction.
+
+### Plugins
+- Guide: `docs/plugins.md`, design: `docs/adr/7-plugins.md`. A plugin is a script module in `config/plugins/<name>/` (`plugin.wasm`, optional `npcs.json`, `events.json`, `config.json`), loaded only when listed and enabled in `scripting.plugins` (a name, or `{ "name", "enabled", "capabilities" }`), in list order. A refused plugin stops the boot.
+- Sources are crates under `scripts/plugins/<name>` declared with `script_sdk_2::plugin_module!`; `scripts-build` installs them to `config/plugins/<name>/plugin.wasm`. `double_xp` is the example (template ships it disabled).
+- Server side: `server/src/server/plugins/` (loading, interceptor chain, `rates.rs`), `service/plugin_service.rs` (init, hooks), runtime policy and the interceptor sandbox in `lib/script-runtime`, wire types in `lib/script-sdk/src/plugin.rs`. The VM knows a plugin's module as `plugin:<name>`; runs without an NPC (init, hooks) use script id 0 with the plugin's init handle as entry.
+- A new `Function` must get its capability in the exhaustive match of `Function::capability()` (`lib/script-sdk/src/plugin.rs`).
+- Hooks: call `server.queue_hook(Hook::...)` (or `plugins::queue_hook` with only the task queue) where the event happened; it is a bit test when no plugin observes the kind. Interceptors: `server.intercept(Interception::...)` / `intercept_allowed` before the game acts; they run synchronously in the game loop under `scripting.interceptor_deadline_us`, so only add one on a path that fires a few times per player action. Per-hit numbers go through `plugins::rates` instead.
 
 ### Configuration and Data
 - `config.json`: Main server configuration (copy from `config.template.json`)

@@ -23,6 +23,8 @@ use packets::packets::{
 };
 use tokio::runtime::Runtime;
 
+use script_sdk::{Hook, LevelKind};
+
 use crate::repository::CharacterRepository;
 use crate::repository::model::item_model::InventoryItemModel;
 use crate::server::PLAYER_FOV;
@@ -676,6 +678,9 @@ impl CharacterService {
         packet_zc_notify_effect.set_aid(character.char_id);
         packet_zc_notify_effect.fill_raw();
         self.send_area_notification_around_characters(character, packet_zc_notify_effect.raw);
+        if new_base_level > old_base_level {
+            crate::server::plugins::queue_hook(&self.server_task_queue, Hook::LevelUp { char_id: character.char_id, kind: LevelKind::Base, level: new_base_level });
+        }
         new_base_level as i32 - old_base_level as i32
     }
 
@@ -715,11 +720,15 @@ impl CharacterService {
         packet_zc_notify_effect.set_aid(character.char_id);
         packet_zc_notify_effect.fill_raw();
         self.send_area_notification_around_characters(character, packet_zc_notify_effect.raw);
+        if new_job_level > old_job_level {
+            crate::server::plugins::queue_hook(&self.server_task_queue, Hook::LevelUp { char_id: character.char_id, kind: LevelKind::Job, level: new_job_level });
+        }
         new_job_level as i32 - old_job_level as i32
     }
 
     pub fn change_job(&self, character: &mut Character, job: JobName, should_reset_skills: bool) {
         character.status.job = job.value() as u32;
+        crate::server::plugins::queue_hook(&self.server_task_queue, Hook::JobChange { char_id: character.char_id, job: character.status.job });
         self.persistence_event_sender
             .send(PersistenceEvent::UpdateCharacterStatusU32(StatusUpdate {
                 char_id: character.char_id,

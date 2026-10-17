@@ -223,6 +223,7 @@ impl ServerService {
             return;
         };
         let origin = character.map_instance_key.clone();
+        let (position, dead) = ((character.x, character.y), character.is_dead());
         let map_name = Map::name_without_ext(destination_map);
         let map_instance = if let Some(instance) = server_state.get_map_instance(&map_name, instance_id) { instance }
             else if instance_id != 0 && crate::server::model::instance::is_memorial_map(&map_name) {
@@ -234,6 +235,27 @@ impl ServerService {
                 script_debug!("Warp of char {char_id} to {map_name} ({x},{y}) skipped: map is not loaded");
                 return;
             };
+        let (x, y) = if x == RANDOM_CELL.0 && y == RANDOM_CELL.1 {
+            let walkable_cell = Map::find_random_walkable_cell(map_instance.state().cells(), map_instance.x_size());
+            (walkable_cell.0, walkable_cell.1)
+        } else {
+            (x, y)
+        };
+        // The placement at login (same map and cell) and the respawn of a dead character are never refused.
+        let placement = origin.map_name() == &map_name && position == (x, y);
+        if !placement && !dead && self.vm.plugins().intercepted(script_sdk::InterceptorKind::Warp) {
+            let decision = script_sdk::Interception::Warp { char_id, from_map: origin.map_name().clone(), to_map: map_name.clone(), x, y };
+            if let Err(message) = self.vm.plugins().intercept(decision) {
+                script_debug!("Warp of char {char_id} to {map_name} ({x},{y}) refused by a plugin");
+                if !message.is_empty() {
+                    let mut packet = crate::util::packet::playerchat_packet(self.configuration_service.packetver(), &message);
+                    self.client_notification_sender
+                        .send(Notification::Char(CharNotification::new(char_id, std::mem::take(packet.raw_mut()))))
+                        .unwrap_or_else(|_| error!("Failed to send the warp refusal"));
+                }
+                return;
+            }
+        }
         self.server_task_queue.add_to_first_index(GameEvent::CharacterClearFov(CharacterClearFov { char_id }));
         self.server_task_queue.add_to_index(
             GameEvent::CharacterRemoveFromMap(CharacterRemoveFromMap {
@@ -246,12 +268,6 @@ impl ServerService {
 
         debug!("Char enter on map {}", map_name);
         script_debug!("Warp scheduled: char {char_id} from {} to {map_name} ({x},{y}) instance {}", origin.map_name(), map_instance.id());
-        let (x, y) = if x == RANDOM_CELL.0 && y == RANDOM_CELL.1 {
-            let walkable_cell = Map::find_random_walkable_cell(map_instance.state().cells(), map_instance.x_size());
-            (walkable_cell.0, walkable_cell.1)
-        } else {
-            (x, y)
-        };
 
         self.server_task_queue.add_to_index(
             GameEvent::CharacterChangeMap(CharacterChangeMap {

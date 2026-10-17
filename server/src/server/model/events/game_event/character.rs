@@ -689,6 +689,19 @@ impl GameEventHandler for CharacterRemoveItem {
 
     fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
         let character_drop_item = self;
+        if server.plugins().intercepted(script_sdk::InterceptorKind::ItemDrop) {
+            let character = state.get_character(character_drop_item.char_id).ok_or("Character disconnected")?;
+            let item = character.get_item_from_inventory(character_drop_item.index).ok_or("Dropped item is not in the inventory")?;
+            let decision = script_sdk::Interception::ItemDrop {
+                char_id: character.char_id,
+                item_id: item.item_id as u32,
+                amount: character_drop_item.amount.max(0) as u32,
+                map: character.current_map_name().clone(),
+            };
+            if !server.intercept_allowed(character_drop_item.char_id, decision) {
+                return Ok(());
+            }
+        }
         if let Err(error) = server.server_service().character_drop_item(server, state, character_drop_item) {
             warn!("Item drop failed: {error}");
         }

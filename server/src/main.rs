@@ -49,6 +49,7 @@ use crate::server::model::map_item::MapItems;
 use crate::server::model::script::Script;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::item_service::ItemService;
+use crate::server::service::script_service::ScriptService;
 
 pub static CONFIGS: std::sync::OnceLock<Config> = std::sync::OnceLock::new();
 pub static mut MAPS: Option<HashMap<String, &Map>> = None;
@@ -91,12 +92,17 @@ pub async fn main() {
     update_item_and_mob_static_db(&mut items, &mobs);
 
     // Setup script virtual machine for NPC
+    script_runtime::set_cpu_budget_ms(configs().scripting.cpu_budget_ms);
     let script_modules = create_script_modules();
+    let plugins = server::plugins::Plugins::load(&configs().scripting).unwrap_or_else(|error| panic!("{error}"));
+    plugins.publish_hooks();
+    ScriptService::install_plugin_events(&plugins).unwrap_or_else(|error| panic!("{error}"));
+    let mut scripts = load_scripts();
+    ScriptLoader::place_plugin_npcs(&mut scripts, &plugins, configs().scripting.test_npcs).unwrap_or_else(|error| panic!("{error}"));
     let items_module = script_modules.get("items").cloned().expect("the scripting modules directory must hold items.wasm");
     let pets_module = script_modules.get("pets").cloned().expect("the scripting modules directory must hold pets.wasm");
     let item_script_vm = Arc::new(ItemVm::new(items_module, pets_module));
-    let npc_script_vm = Arc::new(ScriptVm::new(script_modules));
-    let scripts = load_scripts();
+    let npc_script_vm = Arc::new(ScriptVm::with_plugins(script_modules, plugins));
 
     // Loading configs
     let skills_config = Config::load_skills_config(".").unwrap();

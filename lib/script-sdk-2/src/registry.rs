@@ -1,8 +1,9 @@
-use script_sdk::{ABI_VERSION, Entry, Request};
+use script_sdk::{ABI_VERSION, Entry, HookKind, Request};
 
 use crate::ctx::Ctx;
 use crate::flow::{Script, finish};
 use crate::item::{ItemBonus, ItemUse};
+use crate::plugin::HookFn;
 use crate::transport::{Transport, WasmTransport};
 
 /// A script as a module exports it. Plain functions coerce to this, so scripts need no wrapping.
@@ -52,6 +53,8 @@ pub struct Tables<'a> {
     pub pets: &'a [(u32, ItemFn)],
     pub pet_supports: &'a [(u32, ItemFn)],
     pub pet_programs: &'a [(u32, ItemFn)],
+    pub plugin_init: Option<ScriptFn>,
+    pub hooks: &'a [(HookKind, HookFn)],
 }
 
 /// Runs the entry the host named and returns the status it expects: `0` on success.
@@ -69,6 +72,11 @@ pub fn run(tables: Tables<'_>) -> i32 {
         Entry::Pet(id) => finish(find_id(tables.pets, *id, "pet")?(&ItemUse::new(&ctx))),
         Entry::PetSupport(id) => finish(find_id(tables.pet_supports, *id, "pet support")?(&ItemUse::new(&ctx))),
         Entry::PetProgram(id) => finish(find_id(tables.pet_programs, *id, "pet program")?(&ItemUse::new(&ctx))),
+        Entry::PluginInit => finish(tables.plugin_init.ok_or("Module is not a plugin")?(&ctx)),
+        Entry::Hook(hook) => {
+            let observer = tables.hooks.iter().find(|(kind, _)| *kind == hook.kind()).map(|(_, observer)| *observer);
+            finish(observer.ok_or_else(|| format!("Module does not observe {:?}", hook.kind()))?(&ctx, hook))
+        }
     });
     match result {
         Ok(()) => 0,

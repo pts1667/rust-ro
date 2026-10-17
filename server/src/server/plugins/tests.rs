@@ -1,0 +1,266 @@
+use std::collections::{HashMap, HashSet};
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+
+use async_trait::async_trait;
+use configuration::configuration::{PluginSetting, ScriptingConfig};
+use script_runtime::Host;
+use script_sdk::{Capability, Entry, Function, Hook, HookKind, Interception, InterceptorKind, Reply, Request, Value};
+
+use super::*;
+use crate::server::boot::script_loader::ScriptLoader;
+use crate::server::model::script::Script;
+use crate::server::service::script_service::ScriptService;
+
+fn plugins_dir() -> String {
+    concat!(env!("CARGO_MANIFEST_DIR"), "/../config/plugins").into()
+}
+
+fn load(plugins: Vec<PluginSetting>) -> Result<Plugins, String> {
+    Plugins::load(&ScriptingConfig { plugins_dir: plugins_dir(), plugins, ..ScriptingConfig::default() })
+}
+
+fn example() -> Plugins {
+    load(vec![PluginSetting::Name("double_xp".into())]).unwrap()
+}
+
+fn narrowed(capabilities: &[&str]) -> Result<Plugins, String> {
+    load(vec![PluginSetting::Detailed {
+        name: "double_xp".into(),
+        enabled: true,
+        capabilities: Some(capabilities.iter().map(|name| name.to_string()).collect()),
+    }])
+}
+
+/// A folder of its own under the temp directory holding the example's module, for refusals that need a modified package.
+fn copied_example(folder: &str) -> std::path::PathBuf {
+    let root = std::env::temp_dir().join(format!("rust-ro-plugins-{}-{folder}", std::process::id()));
+    let package = root.join(folder);
+    std::fs::create_dir_all(&package).unwrap();
+    std::fs::copy(std::path::Path::new(&plugins_dir()).join("double_xp/plugin.wasm"), package.join("plugin.wasm")).unwrap();
+    root
+}
+
+#[test]
+fn the_example_plugin_loads_with_what_it_declares() {
+    let plugins = example();
+    let plugin = plugins.iter().next().unwrap();
+    assert_eq!((plugin.name(), plugin.info.version.as_str()), ("double_xp", "1.0.0"));
+    assert_eq!(plugin.capabilities.iter().collect::<Vec<_>>(), [Capability::Dialogue, Capability::Rates, Capability::Broadcast]);
+    assert_eq!(plugin.module, "plugin:double_xp");
+    assert_eq!(plugins.observers(HookKind::MobKilled).count(), 1);
+    assert_eq!(plugins.observers(HookKind::Logout).count(), 0);
+    assert!(plugins.intercepted(InterceptorKind::ExpGain));
+    assert!(!plugins.intercepted(InterceptorKind::Chat));
+    assert_eq!(plugin.npcs[0].name, "Rate Clerk");
+    assert!(plugin.events.contains_key("Rate Clerk::OnMinute00"));
+}
+
+#[test]
+fn plugins_load_only_when_listed_and_enabled() {
+    assert!(load(vec![]).unwrap().is_empty());
+    let disabled = PluginSetting::Detailed { name: "double_xp".into(), enabled: false, capabilities: None };
+    assert!(load(vec![disabled]).unwrap().is_empty());
+    let twice = load(vec![PluginSetting::Name("double_xp".into()), PluginSetting::Name("double_xp".into())]);
+    assert!(twice.err().unwrap().contains("listed twice"));
+}
+
+#[test]
+fn the_configuration_narrows_capabilities_but_never_widens_them() {
+    let plugins = narrowed(&["Rates", "World"]).unwrap();
+    assert_eq!(plugins.iter().next().unwrap().capabilities.iter().collect::<Vec<_>>(), [Capability::Rates], "World was never declared");
+    assert!(narrowed(&["Teleport"]).err().unwrap().contains("unknown capability Teleport"));
+}
+
+#[test]
+fn a_plugin_is_refused_when_its_package_does_not_hold_together() {
+    let root = copied_example("renamed");
+    let error = Plugins::load(&ScriptingConfig {
+        plugins_dir: root.to_string_lossy().into(),
+        plugins: vec![PluginSetting::Name("renamed".into())],
+        ..ScriptingConfig::default()
+    })
+    .err()
+    .unwrap();
+    assert!(error.contains("calls itself double_xp"), "{error}");
+
+    let root = copied_example("double_xp");
+    std::fs::write(root.join("double_xp/config.json"), "{ not json").unwrap();
+    let error = Plugins::load(&ScriptingConfig {
+        plugins_dir: root.to_string_lossy().into(),
+        plugins: vec![PluginSetting::Name("double_xp".into())],
+        ..ScriptingConfig::default()
+    })
+    .err()
+    .unwrap();
+    assert!(error.contains("config.json is invalid"), "{error}");
+
+    let missing = load(vec![PluginSetting::Name("not_installed".into())]).err().unwrap();
+    assert!(missing.contains("not_installed"), "{missing}");
+}
+
+#[test]
+fn the_example_scales_monster_experience_by_its_configuration() {
+    let plugins = example();
+    let gained = plugins.intercept(Interception::ExpGain { char_id: 1, mob_id: 1002, base: 10, job: 7 }).unwrap();
+    assert_eq!(gained, Interception::ExpGain { char_id: 1, mob_id: 1002, base: 20, job: 14 }, "exp_percent is 200 in config.json");
+    let chat = Interception::Chat { char_id: 1, map: "prontera".into(), message: "hi".into() };
+    assert_eq!(plugins.intercept(chat.clone()), Ok(chat), "kinds no plugin intercepts are not sent to the guests");
+}
+
+/// The ADR lands an interceptor only with a measure of its cost: one call per kill and recipient must stay far below the 20 ms
+/// of a game loop iteration.
+#[test]
+fn an_interceptor_call_costs_microseconds() {
+    let plugins = example();
+    let decision = Interception::ExpGain { char_id: 1, mob_id: 1002, base: 1000, job: 700 };
+    plugins.intercept(decision.clone()).unwrap();
+    let mut timings: Vec<Duration> = (0..2000)
+        .map(|_| {
+            let started = Instant::now();
+            plugins.intercept(decision.clone()).unwrap();
+            started.elapsed()
+        })
+        .collect();
+    timings.sort();
+    let mean = timings.iter().sum::<Duration>() / timings.len() as u32;
+    let p99 = timings[timings.len() * 99 / 100];
+    println!("ExpGain interceptor: mean {} µs, p99 {} µs, max {} µs", mean.as_micros(), p99.as_micros(), timings.last().unwrap().as_micros());
+    let plugin = plugins.iter().next().unwrap();
+    assert!(plugin.intercepts(InterceptorKind::ExpGain), "no call overran often enough to turn the interceptor off");
+    assert!(mean < plugins.deadline, "mean {mean:?} is over the {:?} deadline", plugins.deadline);
+}
+
+#[derive(Clone, Default)]
+struct Recorder {
+    requests: Arc<Mutex<Vec<Request>>>,
+}
+
+#[async_trait]
+impl Host for Recorder {
+    async fn invoke(&mut self, request: Request) -> Reply {
+        let reply = match &request {
+            Request::Read(name) if name == "double_xp_kills" => Ok(Value::Number(99)),
+            Request::Call { function: Function::GetRate, .. } => Ok(Value::Number(150)),
+            _ => Ok(Value::default()),
+        };
+        self.requests.lock().unwrap().push(request);
+        reply
+    }
+}
+
+impl Recorder {
+    fn requests(&self) -> Vec<Request> {
+        self.requests.lock().unwrap().clone()
+    }
+}
+
+async fn run(plugins: &Plugins, entry: Entry) -> (Vec<Request>, Result<(), String>) {
+    let recorder = Recorder::default();
+    let (_, result) = plugins.iter().next().unwrap().runtime.execute_named(recorder.clone(), &entry).await;
+    (recorder.requests(), result)
+}
+
+#[tokio::test]
+async fn the_initialisation_scales_drops_under_the_plugin_name_and_announces() {
+    let (requests, result) = run(&example(), Entry::PluginInit).await;
+    result.unwrap();
+    assert!(requests.contains(&Request::Call { function: Function::SetRate, arguments: vec!["Drop".into(), 150.into(), "double_xp".into()] }));
+    assert!(requests.contains(&Request::Write { name: "$double_xp::started".into(), value: Value::Number(1) }), "{requests:?}");
+    assert!(requests.iter().any(|request| matches!(request, Request::Call { function: Function::Announce, .. })));
+}
+
+#[tokio::test]
+async fn a_capability_the_configuration_withholds_is_refused() {
+    let (requests, result) = run(&narrowed(&["Rates"]).unwrap(), Entry::PluginInit).await;
+    let error = result.unwrap_err();
+    assert!(error.contains("Broadcast") || error.contains("error code"), "{error}");
+    assert!(!requests.iter().any(|request| matches!(request, Request::Call { function: Function::Announce, .. })), "the host never saw it");
+    assert!(requests.iter().any(|request| matches!(request, Request::ReportError(error) if error.contains("Broadcast"))), "{requests:?}");
+}
+
+#[tokio::test]
+async fn the_kill_hook_counts_in_a_shared_character_variable() {
+    let hook = Hook::MobKilled { char_id: 7, mob_id: 1002, map: "prt_fild08".into(), x: 10, y: 10 };
+    let (requests, result) = run(&example(), Entry::Hook(hook)).await;
+    result.unwrap();
+    assert!(requests.contains(&Request::Write { name: "double_xp_kills".into(), value: Value::Number(100) }), "{requests:?}");
+    assert!(requests.iter().any(|request| matches!(request, Request::Call { function: Function::Message, arguments }
+        if arguments[0].text().starts_with("100 monsters"))));
+    let (_, unobserved) = run(&example(), Entry::Hook(Hook::Logout { char_id: 7, account_id: 7 })).await;
+    assert!(unobserved.is_err(), "a hook the plugin did not declare has no observer");
+}
+
+fn placed(name: &str, map: &str) -> Script {
+    Script {
+        id: 0,
+        scope_instance: 0,
+        map_name: map.into(),
+        name: name.into(),
+        sprite: 111,
+        x: 5,
+        y: 6,
+        dir: 2,
+        x_size: 0,
+        y_size: 0,
+        entry_id: 0,
+        constructor_args: vec![],
+    }
+}
+
+fn npc(name: &str, replaces: bool) -> PluginNpc {
+    PluginNpc {
+        name: name.into(),
+        entry: None,
+        map_name: None,
+        sprite: None,
+        x: None,
+        y: None,
+        dir: None,
+        x_size: None,
+        y_size: None,
+        constructor_args: None,
+        test: false,
+        replaces,
+    }
+}
+
+#[test]
+fn plugin_npcs_are_placed_after_the_base_ones_and_replace_them_only_when_asked() {
+    let mut plugins = example();
+    let mut scripts = HashMap::from([("prontera".to_string(), vec![placed("Guard", "prontera")])]);
+    ScriptLoader::place_plugin_npcs(&mut scripts, &plugins, false).unwrap();
+    let clerk = scripts["prontera"].iter().find(|script| script.name == "Rate Clerk").unwrap();
+    let entry = crate::server::script::entries::resolve(clerk.entry_id).unwrap();
+    assert_eq!((entry.module.as_str(), entry.entry), ("plugin:double_xp", Entry::Npc("Rate Clerk".into())));
+    assert_eq!((clerk.x, clerk.y), (161, 186));
+
+    plugins.list[0].npcs = vec![npc("Guard", false)];
+    let mut scripts = HashMap::from([("prontera".to_string(), vec![placed("Guard", "prontera")])]);
+    let error = ScriptLoader::place_plugin_npcs(&mut scripts, &plugins, false).unwrap_err();
+    assert!(error.contains("replaces"), "{error}");
+
+    plugins.list[0].npcs = vec![npc("Guard", true)];
+    let mut scripts = HashMap::from([("prontera".to_string(), vec![placed("Guard", "prontera")])]);
+    ScriptLoader::place_plugin_npcs(&mut scripts, &plugins, false).unwrap();
+    let [guard] = scripts["prontera"].as_slice() else { panic!("{:?}", scripts["prontera"].len()) };
+    assert_eq!((guard.x, guard.y, guard.sprite), (5, 6, 111), "the replacement keeps the place it leaves out");
+    assert_eq!(crate::server::script::entries::resolve(guard.entry_id).unwrap().module, "plugin:double_xp");
+
+    plugins.list[0].npcs = vec![npc("Nobody", false)];
+    assert!(ScriptLoader::place_plugin_npcs(&mut HashMap::new(), &plugins, false).unwrap_err().contains("map_name is required"));
+}
+
+#[test]
+fn plugin_events_take_a_base_label_only_when_they_replace_it() {
+    let mut plugins = example();
+    let handles = ScriptService::plugin_event_handles(&plugins, HashSet::new()).unwrap();
+    assert_eq!(handles.len(), 1);
+    let entry = crate::server::script::entries::resolve(handles[0].1).unwrap();
+    assert_eq!(entry.entry, Entry::Event("Rate Clerk::OnMinute00".into()));
+
+    let base = HashSet::from(["Rate Clerk::OnMinute00".to_string()]);
+    assert!(ScriptService::plugin_event_handles(&plugins, base.clone()).unwrap_err().contains("already defined"));
+    plugins.list[0].events.get_mut("Rate Clerk::OnMinute00").unwrap().replaces = true;
+    assert!(ScriptService::plugin_event_handles(&plugins, base).is_ok());
+}

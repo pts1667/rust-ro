@@ -113,3 +113,87 @@ macro_rules! pet_module {
         }
     };
 }
+
+/// Exports a plugin (`docs/plugins.md`): its identity, its initialisation, the NPCs and events its manifests place, the hooks
+/// it observes and the decisions it intercepts. The plugin's folder must carry its `name`.
+///
+/// ```ignore
+/// script_sdk_2::plugin_module! {
+///     info { name: "double_xp", version: "1.0.0", requires: [], capabilities: [Rates, Broadcast] }
+///     init => init,
+///     npcs { "Rate Clerk" => rate_clerk }
+///     events { "Rate Clerk::OnTimer3600000" => announce }
+///     hooks { MobKilled => on_mob_killed }
+///     interceptors { ExpGain => exp_gain }
+/// }
+/// ```
+///
+/// `requires` and `capabilities` may be left out. NPC and event names must be unique and in ascending order.
+#[macro_export]
+macro_rules! plugin_module {
+    (
+        info {
+            name: $name:literal,
+            version: $version:literal
+            $(, requires: [$($requires:literal),* $(,)?])?
+            $(, capabilities: [$($capability:ident),* $(,)?])?
+            $(,)?
+        }
+        init => $init:path,
+        npcs { $($npc:literal => $npc_script:path),* $(,)? }
+        events { $($event:literal => $event_script:path),* $(,)? }
+        hooks { $($hook:ident => $hook_script:path),* $(,)? }
+        interceptors { $($interceptor:ident => $interceptor_fn:path),* $(,)? }
+    ) => {
+        const _: () = assert!($crate::registry::is_strictly_sorted(&[$($npc),*]), "NPC names must be unique and sorted");
+        const _: () = assert!($crate::registry::is_strictly_sorted(&[$($event),*]), "Event names must be unique and sorted");
+
+        #[no_mangle]
+        pub extern "C" fn script_abi() -> u32 {
+            $crate::registry::ABI
+        }
+
+        #[no_mangle]
+        pub extern "C" fn script_run() -> i32 {
+            const NPCS: &[(&str, $crate::registry::ScriptFn)] = &[$(($npc, $npc_script)),*];
+            const EVENTS: &[(&str, $crate::registry::ScriptFn)] = &[$(($event, $event_script)),*];
+            const HOOKS: &[($crate::HookKind, $crate::HookFn)] = &[$(($crate::HookKind::$hook, $hook_script)),*];
+            $crate::registry::run($crate::registry::Tables {
+                npcs: NPCS,
+                events: EVENTS,
+                plugin_init: Some($init),
+                hooks: HOOKS,
+                ..Default::default()
+            })
+        }
+
+        #[no_mangle]
+        pub extern "C" fn plugin_buffer() -> u32 {
+            $crate::plugin::buffer_address()
+        }
+
+        #[no_mangle]
+        pub extern "C" fn plugin_info(_length: u32) -> i32 {
+            $crate::plugin::export_info(&$crate::PluginInfo {
+                name: $name.into(),
+                version: $version.into(),
+                sdk_abi: $crate::registry::ABI,
+                requires: vec![$($($requires.into()),*)?],
+                capabilities: vec![$($($crate::Capability::$capability),*)?],
+                hooks: vec![$($crate::HookKind::$hook),*],
+                interceptors: vec![$($crate::InterceptorKind::$interceptor),*],
+            })
+        }
+
+        #[no_mangle]
+        pub extern "C" fn plugin_configure(length: u32) -> i32 {
+            $crate::plugin::export_configure(length)
+        }
+
+        #[no_mangle]
+        pub extern "C" fn plugin_intercept(length: u32) -> i32 {
+            const INTERCEPTORS: &[($crate::InterceptorKind, $crate::InterceptFn)] = &[$(($crate::InterceptorKind::$interceptor, $interceptor_fn)),*];
+            $crate::plugin::export_intercept(INTERCEPTORS, length)
+        }
+    };
+}

@@ -5,15 +5,35 @@ use script_runtime::{Host, WasmRuntime};
 use script_sdk::Entry;
 
 use super::entries::resolve;
+use crate::server::plugins::Plugins;
 
-/// Runs NPC and event scripts in the module their manifest names.
+/// Runs NPC and event scripts in the module their manifest names, plugin scripts included.
 pub struct ScriptVm {
     modules: HashMap<String, Arc<WasmRuntime>>,
+    plugins: Arc<Plugins>,
 }
 
 impl ScriptVm {
     pub fn new(modules: HashMap<String, Arc<WasmRuntime>>) -> Self {
-        Self { modules }
+        Self::with_plugins(modules, Plugins::default())
+    }
+
+    /// The plugins' modules join the base ones under their `plugin:<name>` keys.
+    pub fn with_plugins(mut modules: HashMap<String, Arc<WasmRuntime>>, plugins: Plugins) -> Self {
+        modules.extend(plugins.modules());
+        Self { modules, plugins: Arc::new(plugins) }
+    }
+
+    pub fn plugins(&self) -> &Arc<Plugins> {
+        &self.plugins
+    }
+
+    /// Runs `entry` of `module` without interning it: hook entries carry their data and are never run twice.
+    pub async fn run_entry<H: Host>(&self, host: H, module: &str, entry: &Entry) -> (H, Result<(), String>) {
+        let Some(runtime) = self.modules.get(module) else {
+            return (host, Err(format!("Script module {module} is not loaded")));
+        };
+        runtime.execute_named(host, entry).await
     }
 
     /// Runs the NPC or event `handle`.

@@ -10,6 +10,28 @@ use crate::server::model::map::Map;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::state::server::ServerState;
 
+/// Runs every plugin's initialisation; queued after the base `OnInit` events.
+#[derive(Debug, PartialEq, Clone)]
+pub struct PluginInitialization;
+
+impl GameEventHandler for PluginInitialization {
+    fn handle(self, server: &Server, _state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        server.run_plugin_initialization()
+    }
+}
+
+/// Something plugins observe happened; `Server::queue_hook` queues it only when one does.
+#[derive(Debug, PartialEq, Clone)]
+pub struct PluginHook {
+    pub hook: script_sdk::Hook,
+}
+
+impl GameEventHandler for PluginHook {
+    fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        server.run_hook(state, self.hook)
+    }
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct ScriptWarp {
     pub char_id: u32,

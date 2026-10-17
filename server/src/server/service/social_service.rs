@@ -95,7 +95,31 @@ impl Server {
         if message.len() + 1 > CHAT_SIZE_MAX || speaker.manner < 0 {
             return;
         }
-        let text = text.split(|byte| *byte == 0).next().unwrap_or_default();
+        let mut text = text.split(|byte| *byte == 0).next().unwrap_or_default().to_vec();
+        if self.plugins().intercepted(script_sdk::InterceptorKind::Chat) {
+            let decision = script_sdk::Interception::Chat {
+                char_id,
+                map: speaker.current_map_name().clone(),
+                message: String::from_utf8_lossy(message).into_owned(),
+            };
+            match self.intercept(decision) {
+                Ok(script_sdk::Interception::Chat { message, .. }) => {
+                    let spoken = format!("{} : {message}", speaker.name);
+                    if spoken.len() + 1 > CHAT_SIZE_MAX {
+                        return;
+                    }
+                    text = spoken.into_bytes();
+                }
+                Ok(_) => {}
+                Err(refusal) => {
+                    if !refusal.is_empty() {
+                        self.tell(char_id, &refusal);
+                    }
+                    return;
+                }
+            }
+        }
+        let text = text.as_slice();
         let waiting_room = state.waiting_rooms.room_of(char_id);
         let listeners: Vec<u32> = match (state.chat_rooms.room_of(char_id), waiting_room) {
             (Some(room), _) => room.members.iter().copied().filter(|member| *member != char_id).collect(),
