@@ -17,7 +17,7 @@ fn manifest(file: &str) -> serde_json::Value {
 
 #[test]
 fn every_placement_is_on_a_cached_map_inside_its_bounds_with_a_known_sprite_and_a_unique_name() {
-    let scripts = ScriptLoader::load_scripts(repository_path("config/wasm/npcs.json").to_str().unwrap()).unwrap();
+    let scripts = ScriptLoader::load_scripts(repository_path("config/wasm/npcs.json").to_str().unwrap(), true).unwrap();
     let cache = repository_path("config/maps/pre-re");
     let mut problems = vec![];
     for (map_name, placed) in &scripts {

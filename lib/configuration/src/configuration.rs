@@ -144,6 +144,9 @@ pub struct ScriptingConfig {
     /// Paths that replace the file of a module in `modules_dir`, by module name.
     pub modules: BTreeMap<String, String>,
     pub npcs_path: String,
+    /// Places the manifest entries marked `"test": true` (warpers, Job Master, Mount Master, stylist, the Prontera item mall and the
+    /// test NPCs). rathena keeps their originals in `npc/scripts_custom.conf`, commented out, so they are off by default.
+    pub test_npcs: bool,
     pub items_path: String,
     pub conversation_timeout_secs: u64,
     pub map_flags_path: String,
@@ -155,6 +158,7 @@ impl Default for ScriptingConfig {
             modules_dir: "config/wasm/modules".into(),
             modules: BTreeMap::new(),
             npcs_path: "config/wasm/npcs.json".into(),
+            test_npcs: false,
             items_path: "config/wasm/items.json".into(),
             conversation_timeout_secs: 120,
             map_flags_path: "config/wasm/map_flags.json".into(),

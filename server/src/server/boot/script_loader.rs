@@ -26,6 +26,8 @@ struct NpcDefinition {
     y_size: u16,
     #[serde(default)]
     constructor_args: Vec<Value>,
+    #[serde(default)]
+    test: bool,
 }
 
 impl ScriptLoader {
@@ -71,7 +73,8 @@ impl ScriptLoader {
         Ok(flags)
     }
 
-    pub fn load_scripts(path: &str) -> Result<HashMap<String, Vec<Script>>, String> {
+    /// `test_npcs` places the entries marked `test` too (`scripting.test_npcs`).
+    pub fn load_scripts(path: &str, test_npcs: bool) -> Result<HashMap<String, Vec<Script>>, String> {
         let bytes = std::fs::read(path).map_err(|e| format!("Cannot load {path}: {e}"))?;
         let definitions: Vec<NpcDefinition> = serde_json::from_slice(&bytes).map_err(|e| e.to_string())?;
         let mut scripts: HashMap<String, Vec<Script>> = HashMap::new();
@@ -82,6 +85,9 @@ impl ScriptLoader {
             }
             if definition.module.is_empty() || definition.entry.is_empty() {
                 return Err(format!("NPC {} needs a module and an entry", definition.name));
+            }
+            if definition.test && !test_npcs {
+                continue;
             }
             let entry_id = intern(&definition.module, Entry::Npc(definition.entry));
             let sprite = definition
@@ -143,5 +149,36 @@ mod tests {
         let flags = ScriptLoader::load_map_flags(path.to_str().unwrap()).unwrap();
         assert_eq!(flags["test"].save, Some(("prontera".into(), 155, 181)));
         std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn test_npcs_are_placed_only_when_enabled() {
+        let path = std::env::temp_dir().join(format!("rust-ro-test-npcs-{}.json", std::process::id()));
+        std::fs::write(
+            &path,
+            br#"[{"map_name":"prontera","name":"Warper#prt","sprite":"111","x":1,"y":1,"dir":0,"module":"systems","entry":"warper","test":true},
+                 {"map_name":"prontera","name":"Guard","sprite":"111","x":2,"y":2,"dir":0,"module":"systems","entry":"shop"}]"#,
+        )
+        .unwrap();
+        let names = |test_npcs| {
+            ScriptLoader::load_scripts(path.to_str().unwrap(), test_npcs).unwrap()["prontera"].iter().map(|script| script.name.clone()).collect::<Vec<_>>()
+        };
+        assert_eq!(names(false), vec!["Guard"]);
+        assert_eq!(names(true), vec!["Warper#prt", "Guard"]);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn the_shipped_test_npcs_are_the_custom_block() {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/npcs.json");
+        let manifest: Vec<serde_json::Value> = serde_json::from_slice(&std::fs::read(path).unwrap()).unwrap();
+        let test: Vec<&serde_json::Value> = manifest.iter().filter(|npc| npc["test"] == true).collect();
+        let named = |entry: &str| test.iter().filter(|npc| npc["entry"] == entry).count();
+        assert_eq!(named("warper"), manifest.iter().filter(|npc| npc["entry"] == "warper").count());
+        for entry in ["job_master", "mount_master", "stylist", "counter", "variables"] {
+            assert!(named(entry) > 0, "{entry} is not marked test");
+        }
+        assert!(test.iter().any(|npc| npc["name"] == "Headgear 05"));
+        assert!(test.iter().all(|npc| npc["entry"] != "breeder"));
     }
 }

@@ -253,7 +253,8 @@ Usage: server [--host <ip>] [--debug-log]");
 }
 
 pub fn load_scripts() -> HashMap<String, Vec<Script>> {
-    ScriptLoader::load_scripts(&configs().scripting.npcs_path).expect("Failed to load Wasm NPC manifest")
+    let scripting = &configs().scripting;
+    ScriptLoader::load_scripts(&scripting.npcs_path, scripting.test_npcs).expect("Failed to load Wasm NPC manifest")
 }
 
 pub fn configs() -> &'static Config {

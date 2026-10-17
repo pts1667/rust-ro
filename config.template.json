@@ -20,6 +20,7 @@
   "scripting": {
     "modules_dir": "config/wasm/modules",
     "npcs_path": "config/wasm/npcs.json",
+    "test_npcs": false,
     "items_path": "config/wasm/items.json",
     "map_flags_path": "config/wasm/map_flags.json",
     "conversation_timeout_secs": 120

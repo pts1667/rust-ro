@@ -567,7 +567,8 @@ same way, so a route can be planned between regions instead of whole maps: a war
 Ways between maps that are not warp cells (guards, sewer entrances, ship captains) are NPCs: `/db/maps/<name>` lists them as
 `transports` (and `transport_arrivals` on the map they lead to), with `touch` (walking into the NPC's area is enough) and `checks`
 (what the script reads first: `zeny`, `item`, `quest`, `level`, `job` or `variable`, a hint that the way has a condition). Warper NPCs
-have `warper: true` and offer every place of `/db/destinations`. Talk to the others with `use` and answer their dialogue.
+have `warper: true` and offer every place of `/db/destinations`. They exist only when the server sets `scripting.test_npcs`, off by
+default, so check the `transports` list for them first. Talk to the others with `use` and answer their dialogue.
 
 ## Events
 
@@ -622,6 +623,7 @@ Bots can move, use NPCs, pick items up, attack monsters and players, use items a
 equip, chat, trade, join parties, duel, keep a cart, run vending and buying stores, spend their points, look after a pet, a homunculus
 and a mercenary, and run the `@` commands of their permission group. Not supported: the store search window and guilds (guild
 management and guild skills).
-A job change is done with the Job Master of Prontera (a Novice with Basic Skill 9 and job level 10 became a Mage this way) or the job quest NPCs.
+A job change is done with the job quest NPCs, or with the Job Master of Prontera when the server sets `scripting.test_npcs` (off by
+default; a Novice with Basic Skill 9 and job level 10 became a Mage this way).
 Monsters fight back and a bot can die: check `self.hp` and `self.dead`, and call `respawn` to come back at the save point with a
 few hit points. A novice has 40 HP: stay away from monsters that attack on sight (`Pupa`, `Wild Rose`...) until the bot is stronger.

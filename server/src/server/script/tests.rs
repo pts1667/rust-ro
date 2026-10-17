@@ -130,7 +130,7 @@ fn compiled_catalog_accepts_windows_line_endings() {
 #[test]
 fn npc_manifest_preserves_enabled_placements() {
     let root = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/npcs.json");
-    let scripts = crate::server::boot::script_loader::ScriptLoader::load_scripts(root.to_str().unwrap()).unwrap();
+    let scripts = crate::server::boot::script_loader::ScriptLoader::load_scripts(root.to_str().unwrap(), true).unwrap();
     let systems = |entry: &str| super::entries::system_npc(entry);
     assert_eq!(scripts.values().flatten().filter(|npc| super::entries::resolve(npc.entry_id).is_some_and(|script| script.module == "systems")).count(), 736);
     let prontera = &scripts["prontera"];

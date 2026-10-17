@@ -83,7 +83,7 @@ fn generated_entries(entries: impl Iterator<Item = (String, u32)>) -> Vec<(Strin
 
 fn npc_entries() -> Vec<(String, u32)> {
     let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm/npcs.json");
-    let npcs = ScriptLoader::load_scripts(path.to_str().unwrap()).unwrap();
+    let npcs = ScriptLoader::load_scripts(path.to_str().unwrap(), true).unwrap();
     generated_entries(npcs.into_values().flatten().map(|npc| (npc.name, npc.entry_id)))
 }
 

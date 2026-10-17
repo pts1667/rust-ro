@@ -142,7 +142,7 @@ fn key(kind: &str, handle: u32, placement: Option<&str>) -> String {
 /// gives the script arguments.
 fn digests() -> BTreeMap<String, String> {
     let wasm = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../config/wasm");
-    let npcs = ScriptLoader::load_scripts(wasm.join("npcs.json").to_str().unwrap()).unwrap();
+    let npcs = ScriptLoader::load_scripts(wasm.join("npcs.json").to_str().unwrap(), true).unwrap();
     let events: serde_json::Value = serde_json::from_slice(&std::fs::read(wasm.join("events.json")).unwrap()).unwrap();
     let mut runs: BTreeMap<String, (u32, Vec<Value>)> = npcs
         .values()

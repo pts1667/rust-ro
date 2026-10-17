@@ -8,7 +8,8 @@
     "sprite": "98",
     "constructor_args": [],
     "module": "systems",
-    "entry": "variables"
+    "entry": "variables",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -19,7 +20,8 @@
     "sprite": "100",
     "constructor_args": [],
     "module": "systems",
-    "entry": "counter"
+    "entry": "counter",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -30,7 +32,8 @@
     "sprite": "100",
     "constructor_args": [],
     "module": "systems",
-    "entry": "counter"
+    "entry": "counter",
+    "test": true
   },
   {
     "map_name": "alb2trea",
@@ -41,7 +44,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "alberta",
@@ -52,7 +56,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "aldebaran",
@@ -63,7 +68,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "amatsu",
@@ -74,7 +80,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "ayothaya",
@@ -85,7 +92,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "comodo",
@@ -96,7 +104,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "einbech",
@@ -107,7 +116,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "einbroch",
@@ -118,7 +128,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "gef_fild10",
@@ -129,7 +140,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "geffen",
@@ -140,7 +152,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "glast_01",
@@ -151,7 +164,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "gonryun",
@@ -162,7 +176,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "hugel",
@@ -173,7 +188,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "izlu2dun",
@@ -184,7 +200,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "izlude",
@@ -195,7 +212,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "jawaii",
@@ -206,7 +224,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "lighthalzen",
@@ -217,7 +236,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "louyang",
@@ -228,7 +248,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "manuk",
@@ -239,7 +260,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "mid_camp",
@@ -250,7 +272,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "mjolnir_02",
@@ -261,7 +284,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "moc_ruins",
@@ -272,7 +296,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "morocc",
@@ -283,7 +308,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "moscovia",
@@ -294,7 +320,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "nameless_n",
@@ -305,7 +332,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "niflheim",
@@ -316,7 +344,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "pay_arche",
@@ -327,7 +356,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "payon",
@@ -338,7 +368,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -349,7 +380,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "prt_fild05",
@@ -360,7 +392,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "rachel",
@@ -371,7 +404,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "splendide",
@@ -382,7 +416,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "thor_camp",
@@ -393,7 +428,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "umbala",
@@ -404,7 +440,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "veins",
@@ -415,7 +452,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "xmas",
@@ -426,7 +464,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "yuno",
@@ -437,7 +476,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "prt_monk",
@@ -448,7 +488,8 @@
     "sprite": "4_F_VALKYRIE",
     "constructor_args": [],
     "module": "systems",
-    "entry": "warper"
+    "entry": "warper",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -459,7 +500,8 @@
     "sprite": "122",
     "constructor_args": [],
     "module": "systems",
-    "entry": "stylist"
+    "entry": "stylist",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -470,7 +512,8 @@
     "sprite": "123",
     "constructor_args": [],
     "module": "systems",
-    "entry": "job_master"
+    "entry": "job_master",
+    "test": true
   },
   {
     "map_name": "prt_in",
@@ -563,7 +606,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prt_monk",
@@ -656,7 +700,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prt_monk",
@@ -749,7 +794,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -860,7 +906,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -923,7 +970,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -986,7 +1034,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1067,7 +1116,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1136,7 +1186,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1199,7 +1250,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1268,7 +1320,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1349,7 +1402,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1448,7 +1502,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1481,7 +1536,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1562,7 +1618,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1637,7 +1694,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1688,7 +1746,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1751,7 +1810,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1838,7 +1898,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1919,7 +1980,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -1976,7 +2038,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -2051,7 +2114,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -2126,7 +2190,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -2207,7 +2272,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -2270,7 +2336,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -2357,7 +2424,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -2444,7 +2512,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -2651,7 +2720,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -2774,7 +2844,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -3035,7 +3106,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -3266,7 +3338,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -3425,7 +3498,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -3686,7 +3760,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -3755,7 +3830,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -3812,7 +3888,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -3845,7 +3922,8 @@
       }
     ],
     "module": "systems",
-    "entry": "shop"
+    "entry": "shop",
+    "test": true
   },
   {
     "map_name": "prontera",
@@ -3856,7 +3934,8 @@
     "sprite": "123",
     "constructor_args": [],
     "module": "systems",
-    "entry": "mount_master"
+    "entry": "mount_master",
+    "test": true
   },
   {
     "map_name": "prontera",

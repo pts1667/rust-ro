@@ -40,7 +40,7 @@ def import_manifest():
                         raise ValueError(f"Invalid shop item {specification}")
                     for index in range(0, len(pairs), 2):
                         arguments += [{"Number": int(pairs[index])}, {"Number": int(pairs[index + 1])}]
-            npcs.append(dict(map_name=location[0], x=int(location[1]), y=int(location[2]), dir=int(location[3]), name=name.strip(), sprite=sprite.strip().split("//")[0].strip(), entry_id=kind, constructor_args=arguments))
+            npcs.append(dict(map_name=location[0], x=int(location[1]), y=int(location[2]), dir=int(location[3]), name=name.strip(), sprite=sprite.strip().split("//")[0].strip(), entry_id=kind, constructor_args=arguments, test=True))
     return npcs
 
 
@@ -93,7 +93,7 @@ BREEDERS = [
 
 
 def builtin_npcs():
-    npcs = [dict(map_name="prontera", x=151, y=193, dir=6, name="Mount Master", sprite="123", entry_id=7, constructor_args=[])]
+    npcs = [dict(map_name="prontera", x=151, y=193, dir=6, name="Mount Master", sprite="123", entry_id=7, constructor_args=[], test=True)]
     npcs += [
         dict(map_name=map_name, x=x, y=y, dir=direction, name=name, sprite="105", entry_id=14,
              constructor_args=[{"String": title}, {"String": kind}, {"Number": job}, {"Number": price}, {"String": job_name}])
@@ -309,7 +309,11 @@ def battleground_common_npcs():
 def system_route(npc):
     """Replaces the `entry_id` of a hand-written placement with its module and entry."""
     npc = dict(npc)
+    test = npc.pop("test", False)
     npc["module"], npc["entry"] = SYSTEMS_MODULE, SYSTEM_NPCS[npc.pop("entry_id")]
+    if test:
+        # Placed only with `scripting.test_npcs`, like rathena's commented-out npc/scripts_custom.conf
+        npc["test"] = True
     return npc
 
 

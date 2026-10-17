@@ -29,7 +29,7 @@ Categories and keys:
 | `skills` | id or name | `config/skill.json` entry, `metadata` (route, cast time, cooldown, flags), `learned_by` (jobs), `cast_by` (monsters). |
 | `maps` | name | Flags, `regions` (the walkable areas of the map: cells joined without a warp, numbered from 1, with their size), `warps` out (with destination links, the `region` the warp is used from and the `to.region` it lands in), `arrivals` (warp cells on other maps that land here, with both regions), `transports` (NPCs that send characters to other maps: guards, sewer entrances, the warpers, with `touch`, `checks` and destinations), `transport_arrivals` (NPCs of other maps that send characters here), `connected_maps` (the other maps it links with, both ways), mob spawns, placed NPCs (with their `region`), `quests` (the quests those NPCs start, see below). |
 | `warps` | `<map>/<x>,<y>` | A warp cell of a loaded map (the tile that takes a character to another map): its size and where it leads. Listed by name, `q` filters. |
-| `destinations` | `<map>/<x>,<y>` | A place on the warper's menu (`config/wasm/warps.json`, the list every warper NPC offers): category, group and map. |
+| `destinations` | `<map>/<x>,<y>` | A place on the warper's menu (`config/wasm/warps.json`, the list every warper NPC offers): category, group and map. Listed even when no warper is placed: warpers are test NPCs, placed only with `scripting.test_npcs`. |
 | `npcs` | `<map>/<name>` | The placement, the script module and entry, and for shops the `shop` offers (`price` resolved from `-1`). |
 | `pets` | class id or name | The pet with its taming, egg, food and equip items. |
 | `jobs` | id or name | `config/job.json` entry with its `skill_tree`. |
