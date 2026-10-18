@@ -368,6 +368,7 @@ impl Server {
         };
         let account_id = character.account_id;
         self.queue_hook(script_sdk::Hook::Logout { char_id, account_id });
+        self.forget_plugin_ui(char_id);
         let owner = state
             .character_logins
             .get(&char_id)

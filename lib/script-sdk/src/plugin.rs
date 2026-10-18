@@ -25,10 +25,12 @@ pub enum Capability {
     Accounts,
     /// Announcements to a map or the server.
     Broadcast,
+    /// Plugin windows and overhead notifications (`plugin_ui`).
+    Interface,
 }
 
 impl Capability {
-    pub const ALL: [Capability; 7] = [
+    pub const ALL: [Capability; 8] = [
         Capability::Dialogue,
         Capability::World,
         Capability::Economy,
@@ -36,6 +38,7 @@ impl Capability {
         Capability::Rates,
         Capability::Accounts,
         Capability::Broadcast,
+        Capability::Interface,
     ];
 
     const fn bit(self) -> u16 {
@@ -87,6 +90,26 @@ pub struct PluginInfo {
     pub hooks: Vec<HookKind>,
     #[serde(default)]
     pub interceptors: Vec<InterceptorKind>,
+    /// Ids of the windows whose events the plugin handles.
+    #[serde(default)]
+    pub windows: Vec<String>,
+    #[serde(default)]
+    pub bot_actions: Vec<BotActionInfo>,
+}
+
+/// An action a plugin offers to bots, listed in their observation.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct BotActionInfo {
+    pub name: String,
+    /// What it does and the `args` it takes, for whoever writes the bot.
+    pub description: String,
+}
+
+/// A bot's request for one of the plugin's actions; `args` is JSON.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct BotAction {
+    pub name: String,
+    pub args: String,
 }
 
 /// Server rates a plugin can scale, in percent of the configured rate (100 leaves it unchanged).
@@ -302,7 +325,7 @@ impl Function {
             | GetEquipWeaponLevel | GetEquipArmorLevel | GetEquipCardId | GetEquipIsEquipped | GetEquipIsEnableRefine
             | GetEquipPercentRefinery | GetEquipRefineCost | GetBrokenId | GetGmLevel | ArrayGet | ArraySet | GetWaitingRoomState
             | GetInventoryList | MercenaryGetFaith | GetMonsterInfo | GetGuildMaster | GetCastleName | AttachRid | DetachRid
-            | IsLoggedIn | RequestGuildInfo | PluginConfig | GetRate => None,
+            | IsLoggedIn | RequestGuildInfo | PluginConfig | GetRate | BotObserve | BotReply => None,
             Mes | Close | Next | Select | InputNumber | InputString | Message | DispBottom | Cutin | Emotion | ShowEvent | QuestInfo
             | QuestInfoRefresh | ViewPoint | NpcTalk | SoundEffect | ProgressBar | SpecialEffect | SkillEffect | NpcSpecialEffect
             | PlayBgm | ReadBook => Some(Dialogue),
@@ -325,6 +348,7 @@ impl Function {
             | DisableWaitingRoomEvent | WarpWaitingPc | PushPc | UnloadNpc | MoveNpc | SetNpcDisplay | SetUnitData | UnitSkill
             | UnitSkillToId | UnitSkillToPosition | SetVariableOfNpc | GuildExperience => Some(World),
             SetRate => Some(Rates),
+            UiOpen | UiClose | UiOverhead => Some(Interface),
         }
     }
 }

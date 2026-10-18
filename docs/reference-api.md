@@ -63,6 +63,8 @@ A map's `quests` lists the quests its placed NPCs start: a `quests().start(id)` 
 in the NPC's function, its helpers and its events (`<npc>::<label>`). `config/quest_offers.json`, `{ module: { npc: [ids] } }`,
 is written by `tools/scripts-import/extract_quest_offers.py` from the scripts. It is a static scan, so a quest started by a
 shared helper that no NPC calls by its own name is not listed (quest 18060 is the one case today). Rewards are not in it.
+The game reads the same file for the "!" above a giver whose script sets no `questinfo` of its own, shown until the player has
+one of its quests in the log (`show_quest_icons` in `service/quest_service.rs`).
 
 ### Errors
 

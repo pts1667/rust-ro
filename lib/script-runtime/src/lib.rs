@@ -60,6 +60,16 @@ impl Default for Limits {
     }
 }
 
+/// Functions whose last argument the runtime sets to the calling plugin's name, after this many arguments of the script,
+/// so a plugin cannot act in another's name.
+fn owned_arity(function: Function) -> Option<usize> {
+    match function {
+        Function::UiClose | Function::UiOpen | Function::BotReply => Some(1),
+        Function::SetRate | Function::UiOverhead | Function::BotObserve => Some(2),
+        _ => None,
+    }
+}
+
 /// What a plugin module may do: the server checks every request of its runs against it.
 #[derive(Debug, Clone)]
 pub struct PluginPolicy {
@@ -78,10 +88,10 @@ impl PluginPolicy {
             }
         }
         Ok(match request.for_plugin(&self.name) {
-            Request::Call { function: Function::SetRate, mut arguments } => {
-                arguments.truncate(2);
+            Request::Call { function, mut arguments } if owned_arity(function).is_some() => {
+                arguments.truncate(owned_arity(function).unwrap_or_default());
                 arguments.push(Value::String(self.name.clone()));
-                Request::Call { function: Function::SetRate, arguments }
+                Request::Call { function, arguments }
             }
             request => request,
         })
@@ -347,6 +357,9 @@ impl WasmRuntime {
         match (plugin, request) {
             (Some(plugin), Request::Call { function: Function::PluginConfig, .. }) => Err(Ok(Value::String(plugin.config.clone()))),
             (None, Request::Call { function: Function::PluginConfig, .. }) => Err(Err("Only plugins have a configuration".into())),
+            (None, Request::Call { function, .. }) if owned_arity(function).is_some() && function != Function::SetRate => {
+                Err(Err(format!("Only plugins can call {function:?}")))
+            }
             (Some(plugin), request) => plugin.admit(request).map_err(Err),
             (None, request) => Ok(request),
         }

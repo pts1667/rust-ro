@@ -2,9 +2,10 @@
 //! configuration, hooks and interceptors, loaded from `scripting.plugins_dir` in the order of `scripting.plugins`.
 
 pub mod rates;
+pub mod ui;
 
 use std::collections::BTreeMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -76,6 +77,8 @@ pub struct LoadedPlugin {
     pub init_handle: u32,
     pub npcs: Vec<PluginNpc>,
     pub events: BTreeMap<String, PluginEvent>,
+    /// The plugin's folder; files of its `ui/` subfolder are served to clients as `plugin/<name>/...`.
+    pub folder: PathBuf,
     hooks: u32,
     interceptors: u32,
     sandbox: Mutex<PluginSandbox>,
@@ -90,6 +93,14 @@ impl LoadedPlugin {
 
     pub fn observes(&self, kind: HookKind) -> bool {
         self.hooks & kind.bit() != 0
+    }
+
+    pub fn handles_window(&self, id: &str) -> bool {
+        self.info.windows.iter().any(|window| window == id)
+    }
+
+    pub fn has_bot_action(&self, name: &str) -> bool {
+        self.info.bot_actions.iter().any(|action| action.name == name)
     }
 
     fn intercepts(&self, kind: InterceptorKind) -> bool {
@@ -133,6 +144,7 @@ impl LoadedPlugin {
             module,
             npcs,
             events,
+            folder: folder.to_path_buf(),
             hooks: info.hooks.iter().fold(0, |bits, kind| bits | kind.bit()),
             interceptors: info.interceptors.iter().fold(0, |bits, kind| bits | kind.bit()),
             sandbox: Mutex::new(PluginSandbox::new(&runtime)),
@@ -215,6 +227,10 @@ impl Plugins {
     /// The modules the script VM runs plugin scripts from, by their `plugin:<name>` key.
     pub fn modules(&self) -> impl Iterator<Item = (String, Arc<WasmRuntime>)> + '_ {
         self.list.iter().map(|plugin| (plugin.module.clone(), plugin.runtime.clone()))
+    }
+
+    pub fn by_name(&self, name: &str) -> Option<&LoadedPlugin> {
+        self.list.iter().find(|plugin| plugin.name() == name)
     }
 
     /// The plugin whose initialisation or hook a request without an NPC comes from.

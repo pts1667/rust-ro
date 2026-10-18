@@ -104,6 +104,14 @@ pub enum BotRequest {
     Command(String),
     Stop,
     Respawn,
+    /// A click in a plugin window or an action a plugin offers; the plugin's run answers it.
+    Plugin(PluginRequest),
+}
+
+#[derive(Debug, Clone)]
+pub enum PluginRequest {
+    Ui { plugin: String, event: plugin_ui::UiEvent },
+    Action { plugin: String, name: String, args: String },
 }
 
 impl BotRequest {
@@ -136,6 +144,7 @@ impl BotRequest {
             BotRequest::Command(_) => "Command",
             BotRequest::Stop => "Stop",
             BotRequest::Respawn => "Respawn",
+            BotRequest::Plugin(_) => "Plugin",
         }
     }
 }
@@ -174,6 +183,13 @@ impl GameEventHandler for BotCommand {
     }
 
     fn handle(self, server: &Server, state: &mut ServerState, tick: u128) -> Result<(), String> {
+        if let BotRequest::Plugin(request) = self.request {
+            match request {
+                PluginRequest::Ui { plugin, event } => server.plugin_ui_event(state, self.char_id, &plugin, event, Some(self.reply)),
+                PluginRequest::Action { plugin, name, args } => server.plugin_bot_action(state, self.char_id, &plugin, name, args, self.reply),
+            }
+            return Ok(());
+        }
         let reply = self.reply.lock().unwrap_or_else(|poisoned| poisoned.into_inner()).take();
         let result = server.run_bot_request(state, &self, tick);
         if let Some(reply) = reply {
@@ -309,6 +325,7 @@ impl Server {
                 self.add_to_next_tick(GameEvent::CharacterRespawn(CharacterRespawn { session }));
                 Ok(json!({ "respawning": true }))
             }
+            BotRequest::Plugin(_) => Err("Plugin requests are answered by the plugin".into()),
         }
     }
 

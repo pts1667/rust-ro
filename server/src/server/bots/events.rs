@@ -57,6 +57,8 @@ pub enum BotEventKind {
     PartyLeaderChanged { name: String },
     /// Someone close by asks the bot for a trade: answer with `trade_accept` or `trade_decline`.
     TradeRequested { from: String },
+    /// A plugin showed a notification above a unit near the bot (or above the bot): its text and first image.
+    PluginOverhead { plugin: String, unit_id: u32, text: Option<String>, image: Option<String> },
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]

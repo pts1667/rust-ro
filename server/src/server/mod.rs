@@ -111,6 +111,7 @@ pub struct Server {
     motd: Motd,
     day_night: crate::server::model::day_night::DayNight,
     bots: BotRegistry,
+    plugin_ui: crate::server::plugins::ui::PluginUiStore,
 }
 
 impl Server {
@@ -149,6 +150,11 @@ impl Server {
 
     pub fn bots(&self) -> &BotRegistry {
         &self.bots
+    }
+
+    /// Plugin windows and bot observations by character, see `plugins::ui`.
+    pub fn plugin_ui(&self) -> &crate::server::plugins::ui::PluginUiStore {
+        &self.plugin_ui
     }
 
     pub fn motd(&self) -> &Motd {
@@ -320,6 +326,7 @@ impl Server {
             motd: Motd::load(&configuration.server.motd_path),
             day_night: Default::default(),
             bots: Default::default(),
+            plugin_ui: Default::default(),
             runtime,
         }
     }
@@ -367,6 +374,7 @@ impl Server {
             motd: Motd::default(),
             day_night: Default::default(),
             bots: Default::default(),
+            plugin_ui: Default::default(),
             runtime,
         }
     }

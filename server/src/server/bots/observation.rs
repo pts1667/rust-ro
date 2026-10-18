@@ -1,4 +1,6 @@
 //! What a bot sees: the whole map instance it stands on, nothing is hidden by a field of view.
+use std::collections::BTreeMap;
+
 use models::enums::cell::CellType;
 use models::enums::class::JobName;
 use models::enums::item::EquipmentLocation;
@@ -15,7 +17,7 @@ use crate::server::Server;
 use crate::server::model::game_systems::PlayerTradePhase;
 use crate::server::model::map_regions::{self, MapRegions};
 use crate::server::model::quest::quest_definition;
-use crate::server::script::skill::actor::NpcSkillState;
+use crate::server::script::skill::actor::{INVISIBLE_NPC_SPRITE, NpcSkillState};
 use crate::server::service::quest_service::quest_view;
 use crate::server::service::status_service::StatusService;
 use crate::server::model::movement::Movable;
@@ -25,14 +27,9 @@ use crate::server::state::mob::{Mob, MobAction};
 use crate::server::state::server::ServerState;
 use crate::util::coordinate;
 
-/// Sprite a client draws as nothing. NPCs with it are still clicked (machines, switches) unless they only run timers or a
-/// touch area.
-const INVISIBLE_NPC_SPRITE: u16 = 111;
-
 /// Whether the bot lists `npc`: what a player can talk to, and hidden NPCs that host a waiting room (the queue of a job test).
 fn listed_npc(npc: &NpcSkillState, hosts_waiting_room: bool) -> bool {
-    let touch_only = npc.sprite == INVISIBLE_NPC_SPRITE && (npc.script.x_size > 0 || npc.script.y_size > 0);
-    (!npc.hidden && !touch_only) || hosts_waiting_room
+    (!npc.hidden && !npc.is_touch_area()) || hosts_waiting_room
 }
 
 #[derive(Debug, Serialize)]
@@ -325,6 +322,30 @@ pub struct GameView {
     pub companions: CompanionsView,
     #[serde(flatten)]
     pub commerce: CommerceView,
+    /// What the plugins show the bot, by plugin name: the windows they opened for it, what they chose to let bots observe,
+    /// and the actions they offer (`plugin_ui`, `plugin`). Plugins with none of these are left out.
+    pub plugins: BTreeMap<String, PluginView>,
+}
+
+#[derive(Debug, Serialize, Default)]
+pub struct PluginView {
+    pub windows: Vec<plugin_ui::Window>,
+    pub data: BTreeMap<String, serde_json::Value>,
+    pub actions: Vec<script_sdk::BotActionInfo>,
+}
+
+fn plugins_view(server: &Server, char_id: u32) -> BTreeMap<String, PluginView> {
+    let mut plugins: BTreeMap<String, PluginView> = BTreeMap::new();
+    for plugin in server.plugins().iter().filter(|plugin| !plugin.info.bot_actions.is_empty()) {
+        plugins.entry(plugin.name().to_string()).or_default().actions = plugin.info.bot_actions.clone();
+    }
+    for open in server.plugin_ui().windows(char_id) {
+        plugins.entry(open.plugin).or_default().windows.push(open.window);
+    }
+    for (plugin, data) in server.plugin_ui().observations(char_id) {
+        plugins.entry(plugin).or_default().data = data;
+    }
+    plugins
 }
 
 #[derive(Debug, Serialize)]
@@ -807,6 +828,7 @@ pub fn observe(server: &Server, state: &ServerState, char_id: u32, tick: u128) -
         duel_invitation: server.duels().invitation_of(char_id).is_some(),
         companions: companions_view(character, tick),
         commerce: commerce_view(state, character),
+        plugins: plugins_view(server, char_id),
     };
     view.skills = skill_views(character);
     view.party = party_view(state, character);

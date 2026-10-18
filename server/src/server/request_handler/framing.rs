@@ -129,6 +129,7 @@ impl ClientFrames {
                 .or_else(|| super::login::frame_length(id))
                 .or_else(|| super::quest::frame_length(id))
                 .or_else(|| super::instance::frame_length(id))
+                .or_else(|| super::plugin_ui::frame_length(id))
                 .or_else(|| crate::server::service::script_world_service::client_frame_length(id, self.packetver))
                 .or_else(|| self.lengths.get(&id).copied())
                 .ok_or_else(|| format!("Unknown client packet header {id:#06x}"))?;

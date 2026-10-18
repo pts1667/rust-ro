@@ -37,6 +37,8 @@ async-trait = "0.1.74"
 
 
 script-sdk = { path = "../lib/script-sdk" }
+plugin-ui = { path = "../lib/plugin-ui" }
+zstd = {workspace = true}
 script-runtime = { path = "../lib/script-runtime" }
 
 configuration = { path = "../lib/configuration" }
@@ -60,7 +62,6 @@ path = "../tools/map-cache/main.rs"
 
 [dev-dependencies]
 tower = "0.5"
-zstd = {workspace = true}
 
 [features]
 visual_debugger = ["eframe", "winit"]

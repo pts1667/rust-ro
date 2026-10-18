@@ -4,6 +4,7 @@ use crate::ctx::Ctx;
 use crate::flow::{Script, finish};
 use crate::item::{ItemBonus, ItemUse};
 use crate::plugin::HookFn;
+use crate::ui::{BotActionFn, WindowFn};
 use crate::transport::{Transport, WasmTransport};
 
 /// A script as a module exports it. Plain functions coerce to this, so scripts need no wrapping.
@@ -55,6 +56,8 @@ pub struct Tables<'a> {
     pub pet_programs: &'a [(u32, ItemFn)],
     pub plugin_init: Option<ScriptFn>,
     pub hooks: &'a [(HookKind, HookFn)],
+    pub windows: &'a [(&'a str, WindowFn)],
+    pub bot_actions: &'a [(&'a str, BotActionFn)],
 }
 
 /// Runs the entry the host named and returns the status it expects: `0` on success.
@@ -76,6 +79,14 @@ pub fn run(tables: Tables<'_>) -> i32 {
         Entry::Hook(hook) => {
             let observer = tables.hooks.iter().find(|(kind, _)| *kind == hook.kind()).map(|(_, observer)| *observer);
             finish(observer.ok_or_else(|| format!("Module does not observe {:?}", hook.kind()))?(&ctx, hook))
+        }
+        Entry::UiEvent(event) => {
+            let handler = tables.windows.iter().find(|(id, _)| *id == event.window).map(|(_, handler)| *handler);
+            finish(handler.ok_or_else(|| format!("Module handles no window {}", event.window))?(&ctx, event))
+        }
+        Entry::BotAction(action) => {
+            let handler = tables.bot_actions.iter().find(|(name, _)| *name == action.name).map(|(_, handler)| *handler);
+            finish(handler.ok_or_else(|| format!("Module has no bot action {}", action.name))?(&ctx, action))
         }
     });
     match result {

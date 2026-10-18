@@ -32,6 +32,41 @@ impl GameEventHandler for PluginHook {
     }
 }
 
+/// What the player did in a plugin window, as their client sent it.
+#[derive(Debug, PartialEq, Clone)]
+pub struct PluginUiEvent {
+    pub char_id: u32,
+    pub plugin: String,
+    pub event: plugin_ui::UiEvent,
+}
+
+impl GameEventHandler for PluginUiEvent {
+    fn required_character(&self) -> Option<u32> {
+        Some(self.char_id)
+    }
+
+    fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        server.plugin_ui_event(state, self.char_id, &self.plugin, self.event, None);
+        Ok(())
+    }
+}
+
+/// A plugin window handler or bot action ended: the next one waiting for that plugin and character starts.
+#[derive(Debug, PartialEq, Clone)]
+pub struct PluginJobDone {
+    pub char_id: u32,
+    pub plugin: String,
+}
+
+impl GameEventHandler for PluginJobDone {
+    fn handle(self, server: &Server, state: &mut ServerState, _tick: u128) -> Result<(), String> {
+        if let Some(job) = server.plugin_ui().finish(self.char_id, &self.plugin) {
+            server.start_plugin_job(state, self.char_id, &self.plugin, job);
+        }
+        Ok(())
+    }
+}
+
 #[derive(Debug, PartialEq, Clone)]
 pub struct ScriptWarp {
     pub char_id: u32,

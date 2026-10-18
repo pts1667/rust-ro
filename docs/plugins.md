@@ -1,8 +1,9 @@
 # Plugins
 
 A plugin adds NPCs, events, reactions and rule changes to a server without editing the base game. It is a Wasm script module
-in its own folder, turned on by one line of configuration. Design and rationale: [ADR 7](adr/7-plugins.md). The example is
-`double_xp` (`scripts/plugins/double_xp`, installed in `config/plugins/double_xp`).
+in its own folder, turned on by one line of configuration. Design and rationale: [ADR 7](adr/7-plugins.md). The examples are
+`double_xp` (`scripts/plugins/double_xp`, installed in `config/plugins/double_xp`) and `ui_shop`, which opens its own shop
+window ([plugin UI](plugin-ui.md)).
 
 ## For operators
 
@@ -27,7 +28,8 @@ Plugins are listed under `scripting` in `config.json`, and only listed, enabled 
 
 `config.template.json` ships `double_xp` listed and disabled. To try it, set `"enabled": true` (or write `"plugins": ["double_xp"]`)
 and restart: the server announces the event, the Rate Clerk stands in Prontera (161, 186), monsters give 200% experience and
-150% drop chances. Its settings are in `config/plugins/double_xp/config.json`.
+150% drop chances. Its settings are in `config/plugins/double_xp/config.json`. `ui_shop` ships listed and disabled too: its Curio
+Trader stands in Prontera (158, 186) and needs nostalro-client to draw its window.
 
 ### Package layout
 ```
@@ -36,6 +38,7 @@ config/plugins/<name>/
   npcs.json       optional: NPCs to place
   events.json     optional: event labels to register
   config.json     optional: the plugin's settings, any JSON
+  ui/             optional: images of its windows and overheads, served to clients at /data/plugin/<name>/
 ```
 
 ### Capabilities
@@ -51,8 +54,10 @@ log.
 | `Rates` | the server's experience and drop rates |
 | `Accounts` | permission groups and account data |
 | `Broadcast` | announcements to a map or the whole server |
+| `Interface` | plugin windows and overhead notifications ([plugin UI](plugin-ui.md)) |
 
-Reads (character info, items, time, map users...), the plugin's own variables, timers and events need no capability.
+Reads (character info, items, time, map users...), the plugin's own variables, timers, events and what it shows bots need no
+capability.
 
 ### Settings
 | Setting | Default | |
@@ -84,8 +89,8 @@ serde = { version = "1.0", features = ["derive"] }
 the folder are written by hand. A plugin can also be built outside this repository, against the same `script-sdk-2`, and dropped
 in a folder.
 
-`src/lib.rs` declares the plugin with `plugin_module!`. Every section is required, empty ones included; NPC and event names
-must be sorted.
+`src/lib.rs` declares the plugin with `plugin_module!`. Every section up to `interceptors` is required, empty ones included;
+`windows` and `bot_actions` are optional ([plugin UI](plugin-ui.md)). NPC and event names must be sorted.
 ```rust
 use script_sdk_2::{Ctx, Hook, Interception, Script, Verdict};
 
@@ -170,6 +175,12 @@ Plugins are asked in order, each seeing the previous answer; the first refusal w
 the player, except for `ExpGain`, which happens on every kill and stays silent. A verdict of the wrong kind, a trap or an overrun counts as a failure: the decision goes on as if the plugin had
 allowed it, and after `interceptor_failures` failures that interceptor is turned off until restart. Static state in the module
 does not survive a failure: the instance is rebuilt.
+
+### Windows, overheads and bots
+With the `Interface` capability a plugin opens its own windows (text, tables, images, item icons, buttons, inputs) and handles
+their events in `windows { "id" => handler }`, and draws notifications above units with `ctx.ui().overhead(..)`. It also chooses
+what bots observe (`ctx.bot().observe`) and which actions they may run (`bot_actions { }`). All of it is in
+[plugin UI](plugin-ui.md).
 
 ### Limits
 - 1 MiB of linear memory, 10,000 host calls and `cpu_budget_ms` of CPU per run (waiting for the host is free).

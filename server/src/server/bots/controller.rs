@@ -7,7 +7,7 @@ use serde_json::{Value, json};
 use tokio::time::{Instant, sleep, timeout};
 
 use super::combat::DuelRequest;
-use super::command::{BotCommand, BotRequest, Deal, DialogInput, PathQuery};
+use super::command::{BotCommand, BotRequest, Deal, DialogInput, PathQuery, PluginRequest};
 use super::commerce::{BuyingLine, CartMove, StoreAction, VendingLine};
 use super::companions::{CompanionAction, HomunculusAction, MercenaryAction, Order, PetAction};
 use super::dialog::Prompt;
@@ -192,6 +192,25 @@ pub enum Action {
     },
     Stop,
     Respawn,
+    /// Acts in a window a plugin opened for the bot: presses a button, submits an input, picks a table row, or closes it.
+    PluginUi {
+        plugin: String,
+        window: String,
+        #[serde(default)]
+        widget: String,
+        kind: plugin_ui::EventKind,
+        #[serde(default)]
+        row: Option<String>,
+        #[serde(default)]
+        inputs: std::collections::BTreeMap<String, plugin_ui::InputValue>,
+    },
+    /// Runs an action a plugin offers to bots, as listed in the observation.
+    Plugin {
+        plugin: String,
+        name: String,
+        #[serde(default)]
+        args: Value,
+    },
     DialogNext,
     DialogChoose {
         option: u8,
@@ -988,6 +1007,18 @@ impl BotController {
                 self.run(&bot, BotRequest::Stop).await
             }
             Action::Respawn => self.run(&bot, BotRequest::Respawn).await,
+            Action::PluginUi { plugin, window, widget, kind, row, inputs } => {
+                let event = plugin_ui::UiEvent { window, widget, kind, row, inputs };
+                let mut reply = self.run(&bot, BotRequest::Plugin(PluginRequest::Ui { plugin, event })).await?;
+                reply["action"] = json!("plugin_ui");
+                Ok(reply)
+            }
+            Action::Plugin { plugin, name, args } => {
+                let args = if args.is_null() { "{}".to_string() } else { args.to_string() };
+                let request = PluginRequest::Action { plugin: plugin.clone(), name: name.clone(), args };
+                let reply = self.run(&bot, BotRequest::Plugin(request)).await?;
+                Ok(json!({ "action": "plugin", "plugin": plugin, "name": name, "reply": reply }))
+            }
             Action::DialogNext => self.answer(&bot, DialogInput::Next).await,
             Action::DialogChoose { option } => self.answer(&bot, DialogInput::Choose(option)).await,
             Action::DialogNumber { value } => self.answer(&bot, DialogInput::Number(value)).await,

@@ -57,6 +57,9 @@ mod script_map_command_tests;
 #[path = "world_party_test.rs"]
 mod world_party_tests;
 
+#[path = "quest_offer_test.rs"]
+mod quest_offer_tests;
+
 #[path = "mob_command_test.rs"]
 mod mob_command_tests;
 
@@ -77,6 +80,9 @@ mod bot_commerce_tests;
 
 #[path = "bot_interaction_test.rs"]
 mod bot_interaction_tests;
+#[cfg(not(feature = "integration_tests"))]
+#[path = "plugin_ui_test.rs"]
+mod plugin_ui_tests;
 
 #[path = "bot_companion_test.rs"]
 mod bot_companion_tests;
@@ -133,6 +139,16 @@ fn before_each_with_latch(latch_size: usize) -> ServerServiceTestContext {
 }
 
 fn before_each_with_repository(latch_size: usize, repository: Arc<dyn crate::repository::Repository>, force_no_delay: bool) -> ServerServiceTestContext {
+    before_each_with_npc_vm(latch_size, repository, force_no_delay, crate::tests::common::test_npc_vm())
+}
+
+/// A context whose NPC VM is `npc_vm`, for tests that load plugins.
+fn before_each_with_npc_vm(
+    latch_size: usize,
+    repository: Arc<dyn crate::repository::Repository>,
+    force_no_delay: bool,
+    npc_vm: Arc<crate::server::script::ScriptVm>,
+) -> ServerServiceTestContext {
     common::before_all();
     let (client_notification_sender, client_notification_receiver) = create_mpsc::<Notification>();
     let (persistence_event_sender, persistence_event_receiver) = create_mpsc::<PersistenceEvent>();
@@ -150,7 +166,7 @@ fn before_each_with_repository(latch_size: usize, repository: Arc<dyn crate::rep
         GlobalConfigService::instance(),
         server_task_queue.clone(),
         movement_task_queue.clone(),
-        crate::tests::common::test_npc_vm(),
+        npc_vm.clone(),
         InventoryService::new(
             client_notification_sender.clone(),
             persistence_event_sender.clone(),
@@ -171,7 +187,7 @@ fn before_each_with_repository(latch_size: usize, repository: Arc<dyn crate::rep
             GlobalConfigService::instance(),
             repository.clone(),
             server_task_queue.clone(),
-            crate::tests::common::test_npc_vm(),
+            npc_vm.clone(),
         ),
         CharacterService::new(
             client_notification_sender.clone(),

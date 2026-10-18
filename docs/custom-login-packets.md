@@ -1,6 +1,7 @@
 # Custom login packets
 
-These packets are not part of the client. Their ids (`0xC3E0`–`0xC3E3`) lie in a range that a scan of the rathena source and this repo's packet table found unused, so a client that knows only the stock packets never sends them. A custom client or bot sends them to the login port, the same connection that takes `CA_LOGIN` (`0x0064`). The official client never sends them.
+These packets are not part of the client. Their ids (`0xC3E0`–`0xC3E3`) lie in a range that a scan of the rathena source and this repo's packet table found unused, so a client that knows only the stock packets never sends them. A custom client or bot sends them to the login port, the same connection that takes `CA_LOGIN` (`0x0064`). The official client never sends them. The plugin UI packets continue the range on the map connection, `0xC3E4`–`0xC3E7`
+([plugin UI](plugin-ui.md#packets)).
 
 ## `CA_CREATE_ACCOUNT` (`0xC3E0`, client to login)
 

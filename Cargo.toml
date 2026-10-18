@@ -6,6 +6,7 @@ members = [
     "lib/database",
     "lib/script-sdk",
     "lib/script-sdk-2",
+    "lib/plugin-ui",
     "lib/script-runtime"
 ]
 

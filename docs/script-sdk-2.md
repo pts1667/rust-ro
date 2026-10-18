@@ -200,7 +200,18 @@ let drops = ctx.rates().get(Rate::Drop)?;        // the effective rate, all plug
 - `$`, `$@`, `#` and `##` variables are stored under the plugin's name, character variables are shared.
 - Interceptors cannot call the host at all. They read their settings with `script_sdk_2::configured::<T>()`.
 
-The plugin layer is `lib/script-sdk-2/src/plugin.rs`; packaging, hooks, interceptors and the operator side are in [plugins.md](plugins.md).
+With the `Interface` capability a plugin also has its own windows and overhead notifications, and it decides what bots see of it:
+
+```rust
+ctx.ui().open(&Window::new("shop", "Shop", 300, Node::column([..])))?;  // events go to `windows { "shop" => handler }`
+ctx.ui().close("shop")?;
+ctx.ui().overhead(Above::Player, &Overhead::text("Hi!", None, 1500).rise(20.0, 800))?;
+ctx.bot().observe("stock", &stock)?;   // in the bots' observation, under plugins.<name>.data
+ctx.bot().reply(&answer)?;             // the answer to a bot action declared in `bot_actions { }`
+```
+
+The plugin layer is `lib/script-sdk-2/src/plugin.rs` and `ui.rs`. Packaging, hooks, interceptors and the operator side are in
+[plugins.md](plugins.md); windows, overheads and bots are in [plugin-ui.md](plugin-ui.md).
 
 ## Not covered yet
 

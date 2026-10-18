@@ -59,6 +59,17 @@ fn plugins_are_refused_what_they_did_not_declare_and_answered_their_config_local
     assert_eq!(WasmRuntime::admit(Some(&policy(&[])), Request::Read("$x".into())), Ok(Request::Read("$p::x".into())));
 }
 
+#[test]
+fn ui_calls_carry_the_plugin_name_and_are_refused_to_base_modules() {
+    let open = Request::Call { function: Function::UiOpen, arguments: vec!["{}".into(), "other".into()] };
+    let admitted = WasmRuntime::admit(Some(&policy(&[Capability::Interface])), open.clone()).unwrap();
+    assert_eq!(admitted, Request::Call { function: Function::UiOpen, arguments: vec!["{}".into(), "p".into()] }, "a forged owner is replaced");
+    assert!(WasmRuntime::admit(Some(&policy(&[])), open.clone()).unwrap_err().unwrap_err().contains("Interface"));
+    assert!(WasmRuntime::admit(None, open).unwrap_err().is_err());
+    let reply = Request::Call { function: Function::BotReply, arguments: vec!["1".into()] };
+    assert_eq!(WasmRuntime::admit(Some(&policy(&[])), reply), Ok(Request::Call { function: Function::BotReply, arguments: vec!["1".into(), "p".into()] }));
+}
+
 /// A guest whose interceptor answers what its data segment holds at offset 0, after spinning `spin` times through `$work`.
 fn interceptor(body: &str) -> String {
     format!(

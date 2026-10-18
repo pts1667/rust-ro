@@ -87,6 +87,8 @@ game_events! {
     ScriptNpcEvent(ScriptNpcEvent),
     PluginInitialization(PluginInitialization),
     PluginHook(PluginHook),
+    PluginUiEvent(PluginUiEvent),
+    PluginJobDone(PluginJobDone),
     ScriptLogoutAction(crate::server::model::character_lifecycle::ScriptLogoutAction),
     ScriptLogoutCompleted(crate::server::model::character_lifecycle::ScriptLogoutCompleted),
     CharacterSelectionGate(crate::server::model::character_lifecycle::CharacterSelectionGate),

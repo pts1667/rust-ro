@@ -1,15 +1,20 @@
 //! Quest log (`quest.cpp`): adding, completing and erasing quests, hunting counters and the quest icons of NPCs.
 //! Quest content (the NPCs that hand out quests) is written with the quest functions of the script SDK.
 
-use script_sdk::{Function, Reply, Value};
+use std::collections::HashMap;
+use std::sync::{OnceLock, RwLock};
+
+use script_sdk::{Entry, Function, Reply, Value};
 
 use crate::server::Server;
 use crate::server::model::map_instance::MapInstanceKey;
 use crate::server::model::quest::{
     LocalClock, QuestCheck, QuestDefinition, QuestEntry, QuestError, QuestKill, QuestLog, QuestObjective, QuestState, quest_definition,
+    quests_offered_by,
 };
 use crate::server::model::quest_info::{Condition, ConditionEnvironment, QuestInfoEntry};
 use crate::server::script::ScriptRequest;
+use crate::server::script::entries::NamedScript;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::quest_packets::{self as wire, ObjectiveView, QuestView};
 use crate::server::state::character::Character;
@@ -22,9 +27,35 @@ const FALLBACK_MOB_ID: u32 = 1002;
 const ICON_QUEST: u16 = 0;
 const MARK_MAX: i32 = 4;
 
+/// `QTYPE_QUEST` with `QMARK_YELLOW`: the "!" of an NPC from `config/quest_offers.json`. The colour is never 0, which
+/// nostalro-client reads as "no icon".
+const OFFER_ICON: (u16, u8) = (1, 1);
+
 /// The `questinfo` icon ids of the 2012 clients are the script ids shifted by one (0 shows nothing).
 fn client_icon(icon: i32) -> u16 {
     if (0..=7).contains(&icon) { icon as u16 + 1 } else { ICON_QUEST }
+}
+
+/// The quests the NPC script `entry_id` starts, remembered per handle: icons are refreshed on every quest kill.
+fn offered_by_script(entry_id: u32) -> &'static [u32] {
+    static OFFERS: OnceLock<RwLock<HashMap<u32, &'static [u32]>>> = OnceLock::new();
+    let offers = OFFERS.get_or_init(Default::default);
+    if let Some(quests) = offers.read().unwrap().get(&entry_id) {
+        return quests;
+    }
+    let quests = match crate::server::script::entries::resolve(entry_id) {
+        Some(NamedScript { module, entry: Entry::Npc(name) }) => quests_offered_by(&module, &name),
+        _ => &[],
+    };
+    offers.write().unwrap().insert(entry_id, quests);
+    quests
+}
+
+/// An NPC of `quest_offers.json` shows its "!" while the player has none of its quests in the log. Its quests are
+/// alternatives (job tests), steps that `changequest` replaces, or repeatable hunts erased once handed in, so any
+/// one of them in the log, started or completed, means the player took the NPC up already.
+fn offers_quest(log: &QuestLog, offered: &[u32]) -> bool {
+    !offered.is_empty() && offered.iter().all(|quest_id| log.find(*quest_id).is_none())
 }
 
 fn objective_text(objective: &QuestObjective) -> String {
@@ -256,20 +287,33 @@ impl Server {
         )
     }
 
-    /// Shows or hides the quest icons above the NPCs of the map the character stands on (`pc_show_questinfo`).
+    /// Shows or hides the quest icons above the NPCs of the map the character stands on (`pc_show_questinfo`). NPCs
+    /// whose script registered `questinfo` follow it; the others show a "!" while they offer a quest (`offers_quest`).
     pub(crate) fn show_quest_icons(&self, state: &mut ServerState, char_id: u32) {
         let Some(character) = state.get_character(char_id) else { return };
         let key = character.map_instance_key.clone();
         let Some(instance) = state.get_map_instance(key.map_name(), key.map_instance()) else { return };
         let conditions = CharacterConditions { server: self, character };
+        let instance_state = instance.state();
+        let npcs = &instance_state.script_skill_state.npcs;
+        let registered: HashMap<u32, &[QuestInfoEntry]> = state.quest_infos.on_map(key.map_name(), key.map_instance()).collect();
         let mut wanted = Vec::new();
-        for (npc_id, entries) in state.quest_infos.on_map(key.map_name(), key.map_instance()) {
-            let Some((x, y, hidden)) = instance.state().script_skill_state.npcs.get(&npc_id).map(|npc| (npc.x, npc.y, npc.hidden)) else { continue };
-            let shown = (!hidden)
+        for (npc_id, entries) in &registered {
+            let Some(npc) = npcs.get(npc_id) else { continue };
+            let shown = (!npc.hidden)
                 .then(|| entries.iter().find(|entry| entry.condition.as_ref().map_or(true, |condition| condition.evaluate(&conditions).is_ok_and(|value| value != 0))))
                 .flatten();
-            wanted.push((npc_id, x, y, shown.map(|entry| (entry.icon, entry.color))));
+            wanted.push((*npc_id, npc.x, npc.y, shown.map(|entry| (entry.icon, entry.color))));
         }
+        for npc in npcs.values().filter(|npc| !registered.contains_key(&npc.id) && !npc.is_touch_area()) {
+            let offered = offered_by_script(npc.script.entry_id);
+            if offered.is_empty() {
+                continue;
+            }
+            let shown = !npc.hidden && offers_quest(&character.game_systems.quests, offered);
+            wanted.push((npc.id, npc.x, npc.y, shown.then_some(OFFER_ICON)));
+        }
+        drop(instance_state);
         let Some(character) = state.characters_mut().get_mut(&char_id) else { return };
         for (npc_id, x, y, icon) in wanted {
             let shown = character.game_systems.quest_icons.get(&npc_id).copied();

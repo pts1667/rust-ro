@@ -43,7 +43,7 @@ impl Server {
 
     /// A plugin run that belongs to no NPC: its initialisation or a hook. The script carries the plugin's init handle, which is
     /// how the game loop recognises the requests of such runs.
-    fn plugin_host(&self, server: Arc<Server>, plugin: &LoadedPlugin, session: Arc<Session>) -> NpcScriptHost {
+    pub(crate) fn plugin_host(&self, server: Arc<Server>, plugin: &LoadedPlugin, session: Arc<Session>) -> NpcScriptHost {
         let script = Script {
             id: 0,
             scope_instance: 0,

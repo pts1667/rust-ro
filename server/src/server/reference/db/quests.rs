@@ -48,16 +48,7 @@ fn texts() -> &'static BTreeMap<String, QuestText> {
     TEXTS.get_or_init(|| serde_json::from_str(include_str!("../../../../../config/quest_text.json")).expect("Embedded quest text is invalid"))
 }
 
-static OFFERS: OnceLock<BTreeMap<String, BTreeMap<String, Vec<u32>>>> = OnceLock::new();
-
-/// The quests the NPC `name` of script `module` starts, from `config/quest_offers.json`.
-pub fn offered_by(module: &str, name: &str) -> &'static [u32] {
-    OFFERS
-        .get_or_init(|| serde_json::from_str(include_str!("../../../../../config/quest_offers.json")).expect("Embedded quest offers are invalid"))
-        .get(module)
-        .and_then(|npcs| npcs.get(name))
-        .map_or(&[], Vec::as_slice)
-}
+pub use crate::server::model::quest::quests_offered_by as offered_by;
 
 pub fn link(id: u32) -> Link {
     let title = quest_definition(id).map_or_else(|| id.to_string(), |quest| quest.title.clone());

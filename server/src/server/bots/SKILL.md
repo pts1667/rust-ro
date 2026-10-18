@@ -171,7 +171,8 @@ map or to everyone: a test starting, the moves of a dance). What the bot says it
 the chat window, come back as `system`.
 `quests` is the quest window: the quests started and not completed, with their `title`, whether they are `active`, the seconds
 left in `expires_in` (`null` for no time limit) and the monsters still to hunt in `objectives` (`done` of `total`). `npcs[].quest_icon`
-is the icon a client shows above an NPC that has a quest, or the next step of one, for the bot. `npcs[].invisible` marks an NPC
+is the icon a client shows above an NPC that has a quest, or the next step of one, for the bot. A quest giver whose script sets
+no icon of its own shows it until the bot has one of its quests in the log, started or completed. `npcs[].invisible` marks an NPC
 with the invisible sprite: a client shows nothing there but a click still talks to it (a machine, a switch, a blackboard). Some
 only run timers and answer nothing. Invisible NPCs with a touch area are left out: they are stepped on, not talked to.
 `players[]` are the other characters on the map: what their sprite shows (`job`, `sex`, `dead`, `action`, what they hit in
@@ -181,7 +182,7 @@ they opened (`chat_room`), and for the members of the bot's party (`party: true`
 `inventory[].index` is what the item actions take. `skills` lists what the bot knows, see Skills. `storage` is `null` unless a Kafra opened
 the storage, see Storage. `party`, `party_invitation`, `booking`, `booking_results` and `trade` are described in their sections,
 `guild`, `guild_invitation`, `friends`, `friend_request` and `chat_room` in Guilds, friends and chat rooms, `skill_menu` and `crafting` in
-Skills, `duel`, `duel_invitation` and `attackable` in Fighting players, `companions` in Pets, homunculus and mercenary, and `cart`, `vending`, `buying`, `buying_slots`, `vendors` and `buyers` in Carts and stores.
+Skills, `duel`, `duel_invitation` and `attackable` in Fighting players, `companions` in Pets, homunculus and mercenary, and `cart`, `vending`, `buying`, `buying_slots`, `vendors` and `buyers` in Carts and stores, and `plugins` in Plugins.
 
 ## Actions
 
@@ -221,6 +222,7 @@ Send them as the body of `POST /bots/{name}/actions`, or over the WebSocket. `ty
 | `homunculus_feed` `homunculus_rename` `homunculus_delete` `homunculus_move` `homunculus_follow` `homunculus_attack` | `name` / `x`, `y` / `target`, `repeat` | Homunculus, see Pets, homunculus and mercenary |
 | `mercenary_move` `mercenary_follow` `mercenary_attack` `mercenary_dismiss` | `x`, `y` / `target`, `repeat` | Mercenary, see Pets, homunculus and mercenary |
 | `command` | `text` (`@rates`) | An `@` command, see Commands |
+| `plugin_ui` `plugin` | `plugin`, `window`, `widget`, `kind`, `row`, `inputs` / `plugin`, `name`, `args` | Plugin windows and plugin actions, see Plugins |
 
 A walk can be as long as the map: routes the game cannot walk in one go (about 100 cells) are walked in legs, one after the other.
 Without `wait`, the first leg starts and the rest follows in the background until another command of the bot takes over.
@@ -524,6 +526,46 @@ a missing item).
 ones of its `skills` list, fixed by the contract, there is nothing to learn; they are cast with `skill` like the homunculus ones, with
 `"caster": "mercenary"`.
 
+### Plugins
+
+Plugins can open their own windows (a shop, a board, a quest tracker) and offer bots actions of their own. What they show the bot is in
+`plugins` of the observation, by plugin name; a plugin with nothing to show is left out:
+
+```json
+"plugins": {
+  "ui_shop": {
+    "windows": [{"id": "shop", "title": "Curio Trader", "width": 340, "closable": true, "node": {"type": "column", "children": [...]}}],
+    "data": {"stock": [{"item_id": 501, "name": "Red Potion", "price": 40}]},
+    "actions": [{"name": "buy", "description": "Buys from the Curio Trader: {item_id, amount}"}]
+  }
+}
+```
+
+- `windows` are what a player's client draws: a tree of nodes (`column`, `row`, `text`, `image`, `item_icon`, `button`, `number_input`,
+  `text_input`, `table`, `gauge`, `spacer`, `separator`). The ids of buttons, inputs and tables are what `plugin_ui` takes; the node
+  reference is in `docs/plugin-ui.md`.
+- `data` is whatever the plugin chose to let bots read, under keys it picked.
+- `actions` are the `plugin` actions it offers, with what they take.
+
+`plugin_ui` does what a player does in a window: `kind` is `click` (a `button`), `submit` (an input), `select` (a row of a selectable
+`table`, named by `row`) or `closed` (leave `widget` out). `inputs` carries the values of the window's inputs, `{"amount": 3}`; inputs
+left out are absent from the event, and values are clamped to the input's bounds. The answer is the window after the plugin handled it
+(`window`, `null` once closed), or why it was refused (no such window or widget, a disabled button, the plugin failed).
+
+```json
+{"type": "plugin_ui", "plugin": "ui_shop", "window": "shop", "widget": "buy:501", "kind": "click", "inputs": {"amount": 3}}
+```
+
+`plugin` runs an action of `actions`: `args` is any JSON the action describes. The answer is `{"action": "plugin", "plugin", "name",
+"reply"}`, `reply` being what the plugin answered (`null` when it said nothing), or the plugin's error.
+
+```json
+{"type": "plugin", "plugin": "ui_shop", "name": "buy", "args": {"item_id": 501, "amount": 3}}
+```
+
+The events of a plugin window and the actions of one plugin run one at a time per bot: a few more wait their turn, beyond that they are
+refused. Each must answer within 5 seconds. Notifications a plugin draws above units near the bot come as `plugin_overhead` events.
+
 ### Commands
 
 `command` (`text`, such as `"@rates"`) runs an `@` command like a player typing it, in the game loop, and answers
@@ -592,6 +634,7 @@ Each bot keeps the last 500 things that happened to it, numbered by `seq`:
 | `party_member_joined`, `party_member_left` | `name` |
 | `party_leader_changed` | `name` of the new leader |
 | `trade_requested` | `from`: someone next to the bot asks for a trade, answer with `trade_accept` or `trade_decline` |
+| `plugin_overhead` | A plugin drew a notification above a unit near the bot: `plugin`, `unit_id` (a character id for players), `text`, `image` (its first frame) |
 
 `GET /bots/{name}/events?after=12` answers `{"events": [{"seq": 13, "at": 1760000000000, "event": "damaged", ...}], "last": 13}`, `at`
 being milliseconds since the Unix epoch. Keep `last` and ask with it next time. Events are kept while the bot is out of the game too,

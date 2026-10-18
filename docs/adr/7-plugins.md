@@ -139,7 +139,8 @@ An interceptor is a pure function the game loop calls and waits for, to change o
 
 ## Out of scope
 - **Custom packets.** A plugin that adds client packets would need its ids registered in the packet framing table
-  (unregistered headers drop the connection) and a reserved range away from the login extension (`0xC3E0`-`0xC3E3`). A later ADR.
+  (unregistered headers drop the connection) and a reserved range away from the login extension (`0xC3E0`-`0xC3E3`). Plugin
+  windows and overheads came with [ADR 8](8-plugin-ui.md), on `0xC3E4`-`0xC3E7`; plugins still cannot define packets.
 - **Hot reload.** Plugins load at boot; changing one means a restart.
 - **Skills.** Skills are native Rust implementing the `Skill` trait in `lib/skills`. A plugin can react to a skill (hook), not
   add one.

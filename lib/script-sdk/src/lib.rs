@@ -3,7 +3,8 @@ use std::fmt::{Display, Formatter};
 use serde::{Deserialize, Serialize};
 
 mod plugin;
-pub use plugin::{Capabilities, Capability, Hook, HookKind, Interception, InterceptorKind, LevelKind, PluginInfo, Rate, Verdict, PLUGIN_BUFFER_BYTES};
+pub use plugin_ui;
+pub use plugin::{BotAction, BotActionInfo, Capabilities, Capability, Hook, HookKind, Interception, InterceptorKind, LevelKind, PluginInfo, Rate, Verdict, PLUGIN_BUFFER_BYTES};
 
 /// ABI of script modules. The host passes the script as an [`Entry`] and the module exports `script_run`. Version 1, which
 /// exported one function per script id, is retired.
@@ -31,6 +32,10 @@ pub enum Entry {
     PluginInit,
     /// A hook a plugin declared, with what happened.
     Hook(Hook),
+    /// The player acted in a window of the plugin, which checked the event against the window first.
+    UiEvent(plugin_ui::UiEvent),
+    /// A bot asked for an action the plugin declared.
+    BotAction(BotAction),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -453,6 +458,16 @@ pub enum Function {
     SetRate,
     /// `GetRate(rate name)`: the percent the plugins together apply to a rate.
     GetRate,
+    /// `UiOpen(window JSON)`: opens or replaces a plugin window for the attached player (`plugin_ui::Window`).
+    UiOpen,
+    /// `UiClose(window id)`.
+    UiClose,
+    /// `UiOverhead(unit id, overhead JSON)`: an overhead notification above a unit, 0 for the attached player.
+    UiOverhead,
+    /// `BotObserve(key, JSON)`: what bots observe of this plugin for the attached player under `key`; `null` removes it.
+    BotObserve,
+    /// `BotReply(JSON)`: the answer to the bot action being run.
+    BotReply,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

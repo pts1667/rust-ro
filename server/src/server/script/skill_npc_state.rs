@@ -13,6 +13,10 @@ use crate::server::model::map_item::MapItemType;
 use crate::server::model::script::Script;
 use crate::server::service::status_effect_service::{StatusChangeOutcome, StatusEffectService};
 
+/// `HIDDEN_NPC`: a client draws nothing. NPCs with it are still clicked (machines, switches) unless they only run timers or a
+/// touch area.
+pub const INVISIBLE_NPC_SPRITE: u16 = 111;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct NpcSkillState {
     pub script: std::sync::Arc<Script>,
@@ -105,6 +109,11 @@ impl NpcSkillState {
 
     fn matk(int: u16, divisor: u16) -> u16 {
         (u32::from(int) + u32::from(int / divisor).pow(2)).min(u32::from(u16::MAX)) as u16
+    }
+
+    /// An invisible area that runs when stepped on: nothing to draw or click.
+    pub fn is_touch_area(&self) -> bool {
+        self.sprite == INVISIBLE_NPC_SPRITE && (self.script.x_size > 0 || self.script.y_size > 0)
     }
 
     pub fn current_script(&self, map: &str) -> std::sync::Arc<Script> {

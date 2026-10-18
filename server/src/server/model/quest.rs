@@ -84,6 +84,16 @@ pub fn quest_definition(quest_id: u32) -> Option<&'static QuestDefinition> {
     quest_catalog().get(&quest_id)
 }
 
+/// The quests the NPC `name` of script `module` starts, from `config/quest_offers.json` (`tools/scripts-import/extract_quest_offers.py`).
+pub fn quests_offered_by(module: &str, name: &str) -> &'static [u32] {
+    static OFFERS: OnceLock<HashMap<String, HashMap<String, Vec<u32>>>> = OnceLock::new();
+    OFFERS
+        .get_or_init(|| serde_json::from_str(include_str!("../../../../config/quest_offers.json")).expect("Embedded quest offers are invalid"))
+        .get(module)
+        .and_then(|npcs| npcs.get(name))
+        .map_or(&[], Vec::as_slice)
+}
+
 /// The client names the states: 0 inactive, 1 active, 2 complete.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum QuestState {

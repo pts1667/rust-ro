@@ -27,7 +27,8 @@
     "cpu_budget_ms": 2000,
     "plugins_dir": "config/plugins",
     "plugins": [
-      { "name": "double_xp", "enabled": false }
+      { "name": "double_xp", "enabled": false },
+      { "name": "ui_shop", "enabled": false }
     ],
     "interceptor_deadline_us": 200,
     "interceptor_failures": 10

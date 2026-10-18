@@ -59,6 +59,7 @@ pub mod map;
 pub mod movement;
 pub(crate) mod player_trade;
 pub mod instance;
+pub mod plugin_ui;
 pub mod quest;
 pub mod script_operations;
 pub mod social;
@@ -85,6 +86,7 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
         || social::handle_raw(server.as_ref(), &context)
         || quest::handle_raw(server.as_ref(), &context)
         || instance::handle_raw(server.as_ref(), &context)
+        || plugin_ui::handle_raw(server.as_ref(), &context)
     {
         return;
     }

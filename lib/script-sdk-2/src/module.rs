@@ -125,10 +125,14 @@ macro_rules! pet_module {
 ///     events { "Rate Clerk::OnTimer3600000" => announce }
 ///     hooks { MobKilled => on_mob_killed }
 ///     interceptors { ExpGain => exp_gain }
+///     windows { "shop" => on_shop }
+///     bot_actions { "buy" => (bot_buy, "Buys an item: {item_id, amount}") }
 /// }
 /// ```
 ///
-/// `requires` and `capabilities` may be left out. NPC and event names must be unique and in ascending order.
+/// `requires` and `capabilities` may be left out, and so may `windows` (handlers of the plugin's windows, by window
+/// id) and `bot_actions` (actions offered to bots, with their description). NPC and event names must be unique and
+/// in ascending order.
 #[macro_export]
 macro_rules! plugin_module {
     (
@@ -144,6 +148,8 @@ macro_rules! plugin_module {
         events { $($event:literal => $event_script:path),* $(,)? }
         hooks { $($hook:ident => $hook_script:path),* $(,)? }
         interceptors { $($interceptor:ident => $interceptor_fn:path),* $(,)? }
+        $(windows { $($window:literal => $window_script:path),* $(,)? })?
+        $(bot_actions { $($action:literal => ($action_script:path, $action_description:literal)),* $(,)? })?
     ) => {
         const _: () = assert!($crate::registry::is_strictly_sorted(&[$($npc),*]), "NPC names must be unique and sorted");
         const _: () = assert!($crate::registry::is_strictly_sorted(&[$($event),*]), "Event names must be unique and sorted");
@@ -158,11 +164,15 @@ macro_rules! plugin_module {
             const NPCS: &[(&str, $crate::registry::ScriptFn)] = &[$(($npc, $npc_script)),*];
             const EVENTS: &[(&str, $crate::registry::ScriptFn)] = &[$(($event, $event_script)),*];
             const HOOKS: &[($crate::HookKind, $crate::HookFn)] = &[$(($crate::HookKind::$hook, $hook_script)),*];
+            const WINDOWS: &[(&str, $crate::WindowFn)] = &[$($(($window, $window_script)),*)?];
+            const BOT_ACTIONS: &[(&str, $crate::BotActionFn)] = &[$($(($action, $action_script)),*)?];
             $crate::registry::run($crate::registry::Tables {
                 npcs: NPCS,
                 events: EVENTS,
                 plugin_init: Some($init),
                 hooks: HOOKS,
+                windows: WINDOWS,
+                bot_actions: BOT_ACTIONS,
                 ..Default::default()
             })
         }
@@ -182,6 +192,8 @@ macro_rules! plugin_module {
                 capabilities: vec![$($($crate::Capability::$capability),*)?],
                 hooks: vec![$($crate::HookKind::$hook),*],
                 interceptors: vec![$($crate::InterceptorKind::$interceptor),*],
+                windows: vec![$($($window.into()),*)?],
+                bot_actions: vec![$($($crate::BotActionInfo { name: $action.into(), description: $action_description.into() }),*)?],
             })
         }
 

@@ -61,7 +61,7 @@ pub fn is_expected_rejection(error: &str) -> bool {
 
 #[path = "skill_npc_state.rs"]
 mod npc;
-pub use npc::NpcSkillState;
+pub use npc::{INVISIBLE_NPC_SPRITE, NpcSkillState};
 
 impl ScriptSkillActor {
     pub fn from_mob(mob: &Mob, map: String, instance: u8) -> Self {

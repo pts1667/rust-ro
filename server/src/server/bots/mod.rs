@@ -29,7 +29,8 @@ use std::sync::Arc;
 use std::time::Duration;
 
 pub(crate) use auth::ApiKey;
-pub use command::BotCommand;
+pub use command::{BotCommand, BotReply};
+pub(crate) use events::BotEventKind;
 #[cfg(test)]
 pub(crate) use combat::DuelRequest;
 #[cfg(test)]

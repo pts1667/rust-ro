@@ -5,7 +5,7 @@ use std::time::{Duration, Instant};
 use async_trait::async_trait;
 use configuration::configuration::{PluginSetting, ScriptingConfig};
 use script_runtime::Host;
-use script_sdk::{Capability, Entry, Function, Hook, HookKind, Interception, InterceptorKind, Reply, Request, Value};
+use script_sdk::{Capability, Entry, Function, Hook, HookKind, Interception, InterceptorKind, LevelKind, Reply, Request, Value};
 
 use super::*;
 use crate::server::boot::script_loader::ScriptLoader;
@@ -263,4 +263,113 @@ fn plugin_events_take_a_base_label_only_when_they_replace_it() {
     assert!(ScriptService::plugin_event_handles(&plugins, base.clone()).unwrap_err().contains("already defined"));
     plugins.list[0].events.get_mut("Rate Clerk::OnMinute00").unwrap().replaces = true;
     assert!(ScriptService::plugin_event_handles(&plugins, base).is_ok());
+}
+
+fn ui_shop() -> Plugins {
+    load(vec![PluginSetting::Name("ui_shop".into())]).unwrap()
+}
+
+/// The host of a player with `zeny`, the shop window open or not, who can carry anything.
+#[derive(Clone)]
+struct Shopper {
+    zeny: i32,
+    shop_open: i32,
+    requests: Arc<Mutex<Vec<Request>>>,
+}
+
+#[async_trait]
+impl Host for Shopper {
+    async fn invoke(&mut self, request: Request) -> Reply {
+        let reply = match &request {
+            Request::Read(name) if name == "Zeny" => Ok(Value::Number(self.zeny)),
+            Request::Read(name) if name == "@ui_shop_open" => Ok(Value::Number(self.shop_open)),
+            Request::VariableRead { name, .. } if name.ends_with("ui_shop_open") => Ok(Value::Number(self.shop_open)),
+            Request::Call { function: Function::CheckWeight, .. } => Ok(Value::Number(1)),
+            Request::Call { function: Function::GetItemName, .. } => Ok(Value::String("Red Potion".into())),
+            _ => Ok(Value::default()),
+        };
+        self.requests.lock().unwrap().push(request);
+        reply
+    }
+}
+
+async fn shop_run(zeny: i32, shop_open: i32, entry: Entry) -> (Vec<Request>, Result<(), String>) {
+    let host = Shopper { zeny, shop_open, requests: Default::default() };
+    let plugins = ui_shop();
+    let (host, result) = plugins.iter().next().unwrap().runtime.execute_named(host, &entry).await;
+    let requests = host.requests.lock().unwrap().clone();
+    (requests, result)
+}
+
+fn ui_call(requests: &[Request], wanted: Function) -> Vec<Vec<Value>> {
+    requests
+        .iter()
+        .filter_map(|request| match request {
+            Request::Call { function, arguments } if *function == wanted => Some(arguments.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+#[test]
+fn the_ui_example_declares_its_window_and_bot_action() {
+    let plugins = ui_shop();
+    let plugin = plugins.iter().next().unwrap();
+    assert_eq!(plugin.capabilities.iter().collect::<Vec<_>>(), [Capability::Economy, Capability::Interface]);
+    assert!(plugin.handles_window("shop"));
+    assert!(plugin.has_bot_action("buy"));
+    assert_eq!(plugins.observers(HookKind::LevelUp).count(), 1);
+}
+
+#[tokio::test]
+async fn talking_to_the_trader_opens_the_shop_window_and_shows_bots_the_stock() {
+    let (requests, result) = shop_run(1_000, 0, Entry::Npc("Curio Trader".into())).await;
+    result.unwrap();
+    let opened = ui_call(&requests, Function::UiOpen);
+    assert_eq!(opened.len(), 1);
+    assert_eq!(opened[0][1], Value::from("ui_shop"), "the runtime names the plugin");
+    let window: plugin_ui::Window = serde_json::from_str(&opened[0][0].text()).unwrap();
+    assert_eq!(window.id, "shop");
+    assert!(matches!(window.widget("buy:501"), Some(plugin_ui::Node::Button { enabled: true, .. })));
+    assert!(matches!(window.widget("buy:505"), Some(plugin_ui::Node::Button { enabled: false, .. })), "4,000 zeny is more than the player has");
+    let stock = ui_call(&requests, Function::BotObserve);
+    assert_eq!(stock[0][0], Value::from("stock"));
+    assert!(stock[0][1].text().contains("\"item_id\":501"));
+}
+
+#[tokio::test]
+async fn a_buy_click_takes_the_zeny_gives_the_items_and_refreshes_the_window() {
+    let click = plugin_ui::UiEvent::click("shop", "buy:501").with_input("amount", plugin_ui::InputValue::Number(3));
+    let (requests, result) = shop_run(1_000, 1, Entry::UiEvent(click)).await;
+    result.unwrap();
+    assert!(requests.contains(&Request::Write { name: "Zeny".into(), value: Value::Number(880) }), "{requests:?}");
+    assert!(ui_call(&requests, Function::GetItem).contains(&vec![501.into(), 3.into()]));
+    let refreshed: plugin_ui::Window = serde_json::from_str(&ui_call(&requests, Function::UiOpen)[0][0].text()).unwrap();
+    assert!(serde_json::to_string(&refreshed).unwrap().contains("Bought 3 Red Potion."));
+}
+
+#[tokio::test]
+async fn the_bot_action_needs_the_trader_visited_and_answers_what_it_bought() {
+    let buy = || Entry::BotAction(script_sdk::BotAction { name: "buy".into(), args: r#"{"item_id":501,"amount":2}"#.into() });
+    let (requests, result) = shop_run(1_000, 0, buy()).await;
+    result.unwrap();
+    assert!(ui_call(&requests, Function::BotReply)[0][0].text().contains("Talk to the Curio Trader first"));
+    assert!(!requests.iter().any(|request| matches!(request, Request::Write { name, .. } if name == "Zeny")));
+
+    let (requests, result) = shop_run(1_000, 1, buy()).await;
+    result.unwrap();
+    let reply: serde_json::Value = serde_json::from_str(&ui_call(&requests, Function::BotReply)[0][0].text()).unwrap();
+    assert_eq!(reply, serde_json::json!({ "bought": 2, "item_id": 501, "zeny": 920 }));
+}
+
+#[tokio::test]
+async fn a_level_up_shows_a_rising_star_above_the_player() {
+    let hook = Hook::LevelUp { char_id: 7, kind: LevelKind::Base, level: 12 };
+    let (requests, result) = shop_run(0, 0, Entry::Hook(hook)).await;
+    result.unwrap();
+    let shown = ui_call(&requests, Function::UiOverhead);
+    assert_eq!(shown[0][0], Value::Number(0), "above the attached player");
+    let overhead: plugin_ui::Overhead = serde_json::from_str(&shown[0][1].text()).unwrap();
+    assert_eq!(overhead.text.unwrap().text, "LEVEL 12!");
+    assert_eq!(overhead.image.unwrap().frames, ["@/star.png"], "the server resolves the plugin's own path");
 }
