@@ -1,0 +1,10 @@
+[package]
+name = "towns_warps"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+script-sdk-2.workspace = true

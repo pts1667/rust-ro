@@ -51570,5 +51570,285 @@
   "Knight De Thomas::OnTouch": {
     "module": "quests_skills_misc_2",
     "entry": "KnightDeThomas::OnTouch"
+  },
+  "um_shaman1-1::OnTouch": {
+    "module": "towns_warps",
+    "entry": "um_shaman1-1::OnTouch_"
+  },
+  "#yun63::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun63::OnTouch_"
+  },
+  "#yun64::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun64::OnTouch_"
+  },
+  "#yun65::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun65::OnTouch_"
+  },
+  "#yun66::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun66::OnTouch_"
+  },
+  "#yun67::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun67::OnTouch_"
+  },
+  "#yun68::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun68::OnTouch_"
+  },
+  "#yun69::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun69::OnTouch_"
+  },
+  "#yun70::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun70::OnTouch_"
+  },
+  "#yun71::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun71::OnTouch_"
+  },
+  "#yun72::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun72::OnTouch_"
+  },
+  "#yun73::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun73::OnTouch_"
+  },
+  "#yun74::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun74::OnTouch_"
+  },
+  "#yun75::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#yun75::OnTouch_"
+  },
+  "ald008r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "ald008r::OnTouch_"
+  },
+  "ald014r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "ald014r::OnTouch_"
+  },
+  "ald015r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "ald015r::OnTouch_"
+  },
+  "ald022r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "ald022r::OnTouch_"
+  },
+  "clt006r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "clt006r::OnTouch_"
+  },
+  "clt007r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "clt007r::OnTouch_"
+  },
+  "clt014r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "clt014r::OnTouch_"
+  },
+  "clt015r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "clt015r::OnTouch_"
+  },
+  "clt016r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "clt016r::OnTouch_"
+  },
+  "clt031r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "clt031r::OnTouch_"
+  },
+  "kh_dun04::OnTouch": {
+    "module": "towns_warps",
+    "entry": "kh_dun04::OnTouch_"
+  },
+  "lhz_dun5-1::OnTouch": {
+    "module": "towns_warps",
+    "entry": "lhz_dun5-1::OnTouch_"
+  },
+  "cubew01-1::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew01-1::OnTouch_"
+  },
+  "cubew01-3::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew01-3::OnTouch_"
+  },
+  "cubew01-4::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew01-4::OnTouch_"
+  },
+  "cubew02-2::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew02-2::OnTouch_"
+  },
+  "cubew02-3::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew02-3::OnTouch_"
+  },
+  "cubew02-4::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew02-4::OnTouch_"
+  },
+  "cubew03-1::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew03-1::OnTouch_"
+  },
+  "cubew03-2::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew03-2::OnTouch_"
+  },
+  "cubew03-3::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew03-3::OnTouch_"
+  },
+  "cubew04-1::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew04-1::OnTouch_"
+  },
+  "cubew04-3::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew04-3::OnTouch_"
+  },
+  "cubew05-3::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew05-3::OnTouch_"
+  },
+  "cubew05-4::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew05-4::OnTouch_"
+  },
+  "cubew06-1::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew06-1::OnTouch_"
+  },
+  "cubew06-4::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew06-4::OnTouch_"
+  },
+  "cubew07-2::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew07-2::OnTouch_"
+  },
+  "cubew07-3::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew07-3::OnTouch_"
+  },
+  "cubew07-4::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew07-4::OnTouch_"
+  },
+  "cubew08-1::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew08-1::OnTouch_"
+  },
+  "cubew08-2::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew08-2::OnTouch_"
+  },
+  "cubew09-1::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew09-1::OnTouch_"
+  },
+  "cubew09-2::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew09-2::OnTouch_"
+  },
+  "cubew09-4::OnTouch": {
+    "module": "towns_warps",
+    "entry": "cubew09-4::OnTouch_"
+  },
+  "#babayagain::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#babayagain::OnTouch"
+  },
+  "Soldier1#mos::OnInit": {
+    "module": "towns_warps",
+    "entry": "Soldier1#mos::OnInit"
+  },
+  "Soldier1#mos::OnEnable": {
+    "module": "towns_warps",
+    "entry": "Soldier1#mos::OnEnable"
+  },
+  "Soldier2#mos::OnInit": {
+    "module": "towns_warps",
+    "entry": "Soldier1#mos::OnInit"
+  },
+  "Soldier2#mos::OnEnable": {
+    "module": "towns_warps",
+    "entry": "Soldier1#mos::OnEnable"
+  },
+  "Soldier3#mos::OnInit": {
+    "module": "towns_warps",
+    "entry": "Soldier1#mos::OnInit"
+  },
+  "Soldier3#mos::OnEnable": {
+    "module": "towns_warps",
+    "entry": "Soldier1#mos::OnEnable"
+  },
+  "payd04r::OnTouch": {
+    "module": "towns_warps",
+    "entry": "payd04r::OnTouch_"
+  },
+  "#mazewarp5303::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#mazewarp5303::OnTouch_"
+  },
+  "#mazewarp5339::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#mazewarp5339::OnTouch_"
+  },
+  "#mazewarp5346::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#mazewarp5346::OnTouch_"
+  },
+  "#mazewarp5358::OnTouch": {
+    "module": "towns_warps",
+    "entry": "#mazewarp5358::OnTouch_"
+  },
+  "sanctuary01::OnTouch": {
+    "module": "towns_warps",
+    "entry": "sanctuary01::OnTouch_"
+  },
+  "AbyssWarp::OnInit": {
+    "module": "towns_warps",
+    "entry": "AbyssWarp::OnInit"
+  },
+  "AbyssWarp::OnTouch": {
+    "module": "towns_warps",
+    "entry": "AbyssWarp::OnTouch_"
+  },
+  "AbyssWarp::OnWarp": {
+    "module": "towns_warps",
+    "entry": "AbyssWarp::OnWarp"
+  },
+  "AbyssWarp::OnTimer30000": {
+    "module": "towns_warps",
+    "entry": "AbyssWarp::OnTimer30000"
+  },
+  "gl18-2::OnTouch": {
+    "module": "towns_warps",
+    "entry": "gl18-2::OnTouch_"
+  },
+  "jawaiiwarp006::OnTouch": {
+    "module": "towns_warps",
+    "entry": "jawaiiwarp006::OnTouch_"
+  },
+  "aldeg-4-15_aldeg-4-::OnTouch": {
+    "module": "towns_warps",
+    "entry": "aldeg-4-15_aldeg-4-::OnTouch_"
+  },
+  "ve_fild6-2::OnTouch": {
+    "module": "towns_warps",
+    "entry": "ve_fild6-2::OnTouch_"
   }
 }
