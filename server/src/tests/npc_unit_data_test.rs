@@ -415,14 +415,15 @@ fn compiled_wasm_npc_reads_and_writes_unit_data_through_the_real_host_and_map_lo
         (memory (export "memory") 1)
         (data (i32.const 0) "{}")
         (data (i32.const 256) "{}")
-        (func (export "script_abi") (result i32) i32.const 2)
+        (func (export "script_abi") (result i32) i32.const {abi})
         (func (export "script_run") (result i32)
             i32.const 0 i32.const {} i32.const 4096 i32.const 4096 call $invoke drop
             i32.const 256 i32.const {} i32.const 4096 i32.const 4096 call $invoke drop i32.const 0))"#,
         escape(&write),
         escape(&read),
         write.len(),
-        read.len()
+        read.len(),
+        abi = script_sdk::ABI_VERSION
     );
     let vm = script_runtime::WasmRuntime::from_bytes(module.as_bytes(), script_runtime::Limits::default()).unwrap();
     let (_, inputs) = tokio::sync::mpsc::channel(1);

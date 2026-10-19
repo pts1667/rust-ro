@@ -208,6 +208,9 @@ impl MapInstanceService {
         }
         let moved = (old.x, old.y) != (npc.x, npc.y);
         let dead = old.hp > 0 && npc.hp == 0;
+        if moved || dead {
+            npc.walk = None;
+        }
         if dead {
             let mut status = npc.status();
             StatusEffectService::remove_on_death(&mut status);
@@ -438,7 +441,7 @@ impl MapInstanceService {
         }
     }
 
-    fn cancel_npc_cast(&self, state: &mut MapInstanceState, id: u32) {
+    pub(super) fn cancel_npc_cast(&self, state: &mut MapInstanceState, id: u32) {
         if state.script_skill_state.casts.remove(&id).is_some() {
             let mut packet = 0x01B9_u16.to_le_bytes().to_vec();
             packet.extend_from_slice(&id.to_le_bytes());
@@ -479,6 +482,7 @@ impl MapInstanceService {
                 StatusEffectService::remove_on_death(&mut status);
                 npc.active_statuses = status.active_statuses;
                 npc.dead_sit = 1;
+                npc.walk = None;
                 state.script_skill_state.npcs.insert(npc.id, npc.clone());
                 self.cancel_npc_cast(state, npc.id);
                 self.notify_npc_death(state, &npc);

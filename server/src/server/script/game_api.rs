@@ -535,6 +535,12 @@ impl ScriptService {
                 if function == Function::SpecialEffect && context.char_id == 0 {
                     return server.script_npc_effect(state, context, &arguments);
                 }
+                if crate::server::service::script_unit_walk::handles(function) {
+                    return server.script_unit_walk_call(state, context, function, &arguments);
+                }
+                if crate::server::service::script_npc_walk::handles(function) {
+                    return server.script_npc_walk_call(state, context, function, &arguments);
+                }
                 if crate::server::service::script_npc_commands::handles(function) {
                     return server.script_npc_call(state, context, function, &arguments);
                 }

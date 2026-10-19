@@ -1,0 +1,9 @@
+{
+  "title": "Double XP",
+  "description": "An experience and drop rate event: monsters give more experience and drops, the Rate Clerk in Prontera tells players about it and counts their kills.",
+  "config": {
+    "exp_percent": { "default": 200, "description": "Percent of the experience a monster gives." },
+    "drop_percent": { "default": 150, "description": "Percent of the drop chances, applied through the server rates." },
+    "milestone": { "default": 100, "description": "Kills between two messages to the player; 0 turns them off." }
+  }
+}

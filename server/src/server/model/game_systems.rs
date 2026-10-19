@@ -157,6 +157,9 @@ pub struct CharacterGameSystems {
     pub party_position: Option<(String, u8, u16, u16, u32)>,
     #[serde(skip)]
     pub party_health: Option<(u32, u32)>,
+    /// Set by `unitwalk`; its arrival label runs when the player stops on the destination.
+    #[serde(skip)]
+    pub forced_walk: Option<crate::server::model::events::map_event::ForcedWalk>,
 }
 
 /// The attachments being prepared in the mail window; nothing leaves the inventory until the mail is sent.

@@ -1736,6 +1736,10 @@ impl CharacterService {
                                 npc,
                                 self.configuration_service.packetver(),
                             ));
+                            packets.extend(
+                                crate::server::service::map_instance_service::npc_walk_packet(npc, self.configuration_service.packetver())
+                                    .unwrap_or_default(),
+                            );
                             if let Some(packet) = crate::server::service::waiting_room_service::waiting_room_entry_packet(server_state, npc.id) {
                                 packets.extend(packet);
                             }

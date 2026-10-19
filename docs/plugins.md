@@ -22,23 +22,37 @@ Plugins are listed under `scripting` in `config.json`, and only listed, enabled 
 - An entry is a folder name under `plugins_dir`, or an object with `name`, `enabled` (default `true`) and `capabilities`.
 - Plugins load, initialise and intercept in the order of the list. A plugin that `requires` another must come after it.
 - `capabilities` narrows what the plugin may do (see below). It can only remove capabilities the plugin declared, never add.
-- Changing the list, a plugin's files or its `config.json` takes a restart.
+- Changing the list, a plugin's files or its settings file takes a restart.
 - A plugin that cannot load stops the boot with the reason (`Plugin x is refused: ...`): a server never runs without a plugin its
   operator listed. Set `"enabled": false` to boot without it.
 
 `config.template.json` ships `double_xp` listed and disabled. To try it, set `"enabled": true` (or write `"plugins": ["double_xp"]`)
 and restart: the server announces the event, the Rate Clerk stands in Prontera (161, 186), monsters give 200% experience and
-150% drop chances. Its settings are in `config/plugins/double_xp/config.json`. `ui_shop` ships listed and disabled too: its Curio
-Trader stands in Prontera (158, 186) and needs nostalro-client to draw its window.
+150% drop chances by default. `ui_shop` ships listed and disabled too: its Curio Trader stands in Prontera (158, 186) and needs
+nostalro-client to draw its window.
+
+### Plugin settings
+Every plugin declares its settings with a default and a description (its `info.json`, compiled into `plugin.wasm`; the boot
+log names the plugin's title). To change some, write `config/plugins/<name>.json` next to the plugin's folder, with only the
+keys to change:
+```json
+{ "exp_percent": 300 }
+```
+- Keys left out keep their default. Arrays and objects are replaced whole, not merged.
+- A key the plugin does not declare, or a value of another JSON type than the default, refuses the plugin, so a typo stops the
+  boot instead of being ignored. The refusal lists the keys the plugin knows.
+- It is the plugin's only settings file. A `config.json` left inside the plugin's folder (the former location) refuses the
+  plugin until it is moved.
+- These files are local to the server, like `config.json`: git ignores `config/plugins/*.json`.
 
 ### Package layout
 ```
 config/plugins/<name>/
-  plugin.wasm     the module; the folder name must be the plugin's name
+  plugin.wasm     the module (with its info.json inside); the folder name must be the plugin's name
   npcs.json       optional: NPCs to place
   events.json     optional: event labels to register
-  config.json     optional: the plugin's settings, any JSON
   ui/             optional: images of its windows and overheads, served to clients at /data/plugin/<name>/
+config/plugins/<name>.json   optional: the operator's overrides of the plugin's settings
 ```
 
 ### Capabilities
@@ -48,7 +62,7 @@ log.
 | Capability | What it allows |
 | --- | --- |
 | `Dialogue` | dialogue windows, messages, cutins, effects and sounds shown to the attached player |
-| `World` | warps, monsters, map flags, NPCs, instances, battlegrounds, castles, waiting rooms |
+| `World` | warps, monsters, map flags, NPCs (moving, walking, look), instances, battlegrounds, castles, waiting rooms |
 | `Economy` | items, zeny, shops, storage, refining, mail |
 | `Character` | job, levels, experience, skills, statuses, healing, quests, save point |
 | `Rates` | the server's experience and drop rates |
@@ -85,6 +99,20 @@ crate-type = ["cdylib"]
 script-sdk-2.workspace = true
 serde = { version = "1.0", features = ["derive"] }
 ```
+Next to `Cargo.toml`, `info.json` describes the plugin and every setting it reads, with its default:
+```json
+{
+  "title": "Double XP",
+  "description": "An experience and drop rate event.",
+  "config": {
+    "exp_percent": { "default": 200, "description": "Percent of the experience a monster gives." },
+    "milestone": { "default": 100, "description": "Kills between two messages to the player." }
+  }
+}
+```
+`title` and `description` are required, `config` may be empty. `plugin_module!` compiles the file into the module, so a built
+plugin always carries its defaults, and `scripts-build` refuses to build a plugin whose `info.json` does not decode.
+
 `cargo run --package tools --bin scripts-build --release` builds it to `config/plugins/<name>/plugin.wasm`; the JSON files of
 the folder are written by hand. A plugin can also be built outside this repository, against the same `script-sdk-2`, and dropped
 in a folder.
@@ -119,13 +147,27 @@ Script bodies are written as in any module ([the script SDK](script-sdk-2.md)): 
 `events.json` maps labels to options, like `config/wasm/events.json`: `{ "Greeter::OnClock1200": {} }`. `entry` and `replaces`
 work as for NPCs. Labels follow the rathena names (`OnInit`, `OnMinute00`, `OnClock1200`, `OnTimer<ms>`...).
 
+### NPC routines
+An NPC's events can drive it around its map: `ctx.npc().walk_to_then(None, x, y, "Baker::OnAtOven")` walks it there and
+runs the label on arrival, where it can emote, talk (`Function::NpcTalk`), turn or start its next walk. `OnInit` or an
+`OnTimer<ms>`/`OnMinute` label starts the loop. Walking needs `World`; emotes and effects need `Dialogue`. Paths are short,
+so a long route is a chain of walks, and a click stops the NPC where it is. `ctx.unit_walk(..)` walks players and
+monsters the same way (see `docs/script-server-gaps.md`).
+
 ### Initialisation
 `init` runs once at boot, after the base scripts' `OnInit`, in plugin order. No player is attached and there is no NPC:
 dialogue windows are refused, announcements go to the whole server. It is where a plugin sets its rates or spawns its monsters.
 
 ### Configuration
-`ctx.plugin_config::<T>()` decodes `config.json` with serde (`{}` when there is none); `ctx.plugin_config_json()` gives the text.
-Give the settings struct `#[serde(default)]` so a missing file or field falls back to defaults.
+The plugin reads its settings as a JSON object holding every key of its `info.json`: the operator's value from
+`config/plugins/<name>.json`, else the default.
+- `ctx.plugin_setting::<u32>("exp_percent")` reads one key (a key `info.json` does not declare is an error);
+  `ctx.plugin_config::<T>()` decodes them all into a struct, which needs no `Default`: every key is always present.
+  `ctx.plugin_config_json()` gives the JSON text.
+- Interceptors use `script_sdk_2::setting::<T>(key)` and `script_sdk_2::configured::<T>()`.
+- `script_sdk_2::plugin_manifest()` returns the `info.json` itself: title, description, settings with defaults and descriptions.
+- In the plugin's unit tests, `script_sdk_2::plugin::configure_for_test(include_str!("../info.json"))` gives the interceptor
+  functions the defaults, as the server would.
 
 ### Variables
 Server and account variables (`$x`, `$@x`, `#x`, `##x`) are the plugin's own: they are stored as `$my_plugin::x`, so they cannot

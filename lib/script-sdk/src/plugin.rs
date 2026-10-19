@@ -1,5 +1,7 @@
 //! What a plugin declares about itself, the hooks it observes and the decisions it can intercept (`docs/adr/7-plugins.md`).
 
+use std::collections::BTreeMap;
+
 use serde::{Deserialize, Serialize};
 
 use crate::{Function, Request, Variable, VariableScope};
@@ -95,6 +97,71 @@ pub struct PluginInfo {
     pub windows: Vec<String>,
     #[serde(default)]
     pub bot_actions: Vec<BotActionInfo>,
+    /// The plugin's `info.json`, compiled into the module.
+    pub manifest: PluginManifest,
+}
+
+/// A plugin's `info.json`: what it is and the settings it reads, with their defaults. The operator's
+/// `config/plugins/<name>.json` overrides the defaults ([`PluginManifest::configure`]).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct PluginManifest {
+    pub title: String,
+    pub description: String,
+    #[serde(default)]
+    pub config: BTreeMap<String, ConfigEntry>,
+}
+
+/// A setting of [`PluginManifest::config`].
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ConfigEntry {
+    /// Its value when the operator does not set it. An override must have the same JSON type, unless the default is `null`.
+    pub default: serde_json::Value,
+    #[serde(default)]
+    pub description: String,
+}
+
+impl PluginManifest {
+    pub fn parse(text: &str) -> Result<Self, String> {
+        let manifest: Self = serde_json::from_str(text).map_err(|error| format!("info.json is invalid: {error}"))?;
+        if manifest.title.trim().is_empty() {
+            return Err("info.json has no title".into());
+        }
+        Ok(manifest)
+    }
+
+    pub fn defaults(&self) -> serde_json::Map<String, serde_json::Value> {
+        self.config.iter().map(|(key, entry)| (key.clone(), entry.default.clone())).collect()
+    }
+
+    /// The settings the plugin runs with: its defaults, replaced key by key by `overrides`. A key the manifest does not
+    /// declare, or a value of another type than its default, is refused. Arrays and objects are replaced whole.
+    pub fn configure(&self, overrides: &serde_json::Value) -> Result<serde_json::Map<String, serde_json::Value>, String> {
+        let serde_json::Value::Object(overrides) = overrides else { return Err("it must be a JSON object".into()) };
+        let mut settings = self.defaults();
+        for (key, value) in overrides {
+            let Some(entry) = self.config.get(key) else {
+                return Err(format!("{key} is not a setting of this plugin (known: {})", self.config.keys().cloned().collect::<Vec<_>>().join(", ")));
+            };
+            if !entry.default.is_null() && json_type(value) != json_type(&entry.default) {
+                return Err(format!("{key} must be {}, not {}", json_type(&entry.default), json_type(value)));
+            }
+            settings.insert(key.clone(), value.clone());
+        }
+        Ok(settings)
+    }
+}
+
+fn json_type(value: &serde_json::Value) -> &'static str {
+    match value {
+        serde_json::Value::Null => "null",
+        serde_json::Value::Bool(_) => "a boolean",
+        serde_json::Value::Number(_) => "a number",
+        serde_json::Value::String(_) => "a string",
+        serde_json::Value::Array(_) => "an array",
+        serde_json::Value::Object(_) => "an object",
+    }
 }
 
 /// An action a plugin offers to bots, listed in their observation.
@@ -345,7 +412,7 @@ impl Function {
             | BgCreate | BgJoin | BgLeave | BgDesert | BgDestroy | BgWarp | BgTeamSetXy | BgUpdateScore | BgReserve | BgUnbook
             | BgMonster | BgMonsterSetTeam | InstanceCreate | InstanceDestroy | InstanceEnter | InstanceWarpAll | SetInstanceVar
             | AreaMobUseSkill | WaitingRoom | DelWaitingRoom | WaitingRoomKick | WaitingRoomKickAll | EnableWaitingRoomEvent
-            | DisableWaitingRoomEvent | WarpWaitingPc | PushPc | UnloadNpc | MoveNpc | SetNpcDisplay | SetUnitData | UnitSkill
+            | DisableWaitingRoomEvent | WarpWaitingPc | PushPc | UnloadNpc | MoveNpc | NpcSpeed | NpcWalkTo | NpcStop | UnitWalk | UnitWalkTo | UnitStopWalk | SetNpcDisplay | SetUnitData | UnitSkill
             | UnitSkillToId | UnitSkillToPosition | SetVariableOfNpc | GuildExperience => Some(World),
             SetRate => Some(Rates),
             UiOpen | UiClose | UiOverhead => Some(Interface),
@@ -466,5 +533,42 @@ mod tests {
         assert_eq!(doubled, Interception::ExpGain { char_id: 1, mob_id: 1002, base: 20, job: 10 });
         assert_eq!(doubled.clone().apply(&Verdict::Refuse(String::new())).unwrap(), None);
         assert!(doubled.apply(&Verdict::Chat("hi".into())).is_err());
+    }
+
+    fn manifest() -> PluginManifest {
+        PluginManifest::parse(
+            r#"{
+                "title": "Event", "description": "A rate event.",
+                "config": {
+                    "percent": { "default": 200, "description": "Experience in percent." },
+                    "stock": { "default": [1, 2] },
+                    "anything": { "default": null }
+                }
+            }"#,
+        )
+        .unwrap()
+    }
+
+    #[test]
+    fn overrides_replace_defaults_key_by_key() {
+        let settings = manifest().configure(&serde_json::json!({ "percent": 300, "stock": [3] })).unwrap();
+        assert_eq!(serde_json::Value::Object(settings), serde_json::json!({ "percent": 300, "stock": [3], "anything": null }));
+        assert_eq!(manifest().configure(&serde_json::json!({})).unwrap(), manifest().defaults());
+        assert!(manifest().configure(&serde_json::json!({ "anything": { "x": 1 } })).is_ok(), "a null default takes any type");
+    }
+
+    #[test]
+    fn overrides_of_unknown_keys_or_other_types_are_refused() {
+        let unknown = manifest().configure(&serde_json::json!({ "percnt": 300 })).unwrap_err();
+        assert!(unknown.contains("percnt is not a setting") && unknown.contains("percent"), "{unknown}");
+        assert_eq!(manifest().configure(&serde_json::json!({ "percent": "300" })).unwrap_err(), "percent must be a number, not a string");
+        assert!(manifest().configure(&serde_json::json!([1])).is_err());
+    }
+
+    #[test]
+    fn a_manifest_needs_a_title_and_known_fields() {
+        assert!(PluginManifest::parse(r#"{ "title": "", "description": "" }"#).unwrap_err().contains("no title"));
+        assert!(PluginManifest::parse(r#"{ "title": "t", "description": "", "config": { "k": { "defualt": 1 } } }"#).is_err());
+        assert!(PluginManifest::parse(r#"{ "title": "t" }"#).unwrap_err().contains("description"));
     }
 }

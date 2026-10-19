@@ -96,8 +96,9 @@ Actions are grouped by domain. Each group is a thin typed wrapper over one or mo
 
 - `ctx.items()`: `count(item)`, `give(item, amount)`, `take(item, amount)`, `is_equipped(item)`, `check_weight(&[(item, amount)])`, `name(item)`, `place(item, amount, map, x, y)` (rathena `makeitem`, dropped on the floor for everyone).
 - `ctx.quests()`: `start`, `complete`, `erase`, `change(old, new)`, `check(quest)`, `progress(quest)`.
+- `ctx.unit_walk(unit, x, y, event)`, `ctx.unit_walk_to(unit, target, event)` and `ctx.unit_stop_walk(unit)`: rathena's `unitwalk` family for a player (account or character id), monster or NPC; the walks answer false when the unit does not start.
 - `ctx.timers()`: `init(npc)`, `stop(npc)`, `restart(npc)` (stop, then init) and `set_elapsed(ms, npc)` for the timer of `npc` (`None` for the current NPC), and `start()` for the current NPC's timer.
-- `ctx.npc()`: `emotion(id)`, `special_effect(effect)`, `do_event("NPC::Label")`, `id(npc)` (`None` for the current NPC), `name()`, `visible_name()`, `hidden_name()`, `map_name()` for the current NPC, `variable(".name", npc, index)` and `set_variable(".name", npc, index, value)` for another NPC's variables, and `open_shop()` for the shop window its placement stocks.
+- `ctx.npc()`: `emotion(id)`, `special_effect(effect)`, `do_event("NPC::Label")`, `id(npc)` (`None` for the current NPC), `name()`, `visible_name()`, `hidden_name()`, `map_name()` for the current NPC, `variable(".name", npc, index)` and `set_variable(".name", npc, index, value)` for another NPC's variables, and `open_shop()` for the shop window its placement stocks. Walking, for `npc` (`None` for the current NPC): `walk_to(npc, x, y)` (false when no path leads there), `walk_to_then(npc, x, y, "NPC::Label")` (runs the label when the NPC arrives), `stop_walking(npc)` and `set_walk_speed(npc, ms_per_cell)`; see `docs/script-server-gaps.md` for how a walk ends.
 - `ctx.castle()`: `data(map, field)`, `set_data(map, field, value)` (rathena's `getcastledata` fields: `1` owner guild, `2` economy, `3` defense, `9` Kafra, `10` onwards the guardian slots) and `summon_guardian(map, slot)`.
 - `ctx.ea_class(job)` (`None` for the attached player's job), `ctx.ro_class(mask)` and `ctx.job_name(job)` convert between jobs and their `EAJ_*`/`EAJL_*` class masks.
 - `ctx.battle_flag(name)` reads a server battle setting, and `ctx.set_mob_immunity(map, label, immune)` makes the script monsters of an event immune to damage.
@@ -191,7 +192,8 @@ The item layer is `lib/script-sdk-2/src/item.rs`. Every item is in the items mod
 A plugin is declared with `plugin_module!` instead of `script_module!`, and gets more than an ordinary module: an `init` run, hooks (`fn(&Ctx, &Hook) -> Script`, run after something happened to a character) and interceptors (`fn(&Interception) -> Verdict`, pure functions the game loop waits for). Its NPC and event bodies are written exactly as above. What it adds to `Ctx`:
 
 ```rust
-let settings: Settings = ctx.plugin_config()?;   // the plugin's config.json, through serde
+let settings: Settings = ctx.plugin_config()?;   // every setting of info.json, with the operator's overrides
+let percent: u32 = ctx.plugin_setting("exp_percent")?;   // one of them
 ctx.rates().set(Rate::BaseExp, 150)?;            // this plugin's share of a server rate, in percent
 let drops = ctx.rates().get(Rate::Drop)?;        // the effective rate, all plugins together
 ```

@@ -60,6 +60,9 @@ mod world_party_tests;
 #[path = "quest_offer_test.rs"]
 mod quest_offer_tests;
 
+#[path = "unit_walk_test.rs"]
+mod unit_walk_tests;
+
 #[path = "mob_command_test.rs"]
 mod mob_command_tests;
 

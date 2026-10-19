@@ -54,6 +54,48 @@ fn the_example_plugin_loads_with_what_it_declares() {
     assert!(!plugins.intercepted(InterceptorKind::Chat));
     assert_eq!(plugin.npcs[0].name, "Rate Clerk");
     assert!(plugin.events.contains_key("Rate Clerk::OnMinute00"));
+    assert_eq!(plugin.info.manifest.title, "Double XP");
+    assert_eq!(serde_json::Value::Object(plugin.settings.clone()), serde_json::json!({ "exp_percent": 200, "drop_percent": 150, "milestone": 100 }));
+}
+
+/// The example's module as `double_xp` under a root of its own, so tests that write settings next to it do not race.
+fn copied_double_xp(test: &str) -> std::path::PathBuf {
+    let root = copied_example(test);
+    std::fs::rename(root.join(test), root.join("double_xp")).unwrap();
+    root
+}
+
+fn load_copied(root: &std::path::Path) -> Result<Plugins, String> {
+    Plugins::load(&ScriptingConfig {
+        plugins_dir: root.to_string_lossy().into(),
+        plugins: vec![PluginSetting::Name("double_xp".into())],
+        ..ScriptingConfig::default()
+    })
+}
+
+#[test]
+fn the_operator_file_overrides_the_defaults_of_info_json() {
+    let root = copied_double_xp("overridden");
+    std::fs::write(root.join("double_xp.json"), r#"{ "exp_percent": 300 }"#).unwrap();
+    let plugins = load_copied(&root).unwrap();
+    let plugin = plugins.iter().next().unwrap();
+    assert_eq!(serde_json::Value::Object(plugin.settings.clone()), serde_json::json!({ "exp_percent": 300, "drop_percent": 150, "milestone": 100 }));
+    let gained = plugins.intercept(Interception::ExpGain { char_id: 1, mob_id: 1002, base: 10, job: 7 }).unwrap();
+    assert_eq!(gained, Interception::ExpGain { char_id: 1, mob_id: 1002, base: 30, job: 21 }, "the guest reads the override");
+}
+
+#[test]
+fn overrides_the_plugin_does_not_declare_or_of_another_type_are_refused() {
+    let root = copied_double_xp("misconfigured");
+    for (overrides, reason) in [
+        (r#"{ "exp_procent": 300 }"#, "exp_procent is not a setting"),
+        (r#"{ "exp_percent": "300" }"#, "exp_percent must be a number"),
+        ("{ not json", "double_xp.json is invalid"),
+    ] {
+        std::fs::write(root.join("double_xp.json"), overrides).unwrap();
+        let error = load_copied(&root).err().unwrap();
+        assert!(error.contains(reason), "{error}");
+    }
 }
 
 #[test]
@@ -84,16 +126,10 @@ fn a_plugin_is_refused_when_its_package_does_not_hold_together() {
     .unwrap();
     assert!(error.contains("calls itself double_xp"), "{error}");
 
-    let root = copied_example("double_xp");
-    std::fs::write(root.join("double_xp/config.json"), "{ not json").unwrap();
-    let error = Plugins::load(&ScriptingConfig {
-        plugins_dir: root.to_string_lossy().into(),
-        plugins: vec![PluginSetting::Name("double_xp".into())],
-        ..ScriptingConfig::default()
-    })
-    .err()
-    .unwrap();
-    assert!(error.contains("config.json is invalid"), "{error}");
+    let root = copied_double_xp("leftover");
+    std::fs::write(root.join("double_xp/config.json"), "{}").unwrap();
+    let error = load_copied(&root).err().unwrap();
+    assert!(error.contains("settings moved") && error.contains("double_xp.json"), "a settings file left in the package is not ignored: {error}");
 
     let missing = load(vec![PluginSetting::Name("not_installed".into())]).err().unwrap();
     assert!(missing.contains("not_installed"), "{missing}");
@@ -103,7 +139,7 @@ fn a_plugin_is_refused_when_its_package_does_not_hold_together() {
 fn the_example_scales_monster_experience_by_its_configuration() {
     let plugins = example();
     let gained = plugins.intercept(Interception::ExpGain { char_id: 1, mob_id: 1002, base: 10, job: 7 }).unwrap();
-    assert_eq!(gained, Interception::ExpGain { char_id: 1, mob_id: 1002, base: 20, job: 14 }, "exp_percent is 200 in config.json");
+    assert_eq!(gained, Interception::ExpGain { char_id: 1, mob_id: 1002, base: 20, job: 14 }, "exp_percent is 200 in info.json");
     let chat = Interception::Chat { char_id: 1, map: "prontera".into(), message: "hi".into() };
     assert_eq!(plugins.intercept(chat.clone()), Ok(chat), "kinds no plugin intercepts are not sent to the guests");
 }

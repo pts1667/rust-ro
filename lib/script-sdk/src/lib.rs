@@ -4,11 +4,11 @@ use serde::{Deserialize, Serialize};
 
 mod plugin;
 pub use plugin_ui;
-pub use plugin::{BotAction, BotActionInfo, Capabilities, Capability, Hook, HookKind, Interception, InterceptorKind, LevelKind, PluginInfo, Rate, Verdict, PLUGIN_BUFFER_BYTES};
+pub use plugin::{BotAction, BotActionInfo, Capabilities, Capability, ConfigEntry, Hook, HookKind, Interception, InterceptorKind, LevelKind, PluginInfo, PluginManifest, Rate, Verdict, PLUGIN_BUFFER_BYTES};
 
 /// ABI of script modules. The host passes the script as an [`Entry`] and the module exports `script_run`. Version 1, which
-/// exported one function per script id, is retired.
-pub const ABI_VERSION: u32 = 2;
+/// exported one function per script id, is retired; version 3 added the plugin manifest to [`PluginInfo`].
+pub const ABI_VERSION: u32 = 3;
 pub const MAX_MESSAGE_BYTES: usize = 65_536;
 
 /// The script a named-ABI module runs, read by the guest through the `rust_ro::entry` import.
@@ -436,6 +436,20 @@ pub enum Function {
     MercenarySetFaith,
     UnloadNpc,
     MoveNpc,
+    /// `NpcSpeed(speed[, npc name])`: walking speed, in ms per cell from 20 (fastest) to 1000.
+    NpcSpeed,
+    /// `NpcWalkTo(x, y[, npc name[, "Npc::OnLabel"]])`: starts walking on the NPC's map and runs the label on arrival.
+    /// An empty name is the current NPC. 1 when a path exists, 0 otherwise.
+    NpcWalkTo,
+    /// `NpcStop([npc name])`: the NPC finishes the cell it is entering and stands; the arrival label is dropped.
+    NpcStop,
+    /// `UnitWalk(unit id, x, y[, "Npc::OnLabel"])`: walks a player (account or character id), monster or NPC on its map; the
+    /// label runs on arrival, attached to the player when the unit is one. 1 when it starts, 0 otherwise.
+    UnitWalk,
+    /// `UnitWalkTo(unit id, target id[, "Npc::OnLabel"])`: walks the unit to the cell the target stands on.
+    UnitWalkTo,
+    /// `UnitStopWalk(unit id[, flag])`: stops the unit's walk and drops its arrival label; the flag is accepted and ignored.
+    UnitStopWalk,
     GetMonsterInfo,
     NpcTalk,
     GetGuildMaster,
@@ -452,7 +466,7 @@ pub enum Function {
     RequestGuildInfo,
     Wedding,
     IsLoggedIn,
-    /// The plugin's `config.json`, as its JSON text.
+    /// The plugin's settings as a JSON object: the defaults of its `info.json` with the operator's overrides.
     PluginConfig,
     /// `SetRate(rate name, percent)`: scales a server rate for as long as the server runs (see [`Rate`]).
     SetRate,

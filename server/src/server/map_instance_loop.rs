@@ -96,6 +96,7 @@ impl MapInstanceLoop {
                     let mut map_instance_state = map_instance.state_mut();
 
                     map_instance_service.remove_dead_mobs(&mut map_instance_state);
+                    let key = map_instance_state.key().clone();
                     let mobs = map_instance_state.mobs_mut();
                     for mob in mobs.values_mut() {
                         // Update flinch state - transition to Idle when done
@@ -130,10 +131,12 @@ impl MapInstanceLoop {
                                 } else {
                                     // Movement complete - transition to Idle
                                     mob.update_movement_complete();
+                                    map_instance_service.mob_walk_ended(mob, &key);
                                 }
                             }
                         }
                     }
+                    map_instance_service.step_npc_walks(&mut map_instance_state, tick);
                     drop(map_instance_state);
                     let time_spent = started.elapsed();
                     let sleep_duration = real_duration(MOVEMENT_TICK_RATE).saturating_sub(time_spent);

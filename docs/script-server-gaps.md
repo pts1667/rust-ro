@@ -37,6 +37,23 @@ Castles that the server runs itself (`server/src/server/script/castles.json`, `c
 - **Background scripts can talk to an attached player.** The wedding ceremony in `marriage.txt` is a timer script that attaches the bride and talks to her.
 - **Not tested in game.** The channel routing and release are unit tested. The wedding flow has not been played through.
 
+## Walking (`npcwalkto`, `npcstop`, `npcspeed`, `unitwalk`, `unitwalkto`, `unitstopwalk`)
+
+- **Implemented, not played against a client.** The script call is checked in the game loop (`service/script_npc_walk.rs`); the walk is stepped by the map's movement thread (`step_npc_walks` in `service/map_unit_walk.rs`), which moves the NPC one cell per step delay and turns it the way it goes. Nearby clients get `ZC_NOTIFY_MOVE` when the walk starts, and players who come into view of a walking NPC get it after its entry packet. Clicks, range checks and `getmapxy` see the cell the NPC has reached.
+- **Arrival label, an addition.** `npcwalkto x, y, "<npc>", "<Npc::OnLabel>"` runs the label without a player when the NPC arrives, like the label of rathena's `unitwalk`. rathena's `npcwalkto` has no label. Walking to the cell the NPC stands on runs it at once.
+- **`npcwalkto` answers 1 or 0.** 0 when the NPC is hidden or dead, or no path leads to the cell. rathena answers nothing. Paths are searched like a click on the ground (a few dozen cells), so a long route is a chain of walks, each started from the previous arrival label.
+- **`npcstop` takes no flags.** It behaves like rathena's default (`USW_FIXPOS | USW_MOVE_FULL_CELL | USW_FORCE_STOP`): the NPC finishes the cell it is entering, nearby clients get `ZC_STOPMOVE` for that cell, and the arrival label is dropped. Clicking a walking NPC stops it the same way, as in rathena.
+- **What ends a walk.** Another `npcwalkto` replaces it. `movenpc`, a `setunitdata` move, knockback, a map change, `disablenpc` and death end it without running the arrival label.
+- **`npcspeed`** takes 20 to 1000 ms per cell (refused outside that range, as in rathena); NPCs start at 200. A walking NPC is drawn again with the new speed and sent on from where it is.
+- **`unitwalk` and `unitwalkto`** (`service/script_unit_walk.rs`) take a player (account or character id), a monster or an NPC. They answer 1 when the walk starts and 0 when no path leads there, the unit cannot walk (dead, frozen, trading, vending, a monster without `CanMove`), or an earlier `unitwalk` still moves it, as rathena refuses a second forced walk. Pets, homunculi and mercenaries answer 0: they follow their owner.
+  - A player walks through the movement loop like a click on the ground. The label runs attached to them when their path ends on the destination; a player who clicks elsewhere, warps or changes maps drops it. rathena runs the label at the end of whatever walk comes next.
+  - A monster leaves its target alone: its AI and skills wait until the walk ends, as in rathena. A walk cut short (knockback, a chase started by damage) gives it back to its AI without the label.
+  - An NPC walks as with `npcwalkto`; `npcwalkto` may replace a forced walk.
+  - `unitwalkto` walks to the cell the target stands on when called. It does not follow a target that moves, and walks onto the cell rather than next to it.
+- **`unitstopwalk`** stops a player where they are (the half-way rule of a cancelled click), a monster on its current cell, and an NPC on the cell it is entering. The flag is accepted and ignored; nearby clients always get `ZC_STOPMOVE`.
+- **Not done:** moving touch areas. The area of an `OnTouch` NPC follows it, but a walking NPC that reaches a standing player does not trigger it; only the player's own steps do.
+- **Sprites:** the client animates the walk only for sprites that have walking frames (player job sprites, monster sprites). Most NPC sprites slide.
+
 ## Character commands without an in-game check
 
 These are implemented and reviewed, but nothing has been run against a live client:

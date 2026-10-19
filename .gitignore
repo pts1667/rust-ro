@@ -15,6 +15,8 @@ graph.png
 .vs
 .claude/settings.local.json
 *.cwasm
+# The operator's plugin settings, overriding the defaults of each plugin's info.json
+/config/plugins/*.json
 # Secret of the bot API (server/src/server/bots), created on first boot when missing
 /config/bots_api_key.txt
 # Extracted client data served under /data, built by the client-data-setup tool

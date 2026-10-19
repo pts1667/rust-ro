@@ -490,6 +490,7 @@ impl Server {
             }
             for character in character_finished_to_move {
                 character.transition_to_idle();
+                server_ref.character_stopped_walking(character);
                 server_ref.add_to_next_tick(GameEvent::CharacterSavePosition(CharacterSavePosition { char_id: character.char_id }));
             }
             for (char_id, (npc_id, scope_instance, entry_id)) in npc_touches {

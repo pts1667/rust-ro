@@ -172,6 +172,7 @@ impl MapInstanceService {
             return;
         }
         if (npc.x, npc.y) != (next.x, next.y) {
+            next.walk = None;
             self.vanish_npc(state, &npc);
             state.script_skill_state.casts.remove(&npc.id);
             state.script_skill_state.generations.remove(&npc.id);
@@ -223,6 +224,7 @@ impl MapInstanceService {
         };
         transfer.npc.x = x;
         transfer.npc.y = y;
+        transfer.npc.walk = None;
         if !rollback && transfer.npc.hp == 0 {
             transfer.npc.initialize_for_cast();
         }

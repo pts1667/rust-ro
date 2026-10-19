@@ -9,13 +9,29 @@ use models::status_bonus::StatusBonus;
 use models::status_change::{StatusChange, StatusChangeKind, StatusChangeRequest, StatusStartFlag};
 
 use super::ScriptSkillActor;
+use crate::server::model::events::map_event::ScriptNpcCallback;
 use crate::server::model::map_item::MapItemType;
+use crate::server::model::movement::Movement;
 use crate::server::model::script::Script;
 use crate::server::service::status_effect_service::{StatusChangeOutcome, StatusEffectService};
 
 /// `HIDDEN_NPC`: a client draws nothing. NPCs with it are still clicked (machines, switches) unless they only run timers or a
 /// touch area.
 pub const INVISIBLE_NPC_SPRITE: u16 = 111;
+pub const DEFAULT_NPC_WALK_SPEED: u16 = 200;
+/// `MIN_WALK_SPEED` and `MAX_WALK_SPEED` of rathena, in milliseconds per cell.
+pub const NPC_WALK_SPEEDS: std::ops::RangeInclusive<u16> = 20..=1000;
+
+/// A walk started by `npcwalkto` or `unitwalk`, stepped by the map's movement thread.
+#[derive(Clone, Debug, PartialEq)]
+pub struct NpcWalk {
+    /// Remaining cells, the next one last.
+    pub steps: Vec<Movement>,
+    pub destination: (u16, u16),
+    pub on_arrival: Option<ScriptNpcCallback>,
+    /// Started by `unitwalk`, which refuses to start another until this one ends.
+    pub forced: bool,
+}
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct NpcSkillState {
@@ -49,6 +65,7 @@ pub struct NpcSkillState {
     pub group_id: i32,
     pub active_statuses: Vec<StatusChange>,
     pub base_status: StatusSnapshot,
+    pub walk: Option<NpcWalk>,
 }
 
 impl NpcSkillState {
@@ -57,11 +74,12 @@ impl NpcSkillState {
             script: std::sync::Arc::new(script.clone()),
             id: script.id, sprite: script.sprite, x: script.x, y: script.y, dir: script.dir,
             level: 0, stat_point: 0, parameters: [0; 6], hp: 0, sp: 0, max_hp: 0, max_sp: 0,
-            size: Size::Small, speed: 200, attack_min: 0, attack_max: 0, attack_range: 0,
+            size: Size::Small, speed: DEFAULT_NPC_WALK_SPEED, attack_min: 0, attack_max: 0, attack_range: 0,
             attack_motion: 0, attack_delay: 0, damage_motion: 0, damage_immune: false, hidden: false, emblem: (0, 0),
             sex: 0, looks: [0; 12], dead_sit: 0, group_id: 0, active_statuses: vec![],
             base_status: StatusSnapshot::new_for_mob(u32::from(script.sprite), 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Size::Small, Element::Neutral, MobRace::DemiHuman, 0),
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, DEFAULT_NPC_WALK_SPEED, 0, 0, Size::Small, Element::Neutral, MobRace::DemiHuman, 0),
+            walk: None,
         };
         npc.base_status.set_combat_actor_kind(CombatActorKind::Npc);
         npc
@@ -114,6 +132,11 @@ impl NpcSkillState {
     /// An invisible area that runs when stepped on: nothing to draw or click.
     pub fn is_touch_area(&self) -> bool {
         self.sprite == INVISIBLE_NPC_SPRITE && (self.script.x_size > 0 || self.script.y_size > 0)
+    }
+
+    /// Killed by damage; NPCs that never took any have no HP pool and stay up.
+    pub fn is_dead(&self) -> bool {
+        self.max_hp > 0 && self.hp == 0
     }
 
     pub fn current_script(&self, map: &str) -> std::sync::Arc<Script> {

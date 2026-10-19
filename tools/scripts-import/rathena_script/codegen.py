@@ -124,7 +124,7 @@ NEW_CALLS = {
     "getbattleflag": "GetBattleFlag", "ismounting": "IsMounting", "checkmadogear": "CheckMadogear", "guildopenstorage": "GuildOpenStorage",
     "warpparty": "PartyWarp", "itemskill": "ItemSkill", "unitskilluseid": "UnitSkillToId", "removemapflag": "RemoveMapFlag",
     "setmapflag": "SetMapFlag", "getsavepoint": "GetSavePoint", "resetlvl": "ResetLevel", "pushpc": "PushPc", "areaannounce": "AreaAnnounce",
-    "mercenary_get_faith": "MercenaryGetFaith", "mercenary_set_faith": "MercenarySetFaith", "unloadnpc": "UnloadNpc", "movenpc": "MoveNpc",
+    "mercenary_get_faith": "MercenaryGetFaith", "mercenary_set_faith": "MercenarySetFaith", "unloadnpc": "UnloadNpc", "movenpc": "MoveNpc", "npcspeed": "NpcSpeed", "npcwalkto": "NpcWalkTo", "npcstop": "NpcStop", "unitwalk": "UnitWalk", "unitwalkto": "UnitWalkTo", "unitstopwalk": "UnitStopWalk",
     "getmonsterinfo": "GetMonsterInfo", "npctalk": "NpcTalk", "cloakonnpc": "DisableNpc", "cloakoffnpc": "EnableNpc",
     "gvgon": "GvgOn", "gvgoff": "GvgOff", "divorce": "Divorce",
     "getguildmaster": "GetGuildMaster", "getcastlename": "GetCastleName", "getgdskilllv": "GetGuildSkillLevel", "guardian": "Guardian",

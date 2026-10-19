@@ -2,7 +2,7 @@
 
 use std::cell::UnsafeCell;
 
-use script_sdk::{Function, Interception, InterceptorKind, PLUGIN_BUFFER_BYTES, PluginInfo, Rate, Verdict};
+use script_sdk::{Function, Interception, InterceptorKind, PLUGIN_BUFFER_BYTES, PluginInfo, PluginManifest, Rate, Verdict};
 use serde::de::DeserializeOwned;
 
 use crate::ctx::Ctx;
@@ -16,13 +16,19 @@ pub type HookFn = fn(&Ctx<'_>, &script_sdk::Hook) -> Script;
 pub type InterceptFn = fn(&Interception) -> Verdict;
 
 impl<'a> Ctx<'a> {
-    /// The plugin's `config.json`, decoded into `T`.
+    /// The plugin's settings decoded into `T`: every key of its `info.json`, with the value of `config/plugins/<name>.json`
+    /// when the operator set one, else the default.
     pub fn plugin_config<T: DeserializeOwned>(&self) -> Result<T, Stop> {
         let text = self.plugin_config_json()?;
         serde_json::from_str(&text).map_err(|error| Stop::from(format!("Invalid plugin configuration: {error}")))
     }
 
-    /// The plugin's `config.json` as it is written, `{}` when the plugin has none.
+    /// One setting of the plugin, by its `info.json` key: `ctx.plugin_setting::<u32>("exp_percent")`.
+    pub fn plugin_setting<T: DeserializeOwned>(&self, key: &str) -> Result<T, Stop> {
+        setting_of(&self.plugin_config_json()?, key).map_err(Stop::from)
+    }
+
+    /// The plugin's settings as the JSON object [`plugin_config`](Self::plugin_config) decodes.
     pub fn plugin_config_json(&self) -> Result<String, Stop> {
         Ok(self.call(Function::PluginConfig, vec![])?.text())
     }
@@ -51,10 +57,38 @@ impl Rates<'_, '_> {
     }
 }
 
-/// The plugin's `config.json` decoded into `T`, for interceptors. It is parsed on every call; keep it small or cache it.
+/// The plugin's settings decoded into `T`, for interceptors. They are parsed on every call; keep them small or cache them.
 pub fn configured<T: DeserializeOwned>() -> Result<T, String> {
-    let text = unsafe { &*CONFIG.0.get() };
-    serde_json::from_str(text.as_deref().unwrap_or("{}")).map_err(|error| error.to_string())
+    serde_json::from_str(configuration()).map_err(|error| error.to_string())
+}
+
+/// One setting of the plugin, by its `info.json` key, for interceptors.
+pub fn setting<T: DeserializeOwned>(key: &str) -> Result<T, String> {
+    setting_of(configuration(), key)
+}
+
+/// The plugin's `info.json`: its title, description and settings with their defaults.
+pub fn plugin_manifest() -> Result<PluginManifest, String> {
+    let text = unsafe { *MANIFEST.0.get() };
+    PluginManifest::parse(text.ok_or("Only plugins have a manifest")?)
+}
+
+/// Gives [`configured`] and [`setting`] the defaults of `info_json`, as the host would, for a plugin's unit tests:
+/// `script_sdk_2::plugin::configure_for_test(include_str!("../info.json"))`.
+pub fn configure_for_test(info_json: &str) {
+    let defaults = PluginManifest::parse(info_json).expect("info.json").defaults();
+    unsafe { *CONFIG.0.get() = Some(serde_json::Value::Object(defaults).to_string()) };
+}
+
+fn configuration() -> &'static str {
+    unsafe { &*CONFIG.0.get() }.as_deref().unwrap_or("{}")
+}
+
+fn setting_of<T: DeserializeOwned>(settings: &str, key: &str) -> Result<T, String> {
+    let settings: serde_json::Map<String, serde_json::Value> =
+        serde_json::from_str(settings).map_err(|error| format!("Invalid plugin configuration: {error}"))?;
+    let value = settings.get(key).ok_or_else(|| format!("Plugin setting {key} is not declared in info.json"))?;
+    T::deserialize(value).map_err(|error| format!("Plugin setting {key}: {error}"))
 }
 
 /// The messages the host exchanges with a plugin outside of script runs. A module runs on one thread.
@@ -63,6 +97,12 @@ unsafe impl<T> Sync for Shared<T> {}
 
 static BUFFER: Shared<[u8; PLUGIN_BUFFER_BYTES]> = Shared(UnsafeCell::new([0; PLUGIN_BUFFER_BYTES]));
 static CONFIG: Shared<Option<String>> = Shared(UnsafeCell::new(None));
+static MANIFEST: Shared<Option<&'static str>> = Shared(UnsafeCell::new(None));
+
+#[doc(hidden)]
+pub fn set_manifest(info_json: &'static str) {
+    unsafe { *MANIFEST.0.get() = Some(info_json) };
+}
 
 #[doc(hidden)]
 pub fn buffer_address() -> u32 {
@@ -85,9 +125,12 @@ fn write_buffer(bytes: &[u8]) -> i32 {
     }
 }
 
+/// Writes the plugin's [`PluginInfo`]; an `info.json` that does not decode answers -1, which the host refuses.
 #[doc(hidden)]
-pub fn export_info(info: &PluginInfo) -> i32 {
-    serde_json::to_vec(info).map_or(-1, |bytes| write_buffer(&bytes))
+pub fn export_info(info_json: &'static str, info: impl FnOnce(PluginManifest) -> PluginInfo) -> i32 {
+    set_manifest(info_json);
+    let Ok(manifest) = PluginManifest::parse(info_json) else { return -1 };
+    serde_json::to_vec(&info(manifest)).map_or(-1, |bytes| write_buffer(&bytes))
 }
 
 #[doc(hidden)]
@@ -149,6 +192,9 @@ mod tests {
         });
         let ctx = Ctx::new(&transport);
         assert_eq!(ctx.plugin_config::<Settings>().unwrap().multiplier, 3);
+        assert_eq!(ctx.plugin_setting::<u32>("multiplier").unwrap(), 3);
+        assert!(ctx.plugin_setting::<u32>("divider").is_err(), "a key info.json does not declare");
+        assert!(ctx.plugin_setting::<String>("multiplier").is_err(), "a value of another type does not decode");
         ctx.rates().set(Rate::BaseExp, 300).unwrap();
         assert_eq!(ctx.rates().get(Rate::BaseExp), Ok(300));
         assert!(transport.requests().contains(&Request::Call { function: Function::SetRate, arguments: vec!["BaseExp".into(), 300.into()] }));

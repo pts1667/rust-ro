@@ -40,7 +40,7 @@ config/plugins/<name>/
   plugin.wasm     the module
   npcs.json       optional, same shape as config/wasm/npcs.json without `module`
   events.json     optional, same shape as config/wasm/events.json
-  config.json     optional, the plugin's own settings
+config/plugins/<name>.json   optional, the operator's overrides of the plugin's settings
 ```
 - `scripting.plugins_dir` (default `config/plugins`) and `scripting.plugins` (the plugins to load, in order; empty loads none).
   A plugin is never loaded just because its folder exists. An entry is a name, or an object
@@ -75,9 +75,13 @@ config/plugins/<name>/
 - **Init.** `Entry::PluginInit` runs once per plugin, in load order, queued after the base `OnInit` events. It runs like an
   event with no player attached. Dialogue windows are refused in runs without an NPC (init and hooks), and announcements there
   are allowed for the whole server only.
-- **Configuration.** `config.json` is read and validated at boot and handed to the plugin as JSON text: `ctx.plugin_config::<T>()`
-  decodes it with serde (`ctx.plugin_config_json()` gives the text). The runtime answers `PluginConfig` itself, without a game
-  loop round trip. A plugin never touches the filesystem.
+- **Configuration.** The plugin's crate has an `info.json` (title, description, settings with defaults and descriptions) that
+  `plugin_module!` compiles into the module and `plugin_info` reports (`PluginManifest`, ABI 3). At boot the server overlays the
+  operator's `config/plugins/<name>.json` on the defaults, refusing undeclared keys and values of another JSON type, and hands
+  the result to the plugin as one JSON object: `ctx.plugin_setting(key)` reads a key, `ctx.plugin_config::<T>()` decodes them
+  all. The runtime answers `PluginConfig` itself, without a game loop round trip. A plugin never touches the filesystem.
+  Defaults live in the module rather than in a file of the package so that they cannot drift from the code that reads them,
+  and the operator's file holds only what they changed (the first version read a whole `config.json` from the package).
 - **Capabilities.** A plugin lists what it needs: `Dialogue`, `World` (warps, spawns, map flags, NPCs, instances), `Economy`
   (items, zeny, shops, storage), `Character` (job, levels, skills, statuses, quests), `Rates`, `Accounts`, `Broadcast`.
   `Character` was added to the original list: changing a character is neither world nor economy. Every `Function` belongs to

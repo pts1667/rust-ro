@@ -1,0 +1,25 @@
+{
+  "title": "Curio Trader",
+  "description": "A shop in its own plugin window (nostalro-client), with a level up notification above the player. Bots can read the stock and buy.",
+  "config": {
+    "title": { "default": "Curio Trader", "description": "Title of the shop window." },
+    "greeting": { "default": "Potions, wings and arrows, all at a fair price. Pick an amount, then press Buy.", "description": "Text above the stock." },
+    "max_amount": { "default": 100, "description": "Most items of one kind bought at once." },
+    "level_up_overhead": { "default": true, "description": "Shows LEVEL UP above a player who levels up." },
+    "stock": {
+      "default": [
+        { "item_id": 501, "price": 40 },
+        { "item_id": 502, "price": 160 },
+        { "item_id": 503, "price": 440 },
+        { "item_id": 504, "price": 1000 },
+        { "item_id": 505, "price": 4000 },
+        { "item_id": 506, "price": 32 },
+        { "item_id": 601, "price": 48 },
+        { "item_id": 602, "price": 240 },
+        { "item_id": 611, "price": 32 },
+        { "item_id": 1750, "price": 1 }
+      ],
+      "description": "Items on sale: item_id and price in zeny."
+    }
+  }
+}

@@ -3,7 +3,7 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 
 use async_trait::async_trait;
 use script_runtime::{Host, Limits, WasmRuntime};
-use script_sdk::{Entry, Reply, Request, Value};
+use script_sdk::{ABI_VERSION, Entry, Reply, Request, Value};
 
 struct CountingHost {
     count: Arc<AtomicUsize>,
@@ -42,7 +42,7 @@ async fn links_typed_host_requests() {
     let (count, result) = execute(
         module(
             "i32.const 0 i32.const 11 i32.const 64 i32.const 256 call $invoke drop i32.const 0",
-            2,
+            ABI_VERSION,
         ),
         Limits::default(),
     )
@@ -56,7 +56,7 @@ async fn invalid_response_memory_never_calls_host() {
     let (count, result) = execute(
         module(
             "i32.const 0 i32.const 11 i32.const 65530 i32.const 256 call $invoke drop i32.const 0",
-            2,
+            ABI_VERSION,
         ),
         Limits::default(),
     )
@@ -83,7 +83,7 @@ async fn rejects_wrong_abi_before_host_actions() {
 async fn limits_host_call_count() {
     let body = "i32.const 0 i32.const 11 i32.const 64 i32.const 256 call $invoke drop i32.const 0 i32.const 11 i32.const 64 i32.const 256 \
                 call $invoke drop i32.const 0";
-    let (count, result) = execute(module(body, 2), Limits {
+    let (count, result) = execute(module(body, ABI_VERSION), Limits {
         host_calls: 1,
         ..Limits::default()
     })
@@ -94,7 +94,7 @@ async fn limits_host_call_count() {
 
 #[tokio::test]
 async fn denies_guest_memory_growth_past_limit() {
-    let (_, result) = execute(module("i32.const 1 memory.grow i32.const -1 i32.ne", 2), Limits {
+    let (_, result) = execute(module("i32.const 1 memory.grow i32.const -1 i32.ne", ABI_VERSION), Limits {
         memory_bytes: 65_536,
         ..Limits::default()
     })
@@ -104,7 +104,7 @@ async fn denies_guest_memory_growth_past_limit() {
 
 #[tokio::test]
 async fn guest_start_function_cannot_call_game_api() {
-    let bytes = String::from_utf8(module("i32.const 0", 2)).unwrap();
+    let bytes = String::from_utf8(module("i32.const 0", ABI_VERSION)).unwrap();
     let start = "(func $start i32.const 0 i32.const 11 i32.const 64 i32.const 256 call $invoke drop) (start $start)";
     let bytes = format!("{}{start})", bytes.trim_end().strip_suffix(')').unwrap()).into_bytes();
     let (count, result) = execute(bytes, Limits::default()).await;
@@ -125,7 +125,7 @@ async fn asynchronous_host_call_suspends_without_blocking_executor() {
     let runtime = WasmRuntime::from_bytes(
         &module(
             "i32.const 0 i32.const 11 i32.const 64 i32.const 256 call $invoke drop i32.const 0",
-            2,
+            ABI_VERSION,
         ),
         Limits::default(),
     )
@@ -160,7 +160,7 @@ async fn named_module_receives_the_entry_it_runs() {
         "i32.const 64 i32.const 256 call $entry i32.const {NAMED_ENTRY_LENGTH} i32.eq \
          i32.const 64 i32.load8_u i32.const 123 i32.eq i32.and i32.eqz"
     );
-    let runtime = WasmRuntime::from_bytes(&named_module(&body, 2), Limits::default()).unwrap();
+    let runtime = WasmRuntime::from_bytes(&named_module(&body, ABI_VERSION), Limits::default()).unwrap();
     let count = Arc::new(AtomicUsize::new(0));
     let entry = Entry::Npc("prontera_guard".into());
     let (_, result) = runtime.execute_named(CountingHost { count: count.clone() }, &entry).await;
@@ -169,7 +169,7 @@ async fn named_module_receives_the_entry_it_runs() {
 
 #[tokio::test]
 async fn entry_larger_than_the_guest_buffer_is_rejected() {
-    let runtime = WasmRuntime::from_bytes(&named_module("i32.const 64 i32.const 8 call $entry drop i32.const 0", 2), Limits::default()).unwrap();
+    let runtime = WasmRuntime::from_bytes(&named_module("i32.const 64 i32.const 8 call $entry drop i32.const 0", ABI_VERSION), Limits::default()).unwrap();
     let count = Arc::new(AtomicUsize::new(0));
     let entry = Entry::Npc("prontera_guard".into());
     let (_, result) = runtime.execute_named(CountingHost { count }, &entry).await;

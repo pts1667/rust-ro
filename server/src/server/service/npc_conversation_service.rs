@@ -5,6 +5,7 @@ use tokio::sync::mpsc;
 
 use crate::server::model::events::client_notification::{CharNotification, Notification};
 use crate::server::model::events::game_event::NpcContact;
+use crate::server::model::events::map_event::{MapEvent, ScriptMapCommand};
 use crate::server::script::NpcScriptHost;
 use crate::server::state::server::ServerState;
 use crate::server::Server;
@@ -18,10 +19,16 @@ impl Server {
         let map_instance = character.current_map_instance();
         let map_item = state.map_item(contact.npc_id, map_name, map_instance).ok_or("NPC is not on this map")?;
         let script = state.map_item_script(&map_item, map_name, map_instance).ok_or("NPC has no compiled program")?;
-        if state.get_map_instance(map_name, map_instance).is_some_and(|instance| instance.state().script_skill_state.npcs.get(&contact.npc_id).is_some_and(|npc| npc.hidden)) {
+        let instance = state.get_map_instance(map_name, map_instance);
+        let (hidden, walking) = instance.as_ref().and_then(|instance| instance.state().script_skill_state.npcs.get(&contact.npc_id).map(|npc| (npc.hidden, npc.walk.is_some()))).unwrap_or_default();
+        if hidden {
             return Err("NPC is disabled".into());
         }
         if character.x.abs_diff(script.x).max(character.y.abs_diff(script.y)) > crate::server::PLAYER_FOV { return Err("NPC is out of range".into()); }
+        // rathena stops a walking NPC that is clicked.
+        if let Some(instance) = instance.filter(|_| walking) {
+            instance.add_to_next_tick(MapEvent::ScriptMapCommand(ScriptMapCommand::NpcStop { npc_id: contact.npc_id }));
+        }
         let server = self.shared().ok_or("NPC runtime is not bound")?;
         let (sender, receiver) = mpsc::channel(4);
         let generation = session.set_script_handler_channel_sender(sender);

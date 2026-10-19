@@ -171,6 +171,8 @@ pub struct Mob {
     pub bg_id: u32,
     pub damage_immune: bool,
     pub steal_flags: u8,
+    /// Set by `unitwalk`: the AI leaves the monster alone until the walk ends.
+    pub forced_walk: Option<crate::server::model::events::map_event::ForcedWalk>,
 }
 
 pub struct MobMovement {
@@ -657,6 +659,7 @@ impl Mob {
             bg_id: 0,
             damage_immune: false,
             steal_flags: 0,
+            forced_walk: None,
         }
     }
 

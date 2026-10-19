@@ -10,6 +10,7 @@ fn main() {
     let scripts = root.join("scripts");
     let destination = root.join("config/wasm/modules");
     std::fs::create_dir_all(&destination).expect("Cannot create Wasm module directory");
+    check_plugin_manifests(&scripts);
 
     let status = Command::new("cargo")
         .current_dir(root)
@@ -44,6 +45,23 @@ fn main() {
         }
     }
     println!("Built {} modules into config/wasm/modules and {plugins} plugins into config/plugins", installed.len());
+}
+
+/// `plugin_module!` compiles each plugin's `info.json` into it, and a module with an invalid one is refused at boot with
+/// little detail, so the build checks them first.
+fn check_plugin_manifests(scripts: &Path) {
+    let mut invalid = false;
+    for directory in module_directories(scripts).into_iter().filter(|directory| directory.parent().is_some_and(|parent| parent.ends_with("plugins"))) {
+        let path = directory.join("info.json");
+        let checked = std::fs::read_to_string(&path).map_err(|error| format!("cannot read it: {error}")).and_then(|text| script_sdk::PluginManifest::parse(&text));
+        if let Err(error) = checked {
+            eprintln!("{}: {error}", path.display());
+            invalid = true;
+        }
+    }
+    if invalid {
+        std::process::exit(1);
+    }
 }
 
 /// Crates one or two levels below `scripts/` whose manifest declares a `cdylib`.

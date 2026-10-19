@@ -1,6 +1,7 @@
 //! Example plugin of custom UI (`docs/plugin-ui.md`): the Curio Trader in Prontera opens a shop window with an animated
 //! coin, a scrolling table of items and an amount input, a level up shows a notification above the player, and bots can
-//! read the stock and buy through a plugin action. Settings are in `config/plugins/ui_shop/config.json`.
+//! read the stock and buy through a plugin action. Settings and their defaults are in `info.json`;
+//! `config/plugins/ui_shop.json` overrides them.
 
 use script_sdk_2::ui::{Align, Easing, EventKind, ImageRef, Node, Overhead, Table, UiEvent, Window};
 use script_sdk_2::{Above, BotAction, Ctx, Hook, LevelKind, Script, Stop, bot_args};
@@ -22,19 +23,12 @@ const WINDOW: &str = "shop";
 const SHOP_OPEN: &str = "@ui_shop_open";
 
 #[derive(Deserialize)]
-#[serde(default)]
 struct Settings {
     title: String,
     greeting: String,
     max_amount: i32,
     level_up_overhead: bool,
     stock: Vec<Offer>,
-}
-
-impl Default for Settings {
-    fn default() -> Self {
-        Self { title: "Curio Trader".into(), greeting: String::new(), max_amount: 100, level_up_overhead: true, stock: Vec::new() }
-    }
 }
 
 #[derive(Deserialize, Clone, Copy)]
@@ -224,7 +218,13 @@ mod tests {
     use super::*;
 
     fn settings() -> Settings {
-        Settings { stock: vec![Offer { item_id: 501, price: 40 }, Offer { item_id: 1750, price: 1 }], ..Settings::default() }
+        Settings {
+            title: "Curio Trader".into(),
+            greeting: String::new(),
+            max_amount: 100,
+            level_up_overhead: true,
+            stock: vec![Offer { item_id: 501, price: 40 }, Offer { item_id: 1750, price: 1 }],
+        }
     }
 
     fn host(zeny: i32, can_carry: bool) -> MockTransport {

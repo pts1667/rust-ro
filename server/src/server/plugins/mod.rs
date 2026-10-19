@@ -77,6 +77,8 @@ pub struct LoadedPlugin {
     pub init_handle: u32,
     pub npcs: Vec<PluginNpc>,
     pub events: BTreeMap<String, PluginEvent>,
+    /// The defaults of the plugin's `info.json` with the overrides of `<plugins_dir>/<name>.json`, as the plugin reads them.
+    pub settings: serde_json::Map<String, serde_json::Value>,
     /// The plugin's folder; files of its `ui/` subfolder are served to clients as `plugin/<name>/...`.
     pub folder: PathBuf,
     hooks: u32,
@@ -107,19 +109,16 @@ impl LoadedPlugin {
         self.interceptors & kind.bit() != 0 && self.disabled.load(Ordering::Relaxed) & kind.bit() == 0
     }
 
-    fn load(folder: &Path, setting: &PluginSetting, loaded: &[LoadedPlugin]) -> Result<Self, String> {
+    fn load(plugins_dir: &Path, setting: &PluginSetting, loaded: &[LoadedPlugin]) -> Result<Self, String> {
         let name = setting.name();
         let refuse = |reason: String| format!("Plugin {name} is refused: {reason}");
-        let config = match std::fs::read_to_string(folder.join("config.json")) {
-            Ok(text) => {
-                serde_json::from_str::<serde_json::Value>(&text).map_err(|error| refuse(format!("config.json is invalid: {error}")))?;
-                text
-            }
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => "{}".into(),
-            Err(error) => return Err(refuse(format!("cannot read config.json: {error}"))),
-        };
+        let folder = plugins_dir.join(name);
+        let overrides = plugins_dir.join(format!("{name}.json"));
+        if folder.join("config.json").exists() {
+            return Err(refuse(format!("its settings moved from {} to {}", folder.join("config.json").display(), overrides.display())));
+        }
         let module = WasmRuntime::open(folder.join("plugin.wasm")).map_err(refuse)?;
-        let info = PluginSandbox::new(&module).info().map_err(|error| refuse(format!("plugin_info failed: {error}")))?;
+        let info = PluginSandbox::new(&module).info().map_err(|error| refuse(format!("plugin_info failed (is its info.json valid?): {error}")))?;
         if info.name != name {
             return Err(refuse(format!("it calls itself {}, not after its folder", info.name)));
         }
@@ -129,6 +128,10 @@ impl LoadedPlugin {
         if let Some(missing) = info.requires.iter().find(|required| !loaded.iter().any(|plugin| plugin.name() == required.as_str())) {
             return Err(refuse(format!("it requires {missing}, which must be listed and enabled before it")));
         }
+        let settings = match read_optional::<serde_json::Value>(&overrides).map_err(refuse)? {
+            Some(overrides_json) => info.manifest.configure(&overrides_json).map_err(|error| refuse(format!("{}: {error}", overrides.display())))?,
+            None => info.manifest.defaults(),
+        };
         let declared: Capabilities = info.capabilities.iter().copied().collect();
         let capabilities = match setting.capabilities() {
             Some(names) => declared.intersection(names.iter().map(|name| capability(name)).collect::<Result<_, _>>().map_err(refuse)?),
@@ -136,6 +139,7 @@ impl LoadedPlugin {
         };
         let npcs = read_optional(&folder.join("npcs.json")).map_err(refuse)?.unwrap_or_default();
         let events = read_optional(&folder.join("events.json")).map_err(refuse)?.unwrap_or_default();
+        let config = serde_json::Value::Object(settings.clone()).to_string();
         let runtime = Arc::new(module.with_plugin(PluginPolicy { name: name.into(), capabilities, config }));
         let module = format!("plugin:{name}");
         Ok(Self {
@@ -144,7 +148,8 @@ impl LoadedPlugin {
             module,
             npcs,
             events,
-            folder: folder.to_path_buf(),
+            settings,
+            folder,
             hooks: info.hooks.iter().fold(0, |bits, kind| bits | kind.bit()),
             interceptors: info.interceptors.iter().fold(0, |bits, kind| bits | kind.bit()),
             sandbox: Mutex::new(PluginSandbox::new(&runtime)),
@@ -191,11 +196,12 @@ impl Plugins {
             if list.iter().any(|plugin| plugin.name() == setting.name()) {
                 return Err(format!("Plugin {} is listed twice", setting.name()));
             }
-            let plugin = LoadedPlugin::load(&Path::new(&config.plugins_dir).join(setting.name()), setting, &list)?;
+            let plugin = LoadedPlugin::load(Path::new(&config.plugins_dir), setting, &list)?;
             info!(
-                "Loaded plugin {} {} (capabilities {:?}, hooks {:?}, interceptors {:?})",
+                "Loaded plugin {} {} \"{}\" (capabilities {:?}, hooks {:?}, interceptors {:?})",
                 plugin.name(),
                 plugin.info.version,
+                plugin.info.manifest.title,
                 plugin.capabilities.iter().collect::<Vec<_>>(),
                 plugin.info.hooks,
                 plugin.info.interceptors

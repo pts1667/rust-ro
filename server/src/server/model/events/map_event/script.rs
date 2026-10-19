@@ -71,6 +71,30 @@ pub enum ScriptMapCommand {
         y: u16,
         dir: Option<u16>,
     },
+    NpcWalk {
+        npc_id: u32,
+        x: u16,
+        y: u16,
+        on_arrival: Option<ScriptNpcCallback>,
+        /// `unitwalk` rather than `npcwalkto`: a second `unitwalk` is refused until this one ends.
+        forced: bool,
+    },
+    MobWalk {
+        mob_id: u32,
+        x: u16,
+        y: u16,
+        on_arrival: Option<ScriptNpcCallback>,
+    },
+    MobStop {
+        mob_id: u32,
+    },
+    NpcStop {
+        npc_id: u32,
+    },
+    NpcSpeed {
+        npc_id: u32,
+        speed: u16,
+    },
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -102,6 +126,21 @@ pub struct ScriptNpcCallback {
     pub npc_id: u32,
     pub scope_instance: u8,
     pub entry_id: u32,
+}
+
+/// A walk started by `unitwalk`: the arrival label runs only when the unit stops on `destination` of `map`, so a unit
+/// that walks elsewhere or changes maps drops it.
+#[derive(Debug, PartialEq, Clone)]
+pub struct ForcedWalk {
+    pub map: crate::server::model::map_instance::MapInstanceKey,
+    pub destination: (u16, u16),
+    pub on_arrival: Option<ScriptNpcCallback>,
+}
+
+impl ForcedWalk {
+    pub fn arrived(&self, map: &crate::server::model::map_instance::MapInstanceKey, position: (u16, u16)) -> bool {
+        self.map == *map && self.destination == position
+    }
 }
 
 #[derive(Debug, PartialEq, Clone)]

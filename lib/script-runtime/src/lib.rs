@@ -75,7 +75,8 @@ fn owned_arity(function: Function) -> Option<usize> {
 pub struct PluginPolicy {
     pub name: String,
     pub capabilities: Capabilities,
-    /// The plugin's `config.json`, answered to `PluginConfig` without a round trip to the game loop.
+    /// The plugin's settings (`info.json` defaults with the operator's overrides) as a JSON object, answered to
+    /// `PluginConfig` without a round trip to the game loop.
     pub config: String,
 }
 

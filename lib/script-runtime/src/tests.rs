@@ -18,14 +18,19 @@ fn module(wat: &str, cpu_ms: u64) -> WasmRuntime {
     WasmRuntime::from_bytes(wat.as_bytes(), Limits { cpu_ms, ..Limits::default() }).unwrap()
 }
 
-const SPIN: &str = r#"(module
-    (func (export "script_abi") (result i32) i32.const 2)
-    (func (export "script_run") (result i32) (loop $forever br $forever) i32.const 0))"#;
+fn spin() -> String {
+    format!(
+        r#"(module
+    (func (export "script_abi") (result i32) i32.const {})
+    (func (export "script_run") (result i32) (loop $forever br $forever) i32.const 0))"#,
+        script_sdk::ABI_VERSION
+    )
+}
 
 #[tokio::test(flavor = "current_thread")]
 async fn a_guest_that_never_calls_the_host_traps_after_its_cpu_budget() {
     let started = std::time::Instant::now();
-    let (_, result) = module(SPIN, 50).execute_named(NoHost, &Entry::Npc("spin".into())).await;
+    let (_, result) = module(&spin(), 50).execute_named(NoHost, &Entry::Npc("spin".into())).await;
     let error = result.unwrap_err();
     assert!(error.contains("CPU budget of 50 ms"), "{error}");
     assert!(started.elapsed() < Duration::from_secs(5), "took {:?}", started.elapsed());
@@ -34,7 +39,7 @@ async fn a_guest_that_never_calls_the_host_traps_after_its_cpu_budget() {
 #[tokio::test(flavor = "current_thread")]
 async fn a_long_run_yields_its_thread_to_other_tasks() {
     let timer = tokio::spawn(async { tokio::time::sleep(Duration::from_millis(10)).await; std::time::Instant::now() });
-    let runtime = module(SPIN, 300);
+    let runtime = module(&spin(), 300);
     let (_, result) = runtime.execute_named(NoHost, &Entry::Npc("spin".into())).await;
     let ended = std::time::Instant::now();
     assert!(result.is_err());

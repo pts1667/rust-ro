@@ -53,6 +53,9 @@ mod unit_data;
 pub(crate) use unit_data::npc_entry_packet;
 #[path = "map_npc_effect.rs"]
 pub(crate) mod npc_effect;
+#[path = "map_unit_walk.rs"]
+mod unit_walk;
+pub(crate) use unit_walk::{mob_can_walk, npc_can_walk_to, npc_walk_packet, walk_path};
 #[path = "map_ground_trap.rs"]
 mod ground_trap;
 
@@ -908,6 +911,13 @@ impl MapInstanceService {
             if mob.summon_ai == 2 {
                 continue;
             }
+            // A monster walked by `unitwalk` neither looks for targets nor wanders until the walk ends, as in rathena.
+            if mob.forced_walk.is_some() {
+                if crate::server::model::movement::Movable::is_moving(mob) {
+                    continue;
+                }
+                mob.forced_walk = None;
+            }
             if !ground_items.is_empty() {
                 match self.mob_service.loot_ai(mob, &ground_items, cells.as_ref(), x_size, y_size, tick) {
                     Some(LootAction::Walk(movement)) => {
@@ -1736,6 +1746,7 @@ impl MapInstanceService {
                     return;
                 }
                 npc.hidden = !visible;
+                npc.walk = None;
                 if visible {
                     state.insert_item(MapItem::new(npc.id, npc.sprite as i16, MapItemType::Npc));
                     self.refresh_npc(state, &npc);
@@ -1765,12 +1776,18 @@ impl MapInstanceService {
                 npc.x = x;
                 npc.y = y;
                 npc.dir = dir.unwrap_or(npc.dir);
+                npc.walk = None;
                 if !npc.hidden {
                     state.insert_item(MapItem::new(npc.id, npc.sprite as i16, MapItemType::Npc));
                     self.refresh_npc(state, &npc);
                 }
                 state.script_skill_state.npcs.insert(npc_id, npc);
             }
+            ScriptMapCommand::NpcWalk { npc_id, x, y, on_arrival, forced } => self.start_npc_walk(state, npc_id, (x, y), on_arrival, forced, get_tick()),
+            ScriptMapCommand::MobWalk { mob_id, x, y, on_arrival } => self.start_mob_walk(state, mob_id, (x, y), on_arrival, get_tick()),
+            ScriptMapCommand::MobStop { mob_id } => self.stop_mob_walk(state, mob_id),
+            ScriptMapCommand::NpcStop { npc_id } => self.stop_npc_walk(state, npc_id),
+            ScriptMapCommand::NpcSpeed { npc_id, speed } => self.set_npc_speed(state, npc_id, speed),
             ScriptMapCommand::FlagEmblem { castle_map, guild_id, version } => {
                 let flags: Vec<u32> = state
                     .script_skill_state

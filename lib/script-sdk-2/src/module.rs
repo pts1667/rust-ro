@@ -132,7 +132,8 @@ macro_rules! pet_module {
 ///
 /// `requires` and `capabilities` may be left out, and so may `windows` (handlers of the plugin's windows, by window
 /// id) and `bot_actions` (actions offered to bots, with their description). NPC and event names must be unique and
-/// in ascending order.
+/// in ascending order. The crate's `info.json` (title, description, settings and their defaults, see
+/// [`PluginManifest`](crate::PluginManifest)) is compiled into the module.
 #[macro_export]
 macro_rules! plugin_module {
     (
@@ -154,6 +155,9 @@ macro_rules! plugin_module {
         const _: () = assert!($crate::registry::is_strictly_sorted(&[$($npc),*]), "NPC names must be unique and sorted");
         const _: () = assert!($crate::registry::is_strictly_sorted(&[$($event),*]), "Event names must be unique and sorted");
 
+        #[doc(hidden)]
+        pub const PLUGIN_MANIFEST: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/info.json"));
+
         #[no_mangle]
         pub extern "C" fn script_abi() -> u32 {
             $crate::registry::ABI
@@ -161,6 +165,7 @@ macro_rules! plugin_module {
 
         #[no_mangle]
         pub extern "C" fn script_run() -> i32 {
+            $crate::plugin::set_manifest(PLUGIN_MANIFEST);
             const NPCS: &[(&str, $crate::registry::ScriptFn)] = &[$(($npc, $npc_script)),*];
             const EVENTS: &[(&str, $crate::registry::ScriptFn)] = &[$(($event, $event_script)),*];
             const HOOKS: &[($crate::HookKind, $crate::HookFn)] = &[$(($crate::HookKind::$hook, $hook_script)),*];
@@ -184,7 +189,7 @@ macro_rules! plugin_module {
 
         #[no_mangle]
         pub extern "C" fn plugin_info(_length: u32) -> i32 {
-            $crate::plugin::export_info(&$crate::PluginInfo {
+            $crate::plugin::export_info(PLUGIN_MANIFEST, |manifest| $crate::PluginInfo {
                 name: $name.into(),
                 version: $version.into(),
                 sdk_abi: $crate::registry::ABI,
@@ -194,16 +199,19 @@ macro_rules! plugin_module {
                 interceptors: vec![$($crate::InterceptorKind::$interceptor),*],
                 windows: vec![$($($window.into()),*)?],
                 bot_actions: vec![$($($crate::BotActionInfo { name: $action.into(), description: $action_description.into() }),*)?],
+                manifest,
             })
         }
 
         #[no_mangle]
         pub extern "C" fn plugin_configure(length: u32) -> i32 {
+            $crate::plugin::set_manifest(PLUGIN_MANIFEST);
             $crate::plugin::export_configure(length)
         }
 
         #[no_mangle]
         pub extern "C" fn plugin_intercept(length: u32) -> i32 {
+            $crate::plugin::set_manifest(PLUGIN_MANIFEST);
             const INTERCEPTORS: &[($crate::InterceptorKind, $crate::InterceptFn)] = &[$(($crate::InterceptorKind::$interceptor, $interceptor_fn)),*];
             $crate::plugin::export_intercept(INTERCEPTORS, length)
         }

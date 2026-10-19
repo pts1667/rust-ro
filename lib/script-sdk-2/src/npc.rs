@@ -71,6 +71,32 @@ impl Npc<'_, '_> {
         self.info(4)
     }
 
+    /// Starts `npc` (the current NPC when `None`) walking to `(x, y)` on its map and returns at once. False when no path
+    /// leads there: paths are short, like a click on the ground, so a long route is a chain of walks.
+    pub fn walk_to(&self, npc: Option<&str>, x: i32, y: i32) -> Result<bool, Stop> {
+        let mut arguments = args![x, y];
+        arguments.extend(npc.map(Val::from));
+        Ok(self.ctx.call(Function::NpcWalkTo, arguments)?.number()? != 0)
+    }
+
+    /// [`walk_to`](Self::walk_to), then runs `event` (`"Npc::OnLabel"`, without a player) when the NPC arrives. A stop,
+    /// another walk or a jump (`movenpc`, knockback) drops the event.
+    pub fn walk_to_then(&self, npc: Option<&str>, x: i32, y: i32, event: &str) -> Result<bool, Stop> {
+        Ok(self.ctx.call(Function::NpcWalkTo, args![x, y, npc.unwrap_or(""), event])?.number()? != 0)
+    }
+
+    /// Stops `npc` (the current NPC when `None`) on the cell it is entering.
+    pub fn stop_walking(&self, npc: Option<&str>) -> Script {
+        self.ctx.call(Function::NpcStop, npc.map(|npc| args![npc]).unwrap_or_default()).map(|_| ())
+    }
+
+    /// Walking speed of `npc` (the current NPC when `None`) in milliseconds per cell, from 20 to 1000; NPCs start at 200.
+    pub fn set_walk_speed(&self, npc: Option<&str>, speed: i32) -> Script {
+        let mut arguments = args![speed];
+        arguments.extend(npc.map(Val::from));
+        self.ctx.call(Function::NpcSpeed, arguments).map(|_| ())
+    }
+
     fn info(&self, kind: i32) -> Result<String, Stop> {
         self.ctx.call(Function::StrNpcInfo, args![kind]).map(|value| value.text())
     }
@@ -119,6 +145,35 @@ mod tests {
         let calls = transport.calls(Function::GetNpcId);
         assert_eq!(calls[0], vec![Value::new_number(0)]);
         assert_eq!(calls[1], vec![Value::new_number(0), Value::new_string("Guard".into())]);
+    }
+
+    #[test]
+    fn walking_names_the_npc_only_when_given_and_keeps_its_place_for_the_event() {
+        let transport = MockTransport::new(|_| Ok(Value::Number(1)));
+        let ctx = Ctx::new(&transport);
+        assert_eq!(ctx.npc().walk_to(None, 10, 12), Ok(true));
+        ctx.npc().walk_to(Some("Baker"), 10, 12).unwrap();
+        ctx.npc().walk_to_then(None, 10, 12, "Baker::OnOven").unwrap();
+        let calls = transport.calls(Function::NpcWalkTo);
+        assert_eq!(calls[0], vec![Value::new_number(10), Value::new_number(12)]);
+        assert_eq!(calls[1][2], Value::new_string("Baker".into()));
+        assert_eq!(calls[2][2..], [Value::new_string(String::new()), Value::new_string("Baker::OnOven".into())]);
+    }
+
+    #[test]
+    fn walk_to_is_false_without_a_path() {
+        let transport = MockTransport::new(|_| Ok(Value::Number(0)));
+        assert_eq!(Ctx::new(&transport).npc().walk_to(None, 10, 12), Ok(false));
+    }
+
+    #[test]
+    fn stop_and_speed_name_the_npc_only_when_given() {
+        let transport = MockTransport::silent();
+        let ctx = Ctx::new(&transport);
+        ctx.npc().stop_walking(None).unwrap();
+        ctx.npc().set_walk_speed(Some("Baker"), 400).unwrap();
+        assert_eq!(transport.calls(Function::NpcStop), vec![vec![]]);
+        assert_eq!(transport.calls(Function::NpcSpeed), vec![vec![Value::new_number(400), Value::new_string("Baker".into())]]);
     }
 
     #[test]

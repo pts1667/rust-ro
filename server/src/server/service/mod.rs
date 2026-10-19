@@ -14,6 +14,8 @@ pub(crate) mod cell_status_service;
 pub(crate) mod battleground_queue_service;
 pub(crate) mod script_map_commands;
 pub(crate) mod script_npc_commands;
+pub(crate) mod script_npc_walk;
+pub(crate) mod script_unit_walk;
 pub(crate) mod instance_service;
 pub(crate) mod script_refine_service;
 pub(crate) mod skill_menu_service;

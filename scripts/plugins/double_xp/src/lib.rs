@@ -1,4 +1,5 @@
-//! Example plugin: an experience and drop rate event. Its settings are in `config/plugins/double_xp/config.json`.
+//! Example plugin: an experience and drop rate event. Its settings and their defaults are in `info.json`;
+//! `config/plugins/double_xp.json` overrides them.
 
 use script_sdk_2::constants::BC_ALL;
 use script_sdk_2::{Ctx, Hook, Interception, Rate, Script, Verdict};
@@ -17,7 +18,6 @@ script_sdk_2::plugin_module! {
 }
 
 #[derive(Deserialize)]
-#[serde(default)]
 struct Settings {
     /// Percent of the experience a monster gives.
     exp_percent: u32,
@@ -25,12 +25,6 @@ struct Settings {
     drop_percent: u32,
     /// Kills between two messages to the player.
     milestone: i32,
-}
-
-impl Default for Settings {
-    fn default() -> Self {
-        Self { exp_percent: 200, drop_percent: 100, milestone: 100 }
-    }
 }
 
 const KILLS: &str = "double_xp_kills";
@@ -77,7 +71,7 @@ fn count_kill(ctx: &Ctx, _hook: &Hook) -> Script {
 
 fn scale_experience(interception: &Interception) -> Verdict {
     let Interception::ExpGain { base, job, .. } = interception else { return Verdict::Allow };
-    let percent = script_sdk_2::configured::<Settings>().map_or(100, |settings| settings.exp_percent);
+    let percent = script_sdk_2::setting::<u32>("exp_percent").unwrap_or(100);
     let scale = |exp: &u32| (u64::from(*exp) * u64::from(percent) / 100).min(u64::from(u32::MAX)) as u32;
     Verdict::Exp { base: scale(base), job: scale(job) }
 }
@@ -88,8 +82,9 @@ mod tests {
 
     #[test]
     fn experience_is_scaled_by_the_configured_percent() {
+        script_sdk_2::plugin::configure_for_test(include_str!("../info.json"));
         let gain = Interception::ExpGain { char_id: 1, mob_id: 1002, base: 10, job: 7 };
-        assert_eq!(scale_experience(&gain), Verdict::Exp { base: 20, job: 14 }, "200% without a configuration");
+        assert_eq!(scale_experience(&gain), Verdict::Exp { base: 20, job: 14 }, "200% by default");
         assert_eq!(scale_experience(&Interception::Chat { char_id: 1, map: "prontera".into(), message: "hi".into() }), Verdict::Allow);
     }
 }

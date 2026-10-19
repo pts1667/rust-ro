@@ -324,7 +324,7 @@ impl MapInstanceService {
             let Some(mob) = state.mobs().get(&id) else {
                 continue;
             };
-            if !mob.is_present() || mob.hp() == 0 || mob.script_cast_until > tick {
+            if !mob.is_present() || mob.hp() == 0 || mob.script_cast_until > tick || mob.forced_walk.is_some() {
                 continue;
             }
             let Some(mob_state) = mob_state(mob, just_looted.contains(&id)) else {
