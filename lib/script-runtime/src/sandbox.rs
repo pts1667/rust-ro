@@ -1,6 +1,6 @@
 use std::time::{Duration, Instant};
 
-use script_sdk::{Interception, PLUGIN_BUFFER_BYTES, PluginInfo, Verdict};
+use script_sdk::{Interception, PLUGIN_BUFFER_BYTES, PluginInfo, PluginNpc, PluginNpcPage, Verdict};
 use wasmtime::{Engine, Instance, Linker, Memory, Module, Store, StoreLimits, StoreLimitsBuilder, TypedFunc};
 
 use crate::{MAX_TABLE_ELEMENTS, WasmRuntime};
@@ -104,6 +104,29 @@ impl PluginSandbox {
 
     pub fn info(&mut self) -> Result<PluginInfo, String> {
         self.call::<(), _>("plugin_info", None, u64::from(u16::MAX))
+    }
+
+    /// The NPCs the plugin generates from its settings (`plugin_npcs`, page by page), none when it does not export it.
+    pub fn generated_npcs(&mut self, most: usize) -> Result<Vec<PluginNpc>, String> {
+        let live = self.live()?;
+        if live.instance.get_typed_func::<u32, i32>(&mut live.store, "plugin_npcs").is_err() {
+            return Ok(vec![]);
+        }
+        let mut npcs = Vec::new();
+        loop {
+            let from = npcs.len();
+            let page: Result<PluginNpcPage, String> = self.call("plugin_npcs", Some(&serde_json::json!({ "from": from })), u64::from(u16::MAX))?;
+            let page = page?;
+            npcs.extend(page.npcs);
+            if npcs.len() > most {
+                return Err(format!("more than {most} NPCs"));
+            }
+            match page.next {
+                None => return Ok(npcs),
+                Some(next) if next == npcs.len() && next > from => {}
+                Some(next) => return Err(format!("page from {from} ends at {} but says the next starts at {next}", npcs.len())),
+            }
+        }
     }
 
     /// Asks the plugin about `interception`. The epoch traps a guest that runs past the deadline by a tick or two; an answer

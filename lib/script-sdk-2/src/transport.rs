@@ -16,10 +16,12 @@ impl Transport for WasmTransport {
     }
 }
 
-/// Answers requests with a closure and records them, so scripts run without a host.
+/// Answers requests with a closure and records them, so scripts run without a host. The requests of a batch are answered
+/// and recorded one by one.
 pub struct MockTransport {
     handler: Box<dyn Fn(&Request) -> Reply>,
     requests: RefCell<Vec<Request>>,
+    batches: RefCell<usize>,
 }
 
 impl MockTransport {
@@ -27,12 +29,18 @@ impl MockTransport {
         Self {
             handler: Box::new(handler),
             requests: RefCell::new(Vec::new()),
+            batches: RefCell::new(0),
         }
     }
 
     /// Answers every request with the default value, `0`.
     pub fn silent() -> Self {
         Self::new(|_| Ok(Value::default()))
+    }
+
+    /// How many batches the script sent.
+    pub fn batches(&self) -> usize {
+        *self.batches.borrow()
     }
 
     pub fn requests(&self) -> Vec<Request> {
@@ -57,6 +65,10 @@ impl MockTransport {
 
 impl Transport for MockTransport {
     fn request(&self, request: Request) -> Reply {
+        if let Request::Batch(requests) = request {
+            *self.batches.borrow_mut() += 1;
+            return requests.into_iter().map(|request| self.request(request)).collect::<Result<Vec<_>, _>>().map(Value::Array);
+        }
         let reply = (self.handler)(&request);
         self.requests.borrow_mut().push(request);
         reply

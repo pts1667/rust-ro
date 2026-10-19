@@ -111,6 +111,14 @@ Actions are grouped by domain. Each group is a thin typed wrapper over one or mo
 - `ctx.battleground()`: `create(cemetery, events)`, `join(bg, char, destination)`, `leave(char)`, `desert(char)`, `destroy(bg)`, `warp(bg, spot)`, `set_cemetery(bg, x, y)`, `members(bg)`, `member_count(bg)`, `count_in_area(bg, map, area)`, `update_score(map, first, second)`, `reserve(map, ended)`, `unbook(map)`, `info(name, kind)`, `monster(bg, spot, name, class, event)`, `set_monster_team(mob, bg)`. A `char` of `0` in `join`, and of `None` in `leave` and `desert`, means the attached player.
 - `ctx.waiting_room()`: `open(title, limit, rules)`, `delete(npc)`, `kick(npc, name)`, `kick_all(npc)`, `enable_event(npc)`, `disable_event(npc)`, `state(kind, npc)`, `title(npc)`, `event(npc)`, `warp(map, x, y, count)`. `npc` of `None` means the current NPC. `title` and `event` return `None` when the NPC has no room.
 - `ctx.warp(map, x, y)`, `ctx.set_npc_visible(npc, visible)`.
+- `ctx.batch()` collects calls (`.call(Function, args)`, `.request(Request)`) and `.send()` runs them in one game loop pass,
+  returning one reply per request, in order. It splits into several messages past 256 requests or 64 KiB. The first request
+  that fails stops the batch (the ones before it happened); requests that wait (`Sleep`, `ProgressBar`, dialogue, timers,
+  `GetUnitData`/`SetUnitData`, instance creation) are refused in a batch.
+- NPC commands accept a unit id where they take an NPC name: `NpcWalkTo`, `NpcStop`, `NpcSpeed`, `MoveNpc`, `NpcTalk`,
+  `EnableNpc`, `DisableNpc`; `Emotion(emotion, id)` shows over any NPC, monster or player. `GetNpcId(0, [names])` answers an
+  array of ids (0 for a name not placed). `MoveNpc(npc, -1, -1, dir)` turns the NPC where it stands, and does nothing while it
+  walks. The arrival label of an NPC or monster walk gets the walker's id as `ctx.arguments()[0]`.
 - `ctx.monster(map, x, y, name, class, amount, event)`, `ctx.area_monster(map, area, name, class, amount, event)`, `ctx.kill_monster(map, label)`, `ctx.announce(message, flag)`, and `ctx.announce_colored(message, flag, "0xFFCE00")`.
 - `ctx.map_announce(map, message, flag, color)`, `ctx.view_point(action, x, y, number, color)`, `ctx.map_users(map)`, `ctx.mob_count(map, label)`, `ctx.time_string(format, limit)`.
 - `ctx.rand(max)` for `0..max - 1`, and `ctx.rand_range(min, max)` for both ends included, as rathena's `rand`.
@@ -201,6 +209,8 @@ let drops = ctx.rates().get(Rate::Drop)?;        // the effective rate, all plug
 - Calls are checked against the capabilities the plugin declared; one outside them stops the run.
 - `$`, `$@`, `#` and `##` variables are stored under the plugin's name, character variables are shared.
 - Interceptors cannot call the host at all. They read their settings with `script_sdk_2::configured::<T>()`.
+- `generated_npcs => fn(usize) -> Result<Option<PluginNpc>, String>` in `plugin_module!` places NPCs computed from the
+  settings at boot, one per index until it answers `None` (`PluginNpc` has the fields of `npcs.json`, with `appearance: Option<NpcAppearance>` and `speed`).
 
 With the `Interface` capability a plugin also has its own windows and overhead notifications, and it decides what bots see of it:
 

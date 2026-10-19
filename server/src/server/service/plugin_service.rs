@@ -45,6 +45,7 @@ impl Server {
     /// how the game loop recognises the requests of such runs.
     pub(crate) fn plugin_host(&self, server: Arc<Server>, plugin: &LoadedPlugin, session: Arc<Session>) -> NpcScriptHost {
         let script = Script {
+            appearance: None, speed: None,
             id: 0,
             scope_instance: 0,
             map_name: String::new(),

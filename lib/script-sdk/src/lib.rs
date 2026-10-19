@@ -4,12 +4,17 @@ use serde::{Deserialize, Serialize};
 
 mod plugin;
 pub use plugin_ui;
-pub use plugin::{BotAction, BotActionInfo, Capabilities, Capability, ConfigEntry, Hook, HookKind, Interception, InterceptorKind, LevelKind, PluginInfo, PluginManifest, Rate, Verdict, PLUGIN_BUFFER_BYTES};
+pub use plugin::{
+    BotAction, BotActionInfo, Capabilities, Capability, ConfigEntry, Hook, HookKind, Interception, InterceptorKind, LevelKind, NpcAppearance, PluginInfo, PluginManifest,
+    PluginNpc, PluginNpcPage, Rate, Verdict, PLUGIN_BUFFER_BYTES,
+};
 
 /// ABI of script modules. The host passes the script as an [`Entry`] and the module exports `script_run`. Version 1, which
 /// exported one function per script id, is retired; version 3 added the plugin manifest to [`PluginInfo`].
 pub const ABI_VERSION: u32 = 3;
 pub const MAX_MESSAGE_BYTES: usize = 65_536;
+/// Most requests one [`Request::Batch`] carries.
+pub const MAX_BATCH_REQUESTS: usize = 256;
 
 /// The script a named-ABI module runs, read by the guest through the `rust_ro::entry` import.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -498,6 +503,10 @@ pub enum Request {
     Sale(Vec<(usize, i16, i32)>),
     Call { function: Function, arguments: Vec<Value> },
     ReportError(String),
+    /// Requests answered in one pass of the game loop, in order, as an array of their replies. The first that fails stops
+    /// the batch with its error; the ones before it have happened. Requests that wait (`Sleep`, dialogue, unit data) cannot
+    /// be batched.
+    Batch(Vec<Request>),
 }
 
 pub type Reply = Result<Value, String>;

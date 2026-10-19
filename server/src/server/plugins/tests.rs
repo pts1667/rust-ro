@@ -229,6 +229,7 @@ async fn the_kill_hook_counts_in_a_shared_character_variable() {
 
 fn placed(name: &str, map: &str) -> Script {
     Script {
+        appearance: None, speed: None,
         id: 0,
         scope_instance: 0,
         map_name: map.into(),
@@ -245,20 +246,7 @@ fn placed(name: &str, map: &str) -> Script {
 }
 
 fn npc(name: &str, replaces: bool) -> PluginNpc {
-    PluginNpc {
-        name: name.into(),
-        entry: None,
-        map_name: None,
-        sprite: None,
-        x: None,
-        y: None,
-        dir: None,
-        x_size: None,
-        y_size: None,
-        constructor_args: None,
-        test: false,
-        replaces,
-    }
+    PluginNpc { name: name.into(), replaces, ..Default::default() }
 }
 
 #[test]
@@ -285,6 +273,69 @@ fn plugin_npcs_are_placed_after_the_base_ones_and_replace_them_only_when_asked()
 
     plugins.list[0].npcs = vec![npc("Nobody", false)];
     assert!(ScriptLoader::place_plugin_npcs(&mut HashMap::new(), &plugins, false).unwrap_err().contains("map_name is required"));
+}
+
+#[test]
+fn a_plugin_npc_appearance_and_speed_reach_the_drawn_npc() {
+    use crate::server::script::skill::actor::NpcSkillState;
+    use models::enums::look::LookType;
+    use models::enums::EnumWithNumberValue;
+    let mut plugins = example();
+    let appearance = script_sdk::NpcAppearance { sex: 1, hair: 7, hair_color: 3, head_top: 5, ..Default::default() };
+    plugins.list[0].npcs = vec![PluginNpc {
+        name: "Townsfolk#1".into(),
+        map_name: Some("prontera".into()),
+        sprite: Some("4001".into()),
+        x: Some(150),
+        y: Some(150),
+        appearance: Some(appearance),
+        speed: Some(160),
+        ..Default::default()
+    }];
+    let mut scripts = HashMap::new();
+    ScriptLoader::place_plugin_npcs(&mut scripts, &plugins, false).unwrap();
+    let npc = NpcSkillState::uninitialized(&scripts["prontera"][0]);
+    assert_eq!((npc.sprite, npc.sex, npc.speed, npc.snapshot().speed()), (4001, 1, 160, 160));
+    let look = |kind: LookType| npc.looks[kind.value() as usize];
+    assert_eq!((look(LookType::Hair), look(LookType::HairColor), look(LookType::HeadTop)), (7, 3, 5));
+}
+
+/// `alive_towns` under a root of its own with `overrides` as the operator's settings.
+fn alive_towns(test: &str, overrides: &str) -> Result<Plugins, String> {
+    let root = std::env::temp_dir().join(format!("rust-ro-plugins-{}-{test}", std::process::id()));
+    let package = root.join("alive_towns");
+    std::fs::create_dir_all(&package).unwrap();
+    for file in ["plugin.wasm", "events.json"] {
+        std::fs::copy(std::path::Path::new(&plugins_dir()).join("alive_towns").join(file), package.join(file)).unwrap();
+    }
+    std::fs::write(root.join("alive_towns.json"), overrides).unwrap();
+    Plugins::load(&ScriptingConfig {
+        plugins_dir: root.to_string_lossy().into(),
+        plugins: vec![PluginSetting::Name("alive_towns".into())],
+        ..ScriptingConfig::default()
+    })
+}
+
+#[test]
+fn alive_towns_generates_its_townsfolk_from_the_settings() {
+    let plugins = alive_towns("alive", r#"{ "towns": ["prontera"], "npcs_per_town": 5, "guards_per_town": 1 }"#).unwrap();
+    let plugin = plugins.iter().next().unwrap();
+    let [controller, townsfolk @ ..] = plugin.npcs.as_slice() else { panic!("no NPCs") };
+    assert!(controller.name.starts_with("Alive Towns_") && controller.map_name.as_deref() == Some("prontera"), "one controller per town");
+    assert_eq!(townsfolk.len(), 5);
+    assert!(townsfolk.iter().all(|npc| npc.map_name.as_deref() == Some("prontera") && npc.entry.as_deref() == Some("townsfolk") && npc.speed.is_some()));
+    assert!(townsfolk[0].name.starts_with("Guard#at"));
+    assert!(plugin.events.contains_key("Alive Towns::OnTimer1000") && plugin.events.contains_key("Alive Towns::OnDoor"));
+    assert_eq!(plugins.observers(HookKind::MapEnter).count(), 1);
+    let mut scripts = HashMap::new();
+    ScriptLoader::place_plugin_npcs(&mut scripts, &plugins, false).unwrap();
+    assert_eq!(scripts["prontera"].len(), 6);
+
+    let everyone = alive_towns("alive_default", "{}").unwrap();
+    assert_eq!(everyone.iter().next().unwrap().npcs.len(), 22 * (1 + 100), "a guest of 1 MiB generates them page by page");
+
+    let error = alive_towns("alive_unknown", r#"{ "towns": ["prt_fild08"] }"#).err().unwrap();
+    assert!(error.contains("prt_fild08 is not a town"), "{error}");
 }
 
 #[test]

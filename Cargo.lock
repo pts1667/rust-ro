@@ -1901,6 +1901,7 @@ dependencies = [
 name = "movement"
 version = "0.1.0"
 dependencies = [
+ "map-cache",
  "packets",
  "tracing",
 ]
@@ -3252,6 +3253,7 @@ dependencies = [
  "futures",
  "lazy_static",
  "log",
+ "map-cache",
  "md5",
  "models",
  "rand 0.8.5",

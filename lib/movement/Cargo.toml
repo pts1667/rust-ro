@@ -6,3 +6,6 @@ edition = "2021"
 [dependencies]
 packets = { path = "../packets" }
 tracing = {workspace = true}
+
+[dev-dependencies]
+map-cache = { path = "../map-cache" }

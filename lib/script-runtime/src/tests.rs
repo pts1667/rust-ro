@@ -75,6 +75,30 @@ fn ui_calls_carry_the_plugin_name_and_are_refused_to_base_modules() {
     assert_eq!(WasmRuntime::admit(Some(&policy(&[])), reply), Ok(Request::Call { function: Function::BotReply, arguments: vec!["1".into(), "p".into()] }));
 }
 
+#[test]
+fn every_request_of_a_batch_goes_through_the_plugin_policy() {
+    let warp = Request::Call { function: Function::Warp, arguments: vec![] };
+    let open = Request::Call { function: Function::UiOpen, arguments: vec!["{}".into()] };
+    let batch = Request::Batch(vec![Request::Read("$x".into()), open, warp.clone()]);
+    let refused = WasmRuntime::admit(Some(&policy(&[Capability::Interface])), batch.clone()).unwrap_err().unwrap_err();
+    assert!(refused.starts_with("batch request 2:") && refused.contains("World"), "{refused}");
+    let admitted = WasmRuntime::admit(Some(&policy(&[Capability::Interface, Capability::World])), batch).unwrap();
+    assert_eq!(
+        admitted,
+        Request::Batch(vec![
+            Request::Read("$p::x".into()),
+            Request::Call { function: Function::UiOpen, arguments: vec!["{}".into(), "p".into()] },
+            warp.clone(),
+        ])
+    );
+    let nested = Request::Batch(vec![Request::Batch(vec![])]);
+    assert!(WasmRuntime::admit(None, nested).unwrap_err().unwrap_err().contains("nested"));
+    let config = Request::Batch(vec![Request::Call { function: Function::PluginConfig, arguments: vec![] }]);
+    assert!(WasmRuntime::admit(Some(&policy(&[])), config).unwrap_err().unwrap_err().contains("PluginConfig"));
+    let oversized = Request::Batch(vec![warp; script_sdk::MAX_BATCH_REQUESTS + 1]);
+    assert!(WasmRuntime::admit(None, oversized).is_err());
+}
+
 /// A guest whose interceptor answers what its data segment holds at offset 0, after spinning `spin` times through `$work`.
 fn interceptor(body: &str) -> String {
     format!(

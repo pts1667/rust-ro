@@ -2,7 +2,7 @@
 
 use std::cell::UnsafeCell;
 
-use script_sdk::{Function, Interception, InterceptorKind, PLUGIN_BUFFER_BYTES, PluginInfo, PluginManifest, Rate, Verdict};
+use script_sdk::{Function, Interception, InterceptorKind, PLUGIN_BUFFER_BYTES, PluginInfo, PluginManifest, PluginNpc, PluginNpcPage, Rate, Verdict};
 use serde::de::DeserializeOwned;
 
 use crate::ctx::Ctx;
@@ -140,6 +140,35 @@ pub fn export_configure(length: u32) -> i32 {
     0
 }
 
+/// Writes the page of `generate`'s NPCs that starts at the requested index and fits in the buffer. `generate` answers the NPC
+/// at an index (`None` past the last), so a page holds no more than it sends: a guest has 1 MiB of memory.
+#[doc(hidden)]
+pub fn export_npcs(generate: fn(usize) -> Result<Option<PluginNpc>, String>, length: u32) -> i32 {
+    #[derive(serde::Deserialize)]
+    struct PageRequest {
+        from: usize,
+    }
+    let Some(request) = read_buffer(length).and_then(|bytes| serde_json::from_slice::<PageRequest>(bytes).ok()) else { return -1 };
+    serde_json::to_vec(&page_of(generate, request.from, PLUGIN_BUFFER_BYTES)).map_or(-1, |bytes| write_buffer(&bytes))
+}
+
+/// The NPCs from `from` whose page, encoded as the host reads it, stays within `budget` bytes.
+fn page_of(generate: impl Fn(usize) -> Result<Option<PluginNpc>, String>, from: usize, budget: usize) -> Result<PluginNpcPage, String> {
+    const ENVELOPE: usize = 64;
+    let mut size = ENVELOPE;
+    let mut page = Vec::new();
+    for index in from.. {
+        let Some(npc) = generate(index)? else { return Ok(PluginNpcPage { npcs: page, next: None }) };
+        let length = serde_json::to_vec(&npc).map_or(usize::MAX, |bytes| bytes.len()) + 1;
+        if size.saturating_add(length) > budget && !page.is_empty() {
+            return Ok(PluginNpcPage { npcs: page, next: Some(index) });
+        }
+        size = size.saturating_add(length);
+        page.push(npc);
+    }
+    unreachable!("an index past usize::MAX")
+}
+
 #[doc(hidden)]
 pub fn export_intercept(table: &[(InterceptorKind, InterceptFn)], length: u32) -> i32 {
     let Some(interception) = read_buffer(length).and_then(|bytes| serde_json::from_slice::<Interception>(bytes).ok()) else { return -1 };
@@ -199,5 +228,26 @@ mod tests {
         assert_eq!(ctx.rates().get(Rate::BaseExp), Ok(300));
         assert!(transport.requests().contains(&Request::Call { function: Function::SetRate, arguments: vec!["BaseExp".into(), 300.into()] }));
         let _ = Hook::Logout { char_id: 1, account_id: 1 };
+    }
+
+    #[test]
+    fn generated_npcs_are_paged_to_fit_the_buffer() {
+        let generate = |index: usize| Ok((index < 300).then(|| PluginNpc { name: format!("Townsfolk#{index:03}"), map_name: Some("prontera".into()), ..Default::default() }));
+        let mut from = 0;
+        let (mut pages, mut total) = (0, 0);
+        loop {
+            let page = page_of(generate, from, 2_048);
+            assert!(serde_json::to_vec(&page).unwrap().len() <= 2_048);
+            let page = page.unwrap();
+            assert_eq!(page.npcs[0].name, format!("Townsfolk#{from:03}"));
+            pages += 1;
+            total += page.npcs.len();
+            match page.next {
+                Some(next) => from = next,
+                None => break,
+            }
+        }
+        assert_eq!(total, 300);
+        assert!(pages > 1, "{pages} pages");
     }
 }

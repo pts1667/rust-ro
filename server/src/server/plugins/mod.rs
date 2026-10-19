@@ -12,12 +12,17 @@ use std::time::Duration;
 
 use configuration::configuration::{PluginSetting, ScriptingConfig};
 use script_runtime::{PluginPolicy, PluginSandbox, WasmRuntime};
-use script_sdk::{ABI_VERSION, Capabilities, Capability, Entry, Hook, HookKind, Interception, InterceptorKind, PluginInfo, Value, Verdict};
+pub use script_sdk::PluginNpc;
+use script_sdk::{ABI_VERSION, Capabilities, Capability, Entry, Hook, HookKind, Interception, InterceptorKind, PluginInfo, Verdict};
 use serde::Deserialize;
 
 use crate::server::model::events::game_event::{GameEvent, PluginHook};
 use crate::server::model::tasks_queue::TasksQueue;
 use crate::server::script::entries::intern;
+use crate::server::script::skill::actor::NPC_WALK_SPEEDS;
+
+/// Most NPCs one plugin may generate.
+const MAX_GENERATED_NPCS: usize = 5_000;
 
 /// Hooks some loaded plugin observes. Services test it before queuing a hook, so an unobserved hook costs one load.
 static OBSERVED_HOOKS: AtomicU32 = AtomicU32::new(0);
@@ -31,31 +36,6 @@ pub fn queue_hook(queue: &TasksQueue<GameEvent>, hook: Hook) {
     if observed(hook.kind()) {
         queue.add_to_first_index(GameEvent::PluginHook(PluginHook { hook }));
     }
-}
-
-/// An NPC of a plugin's `npcs.json`: the shape of `config/wasm/npcs.json` without `module`. With `replaces`, it takes the place
-/// of the NPC of the same name, and the fields it leaves out are that NPC's.
-#[derive(Deserialize, Debug, Clone)]
-pub struct PluginNpc {
-    pub name: String,
-    /// The plugin's NPC entry; the NPC's name when left out.
-    #[serde(default)]
-    pub entry: Option<String>,
-    pub map_name: Option<String>,
-    pub sprite: Option<String>,
-    pub x: Option<u16>,
-    pub y: Option<u16>,
-    pub dir: Option<u16>,
-    #[serde(default)]
-    pub x_size: Option<u16>,
-    #[serde(default)]
-    pub y_size: Option<u16>,
-    #[serde(default)]
-    pub constructor_args: Option<Vec<Value>>,
-    #[serde(default)]
-    pub test: bool,
-    #[serde(default)]
-    pub replaces: bool,
 }
 
 /// An event label of a plugin's `events.json`.
@@ -137,10 +117,14 @@ impl LoadedPlugin {
             Some(names) => declared.intersection(names.iter().map(|name| capability(name)).collect::<Result<_, _>>().map_err(refuse)?),
             None => declared,
         };
-        let npcs = read_optional(&folder.join("npcs.json")).map_err(refuse)?.unwrap_or_default();
+        let mut npcs: Vec<PluginNpc> = read_optional(&folder.join("npcs.json")).map_err(refuse)?.unwrap_or_default();
         let events = read_optional(&folder.join("events.json")).map_err(refuse)?.unwrap_or_default();
         let config = serde_json::Value::Object(settings.clone()).to_string();
         let runtime = Arc::new(module.with_plugin(PluginPolicy { name: name.into(), capabilities, config }));
+        npcs.extend(PluginSandbox::new(&runtime).generated_npcs(MAX_GENERATED_NPCS).map_err(|error| refuse(format!("its generated NPCs failed: {error}")))?);
+        if let Some(npc) = npcs.iter().find(|npc| npc.speed.is_some_and(|speed| !NPC_WALK_SPEEDS.contains(&speed))) {
+            return Err(refuse(format!("NPC {} walks at {} ms per cell, outside {}..={}", npc.name, npc.speed.unwrap_or_default(), NPC_WALK_SPEEDS.start(), NPC_WALK_SPEEDS.end())));
+        }
         let module = format!("plugin:{name}");
         Ok(Self {
             capabilities,

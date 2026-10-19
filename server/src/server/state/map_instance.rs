@@ -35,6 +35,8 @@ pub struct MapInstanceState {
     pub completed_pet_loot_drop_order: VecDeque<u64>,
 
     mob_movement_paused: bool,
+    /// Long-distance pathfinding over `cells`, built on the first long walk.
+    navigation: std::sync::OnceLock<movement::hierarchy::NavHierarchy>,
 }
 
 pub struct PendingPetCapture {
@@ -144,6 +146,7 @@ impl MapInstanceState {
             completed_pet_loot_drops: Default::default(),
             completed_pet_loot_drop_order: Default::default(),
             mob_movement_paused: false,
+            navigation: std::sync::OnceLock::new(),
         }
     }
 
@@ -282,8 +285,27 @@ impl MapInstanceState {
         &self.cells
     }
 
+    /// Drops the pathfinding hierarchy; [`Self::update_cells`] keeps it instead.
     pub fn cells_mut(&mut self) -> &mut Vec<u16> {
+        self.navigation = std::sync::OnceLock::new();
         &mut self.cells
+    }
+
+    /// Applies `change` to every cell of the rectangle and updates the pathfinding hierarchy for it.
+    pub fn update_cells(&mut self, (x1, y1): (u16, u16), (x2, y2): (u16, u16), change: impl Fn(u16) -> u16) {
+        for y in y1.min(y2)..=y1.max(y2).min(self.y_size.saturating_sub(1)) {
+            for x in x1.min(x2)..=x1.max(x2).min(self.x_size.saturating_sub(1)) {
+                let index = self.get_cell_index_of(x, y);
+                self.cells[index] = change(self.cells[index]);
+            }
+        }
+        if let Some(navigation) = self.navigation.get_mut() {
+            navigation.update_area(&self.cells, (x1, y1), (x2, y2));
+        }
+    }
+
+    pub fn navigation(&self) -> &movement::hierarchy::NavHierarchy {
+        self.navigation.get_or_init(|| movement::hierarchy::NavHierarchy::build(self.x_size, self.y_size, &self.cells))
     }
 
     pub fn x_size(&self) -> u16 {

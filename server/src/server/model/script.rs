@@ -1,4 +1,4 @@
-use script_sdk::Value;
+use script_sdk::{NpcAppearance, Value};
 
 #[derive(Setters, Clone, Debug, PartialEq)]
 pub struct Script {
@@ -17,6 +17,9 @@ pub struct Script {
     pub y_size: u16,
     pub entry_id: u32,
     pub constructor_args: Vec<Value>,
+    /// Player-like look of a plugin's generated NPC, drawn on a job sprite.
+    pub appearance: Option<NpcAppearance>,
+    pub speed: Option<u16>,
 }
 
 impl Script {

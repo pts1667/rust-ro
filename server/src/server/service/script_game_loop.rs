@@ -259,6 +259,7 @@ impl Server {
             logout_token: None,
             session,
             script: Arc::new(Script {
+                appearance: None, speed: None,
                 id: 0,
                 scope_instance: character.current_map_instance(),
                 entry_id: event.entry_id,

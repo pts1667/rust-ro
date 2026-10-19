@@ -9,7 +9,7 @@ use crate::server::script::ScriptRequest;
 use crate::server::script::item_script_handler::ItemEffect;
 use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::map_flag_service::normalize_map;
-use crate::server::service::npc_event_service::named_npc;
+use crate::server::service::npc_event_service::npc_by_name_or_id;
 use crate::server::service::script_service::ScriptService;
 use crate::server::state::server::ServerState;
 
@@ -195,13 +195,13 @@ impl Server {
                 }
             }
             Function::EnableNpc | Function::DisableNpc => {
-                let name = text(0)?;
-                let (actor, script) = if name.is_empty() {
+                let npc = arguments.first().ok_or("Missing argument")?;
+                let (actor, script) = if npc.text().is_empty() {
                     let actor = crate::server::script::unit_data::script_actor(state, context)?.ok_or("NPC source is unavailable")?;
                     let script = state.get_map_instance(&actor.map, actor.instance).and_then(|instance| instance.get_script(actor.id)).ok_or("NPC is unavailable")?;
                     (actor, script)
                 } else {
-                    named_npc(state, context, &name)?.ok_or("NPC is not found")?
+                    npc_by_name_or_id(state, context, npc)?.ok_or("NPC is not found")?
                 };
                 let map_instance = state.get_map_instance(&actor.map, actor.instance).ok_or("NPC map is unavailable")?;
                 map_instance.add_to_next_tick(MapEvent::ScriptMapCommand(ScriptMapCommand::NpcVisibility {

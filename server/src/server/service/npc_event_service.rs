@@ -55,6 +55,23 @@ pub(crate) fn event_npc(state: &ServerState, npc_id: u32, scope_instance: u8) ->
     None
 }
 
+/// The NPC with unit id `npc_id` on any map, without the name scan of [`named_npc`].
+pub(crate) fn npc_by_id(state: &ServerState, npc_id: u32) -> Option<(ScriptSkillActor, Arc<Script>)> {
+    state.map_instances().values().flatten().filter(|instance| instance.is_alive()).find_map(|instance| {
+        let map_state = instance.state();
+        let npc = map_state.script_skill_state.npcs.get(&npc_id)?;
+        Some((npc.actor(instance.key().map_name().clone(), instance.id()), npc.current_script(instance.name())))
+    })
+}
+
+/// The NPC a script names by name, or by unit id when the argument is a number.
+pub(crate) fn npc_by_name_or_id(state: &ServerState, context: &ScriptRequest, npc: &Value) -> Result<Option<(ScriptSkillActor, Arc<Script>)>, String> {
+    match npc {
+        Value::Number(id) => Ok(u32::try_from(*id).ok().and_then(|id| npc_by_id(state, id))),
+        name => named_npc(state, context, &name.text()),
+    }
+}
+
 pub(crate) fn named_npc(state: &ServerState, context: &ScriptRequest, name: &str) -> Result<Option<(ScriptSkillActor, Arc<Script>)>, String> {
     let mut candidates = npcs(state)
         .into_iter()
@@ -77,6 +94,19 @@ pub(crate) fn named_npc(state: &ServerState, context: &ScriptRequest, name: &str
         return Err("NPC name is ambiguous in this instance".into());
     }
     Ok(candidates.pop())
+}
+
+/// `getnpcid(0, [names])`: the id of each named NPC (0 when it is not placed), from one scan of the NPCs. An ambiguous name
+/// resolves to the NPC of the caller's instance scope.
+fn npc_ids(state: &ServerState, context: &ScriptRequest, names: &[Value]) -> Vec<Value> {
+    let wanted: std::collections::HashSet<String> = names.iter().map(Value::text).collect();
+    let mut found: std::collections::HashMap<String, u32> = std::collections::HashMap::new();
+    for (actor, script) in npcs(state) {
+        if wanted.contains(&script.name) && (script.scope_instance == context.npc_scope_instance || !found.contains_key(&script.name)) {
+            found.insert(script.name.clone(), actor.id);
+        }
+    }
+    names.iter().map(|name| Value::Number(found.get(&name.text()).map_or(0, |id| *id as i32))).collect()
 }
 
 /// True when a step from `from` to `to` enters the trigger area centred on the NPC.
@@ -173,6 +203,9 @@ impl Server {
             let kind = arguments.first().ok_or("NPC identifier type is required")?.number_value()?;
             if kind != 0 || arguments.len() > 2 {
                 return Ok(0.into());
+            }
+            if let Some(Value::Array(names)) = arguments.get(1) {
+                return Ok(Value::Array(npc_ids(state, context, names)));
             }
             let id = if let Some(name) = arguments.get(1) {
                 named_npc(state, context, name.string_value()?)?.map(|(actor, _)| actor.id)

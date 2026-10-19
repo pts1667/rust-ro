@@ -19,6 +19,7 @@ const MAIA_AREA: u32 = 612;
 
 fn npc(id: u32, module: &str, name: &str) -> Script {
     Script {
+        appearance: None, speed: None,
         id,
         scope_instance: 0,
         entry_id: intern(module, Entry::Npc(name.into())),

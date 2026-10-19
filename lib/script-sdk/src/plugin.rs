@@ -6,6 +6,67 @@ use serde::{Deserialize, Serialize};
 
 use crate::{Function, Request, Variable, VariableScope};
 
+/// An NPC a plugin places, from its `npcs.json` or its `generated_npcs`: the shape of `config/wasm/npcs.json` without
+/// `module`. With `replaces`, it takes the place of the NPC of the same name, and the fields it leaves out are that NPC's.
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
+pub struct PluginNpc {
+    pub name: String,
+    /// The plugin's NPC entry; the NPC's name when left out.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub entry: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub map_name: Option<String>,
+    /// A sprite number or constant name.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sprite: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub y: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dir: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x_size: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub y_size: Option<u16>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub constructor_args: Option<Vec<crate::Value>>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub test: bool,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub replaces: bool,
+    /// What a player-look NPC (a job sprite) wears.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub appearance: Option<NpcAppearance>,
+    /// Walking speed in ms per cell, 20 to 1000.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub speed: Option<u16>,
+}
+
+/// The looks of a player-look NPC, as `setunitdata` sets them. Headgears, weapon and shield are view ids.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[serde(default, deny_unknown_fields)]
+pub struct NpcAppearance {
+    /// 0 female, 1 male.
+    pub sex: u8,
+    pub hair: u16,
+    pub hair_color: u16,
+    pub clothes_color: u16,
+    pub head_top: u16,
+    pub head_mid: u16,
+    pub head_bottom: u16,
+    pub weapon: u16,
+    pub shield: u16,
+}
+
+/// One page of a plugin's generated NPCs, answered by its `plugin_npcs` export for `{ "from": index }`.
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
+pub struct PluginNpcPage {
+    pub npcs: Vec<PluginNpc>,
+    /// Where the next page starts, when there is one.
+    pub next: Option<usize>,
+}
+
 /// Size of the guest buffer (`plugin_buffer`) that carries `plugin_info` and interceptor messages, which run without host calls.
 pub const PLUGIN_BUFFER_BYTES: usize = 16 * 1024;
 
@@ -449,6 +510,7 @@ impl Request {
             }
             Request::VariablesWrite(variables) => Request::VariablesWrite(variables.into_iter().map(variable).collect()),
             Request::VariablesIncrement(variables) => Request::VariablesIncrement(variables.into_iter().map(variable).collect()),
+            Request::Batch(requests) => Request::Batch(requests.into_iter().map(|request| request.for_plugin(plugin)).collect()),
             Request::Call { function: function @ (Function::ArrayGet | Function::ArraySet), mut arguments } => {
                 if let Some(crate::Value::String(name)) = arguments.first_mut() {
                     *name = namespaced(plugin, std::mem::take(name));

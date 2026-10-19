@@ -1,9 +1,10 @@
 use models::enums::actor::CombatActorKind;
 use models::enums::bonus::BonusType;
 use models::enums::element::Element;
+use models::enums::look::LookType;
 use models::enums::mob::{MobMode, MobRace};
 use models::enums::size::Size;
-use models::enums::EnumWithMaskValueU32;
+use models::enums::{EnumWithMaskValueU32, EnumWithNumberValue};
 use models::status::{Status, StatusSnapshot};
 use models::status_bonus::StatusBonus;
 use models::status_change::{StatusChange, StatusChangeKind, StatusChangeRequest, StatusStartFlag};
@@ -27,7 +28,10 @@ pub const NPC_WALK_SPEEDS: std::ops::RangeInclusive<u16> = 20..=1000;
 pub struct NpcWalk {
     /// Remaining cells, the next one last.
     pub steps: Vec<Movement>,
+    /// End of the leg being walked; a long walk is sent to clients one leg at a time.
     pub destination: (u16, u16),
+    /// Ends of the legs still to walk, the next one last.
+    pub legs: Vec<(u16, u16)>,
     pub on_arrival: Option<ScriptNpcCallback>,
     /// Started by `unitwalk`, which refuses to start another until this one ends.
     pub forced: bool,
@@ -82,6 +86,26 @@ impl NpcSkillState {
             walk: None,
         };
         npc.base_status.set_combat_actor_kind(CombatActorKind::Npc);
+        if let Some(speed) = script.speed {
+            npc.speed = speed;
+            npc.base_status.set_base_speed(speed);
+            npc.base_status.set_speed(speed);
+        }
+        if let Some(appearance) = script.appearance {
+            npc.sex = appearance.sex;
+            for (kind, value) in [
+                (LookType::Hair, appearance.hair),
+                (LookType::HairColor, appearance.hair_color),
+                (LookType::ClothesColor, appearance.clothes_color),
+                (LookType::HeadTop, appearance.head_top),
+                (LookType::HeadMid, appearance.head_mid),
+                (LookType::HeadBottom, appearance.head_bottom),
+                (LookType::Weapon, appearance.weapon),
+                (LookType::Shield, appearance.shield),
+            ] {
+                npc.looks[kind.value() as usize] = value;
+            }
+        }
         npc
     }
 

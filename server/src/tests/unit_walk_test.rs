@@ -45,6 +45,7 @@ struct Walk {
 
 fn npc(id: u32, name: &str, x: u16, y: u16) -> Script {
     Script {
+        appearance: None, speed: None,
         id,
         scope_instance: 0,
         entry_id: intern("npc_walk_test", Entry::Npc(name.into())),
@@ -81,6 +82,10 @@ fn fixture() -> Walk {
 impl Walk {
     /// A call made by the Baker's own background script, then the map commands it queued.
     fn call(&self, function: Function, arguments: Vec<Value>) -> Reply {
+        self.send(Request::Call { function, arguments })
+    }
+
+    fn send(&self, request: Request) -> Reply {
         let (sender, mut receiver) = oneshot::channel();
         let request = ScriptRequest {
             char_id: 0,
@@ -94,7 +99,7 @@ impl Walk {
             event_depth: 0,
             timer_context: None,
             logout_token: None,
-            request: Request::Call { function, arguments },
+            request,
             response: Arc::new(Mutex::new(Some(sender))),
         };
         self.server.script_service().handle_request(&self.server, &mut self.server.state_mut(), request);
@@ -401,4 +406,130 @@ fn unitwalkto_takes_an_npc_to_the_cell_a_player_stands_on() {
     assert_eq!(destination, Some(((50, 50), true)));
     assert_eq!(walk.unit_walk(BAKER, 45, 50, None), 0, "a second unitwalk waits for the first");
     assert_eq!(walk.walk_to(45, 50, &[]), 1, "npcwalkto replaces it, as in rathena");
+}
+
+#[test]
+fn a_walk_past_the_client_pathfinder_goes_leg_by_leg_and_names_the_walker_on_arrival() {
+    let walk = fixture();
+    walk.instance.state_mut().update_cells((45, 0), (45, 98), |_| 0);
+    let entry = ScriptService::event_entry(ARRIVAL).unwrap();
+    assert_eq!(walk.walk_to(50, 50, &["", ARRIVAL]), 1, "the only way round is the gap at the top of the wall");
+    assert!(!walk.instance.state().script_skill_state.npcs[&BAKER].walk.as_ref().unwrap().legs.is_empty());
+    walk.arrivals();
+    walk.sent();
+    let mut tick = walk.first_step_at();
+    let mut legs = 1;
+    for _ in 0..1_000 {
+        if !walk.walking() {
+            break;
+        }
+        walk.step(tick);
+        legs += walk.sent().iter().filter(|packet| **packet == NOTIFY_MOVE).count();
+        tick += 1_000;
+    }
+    assert_eq!(walk.step(tick), (50, 50));
+    assert!(legs > 5, "{legs} legs");
+    let mut arrivals = Vec::new();
+    while let Some(events) = walk.tasks.pop() {
+        arrivals.extend(events.into_iter().filter_map(|event| match event {
+            GameEvent::ScriptNpcEvent(event) => Some((event.npc_id, event.entry_id, event.args)),
+            _ => None,
+        }));
+    }
+    assert_eq!(arrivals, [(THERAPIST, entry, Some(vec![Value::Number(BAKER as i32)]))]);
+}
+
+#[test]
+fn a_leg_that_ends_where_the_npc_already_stands_is_skipped() {
+    let walk = fixture();
+    walk.instance.state_mut().update_cells((45, 0), (45, 98), |_| 0);
+    assert_eq!(walk.walk_to(50, 50, &[]), 1);
+    {
+        let mut state = walk.instance.state_mut();
+        let npc_walk = state.script_skill_state.npcs.get_mut(&BAKER).unwrap().walk.as_mut().unwrap();
+        let leg_end = npc_walk.steps.first().map(|end| (end.position().x, end.position().y)).unwrap();
+        npc_walk.legs.push(leg_end);
+    }
+    let mut tick = walk.first_step_at();
+    for _ in 0..1_000 {
+        if !walk.walking() {
+            break;
+        }
+        walk.step(tick);
+        tick += 1_000;
+    }
+    assert_eq!(walk.step(tick), (50, 50));
+}
+
+#[test]
+fn a_wall_raised_after_the_walk_started_is_seen_by_the_next_reachability_check() {
+    let walk = fixture();
+    assert_eq!(walk.walk_to(50, 50, &[]), 1);
+    walk.instance.state_mut().update_cells((45, 0), (45, 99), |_| 0);
+    assert_eq!(walk.walk_to(50, 50, &[]), 0);
+}
+
+#[test]
+fn npc_commands_take_a_unit_id_in_place_of_the_name() {
+    let walk = fixture();
+    let therapist = Value::Number(THERAPIST as i32);
+    assert_eq!(walk.call(Function::NpcWalkTo, vec![Value::Number(62), Value::Number(60), therapist.clone()]).unwrap(), Value::Number(1));
+    assert!(walk.instance.state().script_skill_state.npcs[&THERAPIST].walk.is_some());
+    walk.call(Function::NpcStop, vec![therapist.clone()]).unwrap();
+    walk.call(Function::DisableNpc, vec![therapist.clone()]).unwrap();
+    assert!(walk.instance.state().script_skill_state.npcs[&THERAPIST].hidden);
+    walk.call(Function::EnableNpc, vec![therapist.clone()]).unwrap();
+    assert!(!walk.instance.state().script_skill_state.npcs[&THERAPIST].hidden);
+    assert!(walk.call(Function::Emotion, vec![Value::Number(1), therapist]).is_ok(), "an NPC can be the emotion's target");
+    assert!(walk.call(Function::DisableNpc, vec![Value::Number(123_456)]).is_err());
+}
+
+#[test]
+fn movenpc_onto_its_own_cell_turns_the_npc_without_drawing_it_again() {
+    let walk = fixture();
+    walk.sent();
+    walk.call(Function::MoveNpc, vec![Value::Number(BAKER as i32), Value::Number(40), Value::Number(50), Value::Number(2)]).unwrap();
+    assert_eq!(walk.sent(), [0x009c], "ZC_CHANGE_DIRECTION, no vanish");
+    assert_eq!(walk.instance.state().script_skill_state.npcs[&BAKER].dir, 2);
+    walk.call(Function::MoveNpc, vec![Value::String("Baker".into()), Value::Number(41), Value::Number(50), Value::Number(4)]).unwrap();
+    assert_eq!(walk.sent()[0], 0x0080, "another cell is a jump");
+    let turn = |dir: i32| walk.call(Function::MoveNpc, vec![Value::Number(BAKER as i32), Value::Number(-1), Value::Number(-1), Value::Number(dir)]).unwrap();
+    turn(6);
+    assert_eq!(walk.sent(), [0x009c], "-1, -1 turns it where it stands");
+    let baker = walk.instance.state().script_skill_state.npcs[&BAKER].clone();
+    assert_eq!((baker.x, baker.y, baker.dir), (41, 50, 6));
+    assert_eq!(walk.call(Function::NpcWalkTo, vec![Value::Number(60), Value::Number(50), Value::Number(BAKER as i32)]).unwrap(), Value::Number(1));
+    walk.sent();
+    turn(0);
+    assert!(walk.sent().is_empty(), "a walking NPC is not turned");
+    assert_eq!(walk.instance.state().script_skill_state.npcs[&BAKER].dir, 6);
+}
+
+#[test]
+fn getnpcid_resolves_a_list_of_names_in_one_call() {
+    let walk = fixture();
+    let names = Value::Array(vec!["Baker".into(), "Nobody".into(), "Battle Therapist#b01_a".into()]);
+    let ids = walk.call(Function::GetNpcId, vec![Value::Number(0), names]).unwrap();
+    assert_eq!(ids, Value::Array(vec![Value::Number(BAKER as i32), Value::Number(0), Value::Number(THERAPIST as i32)]));
+}
+
+#[test]
+fn a_batch_is_answered_in_one_pass_and_refuses_requests_that_wait() {
+    let walk = fixture();
+    let call = |function, arguments| Request::Call { function, arguments };
+    let replies = walk.send(Request::Batch(vec![
+        call(Function::NpcWalkTo, vec![Value::Number(62), Value::Number(60), Value::Number(THERAPIST as i32)]),
+        call(Function::Emotion, vec![Value::Number(1), Value::Number(BAKER as i32)]),
+        call(Function::GetMapUsers, vec![Value::String("empty".into())]),
+    ]));
+    let users = walk.call(Function::GetMapUsers, vec![Value::String("empty".into())]).unwrap();
+    assert_eq!(replies, Ok(Value::Array(vec![Value::Number(1), Value::Number(0), users])));
+    assert!(walk.instance.state().script_skill_state.npcs[&THERAPIST].walk.is_some());
+
+    for waiting in [call(Function::Sleep, vec![Value::Number(10)]), call(Function::SetUnitData, vec![Value::Number(BAKER as i32), Value::Number(0), Value::Number(0)]), Request::Batch(vec![])] {
+        let error = walk.send(Request::Batch(vec![call(Function::GetMapUsers, vec![Value::String("empty".into())]), waiting])).unwrap_err();
+        assert!(error.starts_with("batch request 1 cannot be batched"), "{error}");
+    }
+    let error = walk.send(Request::Batch(vec![call(Function::DisableNpc, vec![Value::Number(123_456)])])).unwrap_err();
+    assert!(error.starts_with("batch request 0: NPC is not found"), "{error}");
 }

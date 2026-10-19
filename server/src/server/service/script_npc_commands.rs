@@ -374,11 +374,13 @@ impl Server {
                 let emotion = u8::try_from(number(0)?).map_err(|_| "Invalid emotion")?;
                 let target = arguments.get(1).map(Value::number_value).transpose()?.filter(|id| *id != 0);
                 let (actor_id, map, instance, x, y) = match target {
-                    Some(id) => {
-                        let character = state.characters().values().find(|character| character.account_id == id as u32 || character.char_id == id as u32)
-                            .ok_or("Emotion target is unavailable")?;
-                        (character.char_id, character.current_map_name().clone(), character.current_map_instance(), character.x(), character.y())
-                    }
+                    Some(id) => match state.characters().values().find(|character| character.account_id == id as u32 || character.char_id == id as u32) {
+                        Some(character) => (character.char_id, character.current_map_name().clone(), character.current_map_instance(), character.x(), character.y()),
+                        None => {
+                            let unit = crate::server::script::unit_data::request_actor(self, state, context, id as u32)?.ok_or("Emotion target is unavailable")?;
+                            (unit.id, unit.map, unit.instance, unit.x, unit.y)
+                        }
+                    },
                     None => {
                         let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("Emotion needs an NPC or a target")?;
                         (npc.id, npc.map.clone(), npc.instance, npc.x, npc.y)
@@ -724,7 +726,7 @@ impl Server {
             }
             Function::NpcTalk => {
                 let (npc, script) = match arguments.get(1) {
-                    Some(name) => crate::server::service::npc_event_service::named_npc(state, context, &name.text())?.ok_or("npctalk: unknown NPC")?,
+                    Some(npc) => crate::server::service::npc_event_service::npc_by_name_or_id(state, context, npc)?.ok_or("npctalk: unknown NPC")?,
                     None => {
                         let npc = crate::server::script::unit_data::script_actor(state, context)?.ok_or("npctalk needs an NPC")?;
                         let script = state.get_map_instance(&npc.map, npc.instance).and_then(|instance| instance.get_script(npc.id)).ok_or("npctalk: NPC is unavailable")?;
@@ -738,14 +740,18 @@ impl Server {
                 Ok(Value::default())
             }
             Function::UnloadNpc | Function::MoveNpc => {
-                let (actor, script) = crate::server::service::npc_event_service::named_npc(state, context, &text(0)?)?.ok_or("NPC is not found")?;
+                let npc = arguments.first().ok_or("Missing argument")?;
+                let (actor, script) = crate::server::service::npc_event_service::npc_by_name_or_id(state, context, npc)?.ok_or("NPC is not found")?;
                 let map_instance = state.get_map_instance(&actor.map, actor.instance).ok_or("NPC map is unavailable")?;
                 let command = if function == Function::UnloadNpc {
                     ScriptMapCommand::NpcRemove { npc_id: script.id }
                 } else {
                     let coordinate = |index: usize| u16::try_from(number(index)?).map_err(|_| "NPC coordinate is outside the map".to_string());
                     let dir = arguments.get(3).map(Value::number_value).transpose()?.map(|dir| u16::try_from(dir).map_err(|_| "Invalid NPC direction".to_string())).transpose()?;
-                    ScriptMapCommand::NpcMove { npc_id: script.id, x: coordinate(1)?, y: coordinate(2)?, dir }
+                    match dir {
+                        Some(dir) if (number(1)?, number(2)?) == (-1, -1) => ScriptMapCommand::NpcTurn { npc_id: script.id, dir },
+                        _ => ScriptMapCommand::NpcMove { npc_id: script.id, x: coordinate(1)?, y: coordinate(2)?, dir },
+                    }
                 };
                 map_instance.add_to_next_tick(MapEvent::ScriptMapCommand(command));
                 Ok(Value::default())

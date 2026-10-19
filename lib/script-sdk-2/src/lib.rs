@@ -33,6 +33,7 @@
 
 pub mod constants;
 mod delay;
+mod batch;
 mod battleground;
 mod bonus;
 mod bonus_names;
@@ -67,6 +68,7 @@ mod vars;
 mod waiting_room;
 mod world;
 
+pub use batch::Batch;
 pub use ctx::Ctx;
 pub use flow::{Script, Stop, finish};
 pub use input::{Bound, Input};
@@ -84,7 +86,7 @@ pub use pet::{PetCatch, PetInfo, Pets};
 pub use player::{Player, SkillGrant};
 pub use quests::Quests;
 pub use plugin::{HookFn, InterceptFn, Rates, configured, plugin_manifest, setting};
-pub use script_sdk::{BotAction, BotActionInfo, Capability, ConfigEntry, Entry, Function, Hook, HookKind, Interception, InterceptorKind, LevelKind, PluginInfo, PluginManifest, Rate, Request, Value, VariableScope, Verdict};
+pub use script_sdk::{BotAction, BotActionInfo, Capability, ConfigEntry, Entry, Function, Hook, HookKind, Interception, InterceptorKind, LevelKind, NpcAppearance, PluginInfo, PluginManifest, PluginNpc, Rate, Request, Value, VariableScope, Verdict};
 pub use timers::Timers;
 pub use transport::{MockTransport, Transport, WasmTransport};
 pub use ui::{Above, BotActionFn, UiEvent, WindowFn, bot_args};

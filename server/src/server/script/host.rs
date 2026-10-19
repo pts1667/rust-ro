@@ -82,6 +82,31 @@ pub struct NpcScriptHost {
 }
 
 impl NpcScriptHost {
+    /// Requests [`Host::invoke`] sends on to the game loop untouched, the only ones a batch may carry.
+    fn forwarded_as_is(request: &Request) -> bool {
+        match request {
+            Request::Constant(_) | Request::Arguments | Request::ReportError(_) | Request::Batch(_) => false,
+            Request::Call { function, .. } => {
+                !matches!(
+                    function,
+                    Function::Shop
+                        | Function::AttachRid
+                        | Function::DetachRid
+                        | Function::Mes
+                        | Function::Close
+                        | Function::Next
+                        | Function::Select
+                        | Function::InputNumber
+                        | Function::InputString
+                        | Function::Message
+                        | Function::DispBottom
+                        | Function::Cutin
+                ) && !crate::server::service::npc_timer_service::handles(*function)
+            }
+            _ => true,
+        }
+    }
+
     async fn attach(&mut self, arguments: Vec<Value>) -> Reply {
         let account_id = u32::try_from(arguments.first().ok_or("Missing account")?.number_value()?).map_err(|_| "Invalid account")?;
         let char_id = u32::try_from(self.forward(Request::Call { function: Function::AttachRid, arguments }).await?.number_value()?).unwrap_or(0);
@@ -225,6 +250,10 @@ impl Host for NpcScriptHost {
                 self.error = Some(error);
                 Ok(Value::default())
             }
+            Request::Batch(requests) => match requests.iter().position(|request| !Self::forwarded_as_is(request)) {
+                Some(index) => Err(format!("batch request {index} is answered by the script host and cannot be batched")),
+                None => self.forward(Request::Batch(requests)).await,
+            },
             request => self.forward(request).await,
         }
     }

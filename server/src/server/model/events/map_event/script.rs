@@ -71,6 +71,11 @@ pub enum ScriptMapCommand {
         y: u16,
         dir: Option<u16>,
     },
+    /// Faces `dir` where the NPC stands; nothing while it walks.
+    NpcTurn {
+        npc_id: u32,
+        dir: u16,
+    },
     NpcWalk {
         npc_id: u32,
         x: u16,

@@ -1,0 +1,18 @@
+{
+  "title": "Alive Towns",
+  "description": "Procedural townsfolk who walk between shops, doors and plazas on daily routines, gather in small groups and chat with emotes.",
+  "config": {
+    "towns": {
+      "default": ["prontera", "alberta", "aldebaran", "amatsu", "ayothaya", "comodo", "einbech", "einbroch", "geffen", "gonryun", "hugel", "izlude", "lighthalzen", "louyang", "xmas", "morocc", "moscovia", "payon", "rachel", "umbala", "veins", "yuno"],
+      "description": "Maps to animate; each must be a town of config/wasm/warps.json."
+    },
+    "npcs_per_town": { "default": 100, "description": "Townsfolk per town, guards included (at most 999)." },
+    "seed": { "default": 1, "description": "Changes every name, look and routine." },
+    "idle_when_empty": { "default": true, "description": "Towns without players stand still, and catch up on their routines when someone arrives." },
+    "gathering_percent": { "default": 20, "description": "Share of the townsfolk in small groups on the plazas at a time." },
+    "player_look_percent": { "default": 75, "description": "Share drawn as players of a job class; the others use the walking NPC sprites." },
+    "children_percent": { "default": 8, "description": "Share of children (baby classes and the walking kid sprite)." },
+    "guards_per_town": { "default": 4, "description": "Soldiers patrolling each town." },
+    "walk_speed": { "default": [140, 220], "description": "Range of walking speeds, in milliseconds per cell (20 to 1000)." }
+  }
+}

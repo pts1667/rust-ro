@@ -29,7 +29,8 @@ Plugins are listed under `scripting` in `config.json`, and only listed, enabled 
 `config.template.json` ships `double_xp` listed and disabled. To try it, set `"enabled": true` (or write `"plugins": ["double_xp"]`)
 and restart: the server announces the event, the Rate Clerk stands in Prontera (161, 186), monsters give 200% experience and
 150% drop chances by default. `ui_shop` ships listed and disabled too: its Curio Trader stands in Prontera (158, 186) and needs
-nostalro-client to draw its window.
+nostalro-client to draw its window. `alive_towns`, also listed and disabled, puts 100 walking townsfolk in each of 22 towns
+(see `scripts/plugins/alive_towns/README.md`); `{ "towns": ["prontera"] }` in `config/plugins/alive_towns.json` narrows it.
 
 ### Plugin settings
 Every plugin declares its settings with a default and a description (its `info.json`, compiled into `plugin.wasm`; the boot
@@ -143,16 +144,30 @@ Script bodies are written as in any module ([the script SDK](script-sdk-2.md)): 
   replacing entry takes over that NPC; the fields it leaves out (map, cell, sprite, direction, size) are the original's, so
   `{ "name": "Kafra Employee#prt", "replaces": true }` swaps the behaviour and keeps the NPC where it was.
 - `"test": true` places the NPC only when `scripting.test_npcs` is on.
+- `"speed"` (20 to 1000 ms per cell) sets its walking speed. `"appearance"` draws a job sprite like a player:
+  `{ "sex": 1, "hair": 5, "hair_color": 2, "clothes_color": 1, "head_top": 17, "head_mid": 0, "head_bottom": 0, "weapon": 0,
+  "shield": 0 }` (head gear and weapons by view id, every field optional).
+
+NPCs can also come from the plugin's code, computed from its settings at boot: `generated_npcs => my_npcs` in
+`plugin_module!`, where `fn my_npcs(index: usize) -> Result<Option<PluginNpc>, String>` reads `script_sdk_2::configured()` and
+returns the NPC at `index` (`None` past the last), an entry of the same shape as `npcs.json`. The server asks page by page, so
+a guest never holds them all in its 1 MiB. They are placed after those of `npcs.json`, at most 5,000 per plugin; an error refuses the
+plugin with its message, which is how a plugin rejects settings it cannot use.
 
 `events.json` maps labels to options, like `config/wasm/events.json`: `{ "Greeter::OnClock1200": {} }`. `entry` and `replaces`
 work as for NPCs. Labels follow the rathena names (`OnInit`, `OnMinute00`, `OnClock1200`, `OnTimer<ms>`...).
 
 ### NPC routines
 An NPC's events can drive it around its map: `ctx.npc().walk_to_then(None, x, y, "Baker::OnAtOven")` walks it there and
-runs the label on arrival, where it can emote, talk (`Function::NpcTalk`), turn or start its next walk. `OnInit` or an
-`OnTimer<ms>`/`OnMinute` label starts the loop. Walking needs `World`; emotes and effects need `Dialogue`. Paths are short,
-so a long route is a chain of walks, and a click stops the NPC where it is. `ctx.unit_walk(..)` walks players and
-monsters the same way (see `docs/script-server-gaps.md`).
+runs the label on arrival with the walker's unit id as its argument (`ctx.arguments()`), where it can emote, talk
+(`Function::NpcTalk`), turn or start its next walk. `OnInit` or an `OnTimer<ms>`/`OnMinute` label starts the loop. A map is
+only loaded when a player first enters it (castles at boot), and `OnInit`, timers and clock labels reach only NPCs on loaded
+maps, so an NPC elsewhere starts its loop from a `MapEnter` hook (`InitNpcTimer` on its name). Walking needs `World`; emotes and effects need `Dialogue`. A walk may cross the whole map: the server splits it into legs. A click
+stops the NPC where it is. `ctx.unit_walk(..)` walks players and monsters the same way (see `docs/script-server-gaps.md`).
+
+A plugin driving many NPCs should name them by unit id (`GetNpcId(0, [names])` answers all ids in one call) and send its
+commands together: `ctx.batch()` collects calls and `send()` runs them in one game loop pass, instead of one round trip each
+(see `docs/script-sdk-2.md`). `alive_towns` drives 100 NPCs per town from one timer per town this way.
 
 ### Initialisation
 `init` runs once at boot, after the base scripts' `OnInit`, in plugin order. No player is attached and there is no NPC:
@@ -225,7 +240,8 @@ what bots observe (`ctx.bot().observe`) and which actions they may run (`bot_act
 [plugin UI](plugin-ui.md).
 
 ### Limits
-- 1 MiB of linear memory, 10,000 host calls and `cpu_budget_ms` of CPU per run (waiting for the host is free).
+- 1 MiB of linear memory, 10,000 host calls and `cpu_budget_ms` of CPU per run (waiting for the host is free). Each request
+  of a batch counts as a host call, and a batch holds at most 256.
 - Interceptor messages are JSON in a 16 KiB buffer.
 - No filesystem, network or clock other than through host calls.
 

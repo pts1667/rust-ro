@@ -93,6 +93,7 @@ impl ScriptLoader {
             let entry_id = intern(&definition.module, Entry::Npc(definition.entry));
             let sprite = sprite_id(&definition.sprite)?;
             scripts.entry(definition.map_name.clone()).or_default().push(Script {
+                appearance: None, speed: None,
                 id: 0,
                 scope_instance: 0,
                 map_name: definition.map_name,
@@ -136,6 +137,7 @@ impl ScriptLoader {
                 };
                 let field = |value: Option<u16>, base_value: Option<u16>, name: &str| value.or(base_value).ok_or_else(|| required(name));
                 let script = Script {
+                    appearance: npc.appearance, speed: npc.speed,
                     id: 0,
                     scope_instance: 0,
                     name: npc.name.clone(),

@@ -1,6 +1,7 @@
 use crate::path::PathNode;
 use crate::position::Position;
 
+pub mod hierarchy;
 pub mod path;
 pub mod position;
 

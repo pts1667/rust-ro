@@ -1768,6 +1768,10 @@ impl MapInstanceService {
             }
             ScriptMapCommand::NpcMove { npc_id, x, y, dir } => {
                 let Some(mut npc) = state.script_skill_state.npcs.get(&npc_id).cloned() else { return };
+                if let Some(dir) = dir.filter(|_| (npc.x, npc.y) == (x, y) && npc.walk.is_none()) {
+                    self.turn_npc(state, npc_id, dir);
+                    return;
+                }
                 if !npc.hidden {
                     self.vanish_npc(state, &npc);
                 }
@@ -1782,6 +1786,11 @@ impl MapInstanceService {
                     self.refresh_npc(state, &npc);
                 }
                 state.script_skill_state.npcs.insert(npc_id, npc);
+            }
+            ScriptMapCommand::NpcTurn { npc_id, dir } => {
+                if state.script_skill_state.npcs.get(&npc_id).is_some_and(|npc| npc.walk.is_none()) {
+                    self.turn_npc(state, npc_id, dir);
+                }
             }
             ScriptMapCommand::NpcWalk { npc_id, x, y, on_arrival, forced } => self.start_npc_walk(state, npc_id, (x, y), on_arrival, forced, get_tick()),
             ScriptMapCommand::MobWalk { mob_id, x, y, on_arrival } => self.start_mob_walk(state, mob_id, (x, y), on_arrival, get_tick()),
@@ -1814,19 +1823,8 @@ impl MapInstanceService {
                 }
             }
             ScriptMapCommand::SetCell { area, cell, enabled } => {
-                let (x_size, y_size) = (state.x_size(), state.y_size());
                 let mask = cell.as_flag();
-                for y in area.y1.min(area.y2)..=area.y1.max(area.y2) {
-                    for x in area.x1.min(area.x2)..=area.x1.max(area.x2) {
-                        if x >= x_size || y >= y_size {
-                            continue;
-                        }
-                        let index = state.get_cell_index_of(x, y);
-                        if let Some(value) = state.cells_mut().get_mut(index) {
-                            *value = if enabled { *value | mask } else { *value & !mask };
-                        }
-                    }
-                }
+                state.update_cells((area.x1, area.y1), (area.x2, area.y2), |value| if enabled { value | mask } else { value & !mask });
             }
         }
     }

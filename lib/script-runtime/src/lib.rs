@@ -8,7 +8,7 @@ use std::task::{Context, Poll};
 use std::time::{Duration, Instant};
 
 use async_trait::async_trait;
-use script_sdk::{ABI_VERSION, Capabilities, Entry, Function, MAX_MESSAGE_BYTES, Reply, Request, Value};
+use script_sdk::{ABI_VERSION, Capabilities, Entry, Function, MAX_BATCH_REQUESTS, MAX_MESSAGE_BYTES, Reply, Request, Value};
 use wasmtime::{
     Caller, Config, Engine, InstanceAllocationStrategy, Linker, Module, PoolingAllocationConfig, Store, StoreLimits,
     StoreLimitsBuilder, UpdateDeadline,
@@ -356,6 +356,17 @@ impl WasmRuntime {
     /// The request a run may send on, or the reply it gets without reaching the host.
     fn admit(plugin: Option<&PluginPolicy>, request: Request) -> Result<Request, Reply> {
         match (plugin, request) {
+            (_, Request::Batch(requests)) if requests.len() > MAX_BATCH_REQUESTS => Err(Err(format!("A batch holds at most {MAX_BATCH_REQUESTS} requests"))),
+            (plugin, Request::Batch(requests)) => requests
+                .into_iter()
+                .enumerate()
+                .map(|(index, request)| match request {
+                    Request::Batch(_) => Err(Err(format!("batch request {index}: batches cannot be nested"))),
+                    Request::Call { function: Function::PluginConfig, .. } => Err(Err(format!("batch request {index}: PluginConfig cannot be batched"))),
+                    request => Self::admit(plugin, request).map_err(|reply| Err(format!("batch request {index}: {}", reply.err().unwrap_or_default()))),
+                })
+                .collect::<Result<Vec<_>, _>>()
+                .map(Request::Batch),
             (Some(plugin), Request::Call { function: Function::PluginConfig, .. }) => Err(Ok(Value::String(plugin.config.clone()))),
             (None, Request::Call { function: Function::PluginConfig, .. }) => Err(Err("Only plugins have a configuration".into())),
             (None, Request::Call { function, .. }) if owned_arity(function).is_some() && function != Function::SetRate => {
@@ -395,6 +406,11 @@ impl WasmRuntime {
                     let mut bytes = vec![0u8; request_length as usize];
                     memory.read(&caller, request_pointer as usize, &mut bytes)?;
                     let request: Request = serde_json::from_slice(&bytes)?;
+                    if let Request::Batch(requests) = &request {
+                        let more = requests.len().saturating_sub(1);
+                        wasmtime::ensure!(caller.data().calls_remaining >= more, "Script host call budget exhausted");
+                        caller.data_mut().calls_remaining -= more;
+                    }
                     let reply = match Self::admit(plugin.as_deref(), request) {
                         Ok(request) => caller.data_mut().host.invoke(request).await,
                         Err(reply) => reply,

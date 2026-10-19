@@ -26,6 +26,7 @@ database = { path = "../lib/database" }
 configuration = { path = "../lib/configuration" }
 script-sdk = { path = "../lib/script-sdk" }
 models = { path = "../lib/models" }
+map-cache = { path = "../lib/map-cache" }
 
 
 [[bin]]
@@ -47,6 +48,10 @@ path = "account-setup/main.rs"
 [[bin]]
 name = "scripts-build"
 path = "scripts-build/main.rs"
+
+[[bin]]
+name = "alive-towns-data"
+path = "alive-towns-data/main.rs"
 
 [[bin]]
 name = "client-data-setup"

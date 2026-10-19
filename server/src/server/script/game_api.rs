@@ -168,6 +168,11 @@ impl ScriptService {
         } else { state.find_session(context.account_id).is_some_and(|session| {
             (context.background || session.script_generation.load(Ordering::Acquire) == context.generation) && session.char_id == Some(context.char_id)
         }) && state.characters().contains_key(&context.char_id) };
+        if let Request::Batch(requests) = &context.request {
+            let reply = if valid { self.process_batch(server, state, &context, requests) } else { Err("Conversation is no longer active".into()) };
+            let _ = response.send(reply);
+            return;
+        }
         if valid {
             if let Request::Call { function: function @ (Function::Sleep | Function::ProgressBar), arguments } = &context.request {
                 self.delay_script(server, &context, *function, arguments, response);
@@ -187,6 +192,26 @@ impl ScriptService {
             script_debug!("Script request failed: npc={} char={} {}: {error}", context.npc_id, context.char_id, request_summary(&context.request));
         }
         let _ = response.send(reply);
+    }
+
+    fn process_batch(&self, server: &Server, state: &mut ServerState, context: &ScriptRequest, requests: &[Request]) -> Reply {
+        if requests.len() > script_sdk::MAX_BATCH_REQUESTS {
+            return Err(format!("A batch holds at most {} requests", script_sdk::MAX_BATCH_REQUESTS));
+        }
+        let mut replies = Vec::with_capacity(requests.len());
+        for (index, request) in requests.iter().enumerate() {
+            let waits = matches!(
+                request,
+                Request::Batch(_)
+                    | Request::Call { function: Function::Sleep | Function::ProgressBar | Function::InstanceCreate | Function::GetUnitData | Function::SetUnitData, .. }
+            );
+            if waits {
+                return Err(format!("batch request {index} cannot be batched: {}", request_summary(request)));
+            }
+            let item = ScriptRequest { request: request.clone(), ..context.clone() };
+            replies.push(self.process_request(server, state, &item).map_err(|error| format!("batch request {index}: {error}"))?);
+        }
+        Ok(Value::Array(replies))
     }
 
     /// `sleep` and `progressbar`: the script resumes after the delay, the game loop is not blocked.

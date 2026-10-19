@@ -10,7 +10,7 @@ use crate::server::model::map_instance::MapInstance;
 use crate::server::script::ScriptRequest;
 use crate::server::script::skill::actor::NPC_WALK_SPEEDS;
 use crate::server::service::map_instance_service::npc_can_walk_to;
-use crate::server::service::npc_event_service::named_npc;
+use crate::server::service::npc_event_service::{named_npc, npc_by_name_or_id};
 use crate::server::service::script_service::ScriptService;
 use crate::server::state::server::ServerState;
 
@@ -57,10 +57,10 @@ impl Server {
     }
 }
 
-/// The NPC named by `name`, or the one running the script when the name is absent or empty.
-pub(crate) fn target_npc(state: &ServerState, context: &ScriptRequest, name: Option<&Value>) -> Result<(u32, Arc<MapInstance>), String> {
-    let actor = match name.map(Value::text).filter(|name| !name.is_empty()) {
-        Some(name) => named_npc(state, context, &name)?.ok_or_else(|| format!("NPC {name} is not found"))?.0,
+/// The NPC named (or given by unit id) by `npc`, or the one running the script when it is absent or empty.
+pub(crate) fn target_npc(state: &ServerState, context: &ScriptRequest, npc: Option<&Value>) -> Result<(u32, Arc<MapInstance>), String> {
+    let actor = match npc.filter(|npc| !npc.text().is_empty()) {
+        Some(npc) => npc_by_name_or_id(state, context, npc)?.ok_or_else(|| format!("NPC {npc} is not found"))?.0,
         None => crate::server::script::unit_data::script_actor(state, context)?.ok_or("NPC walking needs an NPC")?,
     };
     let instance = state.get_map_instance(&actor.map, actor.instance).ok_or("NPC map is unavailable")?;

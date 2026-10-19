@@ -151,6 +151,7 @@ macro_rules! plugin_module {
         interceptors { $($interceptor:ident => $interceptor_fn:path),* $(,)? }
         $(windows { $($window:literal => $window_script:path),* $(,)? })?
         $(bot_actions { $($action:literal => ($action_script:path, $action_description:literal)),* $(,)? })?
+        $(generated_npcs => $generated_npcs:path $(,)?)?
     ) => {
         const _: () = assert!($crate::registry::is_strictly_sorted(&[$($npc),*]), "NPC names must be unique and sorted");
         const _: () = assert!($crate::registry::is_strictly_sorted(&[$($event),*]), "Event names must be unique and sorted");
@@ -208,6 +209,14 @@ macro_rules! plugin_module {
             $crate::plugin::set_manifest(PLUGIN_MANIFEST);
             $crate::plugin::export_configure(length)
         }
+
+        $(
+            #[no_mangle]
+            pub extern "C" fn plugin_npcs(length: u32) -> i32 {
+                $crate::plugin::set_manifest(PLUGIN_MANIFEST);
+                $crate::plugin::export_npcs($generated_npcs, length)
+            }
+        )?
 
         #[no_mangle]
         pub extern "C" fn plugin_intercept(length: u32) -> i32 {

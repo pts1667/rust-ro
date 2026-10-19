@@ -184,3 +184,25 @@ async fn named_execution_rejects_a_retired_numeric_abi() {
     let (_, result) = runtime.execute_named(CountingHost { count }, &entry).await;
     assert!(result.unwrap_err().contains("Unsupported script ABI 1"));
 }
+
+#[tokio::test]
+async fn each_request_of_a_batch_counts_against_the_host_call_budget() {
+    let batch = r#"{"Batch":["Arguments","Arguments","Arguments"]}"#;
+    let bytes = format!(
+        r#"(module
+        (import "rust_ro" "invoke" (func $invoke (param i32 i32 i32 i32) (result i32)))
+        (memory (export "memory") 1)
+        (data (i32.const 0) "{}")
+        (func (export "script_abi") (result i32) i32.const {ABI_VERSION})
+        (func (export "script_run") (result i32) i32.const 0 i32.const {} i32.const 256 i32.const 256 call $invoke drop i32.const 0)
+    )"#,
+        batch.replace('"', r"\22"),
+        batch.len()
+    );
+    let (count, result) = execute(bytes.clone().into_bytes(), Limits { host_calls: 2, ..Limits::default() }).await;
+    assert!(result.unwrap_err().contains("host call budget"));
+    assert_eq!(count, 0);
+    let (count, result) = execute(bytes.into_bytes(), Limits { host_calls: 3, ..Limits::default() }).await;
+    assert!(result.is_ok(), "{result:?}");
+    assert_eq!(count, 1, "the batch reaches the host as one request");
+}

@@ -88,6 +88,11 @@ config/plugins/<name>.json   optional, the operator's overrides of the plugin's 
   one capability or to none (reads, the plugin's own variables and timers), checked by an exhaustive match, and writing `Zeny`
   or `Hp` or buying and selling count as their capability. The runtime refuses a request outside the plugin's list before it
   leaves the guest. Base modules hold every capability. `scripting.plugins` may narrow a plugin's list, never widen it.
+- **Generated NPCs and batches.** A plugin may compute NPCs from its settings at boot (`plugin_npcs`, paged through the
+  16 KiB plugin buffer; `appearance` and `speed` are also valid in `npcs.json`), so one module can populate towns without a
+  2,000-line manifest the operator would have to keep in step with the settings. Driving those NPCs one host call at a time
+  would cost a game loop round trip each, so `Request::Batch` runs up to 256 requests in one pass; each still goes through the
+  capability check and counts against the host call budget, and requests that wait are refused inside a batch.
 - **Isolation of state.** Server and account variables a plugin uses (`$`, `$@`, `#`, `##`) are renamed `<sigil><plugin>::name`
   on their way to the host, so two plugins (or a plugin and the base scripts) cannot overwrite each other's by accident.
   Character variables are shared, as rathena scripts expect.

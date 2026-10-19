@@ -1004,6 +1004,7 @@ mod tests {
 
     fn npc(sprite: u16, touch_area: u16) -> NpcSkillState {
         NpcSkillState::uninitialized(&Script {
+            appearance: None, speed: None,
             id: 1,
             scope_instance: 0,
             map_name: "geffen_in".into(),
