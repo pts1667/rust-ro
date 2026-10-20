@@ -10,7 +10,10 @@
 //!
 //! Enabled plugins add the files of their `ui/` folder as `plugin/<name>/...`, listed in `/data/check` like the rest, so
 //! clients fetch and cache them the same way (`docs/plugin-ui.md`).
+//!
+//! Music copied into `bgm/` after the setup ran is listed too: clients only fetch what `/data/check` names.
 
+use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::Duration;
@@ -23,6 +26,7 @@ use crate::server::Server;
 
 /// Written by the setup tool next to `manifest.json`, one JSON object per file.
 const CHECK_FILE: &str = "check.jsonl";
+const BGM_FOLDER: &str = "bgm";
 
 /// How often the loop checks whether the game server stopped.
 const SHUTDOWN_POLL: Duration = Duration::from_millis(500);
@@ -94,10 +98,14 @@ pub fn serve(server: Arc<Server>) {
 /// when the request accepts it; files stored as-is stay available to every client.
 ///
 /// `plugins` are the `ui/` folders of the enabled plugins by plugin name, served under `/data/plugin/<name>/`. With any,
-/// `/data/check` is built once here: the setup's list followed by the plugin files.
+/// or with `bgm/` files the setup's list lacks or lists with another size, `/data/check` is built once here: the setup's
+/// list with the music on disk, followed by the plugin files.
 pub fn router(root: &str, plugins: &[(String, PathBuf)]) -> Router {
     let mut router = Router::new();
-    if plugins.is_empty() {
+    let bgm = bgm_files(Path::new(root));
+    let setup = setup_list(Path::new(root), !plugins.is_empty() || !bgm.is_empty());
+    let (setup, bgm_changed) = with_bgm(setup, &bgm);
+    if plugins.is_empty() && !bgm_changed {
         let check = ServeFile::new_with_mime(
             Path::new(root).join(CHECK_FILE),
             &"application/x-ndjson".parse::<mime::Mime>().expect("valid mime type"),
@@ -105,7 +113,7 @@ pub fn router(root: &str, plugins: &[(String, PathBuf)]) -> Router {
         .precompressed_zstd();
         router = router.route_service("/data/check", check);
     } else {
-        let list = Arc::new(check_list(Path::new(root), plugins));
+        let list = Arc::new(check_list(setup, plugins));
         router = router.route(
             "/data/check",
             axum::routing::get(move || {
@@ -125,32 +133,109 @@ pub fn router(root: &str, plugins: &[(String, PathBuf)]) -> Router {
     )
 }
 
-/// The setup's check list (decompressed when it was only stored as `.zst`, rebuilt from `manifest.json` when an older setup
-/// wrote none) with a line per plugin file. A client takes this list as everything the server has, so it must keep the
-/// setup's files.
-fn check_list(root: &Path, plugins: &[(String, PathBuf)]) -> Vec<u8> {
+/// The setup's check list, decompressed when it was only stored as `.zst`, rebuilt from `manifest.json` when an older setup
+/// wrote none. Only read when `needed`: otherwise the file is served as it is.
+fn setup_list(root: &Path, needed: bool) -> Vec<u8> {
+    if !needed {
+        return Vec::new();
+    }
     let mut list = std::fs::read(root.join(CHECK_FILE))
         .or_else(|_| std::fs::read(root.join(format!("{CHECK_FILE}.zst"))).and_then(|compressed| zstd::stream::decode_all(compressed.as_slice())))
         .unwrap_or_else(|_| manifest_lines(root));
     if !list.is_empty() && !list.ends_with(b"\n") {
         list.push(b'\n');
     }
+    list
+}
+
+/// The setup's list followed by a line per plugin file. A client takes this list as everything the server has, so it must
+/// keep the setup's files.
+fn check_list(mut list: Vec<u8>, plugins: &[(String, PathBuf)]) -> Vec<u8> {
     for (name, folder) in plugins {
         let mut files = Vec::new();
         collect_files(folder, folder, &mut files);
         files.sort();
         for (relative, file) in files {
-            match std::fs::read(&file) {
-                Ok(bytes) => {
-                    let line = serde_json::json!({ "path": format!("plugin/{name}/{relative}"), "size": bytes.len(), "md5": format!("{:x}", md5::compute(&bytes)) });
-                    list.extend_from_slice(line.to_string().as_bytes());
-                    list.push(b'\n');
-                }
+            match check_line(&format!("plugin/{name}/{relative}"), &file) {
+                Ok(line) => list.extend_from_slice(&line),
                 Err(error) => warn!("Plugin {name} asset {} is not served: {error}", file.display()),
             }
         }
     }
     list
+}
+
+/// `{ path, size, md5 }` and a newline, the line format the setup writes.
+fn check_line(path: &str, file: &Path) -> std::io::Result<Vec<u8>> {
+    let bytes = std::fs::read(file)?;
+    let mut line = serde_json::json!({ "path": path, "size": bytes.len(), "md5": format!("{:x}", md5::compute(&bytes)) }).to_string().into_bytes();
+    line.push(b'\n');
+    Ok(line)
+}
+
+/// The music under `bgm/`: listed path (`bgm/03.mp3`), file and size on disk. `.zst` files are left out, the setup lists
+/// them under their plain name.
+fn bgm_files(root: &Path) -> Vec<(String, PathBuf, u64)> {
+    let folder = root.join(BGM_FOLDER);
+    let mut files = Vec::new();
+    collect_files(&folder, &folder, &mut files);
+    files.sort();
+    files
+        .into_iter()
+        .filter(|(relative, _)| !relative.ends_with(".zst"))
+        .filter_map(|(relative, file)| {
+            let size = file.metadata().ok()?.len();
+            Some((format!("{BGM_FOLDER}/{relative}"), file, size))
+        })
+        .collect()
+}
+
+/// `list` with the line of every music file listed with another size replaced by the file on disk (what `ServeDir` sends),
+/// and a line added for every one it lacks; files listed with their size are not read. Also says whether anything changed.
+fn with_bgm(list: Vec<u8>, bgm: &[(String, PathBuf, u64)]) -> (Vec<u8>, bool) {
+    if bgm.is_empty() {
+        return (list, false);
+    }
+    let on_disk: HashMap<&str, (&Path, u64)> = bgm.iter().map(|(path, file, size)| (path.as_str(), (file.as_path(), *size))).collect();
+    let mut listed = HashSet::new();
+    let mut changed = false;
+    let mut merged = Vec::with_capacity(list.len());
+    for line in list.split_inclusive(|byte| *byte == b'\n') {
+        let entry: Option<serde_json::Value> = serde_json::from_slice(line.trim_ascii()).ok();
+        let found = entry.as_ref().and_then(|entry| entry["path"].as_str()).and_then(|path| on_disk.get_key_value(path));
+        let Some((path, (file, size))) = found else {
+            merged.extend_from_slice(line);
+            continue;
+        };
+        listed.insert(*path);
+        if entry.as_ref().and_then(|entry| entry["size"].as_u64()) == Some(*size) {
+            merged.extend_from_slice(line);
+            continue;
+        }
+        match check_line(path, file) {
+            Ok(fresh) => {
+                merged.extend_from_slice(&fresh);
+                changed = true;
+            }
+            Err(error) => {
+                warn!("Music {} keeps its listed entry, it can not be read: {error}", file.display());
+                merged.extend_from_slice(line);
+            }
+        }
+    }
+    if !merged.is_empty() && !merged.ends_with(b"\n") {
+        merged.push(b'\n');
+    }
+    for (path, file, _) in bgm.iter().filter(|(path, _, _)| !listed.contains(path.as_str())) {
+        match check_line(path, file) {
+            Ok(line) => {
+                merged.extend_from_slice(&line);
+                changed = true;
+            }
+            Err(error) => warn!("Music {} is not listed, it can not be read: {error}", file.display()),
+        }
+    }
+    (merged, changed)
 }
 
 fn manifest_lines(root: &Path) -> Vec<u8> {
@@ -160,7 +245,7 @@ fn manifest_lines(root: &Path) -> Vec<u8> {
     }
     let manifest = std::fs::read(root.join("manifest.json")).ok().and_then(|bytes| serde_json::from_slice::<Manifest>(&bytes).ok());
     let Some(manifest) = manifest else {
-        warn!("{CHECK_FILE} and manifest.json are missing from {}, /data/check lists only plugin files", root.display());
+        warn!("{CHECK_FILE} and manifest.json are missing from {}, /data/check lists only plugin and music files", root.display());
         return Vec::new();
     };
     manifest.files.iter().flat_map(|file| format!("{file}\n").into_bytes()).collect()
@@ -327,6 +412,46 @@ mod tests {
         assert_eq!(response.status(), StatusCode::OK, "setup files are still served");
         let response = app.oneshot(get("/data/plugin/ui_shop/../../check.jsonl")).await.unwrap();
         assert_ne!(response.status(), StatusCode::OK);
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[tokio::test]
+    async fn music_copied_after_the_setup_is_listed_as_it_is_on_disk() {
+        let root = test_root("bgm");
+        std::fs::create_dir_all(root.join("bgm")).unwrap();
+        std::fs::write(root.join("bgm/08.mp3"), b"LONGER MP3").unwrap();
+        std::fs::write(root.join("bgm/149.mp3"), b"MP3").unwrap();
+        std::fs::write(root.join("bgm/03.mp3"), b"ID3").unwrap();
+        let setup = concat!(
+            "{\"path\":\"sprite/poring.spr\",\"size\":3,\"md5\":\"abc\"}\n",
+            "{\"path\":\"bgm/08.mp3\",\"size\":3,\"md5\":\"stale\"}\n",
+            "{\"path\":\"bgm/149.mp3\",\"size\":3,\"md5\":\"kept\"}",
+        );
+        std::fs::write(root.join(CHECK_FILE), setup).unwrap();
+        let app = router(root.to_str().unwrap(), &[]);
+
+        let response = app.clone().oneshot(get("/data/check")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.headers().get("content-type").unwrap(), "application/x-ndjson");
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let lines: Vec<serde_json::Value> =
+            body.split(|b| *b == b'\n').filter(|line| !line.is_empty()).map(|line| serde_json::from_slice(line).unwrap()).collect();
+        assert_eq!(lines.len(), 4);
+        assert_eq!(lines[0]["path"], "sprite/poring.spr");
+        assert_eq!(lines[1]["path"], "bgm/08.mp3");
+        assert_eq!(lines[1]["size"], 10);
+        assert_eq!(lines[1]["md5"], format!("{:x}", md5::compute(b"LONGER MP3")));
+        assert_eq!(lines[2]["md5"], "kept", "a file listed with its size is not hashed again");
+        assert_eq!(lines[3]["path"], "bgm/03.mp3");
+        assert_eq!(lines[3]["md5"], format!("{:x}", md5::compute(b"ID3")));
+
+        std::fs::remove_file(root.join("bgm/03.mp3")).unwrap();
+        std::fs::write(root.join("bgm/08.mp3"), b"MP3").unwrap();
+        let app = router(root.to_str().unwrap(), &[]);
+        let response = app.oneshot(get("/data/check")).await.unwrap();
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        assert_eq!(&body[..], setup.as_bytes(), "a list that names the music on disk is served as the setup wrote it");
 
         let _ = std::fs::remove_dir_all(&root);
     }
