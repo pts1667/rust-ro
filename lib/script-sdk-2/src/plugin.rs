@@ -11,6 +11,10 @@ use crate::flow::{Script, Stop};
 /// An observer of a [`Hook`](script_sdk::Hook): it runs like an event, with the character the hook is about attached.
 pub type HookFn = fn(&Ctx<'_>, &script_sdk::Hook) -> Script;
 
+/// Runs one of the plugin's `@` commands, with the player who typed it attached. [`Ctx::reply`] answers in their chat
+/// window.
+pub type CommandFn = fn(&Ctx<'_>, &script_sdk::PluginCommand) -> Script;
+
 /// An interceptor. It runs in the game loop with no host calls and a deadline of a few hundred microseconds, so it only
 /// computes its answer from the decision and [`configured`].
 pub type InterceptFn = fn(&Interception) -> Verdict;
@@ -31,6 +35,12 @@ impl<'a> Ctx<'a> {
     /// The plugin's settings as the JSON object [`plugin_config`](Self::plugin_config) decodes.
     pub fn plugin_config_json(&self) -> Result<String, Stop> {
         Ok(self.call(Function::PluginConfig, vec![])?.text())
+    }
+
+    /// Answers the player who typed the plugin command being run, in their chat window; a line break starts another line. Bots that
+    /// ran the command receive the lines.
+    pub fn reply(&self, text: &str) -> Script {
+        self.call(Function::CommandReply, vec![text.into()]).map(|_| ())
     }
 
     /// The server rates, which a plugin with the `Rates` capability can scale: `ctx.rates().set(Rate::BaseExp, 200)`.

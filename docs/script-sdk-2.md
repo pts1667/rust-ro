@@ -211,6 +211,11 @@ let drops = ctx.rates().get(Rate::Drop)?;        // the effective rate, all plug
 - Interceptors cannot call the host at all. They read their settings with `script_sdk_2::configured::<T>()`.
 - `generated_npcs => fn(usize) -> Result<Option<PluginNpc>, String>` in `plugin_module!` places NPCs computed from the
   settings at boot, one per index until it answers `None` (`PluginNpc` has the fields of `npcs.json`, with `appearance: Option<NpcAppearance>` and `speed`).
+- `commands { "name" => (handler, level, "usage") }` adds an `@` command: `fn(&Ctx, &PluginCommand) -> Script`, run with the
+  player attached, answering with `ctx.reply(text)` (a line in their chat window, and in a bot's `replies`).
+- `items { id => fn(&ItemUse) -> Script }` and `item_bonuses { id => fn(&ItemBonus) -> Script }` are the use and bonus scripts of
+  the plugin's items (ids 40000 to 59999, defined in its `items.json`). They are written like those of `scripts/items` and read the
+  settings with `item.call(Function::PluginConfig, vec![])`.
 
 With the `Interface` capability a plugin also has its own windows and overhead notifications, and it decides what bots see of it:
 

@@ -3,7 +3,7 @@ use script_sdk::{ABI_VERSION, Entry, HookKind, Request};
 use crate::ctx::Ctx;
 use crate::flow::{Script, finish};
 use crate::item::{ItemBonus, ItemUse};
-use crate::plugin::HookFn;
+use crate::plugin::{CommandFn, HookFn};
 use crate::ui::{BotActionFn, WindowFn};
 use crate::transport::{Transport, WasmTransport};
 
@@ -58,6 +58,7 @@ pub struct Tables<'a> {
     pub hooks: &'a [(HookKind, HookFn)],
     pub windows: &'a [(&'a str, WindowFn)],
     pub bot_actions: &'a [(&'a str, BotActionFn)],
+    pub commands: &'a [(&'a str, CommandFn)],
 }
 
 /// Runs the entry the host named and returns the status it expects: `0` on success.
@@ -87,6 +88,10 @@ pub fn run(tables: Tables<'_>) -> i32 {
         Entry::BotAction(action) => {
             let handler = tables.bot_actions.iter().find(|(name, _)| *name == action.name).map(|(_, handler)| *handler);
             finish(handler.ok_or_else(|| format!("Module has no bot action {}", action.name))?(&ctx, action))
+        }
+        Entry::Command(command) => {
+            let handler = tables.commands.iter().find(|(name, _)| *name == command.name).map(|(_, handler)| *handler);
+            finish(handler.ok_or_else(|| format!("Module has no command {}", command.name))?(&ctx, command))
         }
     });
     match result {

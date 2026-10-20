@@ -183,6 +183,14 @@ impl GameEventHandler for BotCommand {
     }
 
     fn handle(self, server: &Server, state: &mut ServerState, tick: u128) -> Result<(), String> {
+        if let BotRequest::Command(text) = &self.request {
+            if let Ok(command) = server.bot_command_line(state, self.char_id, text) {
+                if state.permission_groups().is_plugin_command(&command.name) {
+                    server.plugin_command(state, self.char_id, &command.name, command.args, Some(self.reply));
+                    return Ok(());
+                }
+            }
+        }
         if let BotRequest::Plugin(request) = self.request {
             match request {
                 PluginRequest::Ui { plugin, event } => server.plugin_ui_event(state, self.char_id, &plugin, event, Some(self.reply)),

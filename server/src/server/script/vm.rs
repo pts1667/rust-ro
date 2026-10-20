@@ -48,15 +48,26 @@ impl ScriptVm {
     }
 }
 
-/// Runs item scripts from the items module and pet scripts from the pets module.
+/// Runs item scripts from the items module, or from the plugin that defines the item, and pet scripts from the pets module.
 pub struct ItemVm {
     items: Arc<WasmRuntime>,
     pets: Arc<WasmRuntime>,
+    plugin_items: HashMap<u32, Arc<WasmRuntime>>,
 }
 
 impl ItemVm {
     pub fn new(items: Arc<WasmRuntime>, pets: Arc<WasmRuntime>) -> Self {
-        Self { items, pets }
+        Self { items, pets, plugin_items: HashMap::new() }
+    }
+
+    /// Runs the scripts of plugin items in their plugin's module, under the plugin's capabilities.
+    pub fn with_plugin_items(mut self, plugins: &Plugins) -> Self {
+        for plugin in plugins.iter() {
+            for id in plugin.info.item_scripts.iter().chain(&plugin.info.item_bonuses) {
+                self.plugin_items.insert(*id, plugin.runtime.clone());
+            }
+        }
+        self
     }
 
     /// The fingerprint of the items module, which must match the item manifest.
@@ -66,7 +77,7 @@ impl ItemVm {
 
     /// Runs the use script of item `id`, or its passive script when the item is worn.
     pub async fn run_item<H: Host>(&self, host: H, id: u32) -> (H, Result<(), String>) {
-        self.items.execute_named(host, &Entry::Item(id)).await
+        self.plugin_items.get(&id).unwrap_or(&self.items).execute_named(host, &Entry::Item(id)).await
     }
 
     /// Runs the automatic bonus or visual program `id` of an item.

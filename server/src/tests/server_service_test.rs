@@ -86,6 +86,9 @@ mod bot_interaction_tests;
 #[cfg(not(feature = "integration_tests"))]
 #[path = "plugin_ui_test.rs"]
 mod plugin_ui_tests;
+#[cfg(not(feature = "integration_tests"))]
+#[path = "plugin_command_test.rs"]
+mod plugin_command_tests;
 
 #[path = "bot_companion_test.rs"]
 mod bot_companion_tests;

@@ -294,7 +294,9 @@ impl Server {
             ),
         );
         let mut state = ServerState::new(map_items);
-        state.set_permission_groups(load_permission_groups(&configuration.server.groups_path));
+        let mut groups = load_permission_groups(&configuration.server.groups_path);
+        crate::server::service::plugin_command_service::register_plugin_commands(npc_script_vm.plugins(), &mut groups);
+        state.set_permission_groups(groups);
         let sessions = state.sessions().clone();
         let directory = state.directory().clone();
         let map_flag_overrides = state.map_flag_overrides().clone();

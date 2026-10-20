@@ -55,13 +55,14 @@ impl Server {
         self.queue_plugin_job(state, char_id, plugin_name, PluginJob::BotAction { action: BotAction { name, args }, reply });
     }
 
-    fn queue_plugin_job(&self, state: &ServerState, char_id: u32, plugin: &str, job: PluginJob) {
+    pub(crate) fn queue_plugin_job(&self, state: &ServerState, char_id: u32, plugin: &str, job: PluginJob) {
         match self.plugin_ui().enqueue(char_id, plugin, job) {
             Ok(Some(job)) => self.start_plugin_job(state, char_id, plugin, job),
             Ok(None) => {}
-            Err(job) => match job.reply() {
-                Some(reply) => answer(reply, Err(format!("Too many requests are waiting for plugin {plugin}"))),
-                None => script_debug!("Plugin UI event of character {char_id} dropped, plugin {plugin} is busy"),
+            Err(job) => match (job.reply(), &job) {
+                (Some(reply), _) => answer(reply, Err(format!("Too many requests are waiting for plugin {plugin}"))),
+                (None, PluginJob::Command { command, .. }) => self.tell(char_id, &format!("@{} is busy, try again in a moment.", command.name)),
+                (None, _) => script_debug!("Plugin UI event of character {char_id} dropped, plugin {plugin} is busy"),
             },
         }
     }
@@ -83,6 +84,7 @@ impl Server {
         let (entry, reply) = match job {
             PluginJob::Event { event, reply } => (Entry::UiEvent(event), reply),
             PluginJob::BotAction { action, reply } => (Entry::BotAction(action), Some(reply)),
+            PluginJob::Command { command, reply } => (Entry::Command(command), reply),
         };
         let timeout = std::time::Duration::from_secs(self.configuration.scripting.conversation_timeout_secs.max(1));
         let (vm, module, store, name) = (self.script_service().vm.clone(), plugin.module.clone(), self.plugin_ui().clone(), plugin_name.to_string());
@@ -93,16 +95,24 @@ impl Server {
                 Err(_) => Err("the run timed out".to_string()),
             };
             let bot_reply = store.take_reply(char_id, &name);
+            let command_lines = store.take_command_lines(char_id, &name);
             match (reply, outcome) {
                 (Some(reply), Err(error)) => answer(&reply, Err(format!("Plugin {name} failed: {error}"))),
                 (Some(reply), Ok(())) => answer(
                     &reply,
                     Ok(match &entry {
                         Entry::UiEvent(event) => json!({ "window": store.window(char_id, &name, &event.window) }),
+                        Entry::Command(command) => json!({ "command": command.name, "replies": command_lines }),
                         _ => bot_reply.unwrap_or(Json::Null),
                     }),
                 ),
-                (None, Err(error)) => script_debug!("Plugin {name} window handler failed: {error}"),
+                (None, Err(error)) => match &entry {
+                    Entry::Command(command) => {
+                        warn!("Command @{} of plugin {name} failed for character {char_id}: {error}", command.name);
+                        server.tell(char_id, &format!("@{} failed.", command.name));
+                    }
+                    _ => script_debug!("Plugin {name} window handler failed: {error}"),
+                },
                 (None, Ok(())) => {}
             }
             server.add_to_next_tick(done);

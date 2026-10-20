@@ -158,8 +158,36 @@ pub struct PluginInfo {
     pub windows: Vec<String>,
     #[serde(default)]
     pub bot_actions: Vec<BotActionInfo>,
+    /// The `@` commands the plugin adds.
+    #[serde(default)]
+    pub commands: Vec<CommandInfo>,
+    /// Plugin items whose use script the plugin runs, by item id.
+    #[serde(default)]
+    pub item_scripts: Vec<u32>,
+    /// Plugin items whose bonus script (worn or carded) the plugin runs, by item id.
+    #[serde(default)]
+    pub item_bonuses: Vec<u32>,
     /// The plugin's `info.json`, compiled into the module.
     pub manifest: PluginManifest,
+}
+
+/// An `@` command a plugin adds.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct CommandInfo {
+    /// Typed after `@`, in lower case.
+    pub name: String,
+    /// The lowest permission group level that may use it; `groups.json` can also list it for a group.
+    pub level: u32,
+    /// What it does and its arguments, shown by `@commands` and to bots.
+    pub usage: String,
+}
+
+/// A plugin command a player typed: `@name args...`.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct PluginCommand {
+    pub name: String,
+    /// The words after the command name.
+    pub args: Vec<String>,
 }
 
 /// A plugin's `info.json`: what it is and the settings it reads, with their defaults. The operator's
@@ -453,7 +481,7 @@ impl Function {
             | GetEquipWeaponLevel | GetEquipArmorLevel | GetEquipCardId | GetEquipIsEquipped | GetEquipIsEnableRefine
             | GetEquipPercentRefinery | GetEquipRefineCost | GetBrokenId | GetGmLevel | ArrayGet | ArraySet | GetWaitingRoomState
             | GetInventoryList | MercenaryGetFaith | GetMonsterInfo | GetGuildMaster | GetCastleName | AttachRid | DetachRid
-            | IsLoggedIn | RequestGuildInfo | PluginConfig | GetRate | BotObserve | BotReply => None,
+            | IsLoggedIn | RequestGuildInfo | PluginConfig | GetRate | BotObserve | BotReply | CommandReply => None,
             Mes | Close | Next | Select | InputNumber | InputString | Message | DispBottom | Cutin | Emotion | ShowEvent | QuestInfo
             | QuestInfoRefresh | ViewPoint | NpcTalk | SoundEffect | ProgressBar | SpecialEffect | SkillEffect | NpcSpecialEffect
             | PlayBgm | ReadBook => Some(Dialogue),

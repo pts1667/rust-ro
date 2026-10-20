@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 mod plugin;
 pub use plugin_ui;
 pub use plugin::{
-    BotAction, BotActionInfo, Capabilities, Capability, ConfigEntry, Hook, HookKind, Interception, InterceptorKind, LevelKind, NpcAppearance, PluginInfo, PluginManifest,
+    BotAction, BotActionInfo, Capabilities, CommandInfo, PluginCommand, Capability, ConfigEntry, Hook, HookKind, Interception, InterceptorKind, LevelKind, NpcAppearance, PluginInfo, PluginManifest,
     PluginNpc, PluginNpcPage, Rate, Verdict, PLUGIN_BUFFER_BYTES,
 };
 
@@ -41,6 +41,8 @@ pub enum Entry {
     UiEvent(plugin_ui::UiEvent),
     /// A bot asked for an action the plugin declared.
     BotAction(BotAction),
+    /// A player typed one of the plugin's `@` commands, and their group may use it.
+    Command(PluginCommand),
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -487,6 +489,8 @@ pub enum Function {
     BotObserve,
     /// `BotReply(JSON)`: the answer to the bot action being run.
     BotReply,
+    /// `CommandReply(text)`: a line in the chat window of the player who typed the plugin command being run.
+    CommandReply,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

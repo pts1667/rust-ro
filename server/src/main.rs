@@ -96,16 +96,21 @@ pub async fn main() {
     let script_modules = create_script_modules();
     let plugins = server::plugins::Plugins::load(&configs().scripting).unwrap_or_else(|error| panic!("{error}"));
     plugins.publish_hooks();
+    let plugin_items = plugins.install_items(&mut items).unwrap_or_else(|error| panic!("{error}"));
+    repository_arc.save_plugin_items(&plugin_items.to_save).expect("Failed to store the plugin items");
+    ItemService::install_plugin_item_scripts(&plugins);
     ScriptService::install_plugin_events(&plugins).unwrap_or_else(|error| panic!("{error}"));
     let mut scripts = load_scripts();
     ScriptLoader::place_plugin_npcs(&mut scripts, &plugins, configs().scripting.test_npcs).unwrap_or_else(|error| panic!("{error}"));
     let items_module = script_modules.get("items").cloned().expect("the scripting modules directory must hold items.wasm");
     let pets_module = script_modules.get("pets").cloned().expect("the scripting modules directory must hold pets.wasm");
-    let item_script_vm = Arc::new(ItemVm::new(items_module, pets_module));
+    let item_script_vm = Arc::new(ItemVm::new(items_module, pets_module).with_plugin_items(&plugins));
     let npc_script_vm = Arc::new(ScriptVm::with_plugins(script_modules, plugins));
 
     // Loading configs
     let skills_config = Config::load_skills_config(".").unwrap();
+    let catalog = npc_script_vm.plugins().catalog(plugin_items.catalog, &skills_config).unwrap_or_else(|error| panic!("{error}"));
+    npc_script_vm.plugins().publish_catalog(catalog);
     let job_configs = Config::load_jobs_config(".").unwrap();
     let job_skills_tree = Config::load_jobs_skill_tree(".").unwrap();
     // Loading map-cache and warps

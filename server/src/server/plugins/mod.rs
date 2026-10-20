@@ -1,7 +1,9 @@
 //! Plugins (`docs/adr/7-plugins.md`, `docs/plugins.md`): script modules with an identity, their own placements and
 //! configuration, hooks and interceptors, loaded from `scripting.plugins_dir` in the order of `scripting.plugins`.
 
+pub mod items;
 pub mod rates;
+pub mod skills;
 pub mod ui;
 
 use std::collections::BTreeMap;
@@ -61,6 +63,11 @@ pub struct LoadedPlugin {
     pub settings: serde_json::Map<String, serde_json::Value>,
     /// The plugin's folder; files of its `ui/` subfolder are served to clients as `plugin/<name>/...`.
     pub folder: PathBuf,
+    /// Its `items.json`.
+    pub items: Vec<items::PluginItem>,
+    /// Its `skills.json` and `jobs.json`, declared only (see `skills`).
+    pub skills: Vec<skills::PluginSkill>,
+    pub jobs: Vec<skills::PluginJob>,
     hooks: u32,
     interceptors: u32,
     sandbox: Mutex<PluginSandbox>,
@@ -83,6 +90,10 @@ impl LoadedPlugin {
 
     pub fn has_bot_action(&self, name: &str) -> bool {
         self.info.bot_actions.iter().any(|action| action.name == name)
+    }
+
+    pub fn has_command(&self, name: &str) -> bool {
+        self.info.commands.iter().any(|command| command.name == name)
     }
 
     fn intercepts(&self, kind: InterceptorKind) -> bool {
@@ -119,6 +130,9 @@ impl LoadedPlugin {
         };
         let mut npcs: Vec<PluginNpc> = read_optional(&folder.join("npcs.json")).map_err(refuse)?.unwrap_or_default();
         let events = read_optional(&folder.join("events.json")).map_err(refuse)?.unwrap_or_default();
+        let items = items::load(&folder, &info).map_err(refuse)?;
+        let skills = skills::load_skills(&folder).map_err(refuse)?;
+        let jobs = skills::load_jobs(&folder).map_err(refuse)?;
         let config = serde_json::Value::Object(settings.clone()).to_string();
         let runtime = Arc::new(module.with_plugin(PluginPolicy { name: name.into(), capabilities, config }));
         npcs.extend(PluginSandbox::new(&runtime).generated_npcs(MAX_GENERATED_NPCS).map_err(|error| refuse(format!("its generated NPCs failed: {error}")))?);
@@ -134,6 +148,9 @@ impl LoadedPlugin {
             events,
             settings,
             folder,
+            items,
+            skills,
+            jobs,
             hooks: info.hooks.iter().fold(0, |bits, kind| bits | kind.bit()),
             interceptors: info.interceptors.iter().fold(0, |bits, kind| bits | kind.bit()),
             sandbox: Mutex::new(PluginSandbox::new(&runtime)),
@@ -163,11 +180,12 @@ pub struct Plugins {
     interceptors: u32,
     deadline: Duration,
     max_failures: u32,
+    catalog: std::sync::OnceLock<plugin_ui::catalog::PluginCatalog>,
 }
 
 impl Default for Plugins {
     fn default() -> Self {
-        Self { list: Vec::new(), interceptors: 0, deadline: Duration::from_micros(200), max_failures: 10 }
+        Self { list: Vec::new(), interceptors: 0, deadline: Duration::from_micros(200), max_failures: 10, catalog: Default::default() }
     }
 }
 
@@ -197,6 +215,7 @@ impl Plugins {
             list,
             deadline: Duration::from_micros(config.interceptor_deadline_us.max(1)),
             max_failures: config.interceptor_failures.max(1),
+            catalog: Default::default(),
         })
     }
 
@@ -217,6 +236,38 @@ impl Plugins {
     /// The modules the script VM runs plugin scripts from, by their `plugin:<name>` key.
     pub fn modules(&self) -> impl Iterator<Item = (String, Arc<WasmRuntime>)> + '_ {
         self.list.iter().map(|plugin| (plugin.module.clone(), plugin.runtime.clone()))
+    }
+
+    /// Adds the plugins' items to the game's, see [`items::install`].
+    pub fn install_items(&self, items: &mut Vec<crate::repository::model::item_model::ItemModel>) -> Result<items::Installed, String> {
+        let plugins: Vec<_> = self.list.iter().map(|plugin| (plugin.name(), plugin.items.as_slice())).collect();
+        items::install(&plugins, items)
+    }
+
+    /// What clients need to draw the plugins' additions: `items`, from [`Self::install_items`], with the skills and jobs.
+    pub fn catalog(
+        &self,
+        items: Vec<plugin_ui::catalog::CatalogItem>,
+        game_skills: &std::collections::HashMap<u32, configuration::configuration::SkillConfig>,
+    ) -> Result<plugin_ui::catalog::PluginCatalog, String> {
+        let plugins: Vec<_> = self.list.iter().map(|plugin| (plugin.name(), plugin.skills.as_slice(), plugin.jobs.as_slice())).collect();
+        let (skills, jobs) = skills::catalog(&plugins, game_skills)?;
+        if !skills.is_empty() || !jobs.is_empty() {
+            warn!("Plugins declare {} skills and {} jobs: clients see them in the catalog, but characters cannot learn or use them yet", skills.len(), jobs.len());
+        }
+        Ok(plugin_ui::catalog::PluginCatalog { items, skills, jobs })
+    }
+
+    /// Keeps the catalog clients download; set once at boot.
+    pub fn publish_catalog(&self, catalog: plugin_ui::catalog::PluginCatalog) {
+        if self.catalog.set(catalog).is_err() {
+            warn!("The plugin catalog was already published");
+        }
+    }
+
+    /// The catalog clients download, when plugins add anything to it.
+    pub fn published_catalog(&self) -> Option<&plugin_ui::catalog::PluginCatalog> {
+        self.catalog.get().filter(|catalog| !catalog.items.is_empty() || !catalog.skills.is_empty() || !catalog.jobs.is_empty())
     }
 
     pub fn by_name(&self, name: &str) -> Option<&LoadedPlugin> {

@@ -32,7 +32,8 @@
     "plugins": [
       { "name": "double_xp", "enabled": false },
       { "name": "ui_shop", "enabled": false },
-      { "name": "alive_towns", "enabled": false }
+      { "name": "alive_towns", "enabled": false },
+      { "name": "lucky_charms", "enabled": false }
     ],
     "interceptor_deadline_us": 200,
     "interceptor_failures": 10

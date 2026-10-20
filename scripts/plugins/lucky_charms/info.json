@@ -1,0 +1,26 @@
+{
+  "title": "Lucky Charms",
+  "description": "Three items of its own: a Lucky Ticket that draws a reward, a Clover Charm accessory that adds luck, and a Fortune Cookie that reads a fortune. @lucky counts your tickets, @luckytickets hands some out.",
+  "config": {
+    "rewards": {
+      "default": [
+        { "item_id": 501, "amount": 5, "weight": 50 },
+        { "item_id": 502, "amount": 3, "weight": 30 },
+        { "item_id": 607, "amount": 1, "weight": 5 },
+        { "item_id": 40003, "amount": 2, "weight": 15 }
+      ],
+      "description": "What a Lucky Ticket draws: an item, its amount and its weight among the others."
+    },
+    "charm_luk": { "default": 3, "description": "Luck the Clover Charm adds while worn." },
+    "fortunes": {
+      "default": [
+        "A new friend waits in Prontera.",
+        "Your next card drop is closer than you think.",
+        "Patience is the strongest skill of all.",
+        "Beware of Porings bearing apples."
+      ],
+      "description": "What a Fortune Cookie may read."
+    },
+    "max_given": { "default": 100, "description": "Most tickets one @luckytickets hands out." }
+  }
+}

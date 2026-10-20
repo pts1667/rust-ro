@@ -127,12 +127,16 @@ macro_rules! pet_module {
 ///     interceptors { ExpGain => exp_gain }
 ///     windows { "shop" => on_shop }
 ///     bot_actions { "buy" => (bot_buy, "Buys an item: {item_id, amount}") }
+///     commands { "rates" => (rates_command, 0, "Shows the event rates") }
+///     items { 40001 => use_ticket }
+///     item_bonuses { 40002 => lucky_charm }
 /// }
 /// ```
 ///
 /// `requires` and `capabilities` may be left out, and so may `windows` (handlers of the plugin's windows, by window
-/// id) and `bot_actions` (actions offered to bots, with their description). NPC and event names must be unique and
-/// in ascending order. The crate's `info.json` (title, description, settings and their defaults, see
+/// id), `bot_actions` (actions offered to bots, with their description), `commands` (`@` commands, with the lowest group
+/// level that may use them and their usage), `items` (use scripts of the plugin's items) and `item_bonuses` (their worn
+/// bonus scripts), in this order. NPC and event names, and item ids, must be unique and in ascending order. The crate's `info.json` (title, description, settings and their defaults, see
 /// [`PluginManifest`](crate::PluginManifest)) is compiled into the module.
 #[macro_export]
 macro_rules! plugin_module {
@@ -151,10 +155,15 @@ macro_rules! plugin_module {
         interceptors { $($interceptor:ident => $interceptor_fn:path),* $(,)? }
         $(windows { $($window:literal => $window_script:path),* $(,)? })?
         $(bot_actions { $($action:literal => ($action_script:path, $action_description:literal)),* $(,)? })?
+        $(commands { $($command:literal => ($command_script:path, $command_level:literal, $command_usage:literal)),* $(,)? })?
+        $(items { $($item:literal => $item_script:path),* $(,)? })?
+        $(item_bonuses { $($bonus:literal => $bonus_script:path),* $(,)? })?
         $(generated_npcs => $generated_npcs:path $(,)?)?
     ) => {
         const _: () = assert!($crate::registry::is_strictly_sorted(&[$($npc),*]), "NPC names must be unique and sorted");
         const _: () = assert!($crate::registry::is_strictly_sorted(&[$($event),*]), "Event names must be unique and sorted");
+        const _: () = assert!($crate::registry::is_strictly_sorted_ids(&[$($($item),*)?]), "Item ids must be unique and sorted");
+        const _: () = assert!($crate::registry::is_strictly_sorted_ids(&[$($($bonus),*)?]), "Bonus item ids must be unique and sorted");
 
         #[doc(hidden)]
         pub const PLUGIN_MANIFEST: &str = include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/info.json"));
@@ -172,6 +181,9 @@ macro_rules! plugin_module {
             const HOOKS: &[($crate::HookKind, $crate::HookFn)] = &[$(($crate::HookKind::$hook, $hook_script)),*];
             const WINDOWS: &[(&str, $crate::WindowFn)] = &[$($(($window, $window_script)),*)?];
             const BOT_ACTIONS: &[(&str, $crate::BotActionFn)] = &[$($(($action, $action_script)),*)?];
+            const COMMANDS: &[(&str, $crate::CommandFn)] = &[$($(($command, $command_script)),*)?];
+            const ITEMS: &[(u32, $crate::registry::ItemFn)] = &[$($(($item, $item_script)),*)?];
+            const BONUSES: &[(u32, $crate::registry::BonusFn)] = &[$($(($bonus, $bonus_script)),*)?];
             $crate::registry::run($crate::registry::Tables {
                 npcs: NPCS,
                 events: EVENTS,
@@ -179,6 +191,9 @@ macro_rules! plugin_module {
                 hooks: HOOKS,
                 windows: WINDOWS,
                 bot_actions: BOT_ACTIONS,
+                commands: COMMANDS,
+                items: ITEMS,
+                bonuses: BONUSES,
                 ..Default::default()
             })
         }
@@ -200,6 +215,9 @@ macro_rules! plugin_module {
                 interceptors: vec![$($crate::InterceptorKind::$interceptor),*],
                 windows: vec![$($($window.into()),*)?],
                 bot_actions: vec![$($($crate::BotActionInfo { name: $action.into(), description: $action_description.into() }),*)?],
+                commands: vec![$($($crate::CommandInfo { name: $command.into(), level: $command_level, usage: $command_usage.into() }),*)?],
+                item_scripts: vec![$($($item),*)?],
+                item_bonuses: vec![$($($bonus),*)?],
                 manifest,
             })
         }

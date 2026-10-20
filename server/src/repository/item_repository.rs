@@ -80,6 +80,25 @@ impl SledRepository {
         }
         Ok(())
     }
+
+    /// Stores the definitions of plugin items, so items players hold outlive their plugin (`plugins::items`). A renamed
+    /// item frees its former name.
+    pub fn save_plugin_items(&self, models: &[ItemModel]) -> Result<(), Error> {
+        let records = models.iter().map(|item| Ok((item.id, serde_json::to_vec(item)?))).collect::<Result<Vec<_>, Error>>()?;
+        (&self.database.items, &self.database.item_names).transaction(|(items, item_names)| {
+            for ((id, record), model) in records.iter().zip(models) {
+                if let Some(previous) = tx_read::<ItemModel>(items, &id.to_be_bytes())? {
+                    if previous.name_aegis != model.name_aegis && tx_read::<i32>(item_names, previous.name_aegis.as_bytes())? == Some(*id) {
+                        item_names.remove(previous.name_aegis.as_bytes())?;
+                    }
+                }
+                items.insert(&id.to_be_bytes()[..], record.clone())?;
+                tx_write(item_names, model.name_aegis.as_bytes(), id)?;
+            }
+            Ok(())
+        })?;
+        Ok(())
+    }
 }
 
 #[async_trait]

@@ -55,13 +55,18 @@ pub fn handle_atcommand(server: &Server, state: &mut ServerState, char_id: u32, 
     let group_id = state.group_id_of(account_id);
     let kind = if symbol == "#" { CommandKind::Char } else { CommandKind::At };
     let canonical = groups.canonical_command(command);
-    if !groups.group(group_id).can_use_command(&canonical, kind) {
+    if !groups.can_use_command(group_id, command, kind) {
         packet_zc_notify_playerchat.set_msg(format!("{symbol}{command} is an Unknown Command."));
         send_chat_reply(server, char_id, packet_zc_notify_playerchat);
         return;
     }
     if groups.group(group_id).log_commands {
         info!(target: "atcommand_log", "account {account_id} char {char_id} (group {group_id}): {symbol}{command} {}", args.join(" ").trim());
+    }
+    if kind == CommandKind::At && groups.is_plugin_command(&canonical) {
+        let args = args.iter().filter(|arg| !arg.is_empty()).map(|arg| arg.to_string()).collect();
+        server.plugin_command(state, char_id, &canonical, args, None);
+        return;
     }
     match canonical.as_str() {
         "go" => {

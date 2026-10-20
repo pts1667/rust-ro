@@ -2,6 +2,7 @@
 //! [`Overhead`] notifications drawn above a unit. Shared by the plugin SDK, the server and the client so the three
 //! agree on one vocabulary; the wire format is in [`wire`]. See `docs/plugin-ui.md`.
 
+pub mod catalog;
 mod event;
 mod overhead;
 mod validate;

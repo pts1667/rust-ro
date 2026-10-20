@@ -64,7 +64,7 @@ impl Default for Limits {
 /// so a plugin cannot act in another's name.
 fn owned_arity(function: Function) -> Option<usize> {
     match function {
-        Function::UiClose | Function::UiOpen | Function::BotReply => Some(1),
+        Function::UiClose | Function::UiOpen | Function::BotReply | Function::CommandReply => Some(1),
         Function::SetRate | Function::UiOverhead | Function::BotObserve => Some(2),
         _ => None,
     }

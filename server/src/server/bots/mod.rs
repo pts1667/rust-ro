@@ -34,6 +34,8 @@ pub(crate) use events::BotEventKind;
 #[cfg(test)]
 pub(crate) use combat::DuelRequest;
 #[cfg(test)]
+pub(crate) use command::BotRequest;
+#[cfg(test)]
 pub(crate) use observation::observe;
 #[cfg(test)]
 pub(crate) use commerce::{BuyingLine, CartMove, StoreAction, VendingLine};

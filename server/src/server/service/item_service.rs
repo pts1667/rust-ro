@@ -35,11 +35,48 @@ pub(crate) struct ItemScript {
     pub interactive: bool,
 }
 
+/// Scripts of plugin items, which no manifest lists: what their plugin declared, set once at boot.
+static PLUGIN_ITEM_SCRIPTS: std::sync::OnceLock<std::collections::HashMap<u32, PluginItemScript>> = std::sync::OnceLock::new();
+
+pub(crate) struct PluginItemScript {
+    metadata: ItemScript,
+    /// It describes bonuses when worn; without, the item only has a use script.
+    bonuses: bool,
+}
+
 impl ItemService {
     pub(crate) fn script_metadata(item_id: u32) -> Option<&'static ItemScript> {
         static METADATA: std::sync::OnceLock<std::collections::HashMap<u32, ItemScript>> = std::sync::OnceLock::new();
         METADATA.get_or_init(|| serde_json::from_str::<Vec<ItemScript>>(include_str!("../../../../config/wasm/items.json"))
             .expect("Invalid compiled item manifest").into_iter().map(|entry| (entry.id, entry)).collect()).get(&item_id)
+            .or_else(|| Self::plugin_item_script(item_id).map(|script| &script.metadata))
+    }
+
+    fn plugin_item_script(item_id: u32) -> Option<&'static PluginItemScript> {
+        PLUGIN_ITEM_SCRIPTS.get()?.get(&item_id)
+    }
+
+    /// Declares the scripts of the loaded plugins' items. Called once, before the item scripts load.
+    pub fn install_plugin_item_scripts(plugins: &crate::server::plugins::Plugins) {
+        let scripts = plugins
+            .iter()
+            .flat_map(|plugin| plugin.items.iter())
+            .filter(|item| item.has_use_script || item.has_bonus_script)
+            .map(|item| {
+                let metadata = ItemScript {
+                    id: item.id(),
+                    dynamic: item.dynamic_bonuses,
+                    source_hash: String::new(),
+                    reads: Vec::new(),
+                    calls: Vec::new(),
+                    interactive: item.dialogue,
+                };
+                (item.id(), PluginItemScript { metadata, bonuses: item.has_bonus_script })
+            })
+            .collect();
+        if PLUGIN_ITEM_SCRIPTS.set(scripts).is_err() {
+            warn!("Plugin item scripts were already installed");
+        }
     }
 
     pub fn new(
@@ -88,6 +125,17 @@ impl ItemService {
                 if item.script.as_ref().is_some_and(|source| !source.is_empty()) {
                     panic!("Item {} has no compiled Wasm script", item.id);
                 }
+                match Self::plugin_item_script(item.id as u32).filter(|script| script.bonuses) {
+                    Some(script) if script.metadata.dynamic => {
+                        item.item_bonuses_are_dynamic = true;
+                        dynamic += 1;
+                    }
+                    Some(_) => {
+                        Self::cache_static_bonuses(item, &vm);
+                        cached += 1;
+                    }
+                    None => {}
+                }
                 continue;
             };
             assert_eq!(
@@ -104,18 +152,23 @@ impl ItemService {
                 dynamic += 1;
                 continue;
             }
-            let (host, result) = futures::executor::block_on(vm.run_item(ItemScriptHost::bonuses(Status::default(), item.id as u32), item.id as u32));
-            if let Err(error) = result {
-                panic!("Cannot load static item bonuses {}: {}", item.id, host.error.unwrap_or(error));
-            }
-            item.bonuses = host.bonuses.drain();
-            for bonus in &item.bonuses {
-                if let BonusType::ElementWeapon(element) = bonus {
-                    item.element = Some(*element);
-                }
-            }
+            Self::cache_static_bonuses(item, &vm);
             cached += 1;
         }
         (cached, dynamic)
+    }
+
+    /// Runs the bonus script of an item whose bonuses do not depend on the wearer, once, and keeps them.
+    fn cache_static_bonuses(item: &mut ItemModel, vm: &ItemVm) {
+        let (host, result) = futures::executor::block_on(vm.run_item(ItemScriptHost::bonuses(Status::default(), item.id as u32), item.id as u32));
+        if let Err(error) = result {
+            panic!("Cannot load static item bonuses {}: {}", item.id, host.error.unwrap_or(error));
+        }
+        item.bonuses = host.bonuses.drain();
+        for bonus in &item.bonuses {
+            if let BonusType::ElementWeapon(element) = bonus {
+                item.element = Some(*element);
+            }
+        }
     }
 }

@@ -5,6 +5,9 @@ in its own folder, turned on by one line of configuration. Design and rationale:
 `double_xp` (`scripts/plugins/double_xp`, installed in `config/plugins/double_xp`) and `ui_shop`, which opens its own shop
 window ([plugin UI](plugin-ui.md)).
 
+New to plugins? Start with the [plugin guide](plugin-guide.md): a first plugin, the common recipes, and what plugins
+cannot do. This page is the reference.
+
 ## For operators
 
 ### Turning a plugin on or off
@@ -52,7 +55,9 @@ config/plugins/<name>/
   plugin.wasm     the module (with its info.json inside); the folder name must be the plugin's name
   npcs.json       optional: NPCs to place
   events.json     optional: event labels to register
-  ui/             optional: images of its windows and overheads, served to clients at /data/plugin/<name>/
+  items.json      optional: its items (see Items)
+  skills.json     optional: its skills, jobs.json its jobs (a scaffold, see Skills and jobs)
+  ui/             optional: images of its windows, overheads and item icons, served to clients at /data/plugin/<name>/
 config/plugins/<name>.json   optional: the operator's overrides of the plugin's settings
 ```
 
@@ -119,7 +124,8 @@ the folder are written by hand. A plugin can also be built outside this reposito
 in a folder.
 
 `src/lib.rs` declares the plugin with `plugin_module!`. Every section up to `interceptors` is required, empty ones included;
-`windows` and `bot_actions` are optional ([plugin UI](plugin-ui.md)). NPC and event names must be sorted.
+`windows` and `bot_actions` ([plugin UI](plugin-ui.md)), then `commands`, `items` and `item_bonuses` (below) are optional,
+in that order. NPC and event names and item ids must be sorted.
 ```rust
 use script_sdk_2::{Ctx, Hook, Interception, Script, Verdict};
 
@@ -238,6 +244,90 @@ With the `Interface` capability a plugin opens its own windows (text, tables, im
 their events in `windows { "id" => handler }`, and draws notifications above units with `ctx.ui().overhead(..)`. It also chooses
 what bots observe (`ctx.bot().observe`) and which actions they may run (`bot_actions { }`). All of it is in
 [plugin UI](plugin-ui.md).
+
+### `@` commands
+`commands { "name" => (handler, level, "usage") }` adds `@name`. The handler is a `fn(&Ctx, &PluginCommand) -> Script`
+that runs with the player attached, like an NPC, in the plugin's job queue for that player; `command.args` holds the
+words after the name. `ctx.reply(text)` writes a line in the player's chat window (a line break starts another line,
+at most 50 lines per reply).
+```rust
+commands { "lucky" => (count_tickets, 0, "Tells how many Lucky Tickets you hold") }
+
+fn count_tickets(ctx: &Ctx, _command: &PluginCommand) -> Script {
+    let count = ctx.items().count(40001)?;
+    ctx.reply(&format!("You hold {count} Lucky Tickets."))
+}
+```
+- Names are 1 to 32 lower case letters, digits or `_`, typed in any case. A name or alias of a built-in command
+  (`config/groups.json`'s `atcommands`), or one another plugin added, refuses the plugin.
+- A group may use the command when its `level` is at least the command's level, when it lists the command in its
+  `commands`, or when it has `all_commands`. `@commands` lists the plugin commands a player may use. Only `@` commands:
+  `#` (on another character) is not offered.
+- Bots run them with the `command` action, under `bots.command_group`, and get `{"command": name, "replies": [...]}`.
+- A player who types a command while the previous one of the same plugin still runs waits in its queue (4 deep);
+  past that they read "@name is busy". A failed run tells them "@name failed." and logs the error.
+
+### Items
+A plugin adds items in `items.json`, with ids from 40000 to 59999. An entry takes the fields of `config/items.json`
+(`id`, `name_aegis`, `name_english`, `item_type`, `price_buy`, `weight`, `location`, `slots`, `equip_level_min`...;
+`weight`, `job_flags` (every job), `class_flags`, `location`, `flags` and `trade_flags` default), but no `script`, plus
+what only plugin items have:
+
+| Field | |
+| --- | --- |
+| `description` | text shown by clients, a string with line breaks or a list of lines |
+| `look` | an item of the game whose icon and floor sprite clients borrow |
+| `icon` | a lower case `.png` of the plugin's `ui/` folder, preferred over `look` for the inventory icon |
+| `dialogue` | the use script talks (`mes`, menus): it runs like an NPC conversation |
+| `dynamic_bonuses` | the bonus script reads the wearer (level, refine, other gear) and runs on every status computation instead of once at boot |
+
+```json
+[{ "id": 40001, "name_aegis": "Lucky_Ticket", "name_english": "Lucky Ticket", "item_type": "Usable", "weight": 1,
+   "description": ["A ticket for the lucky draw."], "look": 6153, "icon": "ticket.png" }]
+```
+Behaviour is Rust in the module, keyed by id: `items { 40001 => lucky_ticket }` for what using it does (an
+`fn(&ItemUse) -> Script`) and `item_bonuses { 40002 => clover_charm }` for what wearing it or the card gives (an
+`fn(&ItemBonus) -> Script`), written as in `scripts/items` ([the script SDK](script-sdk-2.md)). Item scripts get no `Ctx`:
+they read the settings with `item.call(Function::PluginConfig, vec![])`, and their calls need the plugin's capabilities.
+
+The boot refuses a plugin when:
+- an id is outside the range, defined twice, or by two plugins; a `name_aegis` is taken by a game item or another plugin;
+- a usable item (`Healing`, `Usable`, `DelayConsume`, `Cash`) has no `items` handler, or another type has one;
+- an `item_bonuses` handler is on an item that is neither worn nor a card, or a handler has no item;
+- `look` is not an item of the game, `icon` is not a file of `ui/`, or a worn item has no `location`.
+
+The database keeps every plugin item's definition. A plugin turned off leaves its items in inventories and storages as
+plain items without scripts (a warning lists them), and they come back to life when it returns; a later plugin reusing
+the name of such an item renames the old one `<name>_<id>`.
+
+Clients need the name, description and icon, which the stock client reads from its GRF: see the client catalog below.
+
+### Skills and jobs (scaffold)
+`skills.json` (ids 20000 to 20999) and `jobs.json` (ids 4500 to 4599) are read, checked and published in the client
+catalog, but **no character can learn, use or become them yet**:
+```json
+[{ "id": 20000, "name": "RF_RUNE_STRIKE", "display_name": "Rune Strike", "max_level": 5, "target": "enemy",
+   "sp_cost": [10, 12, 14, 16, 18], "range": 1, "look": 5, "description": ["..."], "icon": "rune.png" }]
+```
+```json
+[{ "id": 4500, "name": "Rune_Fencer", "display_name": "Rune Fencer", "base_job": "Swordsman",
+   "skills": [{ "skill": "RF_RUNE_STRIKE", "max_level": 5, "requires": [{ "skill": "SM_BASH", "level": 5 }] }] }]
+```
+`target` is `passive`, `self`, `enemy`, `ally` or `ground`; a tree names skills of the game or of any loaded plugin.
+What remains before they play:
+- characters hold skills as `SkillEnum`, generated from the game's skills and with no room for other ids; plugin skills
+  need a skill store and a `Skill` implementation (hooks or a script entry) beside it;
+- jobs are the `JobName` enum, used by stats, equipment and skill trees, so a plugin job needs its own record (based on
+  `base_job`) in each of them;
+- skill and job packets carrying plugin ids must go only to clients that announced they read the catalog: the stock
+  client does not know them.
+
+### Client catalog
+At boot the server writes what clients need to draw plugin content into `/data/plugin-catalog.json` on the client data
+port (`client_data`), listed in `/data/check` before the plugins' `ui/` files. Its types are `plugin_ui::catalog`
+(`PluginCatalog { items, skills, jobs }`), shared with nostalro-client, which reads it at start: names, descriptions,
+slots, `look` and `icon` of every plugin item, including retired ones (`plugin: null`). Without plugin content the
+file is not served. The stock client shows plugin items as unknown items unless its GRF data is patched by hand.
 
 ### Limits
 - 1 MiB of linear memory, 10,000 host calls and `cpu_budget_ms` of CPU per run (waiting for the host is free). Each request

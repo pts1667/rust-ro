@@ -474,6 +474,9 @@ impl ScriptService {
                 if crate::server::service::script_plugin_ui::handles(function) {
                     return server.plugin_ui_call(state, context, function, &arguments);
                 }
+                if crate::server::service::plugin_command_service::handles(function) {
+                    return server.plugin_command_reply(context, &arguments);
+                }
                 if function == Function::Print {
                     debug!("NPC {}: {}", context.npc_id, arguments.iter().map(|value| value.text()).collect::<Vec<_>>().join(" "));
                     return Ok(Value::default());

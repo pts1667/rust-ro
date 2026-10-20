@@ -1,0 +1,37 @@
+[
+  {
+    "id": 40001,
+    "name_aegis": "Lucky_Ticket",
+    "name_english": "Lucky Ticket",
+    "item_type": "Usable",
+    "price_buy": 1000,
+    "weight": 1,
+    "description": ["A ticket for the lucky draw.", "Use it to draw one of the ^0000FFLucky Charms^000000 rewards."],
+    "look": 6153,
+    "icon": "ticket.png"
+  },
+  {
+    "id": 40002,
+    "name_aegis": "Clover_Charm",
+    "name_english": "Clover Charm",
+    "item_type": "Armor",
+    "price_buy": 20000,
+    "weight": 10,
+    "location": 136,
+    "equip_level_min": 1,
+    "slots": 1,
+    "description": ["A four leaf clover sealed in glass.", "LUK +3 while worn."],
+    "look": 706
+  },
+  {
+    "id": 40003,
+    "name_aegis": "Fortune_Cookie",
+    "name_english": "Fortune Cookie",
+    "item_type": "Usable",
+    "price_buy": 100,
+    "weight": 5,
+    "description": ["A crisp cookie with a note inside.", "Restores 5% HP and SP."],
+    "look": 572,
+    "dialogue": true
+  }
+]

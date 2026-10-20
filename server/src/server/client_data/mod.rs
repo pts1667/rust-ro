@@ -9,7 +9,8 @@
 //! request accepts it; already-compressed formats stay identity so range requests keep working.
 //!
 //! Enabled plugins add the files of their `ui/` folder as `plugin/<name>/...`, listed in `/data/check` like the rest, so
-//! clients fetch and cache them the same way (`docs/plugin-ui.md`).
+//! clients fetch and cache them the same way (`docs/plugin-ui.md`). When plugins add items, skills or jobs, their catalog
+//! is `plugin-catalog.json`, listed and cached the same way (`plugin_ui::catalog`).
 //!
 //! Music copied into `bgm/` after the setup ran is listed too: clients only fetch what `/data/check` names.
 
@@ -70,7 +71,8 @@ pub fn serve(server: Arc<Server>) {
         info!("Client data is served on http://{}:{}/data from {}", config.host, config.port, config.root);
         let assets: Vec<(String, PathBuf)> =
             server.plugins().iter().map(|plugin| (plugin.name().to_string(), plugin.folder.join("ui"))).filter(|(_, folder)| folder.is_dir()).collect();
-        let app = router(&config.root, &assets);
+        let catalog = server.plugins().published_catalog().map(|catalog| serde_json::to_vec(catalog).expect("the plugin catalog is JSON"));
+        let app = router(&config.root, &assets, catalog);
         let stopped = {
             let server = server.clone();
             async move {
@@ -97,15 +99,16 @@ pub fn serve(server: Arc<Server>) {
 /// root. A compressible file exists only as `<path>.zst` and is sent with `Content-Encoding: zstd`
 /// when the request accepts it; files stored as-is stay available to every client.
 ///
-/// `plugins` are the `ui/` folders of the enabled plugins by plugin name, served under `/data/plugin/<name>/`. With any,
-/// or with `bgm/` files the setup's list lacks or lists with another size, `/data/check` is built once here: the setup's
-/// list with the music on disk, followed by the plugin files.
-pub fn router(root: &str, plugins: &[(String, PathBuf)]) -> Router {
+/// `plugins` are the `ui/` folders of the enabled plugins by plugin name, served under `/data/plugin/<name>/`, and
+/// `catalog` the plugin catalog's JSON, served as `/data/plugin-catalog.json`. With any, or with `bgm/` files the setup's
+/// list lacks or lists with another size, `/data/check` is built once here: the setup's list with the music on disk,
+/// followed by the plugin files.
+pub fn router(root: &str, plugins: &[(String, PathBuf)], catalog: Option<Vec<u8>>) -> Router {
     let mut router = Router::new();
     let bgm = bgm_files(Path::new(root));
-    let setup = setup_list(Path::new(root), !plugins.is_empty() || !bgm.is_empty());
-    let (setup, bgm_changed) = with_bgm(setup, &bgm);
-    if plugins.is_empty() && !bgm_changed {
+    let setup = setup_list(Path::new(root), !plugins.is_empty() || !bgm.is_empty() || catalog.is_some());
+    let (mut setup, bgm_changed) = with_bgm(setup, &bgm);
+    if catalog.is_none() && plugins.is_empty() && !bgm_changed {
         let check = ServeFile::new_with_mime(
             Path::new(root).join(CHECK_FILE),
             &"application/x-ndjson".parse::<mime::Mime>().expect("valid mime type"),
@@ -113,6 +116,17 @@ pub fn router(root: &str, plugins: &[(String, PathBuf)]) -> Router {
         .precompressed_zstd();
         router = router.route_service("/data/check", check);
     } else {
+        if let Some(catalog) = catalog {
+            setup.extend_from_slice(&check_entry(plugin_ui::catalog::CATALOG_PATH, &catalog));
+            let catalog = Arc::new(catalog);
+            router = router.route(
+                &format!("/data/{}", plugin_ui::catalog::CATALOG_PATH),
+                axum::routing::get(move || {
+                    let catalog = catalog.clone();
+                    async move { ([(axum::http::header::CONTENT_TYPE, "application/json")], catalog.as_ref().clone()) }
+                }),
+            );
+        }
         let list = Arc::new(check_list(setup, plugins));
         router = router.route(
             "/data/check",
@@ -167,10 +181,13 @@ fn check_list(mut list: Vec<u8>, plugins: &[(String, PathBuf)]) -> Vec<u8> {
 
 /// `{ path, size, md5 }` and a newline, the line format the setup writes.
 fn check_line(path: &str, file: &Path) -> std::io::Result<Vec<u8>> {
-    let bytes = std::fs::read(file)?;
-    let mut line = serde_json::json!({ "path": path, "size": bytes.len(), "md5": format!("{:x}", md5::compute(&bytes)) }).to_string().into_bytes();
+    Ok(check_entry(path, &std::fs::read(file)?))
+}
+
+fn check_entry(path: &str, bytes: &[u8]) -> Vec<u8> {
+    let mut line = serde_json::json!({ "path": path, "size": bytes.len(), "md5": format!("{:x}", md5::compute(bytes)) }).to_string().into_bytes();
     line.push(b'\n');
-    Ok(line)
+    line
 }
 
 /// The music under `bgm/`: listed path (`bgm/03.mp3`), file and size on disk. `.zst` files are left out, the setup lists
@@ -287,7 +304,7 @@ mod tests {
     #[tokio::test]
     async fn serves_files_under_data_and_refuses_escapes() {
         let root = test_root("files");
-        let app = router(root.to_str().unwrap(), &[]);
+        let app = router(root.to_str().unwrap(), &[], None);
 
         let response = app.clone().oneshot(get("/data/sprite/poring.spr")).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
@@ -306,7 +323,7 @@ mod tests {
     #[tokio::test]
     async fn serves_check_list_as_jsonl_and_prefers_its_zstd_sibling() {
         let root = test_root("check");
-        let app = router(root.to_str().unwrap(), &[]);
+        let app = router(root.to_str().unwrap(), &[], None);
 
         let response = app.clone().oneshot(get("/data/check")).await.unwrap();
         assert_eq!(response.status(), StatusCode::NOT_FOUND, "no check list written yet");
@@ -346,7 +363,7 @@ mod tests {
         // `only-zstd.spr` has no identity file.
         let compressed = zstd::bulk::compress(b"SPR", 3).unwrap();
         std::fs::write(root.join("sprite/only-zstd.spr.zst"), &compressed).unwrap();
-        let app = router(root.to_str().unwrap(), &[]);
+        let app = router(root.to_str().unwrap(), &[], None);
 
         let request = Request::builder()
             .uri("/data/sprite/only-zstd.spr")
@@ -392,7 +409,7 @@ mod tests {
         std::fs::create_dir_all(folder.join("frames")).unwrap();
         std::fs::write(folder.join("coin.png"), b"PNG").unwrap();
         std::fs::write(folder.join("frames/a.png"), b"A").unwrap();
-        let app = router(root.to_str().unwrap(), &[("ui_shop".into(), folder)]);
+        let app = router(root.to_str().unwrap(), &[("ui_shop".into(), folder)], None);
 
         let response = app.clone().oneshot(get("/data/check")).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
@@ -417,6 +434,35 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn the_plugin_catalog_is_served_and_listed_before_the_plugin_assets() {
+        let root = test_root("catalog");
+        std::fs::write(root.join(CHECK_FILE), b"{\"path\":\"sprite/poring.spr\",\"size\":3,\"md5\":\"abc\"}").unwrap();
+        let folder = root.join("lucky_ui");
+        std::fs::create_dir_all(&folder).unwrap();
+        std::fs::write(folder.join("ticket.png"), b"PNG").unwrap();
+        let catalog = b"{\"items\":[],\"skills\":[],\"jobs\":[]}".to_vec();
+        let app = router(root.to_str().unwrap(), &[("lucky".into(), folder)], Some(catalog.clone()));
+
+        let response = app.clone().oneshot(get("/data/check")).await.unwrap();
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        let lines: Vec<serde_json::Value> =
+            body.split(|b| *b == b'\n').filter(|line| !line.is_empty()).map(|line| serde_json::from_slice(line).unwrap()).collect();
+        let paths: Vec<_> = lines.iter().map(|line| line["path"].as_str().unwrap()).collect();
+        assert_eq!(paths, ["sprite/poring.spr", plugin_ui::catalog::CATALOG_PATH, "plugin/lucky/ticket.png"]);
+        assert_eq!(lines[1]["md5"], format!("{:x}", md5::compute(&catalog)));
+        assert_eq!(lines[1]["size"], catalog.len());
+
+        let response = app.clone().oneshot(get(&format!("/data/{}", plugin_ui::catalog::CATALOG_PATH))).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.headers().get("content-type").unwrap(), "application/json");
+        assert_eq!(to_bytes(response.into_body(), usize::MAX).await.unwrap().to_vec(), catalog);
+        let response = app.oneshot(get("/data/plugin/lucky/ticket.png")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[tokio::test]
     async fn music_copied_after_the_setup_is_listed_as_it_is_on_disk() {
         let root = test_root("bgm");
         std::fs::create_dir_all(root.join("bgm")).unwrap();
@@ -429,7 +475,7 @@ mod tests {
             "{\"path\":\"bgm/149.mp3\",\"size\":3,\"md5\":\"kept\"}",
         );
         std::fs::write(root.join(CHECK_FILE), setup).unwrap();
-        let app = router(root.to_str().unwrap(), &[]);
+        let app = router(root.to_str().unwrap(), &[], None);
 
         let response = app.clone().oneshot(get("/data/check")).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
@@ -448,7 +494,7 @@ mod tests {
 
         std::fs::remove_file(root.join("bgm/03.mp3")).unwrap();
         std::fs::write(root.join("bgm/08.mp3"), b"MP3").unwrap();
-        let app = router(root.to_str().unwrap(), &[]);
+        let app = router(root.to_str().unwrap(), &[], None);
         let response = app.oneshot(get("/data/check")).await.unwrap();
         let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
         assert_eq!(&body[..], setup.as_bytes(), "a list that names the music on disk is served as the setup wrote it");

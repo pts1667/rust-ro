@@ -7,7 +7,7 @@ use std::sync::{Arc, Mutex, MutexGuard};
 
 use plugin_ui::wire::FEATURE_PLUGIN_UI;
 use plugin_ui::{UiEvent, Window};
-use script_sdk::BotAction;
+use script_sdk::{BotAction, PluginCommand};
 use serde_json::Value as Json;
 
 use crate::server::bots::BotReply;
@@ -21,12 +21,13 @@ pub const MAX_OBSERVATION_BYTES: usize = 16 * 1024;
 pub enum PluginJob {
     Event { event: UiEvent, reply: Option<BotReply> },
     BotAction { action: BotAction, reply: BotReply },
+    Command { command: PluginCommand, reply: Option<BotReply> },
 }
 
 impl PluginJob {
     pub fn reply(&self) -> Option<&BotReply> {
         match self {
-            PluginJob::Event { reply, .. } => reply.as_ref(),
+            PluginJob::Event { reply, .. } | PluginJob::Command { reply, .. } => reply.as_ref(),
             PluginJob::BotAction { reply, .. } => Some(reply),
         }
     }
@@ -54,6 +55,8 @@ struct CharacterUi {
     observations: BTreeMap<String, BTreeMap<String, Json>>,
     queues: HashMap<String, Queue>,
     replies: HashMap<String, Json>,
+    /// What the running command of each plugin answered, for the bot that ran it.
+    command_lines: HashMap<String, Vec<String>>,
 }
 
 #[derive(Default)]
@@ -149,6 +152,14 @@ impl PluginUiStore {
 
     pub fn take_reply(&self, char_id: u32, plugin: &str) -> Option<Json> {
         self.lock().get_mut(&char_id)?.replies.remove(plugin)
+    }
+
+    pub fn add_command_line(&self, char_id: u32, plugin: &str, line: &str) {
+        self.lock().entry(char_id).or_default().command_lines.entry(plugin.into()).or_default().push(line.into());
+    }
+
+    pub fn take_command_lines(&self, char_id: u32, plugin: &str) -> Vec<String> {
+        self.lock().get_mut(&char_id).and_then(|ui| ui.command_lines.remove(plugin)).unwrap_or_default()
     }
 
     /// Queues `job`. It comes back in `Ok` when nothing of `plugin` runs for the character, to be started at once, and in

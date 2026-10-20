@@ -460,3 +460,61 @@ async fn a_level_up_shows_a_rising_star_above_the_player() {
     assert_eq!(overhead.text.unwrap().text, "LEVEL 12!");
     assert_eq!(overhead.image.unwrap().frames, ["@/star.png"], "the server resolves the plugin's own path");
 }
+
+fn lucky_charms() -> Plugins {
+    load(vec![PluginSetting::Name("lucky_charms".into())]).unwrap()
+}
+
+/// Answers a fixed draw. The runtime answers the settings itself, with the defaults of `info.json`.
+#[derive(Clone)]
+struct Lucky {
+    roll: i32,
+    requests: Arc<Mutex<Vec<Request>>>,
+}
+
+#[async_trait]
+impl Host for Lucky {
+    async fn invoke(&mut self, request: Request) -> Reply {
+        let reply = match &request {
+            Request::Call { function: Function::Rand, .. } => Ok(Value::Number(self.roll)),
+            Request::Call { function: Function::CountItem, .. } => Ok(Value::Number(2)),
+            _ => Ok(Value::default()),
+        };
+        self.requests.lock().unwrap().push(request);
+        reply
+    }
+}
+
+#[test]
+fn the_example_declares_its_commands_and_item_scripts() {
+    let plugins = lucky_charms();
+    let plugin = plugins.iter().next().unwrap();
+    let commands: Vec<_> = plugin.info.commands.iter().map(|command| (command.name.as_str(), command.level)).collect();
+    assert_eq!(commands, [("lucky", 0), ("luckytickets", 60)]);
+    assert!(plugin.has_command("lucky") && !plugin.has_command("item"));
+    assert_eq!((plugin.info.item_scripts.as_slice(), plugin.info.item_bonuses.as_slice()), (&[40001, 40003][..], &[40002][..]));
+    assert_eq!(plugin.items.iter().map(|item| item.id()).collect::<Vec<_>>(), [40001, 40002, 40003]);
+}
+
+#[tokio::test]
+async fn a_plugin_command_runs_with_its_arguments_and_replies() {
+    let lucky = Lucky { roll: 0, requests: Arc::default() };
+    let command = script_sdk::PluginCommand { name: "luckytickets".into(), args: vec!["4".into()] };
+    let (host, result) = lucky_charms().iter().next().unwrap().runtime.execute_named(lucky, &Entry::Command(command)).await;
+    result.unwrap();
+    let requests = host.requests.lock().unwrap().clone();
+    assert_eq!(ui_call(&requests, Function::GetItem), [vec![40001.into(), 4.into()]]);
+    assert_eq!(ui_call(&requests, Function::CommandReply), [vec!["Here are 4 Lucky Tickets.".into(), "lucky_charms".into()]], "the runtime names the plugin");
+}
+
+#[tokio::test]
+async fn the_item_vm_runs_plugin_items_in_their_plugin() {
+    let plugins = lucky_charms();
+    let vm = crate::server::script::ItemVm::new(crate::tests::common::test_item_runtime(), crate::tests::common::test_item_runtime()).with_plugin_items(&plugins);
+    let (host, result) = vm.run_item(Lucky { roll: 52, requests: Arc::default() }, 40001).await;
+    result.unwrap();
+    assert_eq!(ui_call(&host.requests.lock().unwrap(), Function::GetItem), [vec![502.into(), 3.into()]], "past the 50 of Red Potions");
+    let (host, result) = vm.run_item(Lucky { roll: 0, requests: Arc::default() }, 501).await;
+    result.unwrap();
+    assert!(ui_call(&host.requests.lock().unwrap(), Function::GetItem).is_empty(), "a game item runs in the item module");
+}

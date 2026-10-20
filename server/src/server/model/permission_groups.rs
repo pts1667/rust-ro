@@ -140,6 +140,8 @@ pub const DEFAULT_GROUP_ID: u32 = 0;
 pub struct PermissionGroups {
     groups: HashMap<u32, PlayerGroup>,
     canonical_commands: HashMap<String, String>,
+    /// `@` commands of plugins, with the lowest group level that may use them without being listed.
+    plugin_commands: HashMap<String, u32>,
 }
 
 impl Default for PermissionGroups {
@@ -160,7 +162,7 @@ impl PermissionGroups {
             char_commands: HashSet::new(),
             permissions: [Permission::Trade, Permission::Party, Permission::Attendance].into(),
         };
-        Self { groups: HashMap::from([(DEFAULT_GROUP_ID, player)]), canonical_commands: HashMap::new() }
+        Self { groups: HashMap::from([(DEFAULT_GROUP_ID, player)]), canonical_commands: HashMap::new(), plugin_commands: HashMap::new() }
     }
 
     pub fn load(path: impl AsRef<Path>) -> Result<Self, String> {
@@ -201,7 +203,7 @@ impl PermissionGroups {
             }
             canonical_commands.insert(command.clone(), command);
         }
-        Ok(Self { groups, canonical_commands })
+        Ok(Self { groups, canonical_commands, plugin_commands: HashMap::new() })
     }
 
     pub fn group(&self, group_id: u32) -> &PlayerGroup {
@@ -226,13 +228,13 @@ impl PermissionGroups {
         self.canonical_commands.get(&word).cloned().unwrap_or(word)
     }
 
-    /// Canonical names of the commands a group may use, sorted.
+    /// Canonical names of the commands a group may use, plugin commands included, sorted.
     pub fn usable_commands(&self, group_id: u32, kind: CommandKind) -> Vec<String> {
-        let group = self.group(group_id);
         let mut names: Vec<String> = self
             .canonical_commands
             .values()
-            .filter(|name| group.can_use_command(name, kind))
+            .chain(self.plugin_commands.keys())
+            .filter(|name| self.can_use_canonical(group_id, name, kind))
             .cloned()
             .collect();
         names.sort();
@@ -241,7 +243,34 @@ impl PermissionGroups {
     }
 
     pub fn can_use_command(&self, group_id: u32, word: &str, kind: CommandKind) -> bool {
-        self.group(group_id).can_use_command(&self.canonical_command(word), kind)
+        self.can_use_canonical(group_id, &self.canonical_command(word), kind)
+    }
+
+    /// A plugin command is open to the groups of its level and above, and to the groups that list it.
+    fn can_use_canonical(&self, group_id: u32, command: &str, kind: CommandKind) -> bool {
+        let group = self.group(group_id);
+        let by_level = kind == CommandKind::At && self.plugin_commands.get(command).is_some_and(|level| u32::from(group.level) >= *level);
+        by_level || group.can_use_command(command, kind)
+    }
+
+    pub fn is_plugin_command(&self, command: &str) -> bool {
+        self.plugin_commands.contains_key(command)
+    }
+
+    /// Adds a plugin's `@` command. A name or alias of the group file's commands, or of another plugin's, is refused: built-in
+    /// commands always keep their meaning.
+    pub fn add_plugin_command(&mut self, name: &str, level: u32) -> Result<(), String> {
+        if name.is_empty() || name.len() > 32 || !name.bytes().all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'_') {
+            return Err(format!("command name {name:?} must be 1 to 32 lower case letters, digits or _"));
+        }
+        if self.canonical_commands.contains_key(name) {
+            return Err(format!("@{name} is a built-in command or alias"));
+        }
+        if self.plugin_commands.contains_key(name) {
+            return Err(format!("@{name} is already a command of another plugin"));
+        }
+        self.plugin_commands.insert(name.to_string(), level);
+        Ok(())
     }
 }
 
@@ -251,6 +280,23 @@ mod tests {
 
     fn stock() -> PermissionGroups {
         PermissionGroups::load(concat!(env!("CARGO_MANIFEST_DIR"), "/../config/groups.json")).unwrap()
+    }
+
+    #[test]
+    fn plugin_commands_open_by_level_and_never_shadow_built_in_ones() {
+        let mut groups = stock();
+        groups.add_plugin_command("raffle", 2).unwrap();
+        assert!(groups.add_plugin_command("raffle", 0).unwrap_err().contains("another plugin"));
+        assert!(groups.add_plugin_command("item", 0).unwrap_err().contains("built-in"));
+        assert!(groups.add_plugin_command("accountinfo", 0).unwrap_err().contains("built-in"), "aliases too");
+        assert!(groups.add_plugin_command("Raffle", 0).is_err() && groups.add_plugin_command("", 0).is_err());
+        assert!(!groups.can_use_command(0, "raffle", CommandKind::At));
+        assert!(groups.can_use_command(10, "RAFFLE", CommandKind::At), "level 2");
+        assert!(groups.can_use_command(99, "raffle", CommandKind::At));
+        assert!(!groups.can_use_command(10, "raffle", CommandKind::Char));
+        assert!(groups.is_plugin_command("raffle") && !groups.is_plugin_command("item"));
+        assert!(groups.usable_commands(10, CommandKind::At).contains(&"raffle".to_string()));
+        assert!(!groups.usable_commands(0, CommandKind::At).contains(&"raffle".to_string()));
     }
 
     #[test]
