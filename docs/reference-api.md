@@ -18,7 +18,8 @@ while the game runs. Code: `server/src/server/reference`.
 | `/db/<category>/<key>` | One entry with everything linked to it. |
 | `/db/route?from=<map>&to=<map>&x=<x>&y=<y>` | The fewest hops from one map to another (see Routes). |
 
-Query parameters on listings: `q` (part of the name, case-insensitive; maps match their name or `display_name`), `map` (NPCs only), `offset`, `limit` (default 50, at most 200).
+Query parameters on listings: `q` (part of the name, case-insensitive; maps match their name or `display_name`), `map` (NPCs only),
+`category` (destinations only, the warper menu category such as `Towns`, case-insensitive), `offset`, `limit` (default 50, at most 200).
 
 Categories and keys:
 

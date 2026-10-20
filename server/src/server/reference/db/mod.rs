@@ -63,6 +63,8 @@ pub struct ListQuery {
     q: Option<String>,
     /// Only the NPCs placed on this map.
     map: Option<String>,
+    /// Only the warper destinations of this category (`Towns`), case-insensitive.
+    category: Option<String>,
     offset: Option<usize>,
     limit: Option<usize>,
 }
@@ -378,6 +380,20 @@ mod tests {
         assert_eq!(status, StatusCode::NOT_FOUND);
         let (status, _) = get_json("/db/destinations/prontera").await;
         assert_eq!(status, StatusCode::BAD_REQUEST);
+    }
+
+    #[tokio::test]
+    async fn warper_destinations_are_filtered_by_category() {
+        let (status, towns) = get_json("/db/destinations?category=towns&limit=200").await;
+        assert_eq!(status, StatusCode::OK);
+        let results = towns["results"].as_array().unwrap();
+        assert_eq!(towns["total"].as_u64().unwrap() as usize, results.len());
+        assert!(results.iter().any(|link| link["name"] == "Prontera"));
+        assert!(!results.iter().any(|link| link["name"] == "Prontera Field 8"));
+        let (_, all) = get_json("/db/destinations").await;
+        assert!(all["total"].as_u64() > towns["total"].as_u64());
+        let (_, none) = get_json("/db/destinations?category=Moon").await;
+        assert_eq!(none["total"], 0);
     }
 
     #[tokio::test]

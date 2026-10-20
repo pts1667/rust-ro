@@ -40,7 +40,12 @@ fn link(destination: &Destination) -> Link {
 }
 
 pub fn links(query: &ListQuery) -> Vec<Link> {
-    destinations().iter().filter(|destination| matches(query.q.as_deref(), &[&destination.name])).map(link).collect()
+    destinations()
+        .iter()
+        .filter(|destination| query.category.as_deref().is_none_or(|category| category.eq_ignore_ascii_case(&destination.category)))
+        .filter(|destination| matches(query.q.as_deref(), &[&destination.name]))
+        .map(link)
+        .collect()
 }
 
 pub fn entry(key: &str) -> Result<Value, DbError> {
