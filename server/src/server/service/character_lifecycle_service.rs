@@ -59,9 +59,9 @@ impl Server {
     /// Tells the client why it is being disconnected (`SC_NOTIFY_BAN`), closes its sockets and logs the character out.
     pub(crate) fn kick_session(&self, session: &Arc<Session>, reason: u8) {
         let notice = crate::server::request_handler::login::notify_ban_packet(self.packetver(), reason);
-        for socket in [session.char_server_socket.as_ref(), session.map_server_socket.as_ref()].into_iter().flatten() {
-            crate::server::request_handler::login::write_to_socket(socket, &notice);
-            let _ = read_lock!(socket).shutdown(std::net::Shutdown::Both);
+        for socket in session.connections() {
+            socket.send(notice.clone());
+            socket.close();
         }
         if session.char_id.is_some() {
             self.add_to_next_tick(GameEvent::CharacterLogout(CharacterLogout {
@@ -101,7 +101,7 @@ impl Server {
     pub(crate) fn admit_character_map_entry(
         &self,
         session: Arc<Session>,
-        socket: Arc<std::sync::RwLock<crate::server::model::client_socket::ClientSocket>>,
+        socket: crate::server::model::client_handle::ClientHandle,
     ) -> Result<crate::server::model::character_lifecycle::CharacterMapEntryData, String> {
         let (sender, receiver) = oneshot::channel();
         self.add_to_next_tick(GameEvent::CharacterMapEntry(
@@ -347,7 +347,7 @@ impl Server {
                             .session
                             .map_server_socket
                             .as_ref()
-                            .is_some_and(|socket| Arc::ptr_eq(socket, &request.socket))
+                            .is_some_and(|socket| *socket == request.socket)
                             && state.find_session(owner.account_id).is_none_or(|session| {
                                 session.auth_code != owner.session.auth_code || session.char_id != Some(owner.char_id)
                             })

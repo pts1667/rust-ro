@@ -6,7 +6,6 @@ use packets::packets::{Packet, PacketZcNotifyPlayerchat};
 use packets::packets_parser::parse;
 
 use crate::server::service::global_config_service::GlobalConfigService;
-use crate::util::tick::get_tick;
 
 /// The client reads the message up to a NUL terminator, so without one it drops the last character.
 pub fn playerchat_packet(packetver: u32, text: &str) -> PacketZcNotifyPlayerchat {
@@ -134,48 +133,6 @@ pub fn print_packet(name: &Option<String>, outgoing: Option<&SocketAddr>, direct
         packet.pretty_debug();
         info!("{:02X?}", packet.raw());
         println!("----------------------------End Packet----------------------------\n");
-    }
-}
-
-/**
- Packets are buffered by session and flushed to the TCP Socket after a short delay.
- It allows to "send" packets from anywhere from the code, in the end packets will be send by batch and not one by one.
-*/
-pub struct PacketsBuffer {
-    session_id: u32,
-    max_capacity: usize,
-    created_at: u128,
-    data: Vec<u8>,
-}
-
-impl PacketsBuffer {
-    pub fn new(session_id: u32, max_capacity: usize) -> Self {
-        Self {
-            session_id,
-            max_capacity,
-            created_at: get_tick(),
-            data: Vec::with_capacity(2048),
-        }
-    }
-
-    pub fn push(&mut self, new_data: &[u8]) {
-        self.data.extend_from_slice(new_data);
-    }
-
-    pub fn should_flush(&self) -> bool {
-        get_tick() - self.created_at > 20
-    }
-
-    pub fn can_contain(&self, len: usize) -> bool {
-        self.data.len() + len <= self.max_capacity
-    }
-
-    pub fn data(&self) -> &Vec<u8> {
-        &self.data
-    }
-
-    pub fn session_id(&self) -> u32 {
-        self.session_id
     }
 }
 

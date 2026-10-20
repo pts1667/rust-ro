@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::server::Server;
 use crate::server::model::events::game_event::{
     CharacterUseGroundSkill, CharacterUseGroundSkillText, GameEvent, ScriptIdentify, ScriptTeleportSelection, SkillMenuSelection,
@@ -47,7 +45,7 @@ pub fn handle_raw(server: &Server, context: &Request) -> Result<bool, String> {
     let session = server.sessions().find(session_id).ok_or("Session expired")?;
     let char_id = session.char_id.ok_or("No character selected")?;
     let socket = session.map_server_socket.as_ref().ok_or("No map connection")?;
-    if !Arc::ptr_eq(socket, &context.socket()) {
+    if *socket != context.socket() {
         return Err("Script operation arrived on a different connection".into());
     }
     let read = |offset| u16::from_le_bytes([bytes[offset], bytes[offset + 1]]);

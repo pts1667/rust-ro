@@ -65,6 +65,10 @@ impl CharNotification {
     pub fn serialized_packet(&self) -> &Vec<u8> {
         &self.packet
     }
+
+    pub fn into_packet(self) -> Vec<u8> {
+        self.packet
+    }
 }
 
 #[derive(Debug, Clone)]

@@ -9,7 +9,10 @@
     "host": "0.0.0.0",
     "port": 6901,
     "groups_path": "config/groups.json",
-    "motd_path": "config/motd.txt"
+    "motd_path": "config/motd.txt",
+    "client_idle_timeout_secs": 60,
+    "max_connections": 2048,
+    "max_connections_per_ip": 0
   },
   "database": {
     "path": "db/sled",

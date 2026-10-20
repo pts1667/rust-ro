@@ -1,5 +1,4 @@
-use std::net::{TcpListener, TcpStream};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::time::{Duration, Instant};
 
 use database::model::{CharacterInventory, CharacterRecord, InventoryRecord, SeedData};
@@ -11,7 +10,7 @@ use models::status::KnownSkill;
 
 use super::ServerServiceTestContext;
 use crate::repository::{InventoryRepository, SledRepository};
-use crate::server::model::client_socket::ClientSocket;
+use crate::server::model::client_handle::test_handle;
 use crate::server::model::events::client_notification::Notification;
 use crate::server::model::events::game_event::{GameEvent, PlayerTradeAction};
 use crate::server::model::game_systems::{ItemContainer, PlayerTradePhase, PlayerTradeRequest, ScriptWorldRequest, StoreRequest, ContainerRequest};
@@ -123,9 +122,7 @@ pub(super) fn fixture() -> (ServerServiceTestContext, Arc<SledRepository>) {
             value: SkillEnum::NvBasic,
             level: 7,
         });
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let socket = Arc::new(RwLock::new(ClientSocket::tcp(TcpStream::connect(listener.local_addr().unwrap()).unwrap())));
-        let _peer = listener.accept().unwrap();
+        let (socket, _outbox) = test_handle();
         let mut session = Session::create_empty(character.account_id, id as i32, 0, context.server.packetver());
         session.char_id = Some(id);
         session.map_server_socket = Some(socket);
@@ -624,14 +621,12 @@ fn trade_network_router_requires_current_map_socket_and_game_loop_handles_the_ac
     let mut bytes = 0xE4_u16.to_le_bytes().to_vec();
     bytes.extend_from_slice(&2_000_001_u32.to_le_bytes());
     let parsed = packets::packets_parser::parse(&bytes, context.server.packetver());
-    let (responses, _receiver) = std::sync::mpsc::sync_channel(1);
     let request = crate::server::model::request::Request::new(
         context.server.configuration,
         Some(2_000_000),
         context.server.packetver(),
         socket,
         parsed.as_ref(),
-        responses,
         context.client_notification_sender.clone(),
     );
     assert!(crate::server::request_handler::player_trade::handle_raw(&context.server, &request).unwrap());

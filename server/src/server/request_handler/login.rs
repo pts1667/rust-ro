@@ -1,6 +1,5 @@
-use std::io::Write;
 use std::net::{Ipv4Addr, SocketAddr};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 
 use configuration::account_config::{CharServerConfig, LoginConfig};
 use configuration::configuration::ServerConfig;
@@ -12,7 +11,7 @@ use rand::Rng;
 
 use super::framing::FrameLength;
 use crate::server::Server;
-use crate::server::model::client_socket::ClientSocket;
+use crate::server::model::client_handle::ClientHandle;
 use crate::server::model::request::Request;
 use crate::server::model::session::{AccountSession, Session};
 use crate::server::service::login_service::{CreateAccountError, LoginOutcome, LoginRequest, LoginService};
@@ -42,11 +41,10 @@ pub struct ListedServer {
     pub new_flag: u16,
 }
 
-pub fn client_ip(socket: &Arc<RwLock<ClientSocket>>) -> Ipv4Addr {
-    match read_lock!(socket).peer_addr() {
-        Ok(SocketAddr::V4(address)) => *address.ip(),
-        Ok(SocketAddr::V6(address)) => address.ip().to_ipv4_mapped().unwrap_or(Ipv4Addr::LOCALHOST),
-        Err(_) => Ipv4Addr::LOCALHOST,
+pub fn client_ip(socket: &ClientHandle) -> Ipv4Addr {
+    match socket.peer_addr() {
+        SocketAddr::V4(address) => *address.ip(),
+        SocketAddr::V6(address) => address.ip().to_ipv4_mapped().unwrap_or(Ipv4Addr::LOCALHOST),
     }
 }
 
@@ -324,13 +322,6 @@ fn block_date(unblock_time: Option<i64>, date_format: &str) -> [char; 20] {
     }
     formatted.chars().take(19).enumerate().for_each(|(i, c)| chars[i] = c);
     chars
-}
-
-pub fn write_to_socket(socket: &Arc<RwLock<ClientSocket>>, bytes: &[u8]) {
-    let mut guard = socket.write().unwrap_or_else(|poisoned| poisoned.into_inner());
-    if guard.write_all(bytes).and_then(|_| guard.flush()).is_err() {
-        debug!("Could not write to a closed client socket");
-    }
 }
 
 #[cfg(test)]

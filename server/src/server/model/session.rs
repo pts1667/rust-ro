@@ -2,9 +2,8 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::hash::Hash;
 use std::io::Write;
-use std::net::Shutdown;
 use std::sync::atomic::{AtomicU64, Ordering};
-use std::sync::{Arc, Mutex, RwLock, Weak};
+use std::sync::{Arc, Mutex, Weak};
 
 use dashmap::DashMap;
 
@@ -13,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::value::RawValue;
 use tokio::sync::mpsc::Sender;
 
-use crate::server::model::client_socket::ClientSocket;
+use crate::server::model::client_handle::ClientHandle;
 use crate::server::script::PlayerInput;
 use crate::server::state::character_directory::CharacterPresence;
 
@@ -82,8 +81,8 @@ impl AccountSession {
 
 pub struct Session {
     pub account: Arc<AccountSession>,
-    pub char_server_socket: Option<Arc<RwLock<ClientSocket>>>,
-    pub map_server_socket: Option<Arc<RwLock<ClientSocket>>>,
+    pub char_server_socket: Option<ClientHandle>,
+    pub map_server_socket: Option<ClientHandle>,
     pub account_id: u32,
     // random value, known as login_id1 in hercules
     pub auth_code: i32,
@@ -266,24 +265,53 @@ impl SessionRecordEntry {
     }
 }
 
-/// Concurrent session registry shared by the network threads and the game loop.
-/// Never hold a returned reference across another registry call: lookups clone the `Arc`.
+/// Concurrent session registry shared by the network threads and the game loop, with the sessions indexed by character and by
+/// connection. Never hold a returned reference across another registry call: lookups clone the `Arc`.
 #[derive(Clone, Default)]
-pub struct SessionRegistry(Arc<DashMap<u32, Arc<Session>>>);
+pub struct SessionRegistry {
+    sessions: Arc<DashMap<u32, Arc<Session>>>,
+    by_char: Arc<DashMap<u32, u32>>,
+    by_connection: Arc<DashMap<u64, u32>>,
+}
 
 impl SessionRegistry {
     pub fn add(&self, session_id: u32, session: Arc<Session>) {
-        self.0.insert(session_id, session);
+        self.index(session_id, &session);
+        if let Some(previous) = self.sessions.insert(session_id, session.clone()) {
+            self.unindex(session_id, &previous, Some(&session));
+        }
     }
 
     pub fn remove(&self, session_id: u32) {
-        if let Some((_, session)) = self.0.remove(&session_id) {
+        if let Some((_, session)) = self.sessions.remove(&session_id) {
+            self.unindex(session_id, &session, None);
             session.cancel_script();
         }
     }
 
+    fn index(&self, session_id: u32, session: &Session) {
+        if let Some(char_id) = session.char_id {
+            self.by_char.insert(char_id, session_id);
+        }
+        for connection in session.connections() {
+            self.by_connection.insert(connection.id(), session_id);
+        }
+    }
+
+    /// Forgets what `session` was found by, except what its replacement is found by.
+    fn unindex(&self, session_id: u32, session: &Session, replacement: Option<&Session>) {
+        if let Some(char_id) = session.char_id.filter(|char_id| replacement.is_none_or(|kept| kept.char_id != Some(*char_id))) {
+            self.by_char.remove_if(&char_id, |_, owner| *owner == session_id);
+        }
+        for connection in session.connections() {
+            if replacement.is_none_or(|kept| !kept.uses(connection)) {
+                self.by_connection.remove_if(&connection.id(), |_, owner| *owner == session_id);
+            }
+        }
+    }
+
     pub fn find(&self, session_id: u32) -> Option<Arc<Session>> {
-        self.0.get(&session_id).map(|session| session.clone())
+        self.sessions.get(&session_id).map(|session| session.clone())
     }
 
     pub fn get(&self, session_id: u32) -> Arc<Session> {
@@ -291,45 +319,41 @@ impl SessionRegistry {
     }
 
     pub fn find_by_char_id(&self, char_id: u32) -> Option<Arc<Session>> {
-        self.0.iter().find(|entry| entry.char_id == Some(char_id)).map(|entry| entry.value().clone())
+        let session_id = *self.by_char.get(&char_id)?;
+        self.find(session_id).filter(|session| session.char_id == Some(char_id))
     }
 
-    pub fn find_by_map_socket(&self, socket: &Arc<RwLock<ClientSocket>>) -> Option<Arc<Session>> {
-        self.0
-            .iter()
-            .find(|entry| entry.map_server_socket.as_ref().is_some_and(|map_socket| Arc::ptr_eq(map_socket, socket)))
-            .map(|entry| entry.value().clone())
+    pub fn find_by_map_socket(&self, socket: &ClientHandle) -> Option<Arc<Session>> {
+        let session_id = *self.by_connection.get(&socket.id())?;
+        self.find(session_id).filter(|session| session.map_server_socket.as_ref() == Some(socket))
     }
 
     pub fn for_each(&self, mut action: impl FnMut(&Arc<Session>)) {
-        let sessions: Vec<Arc<Session>> = self.0.iter().map(|entry| entry.value().clone()).collect();
+        let sessions: Vec<Arc<Session>> = self.sessions.iter().map(|entry| entry.value().clone()).collect();
         sessions.iter().for_each(&mut action);
     }
 
-    pub fn find_by_stream(&self, tcp_stream: &ClientSocket) -> Option<u32> {
-        let found = self.0.iter().find(|entry| {
-            let session = entry.value();
-            if session.map_server_socket.is_some() {
-                let map_server_socket = read_lock!(session.map_server_socket.as_ref().unwrap());
-                let is_map_stream = if session.is_simulated {
-                    map_server_socket.peer_addr().is_ok() && map_server_socket.local_addr().unwrap() == tcp_stream.peer_addr().unwrap()
-                } else {
-                    map_server_socket.peer_addr().is_ok() && map_server_socket.peer_addr().unwrap() == tcp_stream.peer_addr().unwrap()
-                };
-                if is_map_stream {
-                    return true;
-                }
-            }
-            if session.char_server_socket.is_none() {
-                return false;
-            }
-            let char_server_socket = read_lock!(session.char_server_socket.as_ref().unwrap());
-            if char_server_socket.peer_addr().is_err() {
-                return false;
-            }
-            char_server_socket.peer_addr().unwrap() == tcp_stream.peer_addr().unwrap()
-        });
-        found.map(|entry| *entry.key())
+    /// The session that `connection` is the char server or map server connection of.
+    pub fn find_by_connection(&self, connection: &ClientHandle) -> Option<u32> {
+        let indexed = self.by_connection.get(&connection.id()).map(|session_id| *session_id);
+        if let Some(session_id) = indexed.filter(|session_id| self.find(*session_id).is_some_and(|session| session.uses(connection))) {
+            return Some(session_id);
+        }
+        self.find_simulated(connection)
+    }
+
+    /// The multi player simulator's sessions hold the client end of their connection.
+    #[cfg(feature = "visual_debugger")]
+    fn find_simulated(&self, connection: &ClientHandle) -> Option<u32> {
+        self.sessions
+            .iter()
+            .find(|entry| entry.is_simulated && entry.map_server_socket.as_ref().is_some_and(|socket| socket.local_addr() == connection.peer_addr()))
+            .map(|entry| *entry.key())
+    }
+
+    #[cfg(not(feature = "visual_debugger"))]
+    fn find_simulated(&self, _connection: &ClientHandle) -> Option<u32> {
+        None
     }
 }
 
@@ -355,7 +379,7 @@ impl Session {
         self
     }
 
-    pub fn recreate_with_char_socket(&self, char_socket: Arc<RwLock<ClientSocket>>) -> Session {
+    pub fn recreate_with_char_socket(&self, char_socket: ClientHandle) -> Session {
         Session {
             account: self.account.clone(),
             char_server_socket: Some(char_socket),
@@ -371,7 +395,7 @@ impl Session {
         }
     }
 
-    pub fn recreate_with_map_socket(&self, map_socket: Arc<RwLock<ClientSocket>>) -> Session {
+    pub fn recreate_with_map_socket(&self, map_socket: ClientHandle) -> Session {
         Session {
             account: self.account.clone(),
             char_server_socket: self.char_server_socket.clone(),
@@ -391,7 +415,7 @@ impl Session {
         account_id: u32,
         char_id: u32,
         packetver: u32,
-        map_socket: Arc<RwLock<ClientSocket>>,
+        map_socket: ClientHandle,
     ) -> Session {
         Session {
             account: Arc::new(AccountSession::default()),
@@ -507,19 +531,16 @@ impl Session {
         self.char_id.expect("Expect char_id to be set in the session, but was not")
     }
 
+    pub fn connections(&self) -> impl Iterator<Item = &ClientHandle> {
+        self.char_server_socket.iter().chain(self.map_server_socket.iter())
+    }
+
+    pub fn uses(&self, connection: &ClientHandle) -> bool {
+        self.connections().any(|own| own == connection)
+    }
+
     pub fn disconnect(&self) {
         self.cancel_script();
-        if let Some(socket) = self.char_server_socket.as_ref() {
-            let write_guard = socket.write().unwrap();
-            if let Ok(_) = write_guard.shutdown(Shutdown::Both) {
-                debug!("Disconnected from char server");
-            }
-        }
-        if let Some(socket) = self.map_server_socket.as_ref() {
-            let write_guard = socket.write().unwrap();
-            if let Ok(_) = write_guard.shutdown(Shutdown::Both) {
-                debug!("Disconnected from map server");
-            }
-        }
+        self.connections().for_each(ClientHandle::close);
     }
 }

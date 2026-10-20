@@ -1,10 +1,10 @@
 use std::collections::HashSet;
 use std::cell::RefCell;
-use std::io::{Read, Write};
-use std::net::{Shutdown, TcpListener, TcpStream};
+use std::io::Write;
+use std::net::{TcpListener, TcpStream};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{Receiver, SyncSender};
-use std::sync::{Arc, Mutex, MutexGuard, OnceLock, RwLock, Weak, mpsc};
+use std::sync::{Arc, Mutex, MutexGuard, OnceLock, Weak, mpsc};
 use std::thread;
 use std::thread::Scope;
 use std::time::Duration;
@@ -13,7 +13,6 @@ use configuration::configuration::Config;
 use model::events::client_notification::{AreaNotificationRangeType, Notification};
 use model::events::game_event::GameEvent;
 use model::events::persistence_event::PersistenceEvent;
-use packets::packets_parser::parse;
 use script::ScriptVm;
 use script::skill::ScriptSkillService;
 use crate::server::script::ItemVm;
@@ -23,8 +22,6 @@ use crate::repository::Repository;
 use crate::server::bots::BotRegistry;
 use crate::server::game_loop::GAME_TICK_RATE;
 use crate::server::model::map_item::MapItems;
-use crate::server::model::request::Request;
-use crate::server::model::response::Response;
 use crate::server::model::session::{SessionRecord, SessionRegistry};
 use crate::server::model::battleground::Battlegrounds;
 use crate::server::model::character_lifecycle::CharacterSelectionGate;
@@ -42,14 +39,14 @@ use crate::server::service::global_config_service::GlobalConfigService;
 use crate::server::service::item_service::ItemService;
 use crate::server::service::login_service::LoginService;
 use crate::server::service::script_service::ScriptService;
-use crate::server::model::client_socket::{ClientConnection, ClientSocket};
+use crate::server::model::client_handle::ClientHandle;
 use crate::server::service::script_world_service::ScriptWorldService;
 use crate::server::service::server_service::ServerService;
 use crate::server::service::skill_service::SkillService;
 use crate::server::service::status_service::StatusService;
 use crate::server::state::character_directory::CharacterDirectory;
 use crate::server::state::server::ServerState;
-use crate::util::packet::{PacketDirection, PacketsBuffer, debug_packets_from_vec, print_packet};
+use crate::util::packet::{PacketDirection, debug_packets_from_vec};
 use crate::util::tick::{delayed_tick, get_tick};
 
 pub mod boot;
@@ -67,6 +64,7 @@ pub mod script;
 pub mod service;
 pub mod state;
 pub mod websocket;
+mod client_io;
 
 pub(crate) type StateGuard<'a> = parking_lot::MutexGuard<'a, ServerState>;
 
@@ -580,259 +578,27 @@ impl Server {
         let port = server_ref.configuration.server.port;
         server_ref.bind_shared();
 
-        let (response_sender, single_response_receiver) = std::sync::mpsc::sync_channel::<Response>(0);
         let client_notification_sender_clone = client_notification_sender.clone();
         thread::scope(|server_thread_scope: &Scope| {
-            let listener = TcpListener::bind(server_ref.configuration.server.bind_address(port)).unwrap();
-            // listener.set_nonblocking(true);
-            let server_shared_ref = server_ref.clone();
             if enable_client_interfaces {
+                let listener = TcpListener::bind(server_ref.configuration.server.bind_address(port)).unwrap();
                 info!("Server listen on {}", server_ref.configuration.server.bind_address(port));
-                let websocket_enabled = server_ref.configuration.server.enable_websocket;
-                if websocket_enabled {
+                if server_ref.configuration.server.enable_websocket {
                     info!("WebSocket clients are accepted on the same port");
                 }
+                let server_shared_ref = server_ref.clone();
                 thread::Builder::new()
                     .name("client_connection_thread".to_string())
                     .spawn_scoped(server_thread_scope, move || {
-                        for tcp_stream in listener.incoming() {
-                            if !server_shared_ref.is_alive() {
-                                break;
-                            }
-                            // Receive new connection, starting new thread
-                            let server_shared_ref = server_shared_ref.clone();
-                            debug!("Received new connection");
-                            let response_sender_clone = response_sender.clone();
-                            let client_notification_sender_clone = client_notification_sender_clone.clone();
-                            let tcp_stream = tcp_stream.unwrap();
-                            thread::Builder::new()
-                                .name(format!("client_{}_thread", tcp_stream.peer_addr().unwrap()))
-                                .spawn_scoped(server_thread_scope, move || {
-                                    PACKETVER.with(|ver| *ver.borrow_mut() = server_shared_ref.packetver());
-
-                                    let connection = match ClientConnection::accept(tcp_stream, websocket_enabled) {
-                                        Ok(connection) => connection,
-                                        Err(error) => {
-                                            warn!("Client connection rejected: {}", error);
-                                            return;
-                                        }
-                                    };
-                                    let mut reader = connection.reader;
-                                    let tcp_stream_arc = connection.socket;
-                                    let mut buffer = [0; 2048];
-                                    let mut frames = request_handler::framing::ClientFrames::new(server_shared_ref.packetver());
-                                    'connection: loop {
-                                        if !server_shared_ref.is_alive() {
-                                            let _ = tcp_stream_arc.read().unwrap().shutdown(Shutdown::Both);
-                                            break;
-                                        }
-                                        match reader.read(&mut buffer) {
-                                            Ok(bytes_read) => {
-                                                if bytes_read == 0 {
-                                                    info!("shutdown thread client");
-                                                    tcp_stream_arc.read().unwrap().shutdown(Shutdown::Both).expect(
-                                                        "Unable to shutdown incoming socket. Shutdown was done because remote socket \
-                                                         seems closed.",
-                                                    );
-                                                    break;
-                                                }
-                                                let incoming = match frames.push(&buffer[..bytes_read]) {
-                                                    Ok(incoming) => incoming,
-                                                    Err(error) => {
-                                                        warn!("Invalid client packet stream: {}", error);
-                                                        let _ = tcp_stream_arc.read().unwrap().shutdown(Shutdown::Both);
-                                                        break 'connection;
-                                                    }
-                                                };
-                                                for frame in incoming {
-                                                    let id = u16::from_le_bytes([frame[0], frame[1]]);
-                                                    let packet: Box<dyn packets::packets::Packet> =
-                                                        if service::script_world_service::world_frame_length(
-                                                            id,
-                                                            server_shared_ref.packetver(),
-                                                        )
-                                                        .is_some()
-                                                            || request_handler::script_operations::frame_length(
-                                                                id,
-                                                                server_shared_ref.packetver(),
-                                                            )
-                                                            .is_some()
-                                                            || request_handler::char_requests::frame_length(
-                                                                id,
-                                                                server_shared_ref.packetver(),
-                                                            )
-                                                            .is_some()
-                                                        {
-                                                            Box::new(packets::packets::PacketUnknown {
-                                                                raw: frame,
-                                                                packet_id: format!("0x{id:04x}"),
-                                                            })
-                                                        } else {
-                                                            parse(&frame, server_shared_ref.packetver())
-                                                        };
-                                                    if GlobalConfigService::instance().config().server.trace_packet {
-                                                        print_packet(&None, None, PacketDirection::Forward, &packet);
-                                                    }
-                                                    let context = Request::new(
-                                                        server_shared_ref.configuration,
-                                                        None,
-                                                        server_shared_ref.packetver(),
-                                                        tcp_stream_arc.clone(),
-                                                        packet.as_ref(),
-                                                        response_sender_clone.clone(),
-                                                        client_notification_sender_clone.clone(),
-                                                    );
-                                                    request_handler::handle(server_shared_ref.clone(), context);
-                                                }
-                                            }
-                                            Err(err) => {
-                                                error!("{}", err);
-                                                let _ = tcp_stream_arc.read().unwrap().shutdown(Shutdown::Both);
-                                                break;
-                                            }
-                                        }
-                                    }
-                                    server_shared_ref.add_to_next_tick(GameEvent::ClientDisconnected(
-                                        crate::server::model::character_lifecycle::ClientDisconnected { socket: tcp_stream_arc },
-                                    ));
-                                })
-                                .unwrap();
-                        }
+                        client_io::serve(server_shared_ref, listener, client_notification_sender_clone);
                         info!("Shutdown client_connection_thread");
                     })
                     .unwrap();
-                // Start a thread sending response packet to client request
-
-                let _server_ref_clone = server_ref.clone();
-                thread::Builder::new()
-                    .name("client_response_thread".to_string())
-                    .spawn_scoped(server_thread_scope, move || {
-                        while let Ok(response) = single_response_receiver.recv() {
-                            let tcp_stream = &response.socket();
-                            let data = response.serialized_packet();
-                            let mut tcp_stream_guard = tcp_stream.write().unwrap();
-                            debug!("Respond to {:?} with: {:02X?}", tcp_stream_guard.peer_addr(), data);
-                            if GlobalConfigService::instance().config().server.trace_packet {
-                                debug_packets_from_vec(
-                                    Some(tcp_stream_guard.peer_addr().as_ref().unwrap()),
-                                    PacketDirection::Backward,
-                                    GlobalConfigService::instance().packetver(),
-                                    data,
-                                    &Option::None,
-                                );
-                            }
-                            tcp_stream_guard.write_all(data).unwrap();
-                            tcp_stream_guard.flush().unwrap();
-                        }
-                        info!("Shutdown client_response_thread");
-                    })
-                    .unwrap();
-                // Start a thread sending packet to notify client from game update
                 let server_ref_clone = server_ref.clone();
                 thread::Builder::new()
                     .name("client_notification_thread".to_string())
                     .spawn_scoped(server_thread_scope, move || {
-                        let server_ref = server_ref_clone;
-                        let mut packets_by_session: Vec<PacketsBuffer> = Vec::new();
-                        loop {
-                            if !server_ref.is_alive() {
-                                thread::sleep(Duration::from_millis(500));
-                            }
-                            packets_by_session.retain(|buffer| {
-                                if buffer.should_flush() {
-                                    if let Some(tcp_stream) = server_ref
-                                        .sessions()
-                                        .find_by_char_id(buffer.session_id())
-                                        .and_then(|session| session.map_server_socket.clone())
-                                    {
-                                        let mut tcp_stream_guard = tcp_stream.write().unwrap();
-                                        if tcp_stream_guard.peer_addr().is_ok() {
-                                            debug!(
-                                                "Respond to {:?} with {} bytes with: {:02X?}",
-                                                tcp_stream_guard.peer_addr(),
-                                                buffer.data().len(),
-                                                buffer.data()
-                                            );
-                                            if buffer.data().is_empty() {
-                                                debug!("{} - {:?}", buffer.session_id(), buffer.data());
-                                            }
-                                            if GlobalConfigService::instance().config().server.trace_packet {
-                                                debug_packets_from_vec(
-                                                    Some(tcp_stream_guard.peer_addr().as_ref().unwrap()),
-                                                    PacketDirection::Backward,
-                                                    GlobalConfigService::instance().packetver(),
-                                                    buffer.data(),
-                                                    &Option::None,
-                                                );
-                                                info!(
-                                                    "Flushing {} {}bytes - {:02X?}",
-                                                    buffer.session_id(),
-                                                    buffer.data().len(),
-                                                    buffer.data()
-                                                );
-                                            }
-                                            if tcp_stream_guard.write_all(buffer.data()).is_ok() {
-                                                tcp_stream_guard.flush().unwrap();
-                                            }
-                                        } else {
-                                            error!("{:?} socket has been closed", tcp_stream_guard.peer_addr().err());
-                                        }
-                                    }
-                                    return false;
-                                }
-                                true
-                            });
-                            match single_client_notification_receiver.recv_timeout(Duration::from_millis(16)) {
-                                Ok(response) => match response {
-                                    Notification::Char(char_notification) => {
-                                        // Bots have no socket, what is sent to them is read here instead
-                                        if server_ref.bots().is_bot(char_notification.char_id()) {
-                                            bots::receive_packet(&server_ref, char_notification.char_id(), char_notification.serialized_packet());
-                                        } else {
-                                            Self::buffer_packets(
-                                                &mut packets_by_session,
-                                                char_notification.char_id(),
-                                                char_notification.serialized_packet().as_slice(),
-                                            );
-                                        }
-                                    }
-                                    Notification::Area(area_notification) => match area_notification.range_type {
-                                        AreaNotificationRangeType::Map => {}
-                                        AreaNotificationRangeType::Fov { x, y, exclude_id } => {
-                                            server_ref
-                                                .directory()
-                                                .in_fov(&area_notification.map_name, area_notification.map_instance_id, x, y, PLAYER_FOV, exclude_id)
-                                                .into_iter()
-                                                .for_each(|char_id| {
-                                                    if server_ref.bots().is_bot(char_id) {
-                                                        bots::receive_packet(&server_ref, char_id, area_notification.serialized_packet());
-                                                        return;
-                                                    }
-                                                    if GlobalConfigService::instance().config().server.trace_packet {
-                                                        debug_packets_from_vec(
-                                                            None,
-                                                            PacketDirection::Backward,
-                                                            GlobalConfigService::instance().packetver(),
-                                                            area_notification.serialized_packet(),
-                                                            &Some(String::from("Enqueu in buffer")),
-                                                        );
-                                                    }
-                                                    Self::buffer_packets(
-                                                        &mut packets_by_session,
-                                                        char_id,
-                                                        area_notification.serialized_packet().as_slice(),
-                                                    );
-                                                });
-                                        }
-                                    },
-                                },
-                                Err(mpsc::RecvTimeoutError::Timeout) => {}
-                                _ => {}
-                            }
-                            if !server_ref.is_alive() {
-                                break;
-                            }
-                        }
+                        Self::route_notifications(&server_ref_clone, single_client_notification_receiver);
                         info!("Shutdown client_notification_thread");
                     })
                     .unwrap();
@@ -918,29 +684,65 @@ impl Server {
         info!("Shutdown server");
     }
 
-    fn buffer_packets(packets_by_session: &mut Vec<PacketsBuffer>, char_id: u32, data: &[u8]) {
-        let maybe_buffer = packets_by_session.iter_mut().find(|buffer| buffer.session_id() == char_id);
-        if maybe_buffer.is_none() {
-            let mut buffer = PacketsBuffer::new(char_id, 2048);
-            buffer.push(data);
-            packets_by_session.push(buffer);
-        } else {
-            let buffer = maybe_buffer.unwrap();
-            if buffer.can_contain(data.len()) {
-                buffer.push(data);
-            } else {
-                let mut buffer = PacketsBuffer::new(char_id, 2048);
-                buffer.push(data);
-                packets_by_session.push(buffer);
+    /// Queues every notification on the connection of its characters. Nothing here waits on a client: a full queue drops
+    /// that client, so the game loop and the map loops sending notifications are never held back by one.
+    fn route_notifications(server: &Server, receiver: Receiver<Notification>) {
+        while server.is_alive() {
+            let notification = match receiver.recv_timeout(Duration::from_millis(500)) {
+                Ok(notification) => notification,
+                Err(mpsc::RecvTimeoutError::Timeout) => continue,
+                Err(mpsc::RecvTimeoutError::Disconnected) => break,
+            };
+            match notification {
+                Notification::Char(char_notification) => {
+                    let char_id = char_notification.char_id();
+                    // Bots have no socket, what is sent to them is read here instead
+                    if server.bots().is_bot(char_id) {
+                        bots::receive_packet(server, char_id, char_notification.serialized_packet());
+                    } else {
+                        Self::queue_for_character(server, char_id, char_notification.into_packet());
+                    }
+                }
+                Notification::Area(area_notification) => match area_notification.range_type {
+                    AreaNotificationRangeType::Map => {}
+                    AreaNotificationRangeType::Fov { x, y, exclude_id } => {
+                        server
+                            .directory()
+                            .in_fov(&area_notification.map_name, area_notification.map_instance_id, x, y, PLAYER_FOV, exclude_id)
+                            .into_iter()
+                            .for_each(|char_id| {
+                                if server.bots().is_bot(char_id) {
+                                    bots::receive_packet(server, char_id, area_notification.serialized_packet());
+                                } else {
+                                    Self::queue_for_character(server, char_id, area_notification.serialized_packet().clone());
+                                }
+                            });
+                    }
+                },
             }
         }
     }
 
-    pub fn ensure_session_exists(&self, tcp_stream: &Arc<RwLock<ClientSocket>>) -> Option<u32> {
-        let stream_guard = read_lock!(tcp_stream);
-        let session_option = self.sessions.find_by_stream(&stream_guard);
+    fn queue_for_character(server: &Server, char_id: u32, packet: Vec<u8>) {
+        let Some(socket) = server.sessions().find_by_char_id(char_id).and_then(|session| session.map_server_socket.clone()) else {
+            return;
+        };
+        if GlobalConfigService::instance().config().server.trace_packet {
+            debug_packets_from_vec(
+                Some(&socket.peer_addr()),
+                PacketDirection::Backward,
+                GlobalConfigService::instance().packetver(),
+                &packet,
+                &Option::None,
+            );
+        }
+        socket.send(packet);
+    }
+
+    pub fn ensure_session_exists(&self, socket: &ClientHandle) -> Option<u32> {
+        let session_option = self.sessions.find_by_connection(socket);
         if session_option.is_none() {
-            debug!("Session does not exist! for socket {:?}", stream_guard);
+            debug!("Session does not exist! for socket {:?}", socket);
         }
         session_option
     }

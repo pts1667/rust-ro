@@ -59,7 +59,8 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 1. **Game Loop Thread**: Processes game events and state updates
 2. **Map Instance Threads**: Each map instance runs its own event loop for scalability
 3. **Persistence Thread**: Handles all database write operations
-4. **Client Notification Thread**: Sends packets to connected clients
+4. **Client Notification Thread**: Routes notifications to the connections of the characters they are for
+5. **Client connections** (`server/src/server/client_io.rs`): a Tokio runtime of its own, with a reader task and a writer task per connection. Packets are handled one at a time per connection on its blocking pool, so a handler may still block (`runtime().block_on`, waiting on the game loop)
 
 #### Major Modules
 - `server/`: Core server implementation
@@ -122,7 +123,9 @@ This project focus exclusively on "pre-re" (or "pre renewal") version of the gam
 - All services have an instance of `client_notification_sender: SyncSender<Notification>,` in their structure
 - `Notification` is an enum implemented at `server/src/server/model/events/client_notification.rs`
 - `Notification` inner structures contains raw packet data Vec<u8> which come from any packets structure `raw` field
-- `server/src/server/mod.rs` contains implementation of `client_notification_thread` which route and send packet to the right socket(s) 
+- `server/src/server/mod.rs` contains implementation of `client_notification_thread` which routes each packet to the right connection(s)
+- A connection is a `ClientHandle` (`server/src/server/model/client_handle.rs`), held by its session and by each `Request`. `send` only queues the packet for the connection's writer task and never blocks: a client more than `MAX_QUEUED_BYTES` behind is disconnected instead, so no client can hold back the game loop. Replies to a request (`socket_send!`) and notifications go through the same queue, in order
+- `server.client_idle_timeout_secs`, `max_connections` and `max_connections_per_ip` bound the connections
 
 ### Server state
 - `ServerState` (characters and the data handlers touch) sits behind a `parking_lot::Mutex` in `Server`. Only the game loop and the movement loop lock it (`Server::lock_state()`), for the length of one iteration. Everything else receives `&ServerState`/`&mut ServerState` as a parameter, never call `lock_state()` from a service: the lock is not re-entrant and panics after a 10s timeout.

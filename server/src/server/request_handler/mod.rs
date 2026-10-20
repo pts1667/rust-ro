@@ -112,7 +112,7 @@ pub fn handle(server: Arc<Server>, mut context: Request) {
             let Some(socket) = session.map_server_socket.as_ref() else {
                 return;
             };
-            if !Arc::ptr_eq(socket, &context.socket()) {
+            if *socket != context.socket() {
                 return;
             }
             server.add_to_next_tick(crate::server::model::events::game_event::GameEvent::ScriptWorld(

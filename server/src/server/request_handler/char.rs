@@ -1,4 +1,3 @@
-use std::net::Shutdown::Both;
 use std::sync::Arc;
 
 use byteorder::{LittleEndian, WriteBytesExt};
@@ -413,22 +412,18 @@ pub fn handle_enter_game(server: &Server, context: Request) {
         return;
     }
     let Some(session) = server.sessions().find(aid) else {
-        write_lock!(context.socket())
-            .shutdown(Both)
-            .expect("Unable to shutdown incoming socket. Shutdown was done because session does not exists");
+        context.socket().close();
         return;
     };
     if auth_code != session.auth_code || session.char_id.is_none() {
-        write_lock!(context.socket())
-            .shutdown(Both)
-            .expect("Unable to shutdown incoming socket. Shutdown was done because packet auth_code mismatching session auth_code");
+        context.socket().close();
         return;
     }
     let entry = match server.admit_character_map_entry(session, context.socket()) {
         Ok(entry) => entry,
         Err(error) => {
             warn!("Map entry rejected: {error}");
-            let _ = write_lock!(context.socket()).shutdown(Both);
+            context.socket().close();
             return;
         }
     };
@@ -476,7 +471,7 @@ pub fn handle_restart(server: &Server, context: Request) {
     if !session
         .map_server_socket
         .as_ref()
-        .is_some_and(|socket| std::sync::Arc::ptr_eq(socket, &context.socket()))
+        .is_some_and(|socket| *socket == context.socket())
     {
         return;
     }
@@ -504,7 +499,7 @@ pub fn handle_disconnect(server: &Server, context: Request) {
     if !session
         .map_server_socket
         .as_ref()
-        .is_some_and(|socket| std::sync::Arc::ptr_eq(socket, &context.socket()))
+        .is_some_and(|socket| *socket == context.socket())
     {
         return;
     }

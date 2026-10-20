@@ -1,10 +1,10 @@
 use std::collections::VecDeque;
 use std::fmt::{Debug, Formatter};
-use std::sync::{Arc, Mutex, RwLock};
+use std::sync::{Arc, Mutex};
 
 use tokio::sync::oneshot;
 
-use crate::server::model::client_socket::ClientSocket;
+use crate::server::model::client_handle::ClientHandle;
 use crate::server::model::script_timer::{NpcTimerKey, ScriptTimerOwner};
 use crate::server::model::session::Session;
 use crate::server::state::character::Character;
@@ -61,7 +61,7 @@ pub struct CharacterMapEntryData {
 #[derive(Clone)]
 pub struct CharacterMapEntry {
     pub session: Arc<Session>,
-    pub socket: Arc<RwLock<ClientSocket>>,
+    pub socket: ClientHandle,
     pub response: LifecycleReply<CharacterMapEntryData>,
 }
 
@@ -76,7 +76,7 @@ impl Debug for CharacterMapEntry {
 
 impl PartialEq for CharacterMapEntry {
     fn eq(&self, other: &Self) -> bool {
-        Arc::ptr_eq(&self.session, &other.session) && Arc::ptr_eq(&self.socket, &other.socket)
+        Arc::ptr_eq(&self.session, &other.session) && self.socket == other.socket
     }
 }
 
@@ -246,7 +246,7 @@ impl PartialEq for CharacterLogout {
 
 #[derive(Clone)]
 pub struct ClientDisconnected {
-    pub socket: Arc<RwLock<ClientSocket>>,
+    pub socket: ClientHandle,
 }
 
 impl Debug for ClientDisconnected {
@@ -257,7 +257,7 @@ impl Debug for ClientDisconnected {
 
 impl PartialEq for ClientDisconnected {
     fn eq(&self, other: &Self) -> bool {
-        Arc::ptr_eq(&self.socket, &other.socket)
+        self.socket == other.socket
     }
 }
 

@@ -243,9 +243,21 @@ pub struct ServerConfig {
     pub groups_path: String,
     #[serde(default = "default_motd_path")]
     pub motd_path: String,
+    /// Seconds a client may send nothing before it is disconnected (clients send a tick every few seconds), 0 for never.
+    #[serde(default = "default_client_idle_timeout_secs")]
+    pub client_idle_timeout_secs: u64,
+    #[serde(default = "default_max_connections")]
+    pub max_connections: usize,
+    /// 0 for no limit.
+    #[serde(default)]
+    pub max_connections_per_ip: usize,
 }
 
 impl ServerConfig {
+    pub fn client_idle_timeout(&self) -> Option<std::time::Duration> {
+        (self.client_idle_timeout_secs > 0).then(|| std::time::Duration::from_secs(self.client_idle_timeout_secs))
+    }
+
     pub fn validate_host(&self) -> Result<(), String> {
         self.host
             .parse::<IpAddr>()
@@ -330,6 +342,14 @@ fn default_motd_path() -> String {
 
 fn default_enable_websocket() -> bool {
     true
+}
+
+fn default_client_idle_timeout_secs() -> u64 {
+    60
+}
+
+fn default_max_connections() -> usize {
+    2048
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -1662,6 +1682,14 @@ mod tests {
                 "enable_visual_debugger": false, "packetver": 20120229 {extra}}}"#
         );
         serde_json::from_str(&json).unwrap()
+    }
+
+    #[test]
+    fn client_connection_limits_have_defaults_and_zero_disables_the_idle_timeout() {
+        let config = server_config("");
+        assert_eq!(config.client_idle_timeout(), Some(std::time::Duration::from_secs(60)));
+        assert_eq!((config.max_connections, config.max_connections_per_ip), (2048, 0));
+        assert_eq!(server_config(r#", "client_idle_timeout_secs": 0"#).client_idle_timeout(), None);
     }
 
     #[test]

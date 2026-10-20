@@ -1,4 +1,3 @@
-use std::net::Shutdown;
 use std::sync::Arc;
 
 use database::model::AccountRecord;
@@ -96,7 +95,7 @@ fn char_session(server: &Server, context: &Request) -> Result<Arc<Session>, Stri
     let on_char_socket = session
         .char_server_socket
         .as_ref()
-        .is_some_and(|socket| Arc::ptr_eq(socket, &context.socket()));
+        .is_some_and(|socket| *socket == context.socket());
     if !on_char_socket {
         return Err("Character server request arrived on a different connection".into());
     }
@@ -127,7 +126,7 @@ pub fn require_pin(server: &Server, context: &Request, session: &Session) -> boo
         return true;
     }
     warn!("Account {} skipped the PIN check and is disconnected", session.account_id);
-    let _ = read_lock!(context.socket()).shutdown(Shutdown::Both);
+    context.socket().close();
     false
 }
 
@@ -185,7 +184,7 @@ fn fail_pin(server: &Server, context: &Request, session: &Session) {
             "PIN Code check failed",
             now_seconds(),
         );
-        let _ = read_lock!(context.socket()).shutdown(Shutdown::Both);
+        context.socket().close();
     }
 }
 

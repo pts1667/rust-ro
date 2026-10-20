@@ -1,14 +1,13 @@
 #![allow(dead_code)]
 
+use std::sync::Arc;
 use std::sync::mpsc::SyncSender;
-use std::sync::{Arc, RwLock};
 
 use configuration::configuration::Config;
 use packets::packets::Packet;
 
-use crate::server::model::client_socket::ClientSocket;
+use crate::server::model::client_handle::ClientHandle;
 use crate::server::model::events::client_notification::Notification;
-use crate::server::model::response::Response;
 use crate::server::model::session::Session;
 
 pub struct Request<'server: 'request, 'request> {
@@ -16,9 +15,8 @@ pub struct Request<'server: 'request, 'request> {
     packet_ver: u32,
     configuration: &'server Config,
     packet: &'request dyn Packet,
-    socket: Arc<RwLock<ClientSocket>>,
+    socket: ClientHandle,
     session: Option<Arc<Session>>,
-    response_channel: SyncSender<Response>,
     client_notification_channel: SyncSender<Notification>,
 }
 
@@ -27,9 +25,8 @@ impl<'server: 'request, 'request> Request<'server, 'request> {
         configuration: &'server Config,
         session_id: Option<u32>,
         packet_ver: u32,
-        socket: Arc<RwLock<ClientSocket>>,
+        socket: ClientHandle,
         packet: &'request dyn Packet,
-        response_sender: SyncSender<Response>,
         client_notification_channel: SyncSender<Notification>,
     ) -> Self {
         Self {
@@ -39,7 +36,6 @@ impl<'server: 'request, 'request> Request<'server, 'request> {
             packet,
             socket,
             session: None,
-            response_channel: response_sender,
             client_notification_channel,
         }
     }
@@ -56,7 +52,7 @@ impl<'server: 'request, 'request> Request<'server, 'request> {
         self.packet_ver
     }
 
-    pub fn socket(&self) -> Arc<RwLock<ClientSocket>> {
+    pub fn socket(&self) -> ClientHandle {
         self.socket.clone()
     }
 
@@ -65,10 +61,6 @@ impl<'server: 'request, 'request> Request<'server, 'request> {
             .as_ref()
             .expect("Expected session to not be null in RequestContext. Ensure session exists before calling this method")
             .clone()
-    }
-
-    pub fn response_sender(&self) -> SyncSender<Response> {
-        self.response_channel.clone()
     }
 
     pub fn client_notification_channel(&self) -> SyncSender<Notification> {

@@ -1,13 +1,9 @@
-use std::io::{self, ErrorKind, Read, Write};
-use std::net::TcpStream;
-use std::sync::{Arc, RwLock};
-use std::thread;
+use std::io::{self, ErrorKind};
 use std::time::Duration;
 
 use base64::Engine;
 use sha1::{Digest, Sha1};
-
-use crate::server::model::client_socket::ClientSocket;
+use tokio::io::{AsyncRead, AsyncReadExt, AsyncWrite, AsyncWriteExt};
 
 const HANDSHAKE_GUID: &str = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 const HANDSHAKE_TIMEOUT: Duration = Duration::from_secs(5);
@@ -55,53 +51,69 @@ pub fn encode_frame(opcode: u8, payload: &[u8]) -> Vec<u8> {
     frame
 }
 
-/// RO clients send a packet id first, never `GET `, so the first bytes are enough to tell the protocols apart.
-pub fn is_upgrade_request(stream: &TcpStream) -> io::Result<bool> {
-    const METHOD: &[u8] = b"GET ";
-    stream.set_read_timeout(Some(HANDSHAKE_TIMEOUT))?;
-    let mut head = [0u8; METHOD.len()];
-    let upgrade = loop {
-        match stream.peek(&mut head) {
-            Ok(0) => break false,
-            Ok(count) if !METHOD.starts_with(&head[..count]) => break false,
-            Ok(count) if count == METHOD.len() => break true,
-            Ok(_) => thread::sleep(Duration::from_millis(1)),
-            Err(error) if matches!(error.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut) => break false,
-            Err(error) => return Err(error),
-        }
-    };
-    stream.set_read_timeout(None)?;
-    Ok(upgrade)
+/// How a connection opened, with the bytes read past that opening.
+#[derive(Debug, PartialEq, Eq)]
+pub enum Opening {
+    Raw(Vec<u8>),
+    WebSocket(Vec<u8>),
 }
 
-pub fn handshake(stream: &mut TcpStream) -> io::Result<()> {
-    stream.set_read_timeout(Some(HANDSHAKE_TIMEOUT))?;
-    let request = read_request_head(stream)?;
-    let outcome = match negotiate(&request) {
-        Ok(response) => stream.write_all(response.as_bytes()),
+/// RO clients send a packet id first, never `GET `, so the first bytes are enough to tell the protocols apart. A client that
+/// sends nothing for a while is a raw one.
+pub async fn open<S: AsyncRead + AsyncWrite + Unpin>(stream: &mut S) -> io::Result<Opening> {
+    const METHOD: &[u8] = b"GET ";
+    let mut head = Vec::new();
+    let mut chunk = [0u8; 1024];
+    let upgrade = tokio::time::timeout(HANDSHAKE_TIMEOUT, async {
+        loop {
+            let known = head.len().min(METHOD.len());
+            if !METHOD.starts_with(&head[..known]) {
+                return Ok::<_, io::Error>(false);
+            }
+            if known == METHOD.len() {
+                return Ok(true);
+            }
+            let count = stream.read(&mut chunk).await?;
+            if count == 0 {
+                return Ok(false);
+            }
+            head.extend_from_slice(&chunk[..count]);
+        }
+    })
+    .await
+    .unwrap_or(Ok(false))?;
+    if !upgrade {
+        return Ok(Opening::Raw(head));
+    }
+    let end = tokio::time::timeout(HANDSHAKE_TIMEOUT, async {
+        loop {
+            if let Some(end) = head.windows(4).position(|window| window == b"\r\n\r\n") {
+                return Ok(end + 4);
+            }
+            if head.len() >= MAX_HANDSHAKE_BYTES {
+                return Err(io::Error::new(ErrorKind::InvalidData, "websocket handshake is too large"));
+            }
+            let count = stream.read(&mut chunk).await?;
+            if count == 0 {
+                return Err(ErrorKind::UnexpectedEof.into());
+            }
+            head.extend_from_slice(&chunk[..count]);
+        }
+    })
+    .await
+    .map_err(|_| io::Error::from(ErrorKind::TimedOut))??;
+    let after_head = head.split_off(end);
+    let request = String::from_utf8(head).map_err(|_| io::Error::new(ErrorKind::InvalidData, "websocket handshake is not UTF-8"))?;
+    match negotiate(&request) {
+        Ok(response) => {
+            stream.write_all(response.as_bytes()).await?;
+            Ok(Opening::WebSocket(after_head))
+        }
         Err(rejection) => {
-            stream.write_all(rejection.as_bytes())?;
+            stream.write_all(rejection.as_bytes()).await?;
             Err(io::Error::new(ErrorKind::InvalidData, "invalid websocket handshake"))
         }
-    };
-    stream.set_read_timeout(None)?;
-    outcome
-}
-
-// One byte at a time so nothing after the headers is consumed.
-fn read_request_head(stream: &mut TcpStream) -> io::Result<String> {
-    let mut head = Vec::new();
-    let mut byte = [0u8; 1];
-    while !head.ends_with(b"\r\n\r\n") {
-        if head.len() >= MAX_HANDSHAKE_BYTES {
-            return Err(io::Error::new(ErrorKind::InvalidData, "websocket handshake is too large"));
-        }
-        if stream.read(&mut byte)? == 0 {
-            return Err(ErrorKind::UnexpectedEof.into());
-        }
-        head.push(byte[0]);
     }
-    String::from_utf8(head).map_err(|_| io::Error::new(ErrorKind::InvalidData, "websocket handshake is not UTF-8"))
 }
 
 /// Builds the `101` response, or the HTTP error to send instead.
@@ -141,128 +153,109 @@ fn negotiate(request: &str) -> Result<String, &'static str> {
     Ok(response)
 }
 
-/// Presents the payloads of incoming binary frames as the same byte stream a raw TCP client sends.
-pub struct WebSocketReader {
-    stream: TcpStream,
-    writer: Arc<RwLock<ClientSocket>>,
+/// What a run of incoming bytes held: the payloads of binary frames, as the same byte stream a raw TCP client sends, and the
+/// control frames to send back.
+#[derive(Debug, Default, PartialEq, Eq)]
+pub struct Decoded {
+    pub payload: Vec<u8>,
+    pub replies: Vec<(u8, Vec<u8>)>,
+    pub closed: bool,
+}
+
+/// A frame the protocol forbids, with the close status to answer it with.
+#[derive(Debug, PartialEq, Eq)]
+pub struct Violation {
+    pub code: u16,
+    pub reason: &'static str,
+}
+
+impl Violation {
+    fn new(code: u16, reason: &'static str) -> Self {
+        Self { code, reason }
+    }
+}
+
+/// Reads frames out of the bytes of a WebSocket connection, keeping a frame that is not whole yet for the next bytes.
+#[derive(Default)]
+pub struct WebSocketDecoder {
     pending: Vec<u8>,
-    position: usize,
     inside_fragmented_message: bool,
 }
 
-impl WebSocketReader {
-    pub fn new(stream: TcpStream, writer: Arc<RwLock<ClientSocket>>) -> Self {
-        Self {
-            stream,
-            writer,
-            pending: Vec::new(),
-            position: 0,
-            inside_fragmented_message: false,
-        }
-    }
-
-    fn send_control(&self, opcode: u8, payload: &[u8]) {
-        let _ = self.writer.write().unwrap().send_control(opcode, payload);
-    }
-
-    fn fail(&self, code: u16, reason: &str) -> io::Result<bool> {
-        self.send_control(OPCODE_CLOSE, &code.to_be_bytes());
-        Err(io::Error::new(ErrorKind::InvalidData, reason.to_string()))
-    }
-
-    /// Handles one frame. `false` means the connection is over.
-    fn read_frame(&mut self) -> io::Result<bool> {
-        let mut head = [0u8; 2];
-        match self.stream.read_exact(&mut head) {
-            Ok(()) => {}
-            Err(error) if error.kind() == ErrorKind::UnexpectedEof => return Ok(false),
-            Err(error) => return Err(error),
-        }
-        let fin = head[0] & 0x80 != 0;
-        let reserved = head[0] & 0x70;
-        let opcode = head[0] & 0x0F;
-        let masked = head[1] & 0x80 != 0;
-        let length = match head[1] & 0x7F {
-            126 => {
-                let mut bytes = [0u8; 2];
-                self.stream.read_exact(&mut bytes)?;
-                u64::from(u16::from_be_bytes(bytes))
+impl WebSocketDecoder {
+    pub fn push(&mut self, bytes: &[u8]) -> Result<Decoded, Violation> {
+        self.pending.extend_from_slice(bytes);
+        let mut decoded = Decoded::default();
+        let mut consumed = 0;
+        while !decoded.closed {
+            match self.next_frame(consumed, &mut decoded)? {
+                Some(length) => consumed += length,
+                None => break,
             }
-            127 => {
-                let mut bytes = [0u8; 8];
-                self.stream.read_exact(&mut bytes)?;
-                u64::from_be_bytes(bytes)
-            }
-            short => u64::from(short),
+        }
+        self.pending.drain(..consumed);
+        Ok(decoded)
+    }
+
+    /// Handles the frame at `start`, or returns `None` while it is not whole.
+    fn next_frame(&mut self, start: usize, decoded: &mut Decoded) -> Result<Option<usize>, Violation> {
+        let buffer = &self.pending[start..];
+        if buffer.len() < 2 {
+            return Ok(None);
+        }
+        let fin = buffer[0] & 0x80 != 0;
+        let reserved = buffer[0] & 0x70;
+        let opcode = buffer[0] & 0x0F;
+        let masked = buffer[1] & 0x80 != 0;
+        let (length, header) = match buffer[1] & 0x7F {
+            126 if buffer.len() < 4 => return Ok(None),
+            126 => (u64::from(u16::from_be_bytes([buffer[2], buffer[3]])), 4),
+            127 if buffer.len() < 10 => return Ok(None),
+            127 => (u64::from_be_bytes(buffer[2..10].try_into().unwrap()), 10),
+            short => (u64::from(short), 2),
         };
         let control = opcode & 0x8 != 0;
         if reserved != 0 || !masked {
-            return self.fail(CLOSE_PROTOCOL_ERROR, "websocket frame is unmasked or uses extensions");
+            return Err(Violation::new(CLOSE_PROTOCOL_ERROR, "websocket frame is unmasked or uses extensions"));
         }
         if control && (!fin || length > MAX_CONTROL_PAYLOAD) {
-            return self.fail(CLOSE_PROTOCOL_ERROR, "invalid websocket control frame");
+            return Err(Violation::new(CLOSE_PROTOCOL_ERROR, "invalid websocket control frame"));
         }
         if length > MAX_FRAME_PAYLOAD {
-            return self.fail(CLOSE_MESSAGE_TOO_BIG, "websocket frame is too large");
+            return Err(Violation::new(CLOSE_MESSAGE_TOO_BIG, "websocket frame is too large"));
         }
-        let mut mask = [0u8; 4];
-        self.stream.read_exact(&mut mask)?;
-        let mut payload = vec![0u8; length as usize];
-        self.stream.read_exact(&mut payload)?;
-        for (index, byte) in payload.iter_mut().enumerate() {
-            *byte ^= mask[index % 4];
+        let total = header + 4 + length as usize;
+        if buffer.len() < total {
+            return Ok(None);
         }
+        let mask = [buffer[header], buffer[header + 1], buffer[header + 2], buffer[header + 3]];
+        let payload: Vec<u8> = buffer[header + 4..total].iter().enumerate().map(|(index, byte)| byte ^ mask[index % 4]).collect();
         match opcode {
             OPCODE_BINARY | OPCODE_CONTINUATION => {
                 if (opcode == OPCODE_CONTINUATION) != self.inside_fragmented_message {
-                    return self.fail(CLOSE_PROTOCOL_ERROR, "unexpected websocket fragment order");
+                    return Err(Violation::new(CLOSE_PROTOCOL_ERROR, "unexpected websocket fragment order"));
                 }
                 self.inside_fragmented_message = !fin;
-                self.pending = payload;
-                self.position = 0;
-                Ok(true)
+                decoded.payload.extend_from_slice(&payload);
             }
-            OPCODE_TEXT => self.fail(CLOSE_UNSUPPORTED_DATA, "websocket text frames are not supported"),
-            OPCODE_PING => {
-                self.send_control(OPCODE_PONG, &payload);
-                Ok(true)
-            }
-            OPCODE_PONG => Ok(true),
+            OPCODE_TEXT => return Err(Violation::new(CLOSE_UNSUPPORTED_DATA, "websocket text frames are not supported")),
+            OPCODE_PING => decoded.replies.push((OPCODE_PONG, payload)),
+            OPCODE_PONG => {}
             OPCODE_CLOSE => {
-                self.send_control(OPCODE_CLOSE, &payload);
-                Ok(false)
+                decoded.replies.push((OPCODE_CLOSE, payload));
+                decoded.closed = true;
             }
-            _ => self.fail(CLOSE_PROTOCOL_ERROR, "unknown websocket opcode"),
+            _ => return Err(Violation::new(CLOSE_PROTOCOL_ERROR, "unknown websocket opcode")),
         }
-    }
-}
-
-impl Read for WebSocketReader {
-    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
-        if buffer.is_empty() {
-            return Ok(0);
-        }
-        while self.position == self.pending.len() {
-            if !self.read_frame()? {
-                return Ok(0);
-            }
-        }
-        let count = buffer.len().min(self.pending.len() - self.position);
-        buffer[..count].copy_from_slice(&self.pending[self.position..self.position + count]);
-        self.position += count;
-        Ok(count)
+        Ok(Some(total))
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::io::{Read, Write};
-    use std::net::{TcpListener, TcpStream};
-    use std::thread;
-    use std::time::Duration;
+    use tokio::io::{AsyncReadExt, AsyncWriteExt, DuplexStream};
 
     use super::*;
-    use crate::server::model::client_socket::{ClientConnection, Transport};
 
     const MASK: [u8; 4] = [0x11, 0x22, 0x33, 0x44];
     const UPGRADE_REQUEST: &str = "GET / HTTP/1.1\r\nHost: localhost\r\nUpgrade: websocket\r\nConnection: keep-alive, Upgrade\r\n\
@@ -276,38 +269,19 @@ mod tests {
         frame
     }
 
-    fn connect(websocket_enabled: bool, first_bytes: &[u8]) -> (TcpStream, std::io::Result<ClientConnection>) {
-        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
-        let mut client = TcpStream::connect(listener.local_addr().unwrap()).unwrap();
-        client.set_read_timeout(Some(Duration::from_secs(5))).unwrap();
-        let (server_stream, _) = listener.accept().unwrap();
-        let accepting = thread::spawn(move || ClientConnection::accept(server_stream, websocket_enabled));
-        client.write_all(first_bytes).unwrap();
-        (client, accepting.join().unwrap())
+    async fn open_with(first_bytes: &[u8]) -> (DuplexStream, io::Result<Opening>) {
+        let (mut client, mut server) = tokio::io::duplex(16 * 1024);
+        client.write_all(first_bytes).await.unwrap();
+        let opening = open(&mut server).await;
+        (client, opening)
     }
 
-    fn read_head(client: &mut TcpStream) -> String {
+    async fn read_head(client: &mut DuplexStream) -> String {
         let mut head = Vec::new();
-        let mut byte = [0u8; 1];
         while !head.ends_with(b"\r\n\r\n") {
-            client.read_exact(&mut byte).unwrap();
-            head.push(byte[0]);
+            head.push(client.read_u8().await.unwrap());
         }
         String::from_utf8(head).unwrap()
-    }
-
-    fn websocket_pair() -> (TcpStream, ClientConnection) {
-        let (mut client, connection) = connect(true, UPGRADE_REQUEST.as_bytes());
-        assert!(read_head(&mut client).starts_with("HTTP/1.1 101"));
-        (client, connection.unwrap())
-    }
-
-    fn read_server_frame(client: &mut TcpStream) -> (u8, Vec<u8>) {
-        let mut head = [0u8; 2];
-        client.read_exact(&mut head).unwrap();
-        let mut payload = vec![0u8; usize::from(head[1] & 0x7F)];
-        client.read_exact(&mut payload).unwrap();
-        (head[0], payload)
     }
 
     #[test]
@@ -336,86 +310,63 @@ mod tests {
     }
 
     #[test]
-    fn websocket_client_gets_a_byte_stream_and_framed_replies() {
-        let (mut client, mut connection) = websocket_pair();
-        assert_eq!(connection.socket.read().unwrap().transport(), Transport::WebSocket);
-        client.write_all(&client_frame(OPCODE_BINARY, false, &[1, 2])).unwrap();
-        client.write_all(&client_frame(OPCODE_CONTINUATION, true, &[3, 4, 5])).unwrap();
-        let mut received = [0u8; 5];
-        connection.reader.read_exact(&mut received).unwrap();
-        assert_eq!(received, [1, 2, 3, 4, 5]);
-
-        connection.socket.write().unwrap().write_all(&[9, 8, 7]).unwrap();
-        assert_eq!(read_server_frame(&mut client), (0x82, vec![9, 8, 7]));
+    fn fragmented_binary_frames_become_one_byte_stream_even_when_split_across_reads() {
+        let mut bytes = client_frame(OPCODE_BINARY, false, &[1, 2]);
+        bytes.extend(client_frame(OPCODE_CONTINUATION, true, &[3, 4, 5]));
+        let mut decoder = WebSocketDecoder::default();
+        let first = decoder.push(&bytes[..5]).unwrap();
+        assert!(first.payload.is_empty(), "a frame is only read once whole");
+        assert_eq!(decoder.push(&bytes[5..]).unwrap().payload, [1, 2, 3, 4, 5]);
     }
 
     #[test]
     fn ping_is_answered_with_a_pong_carrying_the_same_payload() {
-        let (mut client, mut connection) = websocket_pair();
-        client.write_all(&client_frame(OPCODE_PING, true, b"hi")).unwrap();
-        client.write_all(&client_frame(OPCODE_BINARY, true, &[6])).unwrap();
-        let mut received = [0u8; 1];
-        connection.reader.read_exact(&mut received).unwrap();
-        assert_eq!(received, [6]);
-        assert_eq!(read_server_frame(&mut client), (0x8A, b"hi".to_vec()));
+        let mut bytes = client_frame(OPCODE_PING, true, b"hi");
+        bytes.extend(client_frame(OPCODE_BINARY, true, &[6]));
+        let decoded = WebSocketDecoder::default().push(&bytes).unwrap();
+        assert_eq!(decoded.payload, [6]);
+        assert_eq!(decoded.replies, [(OPCODE_PONG, b"hi".to_vec())]);
     }
 
     #[test]
     fn close_frame_ends_the_stream_and_is_echoed() {
-        let (mut client, mut connection) = websocket_pair();
-        client.write_all(&client_frame(OPCODE_CLOSE, true, &1000u16.to_be_bytes())).unwrap();
-        assert_eq!(connection.reader.read(&mut [0u8; 8]).unwrap(), 0);
-        assert_eq!(read_server_frame(&mut client), (0x88, 1000u16.to_be_bytes().to_vec()));
+        let mut bytes = client_frame(OPCODE_CLOSE, true, &1000u16.to_be_bytes());
+        bytes.extend(client_frame(OPCODE_BINARY, true, &[6]));
+        let decoded = WebSocketDecoder::default().push(&bytes).unwrap();
+        assert!(decoded.closed);
+        assert!(decoded.payload.is_empty(), "nothing after the close is read");
+        assert_eq!(decoded.replies, [(OPCODE_CLOSE, 1000u16.to_be_bytes().to_vec())]);
     }
 
     #[test]
-    fn protocol_violations_close_the_connection_with_a_status_code() {
-        let (mut client, mut connection) = websocket_pair();
-        client.write_all(&[0x82, 0x01, 0x05]).unwrap();
-        assert!(connection.reader.read(&mut [0u8; 8]).is_err());
-        assert_eq!(read_server_frame(&mut client), (0x88, 1002u16.to_be_bytes().to_vec()));
-
-        let (mut client, mut connection) = websocket_pair();
-        client.write_all(&client_frame(OPCODE_TEXT, true, b"text")).unwrap();
-        assert!(connection.reader.read(&mut [0u8; 8]).is_err());
-        assert_eq!(read_server_frame(&mut client), (0x88, 1003u16.to_be_bytes().to_vec()));
-
-        let (mut client, mut connection) = websocket_pair();
-        client.write_all(&client_frame(OPCODE_CONTINUATION, true, &[1])).unwrap();
-        assert!(connection.reader.read(&mut [0u8; 8]).is_err());
-        assert_eq!(read_server_frame(&mut client), (0x88, 1002u16.to_be_bytes().to_vec()));
+    fn protocol_violations_carry_their_close_status() {
+        let code = |bytes: &[u8]| WebSocketDecoder::default().push(bytes).unwrap_err().code;
+        assert_eq!(code(&[0x82, 0x01, 0x05]), 1002);
+        assert_eq!(code(&client_frame(OPCODE_TEXT, true, b"text")), 1003);
+        assert_eq!(code(&client_frame(OPCODE_CONTINUATION, true, &[1])), 1002);
+        assert_eq!(code(&[0x82, 0xFF, 0, 0, 0, 0, 0, 0x10, 0, 0]), 1009, "refused from its header, before the payload arrives");
     }
 
-    #[test]
-    fn plain_http_request_is_refused() {
-        let (mut client, connection) = connect(true, b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n");
-        assert!(connection.is_err());
-        assert!(read_head(&mut client).starts_with("HTTP/1.1 400"));
+    #[tokio::test]
+    async fn an_upgrade_keeps_the_bytes_sent_after_the_request() {
+        let mut first_bytes = UPGRADE_REQUEST.as_bytes().to_vec();
+        first_bytes.extend(client_frame(OPCODE_BINARY, true, &[9]));
+        let (mut client, opening) = open_with(&first_bytes).await;
+        assert_eq!(opening.unwrap(), Opening::WebSocket(client_frame(OPCODE_BINARY, true, &[9])));
+        assert!(read_head(&mut client).await.starts_with("HTTP/1.1 101"));
     }
 
-    #[test]
-    fn raw_tcp_clients_are_not_framed() {
+    #[tokio::test]
+    async fn plain_http_request_is_refused() {
+        let (mut client, opening) = open_with(b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n").await;
+        assert!(opening.is_err());
+        assert!(read_head(&mut client).await.starts_with("HTTP/1.1 400"));
+    }
+
+    #[tokio::test]
+    async fn raw_tcp_clients_keep_their_first_packet() {
         let login = [0x64, 0x00, 0x01, 0x02, 0x03];
-        let (mut client, connection) = connect(true, &login);
-        let mut connection = connection.unwrap();
-        assert_eq!(connection.socket.read().unwrap().transport(), Transport::Tcp);
-        let mut received = [0u8; 5];
-        connection.reader.read_exact(&mut received).unwrap();
-        assert_eq!(received, login);
-
-        connection.socket.write().unwrap().write_all(&[0x69, 0x00]).unwrap();
-        let mut reply = [0u8; 2];
-        client.read_exact(&mut reply).unwrap();
-        assert_eq!(reply, [0x69, 0x00]);
-    }
-
-    #[test]
-    fn disabled_websocket_treats_an_http_request_as_raw_bytes() {
-        let (_client, connection) = connect(false, UPGRADE_REQUEST.as_bytes());
-        let mut connection = connection.unwrap();
-        assert_eq!(connection.socket.read().unwrap().transport(), Transport::Tcp);
-        let mut received = [0u8; 4];
-        connection.reader.read_exact(&mut received).unwrap();
-        assert_eq!(&received, b"GET ");
+        let (_client, opening) = open_with(&login).await;
+        assert_eq!(opening.unwrap(), Opening::Raw(login.to_vec()));
     }
 }

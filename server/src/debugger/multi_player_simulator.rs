@@ -1,8 +1,7 @@
 use std::collections::HashMap;
-use std::io::Write;
 use std::net::TcpStream;
 use std::sync::mpsc::{Receiver, SyncSender};
-use std::sync::{Arc, RwLock};
+use std::sync::Arc;
 use std::thread;
 use std::thread::sleep;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -11,7 +10,7 @@ use packets::packets::{Packet, PacketChSelectChar, PacketCzEnter2, PacketCzPlaye
 use rand::{RngCore, thread_rng};
 
 use crate::server::Server;
-use crate::server::model::client_socket::ClientSocket;
+use crate::server::model::client_handle::{ClientHandle, Transport};
 use crate::server::model::session::{Session, SessionRecord};
 use crate::server::request_handler::chat::handle_chat;
 use crate::server::service::global_config_service::GlobalConfigService;
@@ -78,12 +77,15 @@ impl MultiPlayerSimulator {
             client_socket.local_addr().unwrap()
         );
         let account_id = thread_rng().next_u32();
-        let session = Session::create_with_map_socket_and_char_id(
-            account_id,
-            char_id,
-            GlobalConfigService::instance().packetver(),
-            Arc::new(RwLock::new(ClientSocket::tcp(client_socket))),
-        );
+        let (socket, outbox) = ClientHandle::new(client_socket.peer_addr().unwrap(), client_socket.local_addr().unwrap(), Transport::Tcp);
+        client_socket.set_nonblocking(true).unwrap();
+        let runtime = self.server.runtime();
+        let client_socket = {
+            let _entered = runtime.enter();
+            tokio::net::TcpStream::from_std(client_socket).unwrap()
+        };
+        runtime.spawn(outbox.write_to(client_socket));
+        let session = Session::create_with_map_socket_and_char_id(account_id, char_id, GlobalConfigService::instance().packetver(), socket);
         let session = Arc::new(session);
         self.sessions.push(session.clone());
         self.server.state().add_session(account_id, session.clone());
@@ -144,9 +146,7 @@ impl MultiPlayerSimulator {
                                     .map_server_socket
                                     .as_ref()
                                     .unwrap()
-                                    .write()
-                                    .unwrap()
-                                    .write_all(packet.raw().as_slice());
+                                    .send(packet.raw().clone());
                                 sleep(Duration::from_millis(500));
                                 let mut packet = PacketCzEnter2::new(GlobalConfigService::instance().packetver());
                                 packet.aid = session.account_id;
@@ -156,9 +156,7 @@ impl MultiPlayerSimulator {
                                     .map_server_socket
                                     .as_ref()
                                     .unwrap()
-                                    .write()
-                                    .unwrap()
-                                    .write_all(packet.raw().as_slice());
+                                    .send(packet.raw().clone());
                             }
                             SimlatorEvent::SessionReplay(session, session_record, char_name) => {
                                 sessions_with_replay.insert(session, ReplaySession::new(session_record, char_name));
@@ -190,20 +188,16 @@ impl MultiPlayerSimulator {
                                     );
                                     session
                                         .map_server_socket
-                                        .as_ref()
-                                        .unwrap()
-                                        .write()
-                                        .unwrap()
-                                        .write_all(packet_player_chat.raw().as_slice());
+                                    .as_ref()
+                                    .unwrap()
+                                    .send(packet_player_chat.raw().clone());
                                 } else {
                                     debug!("Simulator - Sending packet {} - {}", packet.name(), replay.current_entry);
                                     session
                                         .map_server_socket
-                                        .as_ref()
-                                        .unwrap()
-                                        .write()
-                                        .unwrap()
-                                        .write_all(packet.raw().as_slice());
+                                    .as_ref()
+                                    .unwrap()
+                                    .send(packet.raw().clone());
                                 }
                             }
                             if let Some(entry) = entries_guard.get(replay.current_entry) {
