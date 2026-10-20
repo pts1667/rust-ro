@@ -10,6 +10,7 @@ mod mobs;
 mod npcs;
 mod pets;
 mod quests;
+mod route;
 mod skills;
 mod statuses;
 mod transports;
@@ -33,6 +34,7 @@ const MAX_LIMIT: usize = 200;
 pub fn router() -> Router {
     Router::new()
         .route("/db", get(categories))
+        .route("/db/route", get(route::answer))
         .route("/db/{category}", get(list))
         .route("/db/{category}/{*key}", get(entry))
 }
@@ -87,7 +89,7 @@ async fn categories() -> Json<Value> {
             json!({ "name": category, "href": format!("/db/{category}"), "count": count })
         })
         .collect();
-    Json(json!({ "categories": categories, "wiki": "/wiki/index.md" }))
+    Json(json!({ "categories": categories, "route": "/db/route?from=<map>&to=<map>", "wiki": "/wiki/index.md" }))
 }
 
 async fn list(Path(category): Path<String>, Query(query): Query<ListQuery>) -> Reply {
@@ -313,6 +315,27 @@ mod tests {
         assert_eq!(skill["id"], 1);
         assert!(skill["metadata"].is_object());
         assert!(skill["learned_by"].as_array().is_some_and(|jobs| !jobs.is_empty()));
+    }
+
+    #[test]
+    fn a_map_link_is_named_in_english_where_the_client_names_it() {
+        let field = maps::link("prt_fild08");
+        assert_eq!(field.id, "prt_fild08");
+        assert_eq!(field.name, "Prontera Field area 8");
+        assert_eq!(field.href, "/db/maps/prt_fild08");
+        assert_eq!(maps::display_name("prontera"), Some("Prontera, Capital of Rune Midgard"));
+        assert_eq!(maps::display_name("no_such_map"), None);
+        assert_eq!(maps::link("no_such_map").name, "no_such_map");
+    }
+
+    #[tokio::test]
+    async fn a_route_needs_both_maps_and_known_ones() {
+        let (status, body) = get_json("/db/route?from=prontera").await;
+        assert_eq!(status, StatusCode::BAD_REQUEST);
+        assert!(body["error"].as_str().unwrap().contains("from=<map>&to=<map>"));
+        let (status, body) = get_json("/db/route?from=no_such_map&to=prontera").await;
+        assert_eq!(status, StatusCode::NOT_FOUND);
+        assert!(body["error"].as_str().unwrap().contains("no_such_map"));
     }
 
     #[tokio::test]

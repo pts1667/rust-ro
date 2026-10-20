@@ -8,19 +8,29 @@ use serde_json::{Value, json};
 use super::{DbError, Link, ListQuery, maps, matches, not_found, warps};
 
 #[derive(Deserialize)]
-struct Destination {
+pub struct Destination {
     category: String,
     group: String,
-    name: String,
-    map: String,
-    x: u16,
-    y: u16,
+    pub name: String,
+    pub map: String,
+    pub x: u16,
+    pub y: u16,
 }
 
 static DESTINATIONS: OnceLock<Vec<Destination>> = OnceLock::new();
 
-fn destinations() -> &'static [Destination] {
+pub fn destinations() -> &'static [Destination] {
     DESTINATIONS.get_or_init(|| serde_json::from_str(include_str!("../../../../../config/wasm/warps.json")).expect("Embedded configuration file is invalid"))
+}
+
+/// The entries a player picks on the warper to go there: category, group, then the name unless the group holds one place.
+pub fn menu_path(destination: &Destination) -> Vec<&str> {
+    let mut path = vec![destination.category.as_str(), destination.group.as_str()];
+    let in_group = destinations().iter().filter(|other| other.category == destination.category && other.group == destination.group).count();
+    if in_group > 1 {
+        path.push(&destination.name);
+    }
+    path
 }
 
 /// Destination names repeat (seven of them are shared), so the key is the place itself.

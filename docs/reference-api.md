@@ -16,8 +16,9 @@ while the game runs. Code: `server/src/server/reference`.
 | `/db` | The categories, with their counts and the wiki index. |
 | `/db/<category>` | A page of the category: `{ total, offset, limit, results: [link...] }`. |
 | `/db/<category>/<key>` | One entry with everything linked to it. |
+| `/db/route?from=<map>&to=<map>&x=<x>&y=<y>` | The fewest hops from one map to another (see Routes). |
 
-Query parameters on listings: `q` (part of the name, case-insensitive), `map` (NPCs only), `offset`, `limit` (default 50, at most 200).
+Query parameters on listings: `q` (part of the name, case-insensitive; maps match their name or `display_name`), `map` (NPCs only), `offset`, `limit` (default 50, at most 200).
 
 Categories and keys:
 
@@ -27,7 +28,7 @@ Categories and keys:
 | `mobs` | id or name | The monster, `drops`, `mvp_drops`, `skills` (own and generic ones), `spawns`, `quests` that hunt it, `summoned_by`. |
 | `quests` | id (number) | The quest database entry with linked objectives and drops, and its text: `description`, `guide`, `recommended_level` (the Base Level, or `"Unknown"`), `level_basis`, `level_override` (a BaseLevel gate, with its script line), `sources`, `prerequisites` (quests that must be started or finished first, with the checking line), `generated`. Rewards are not in it; the NPCs that start the quest are on the maps (see below). |
 | `skills` | id or name | `config/skill.json` entry, `metadata` (route, cast time, cooldown, flags), `learned_by` (jobs), `cast_by` (monsters). |
-| `maps` | name | Flags, `regions` (the walkable areas of the map: cells joined without a warp, numbered from 1, with their size), `warps` out (with destination links, the `region` the warp is used from and the `to.region` it lands in), `arrivals` (warp cells on other maps that land here, with both regions), `transports` (NPCs that send characters to other maps: guards, sewer entrances, the warpers, with `touch`, `checks` and destinations), `transport_arrivals` (NPCs of other maps that send characters here), `connected_maps` (the other maps it links with, both ways), mob spawns, placed NPCs (with their `region`), `quests` (the quests those NPCs start, see below). |
+| `maps` | name | `display_name` (see Map names), flags, `regions` (the walkable areas of the map: cells joined without a warp, numbered from 1, with their size), `warps` out (with destination links, the `region` the warp is used from and the `to.region` it lands in), `arrivals` (warp cells on other maps that land here, with both regions), `transports` (NPCs that send characters to other maps: guards, sewer entrances, the warpers, with `touch`, `checks` and destinations), `transport_arrivals` (NPCs of other maps that send characters here), `connected_maps` (the other maps it links with, both ways), mob spawns, placed NPCs (with their `region`), `quests` (the quests those NPCs start, see below). |
 | `warps` | `<map>/<x>,<y>` | A warp cell of a loaded map (the tile that takes a character to another map): its size and where it leads. Listed by name, `q` filters. |
 | `destinations` | `<map>/<x>,<y>` | A place on the warper's menu (`config/wasm/warps.json`, the list every warper NPC offers): category, group and map. Listed even when no warper is placed: warpers are test NPCs, placed only with `scripting.test_npcs`. |
 | `npcs` | `<map>/<name>` | The placement, the script module and entry, and for shops the `shop` offers (`price` resolved from `-1`). |
@@ -57,14 +58,43 @@ Items also carry `description`: `{ "identified": [...], "unidentified": [...] }`
 `tools/scripts-import/extract_item_descriptions.py <ROenglishPRE checkout>`. Colour codes are removed. The translation is
 a fan project that its author says is for educational use only.
 
+### Map names
+
+A map's links name it as the client does in English (`{ "id": "prt_fild08", "name": "Prontera Field area 8", ... }`) and its
+entry has the same text in `display_name`; both fall back to the map name (`null` for `display_name`) when the client has none.
+The names come from the ROenglishRE translation's `Ragnarok/data/mapnametable.txt` (ROenglishPRE has no map name table, and a
+map keeps its name across episodes), copied into `config/map_names.json` by
+`tools/scripts-import/extract_map_names.py <ROenglishRE checkout>`. 988 of the 1090 loaded maps have one; the others are
+mostly renewal-era instances and event maps. The first line of a map wins, as later duplicates are generic.
+
 ### Quest offers
 
-A map's `quests` lists the quests its placed NPCs start: a `quests().start(id)` or the new id of a `quests().change(old, new)`
-in the NPC's function, its helpers and its events (`<npc>::<label>`). `config/quest_offers.json`, `{ module: { npc: [ids] } }`,
+A map's `quests` lists the quests its placed NPCs start: a `quests().start(id)`, a raw `Function::SetQuest` with a literal id
+(or the literal its callers pass when the id is an argument, as for the Merchant) or the new id of a `quests().change(old, new)`
+in the NPC's function, its helpers and its events (`<npc>::<label>`). Raw `Function::ChangeQuest` calls are not counted: the
+converted scripts use them for every step of a chain. `config/quest_offers.json`, `{ module: { npc: [ids] } }`,
 is written by `tools/scripts-import/extract_quest_offers.py` from the scripts. It is a static scan, so a quest started by a
 shared helper that no NPC calls by its own name is not listed (quest 18060 is the one case today). Rewards are not in it.
 The game reads the same file for the "!" above a giver whose script sets no `questinfo` of its own, shown until the player has
 one of its quests in the log (`show_quest_icons` in `service/quest_service.rs`).
+
+### Routes
+
+`/db/route?from=<map>&to=<map>` answers `{ from, to, region, hops: [...] }`, the hops in order and at most 20 of them; `from`
+equal to `to` gives no hops. With the player's `x` and `y` on `from` (both or neither), the route starts in the walkable region
+of that cell (`region`); without them it may start in any region. Maps are named by their id (`prt_fild08`).
+
+- A warp hop: `{ kind: "warp", map, x, y, x_size, y_size, to_map, to_x, to_y, region, to_region, checks: [] }`, the warp cell
+  to step on (`x_size`, `y_size` are half its width and height). A warp that lands on a warp of the next map names where that
+  one leads.
+- An NPC hop: `{ kind: "npc", map, x, y, npc, destination, menu, to_map, ..., checks: [] }`, a warper to talk to and the
+  entries of `menu` to pick in order (category, group, then the place unless the group holds one). Warpers are test NPCs, so
+  these hops exist only with `scripting.test_npcs`.
+
+Only ways the data states are taken: no guessed way back of a warp, no random warp, and no NPC without a known menu (guards,
+Kafras, the Culvert Guardian, touch NPCs). Without the warpers, Morocc (its Continental Guards), the sewers, `pay_dun04`
+(`payd04r` lands on a random cell) and the training grounds cannot be reached. Unknown maps and maps with no route answer 404,
+a missing `from` or `to` 400. Code: `server/src/server/reference/db/route.rs`, after rust-ro-bot's `knowledge/graph.rs`.
 
 ### Errors
 

@@ -53,7 +53,7 @@ fn warps_of(script: &Script) -> Option<&'static NpcWarps> {
         .get(&name)
 }
 
-fn is_warper(script: &Script) -> bool {
+pub fn is_warper(script: &Script) -> bool {
     module_and_name(script).is_some_and(|(module, name)| module == WARPER.0 && name == WARPER.1)
 }
 

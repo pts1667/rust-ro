@@ -43,6 +43,12 @@
       1007,
       1008
     ],
+    "Merchant#mer": [
+      1009,
+      1010,
+      1011,
+      1012
+    ],
     "Swordman#swd_1": [
       1014
     ],
@@ -74,6 +80,21 @@
       6024
     ]
   },
+  "jobs_s_2_1_assassin": {
+    "Guildsman#asn": [
+      8001
+    ]
+  },
+  "jobs_s_2_1_hunter": {
+    "Hunter Guildsman#hnt": [
+      4000
+    ]
+  },
+  "jobs_s_2_1_knight": {
+    "Chivalry Captain#knt": [
+      9000
+    ]
+  },
   "jobs_s_2_1_misc": {
     "Blacksmith Guildsman#moc": [
       2015
@@ -99,6 +120,18 @@
       2013
     ]
   },
+  "jobs_s_2_1_priest": {
+    "High Bishop#prst": [
+      8009
+    ]
+  },
+  "jobs_s_2_1_wizard": {
+    "Wizard Guildsman": [
+      9013,
+      9014,
+      9015
+    ]
+  },
   "jobs_s_2_1e": {
     "Cheehee#job_star": [
       7010,
@@ -110,6 +143,14 @@
     "Wandering Master#job_sta": [
       7008,
       7009
+    ]
+  },
+  "jobs_s_2_2_crusader": {
+    "Senior Crusader_": [
+      3006,
+      3007,
+      3008,
+      3009
     ]
   },
   "jobs_s_2_2_misc": {
@@ -159,6 +200,40 @@
       7006
     ]
   },
+  "jobs_s_2_2_monk": {
+    "Guarding Monk#mk": [
+      3016
+    ]
+  },
+  "jobs_s_2_2_rogue": {
+    "Rogue Guildsman#rg": [
+      2017
+    ]
+  },
+  "jobs_s_2_2_sage": {
+    "Staff of the Academy#a": [
+      2041,
+      2043,
+      2044,
+      2045
+    ]
+  },
+  "misc_events_gdevent_aru": {
+    "Dwarf#aru_gd": [
+      2144
+    ],
+    "Pierrot Pier#aru_gd": [
+      2143
+    ]
+  },
+  "misc_events_gdevent_sch": {
+    "Dwarf#sch_gd": [
+      2144
+    ],
+    "Pierrot Pier#sch_gd": [
+      2143
+    ]
+  },
   "misc_events_misc_1": {
     "#Hiddne01Easter": [
       9123
@@ -202,6 +277,239 @@
       11378
     ]
   },
+  "misc_instances_endlesstower": {
+    "Tower Protection Stone": [
+      60200,
+      60201
+    ]
+  },
+  "misc_instances_misc": {
+    "Dimensional Gorge Piece": [
+      12059
+    ]
+  },
+  "misc_instances_nydhoggsnest": {
+    "Yggdrasil Gatekeeper": [
+      3135,
+      3136
+    ]
+  },
+  "misc_instances_sealedshrine": {
+    "Friar Patrick#edq": [
+      3042
+    ],
+    "Grave of Baphomet#edq": [
+      3040
+    ],
+    "Magical Seal#SS": [
+      3041
+    ],
+    "Rust Blackhand#edq": [
+      3043
+    ]
+  },
+  "quests_13_1": {
+    "Breeder Taab#ep13_alba": [
+      7042,
+      7043,
+      7044,
+      7045,
+      7046,
+      7047
+    ],
+    "Cat Paw Mining Agent": [
+      12062
+    ],
+    "Diego#ep13bs_": [
+      11087
+    ],
+    "Expedition Scout#1": [
+      3091
+    ],
+    "Ferocious Gorurug": [
+      12060
+    ],
+    "Hibba Agip": [
+      3085
+    ],
+    "Instructor#ep13bs": [
+      11091,
+      11099
+    ],
+    "Marian#ep13bs": [
+      11084
+    ],
+    "Monster Scholar#ep13": [
+      2147
+    ],
+    "Pursuit Party Leader#1": [
+      7012,
+      7037
+    ],
+    "Recruiter for the Brave_": [
+      10057
+    ],
+    "Research Official#ep131": [
+      8196
+    ],
+    "Small Fairy#spl": [
+      2158
+    ],
+    "Staff Officer Abidal": [
+      3092
+    ],
+    "Tree Giant#man": [
+      2159
+    ]
+  },
+  "quests_13_2": {
+    "Arunafeltz Linguist#1": [
+      8244,
+      8245,
+      8248
+    ],
+    "Bazett Teablack#ep13bs": [
+      11101,
+      11104
+    ],
+    "High Laphine#grenouille": [
+      2183
+    ],
+    "Laphine Craftsman#ep13": [
+      7081,
+      7082
+    ],
+    "Manuk Engineer#ep13_2": [
+      7079,
+      7080
+    ],
+    "Manuk Galtun#ep13_2day": [
+      7074,
+      7075
+    ],
+    "Pet Breeder#ep13_eden01": [
+      7077,
+      7078
+    ],
+    "Rune-Midgarts Magician#1": [
+      8246,
+      8247,
+      8250,
+      8251,
+      8252
+    ],
+    "Schwarzwald Mechanic#1": [
+      8243,
+      8249,
+      8253
+    ],
+    "Splendide Guard#ep13md01": [
+      7056
+    ],
+    "Translator Preparation#1": [
+      2158,
+      2159
+    ],
+    "Wanted Sign#ep13_2ect01": [
+      7076
+    ],
+    "Worker#ep13bs": [
+      11105
+    ]
+  },
+  "quests_airship": {
+    "Airship Captain#01": [
+      8032
+    ],
+    "Crewman": [
+      2079
+    ],
+    "Hallen": [
+      8036
+    ]
+  },
+  "quests_alberta": {
+    "Grandpa Turtle#tur": [
+      11029
+    ],
+    "Iromo's Mother#ep3_2": [
+      10079
+    ]
+  },
+  "quests_amatsu": {
+    "Coach#ama": [
+      8128
+    ],
+    "Gate Soldier#ama5": [
+      8131
+    ],
+    "Gate Soldier#ama6": [
+      8131
+    ],
+    "Grandma#ama1": [
+      8127
+    ],
+    "Lord of Palace#ama": [
+      8132
+    ],
+    "Sushi Master#ama": [
+      10036,
+      10037,
+      10038,
+      10039,
+      10040,
+      10041
+    ]
+  },
+  "quests_ayothaya": {
+    "Dusit#thai": [
+      12035
+    ],
+    "Einon#ayo": [
+      8123
+    ],
+    "Powerful-Looking Woman": [
+      12029
+    ]
+  },
+  "quests_brasilis": {
+    "Angelo#br": [
+      9030,
+      9032
+    ],
+    "Botanist Karmen#bra": [
+      2201
+    ],
+    "Candy Maker": [
+      2192
+    ],
+    "Lucia#brasilis": [
+      9028,
+      9029
+    ],
+    "Pedro#bra": [
+      2208
+    ],
+    "Puppy#bra": [
+      9031
+    ],
+    "Shaman#nk": [
+      4133,
+      4134,
+      4135
+    ]
+  },
+  "quests_ein": {
+    "Buender Hikeman#ein": [
+      2071
+    ],
+    "Klitzer#ein": [
+      8076
+    ],
+    "Zelmeto": [
+      8017
+    ]
+  },
   "quests_first_class_misc": {
     "Guarnien": [
       8229,
@@ -218,6 +526,103 @@
       8240
     ]
   },
+  "quests_first_class_tu_sword": {
+    "Shurank": [
+      8211,
+      8212,
+      8213,
+      8214,
+      8215,
+      8221,
+      8222
+    ]
+  },
+  "quests_gonryun": {
+    "Han Ran Jiao#gon": [
+      10034
+    ]
+  },
+  "quests_hugel": {
+    "#HugelTree": [
+      8057
+    ],
+    "Alex": [
+      11000
+    ],
+    "Allen Schuwell": [
+      8053
+    ],
+    "Booboo the Cow": [
+      12043
+    ],
+    "Cellette Lavit": [
+      8064,
+      8065,
+      8066,
+      8067
+    ],
+    "Euslan": [
+      8044
+    ],
+    "Kurupe": [
+      12040
+    ],
+    "Laura": [
+      11003,
+      11006
+    ],
+    "Morriphen": [
+      11009
+    ],
+    "Neha": [
+      8068
+    ],
+    "Torpy": [
+      12044
+    ]
+  },
+  "quests_juperos": {
+    "Scholar": [
+      11017
+    ]
+  },
+  "quests_lighthalzen": {
+    "#kiz01-1": [
+      2086
+    ],
+    "#kiz02-1": [
+      2086
+    ],
+    "#kiz03-1": [
+      2086
+    ],
+    "Fishbone": [
+      12014
+    ],
+    "Maku": [
+      12000
+    ],
+    "Mr. President": [
+      12024
+    ],
+    "Old Man#reken": [
+      12007
+    ],
+    "Switch": [
+      12015
+    ]
+  },
+  "quests_louyang": {
+    "Doctor#lyang": [
+      11044
+    ],
+    "Poison King#lou": [
+      11070
+    ],
+    "Studying Officer#lou": [
+      11055
+    ]
+  },
   "quests_misc_2": {
     "Billik": [
       11039
@@ -230,6 +635,39 @@
       11041,
       11042,
       11043
+    ]
+  },
+  "quests_morocc": {
+    "Book-Touching Man#garas": [
+      2063
+    ],
+    "Continental Official": [
+      3050
+    ]
+  },
+  "quests_moscovia": {
+    "Baba Yaga, the Horrible": [
+      18070
+    ],
+    "Berbayeff#npc": [
+      18100
+    ],
+    "Irina#edq": [
+      18121
+    ]
+  },
+  "quests_nameless": {
+    "Foreign Merchant#aru1": [
+      2129
+    ],
+    "Ibrahim": [
+      3110
+    ],
+    "Muff": [
+      3100
+    ],
+    "Wanted Notice#edq": [
+      3119
     ]
   },
   "quests_newgears_misc": {
@@ -281,6 +719,16 @@
       60135,
       60136
     ],
+    "Li#Dokebi_Hunt": [
+      60128,
+      60129,
+      60130
+    ],
+    "Lilla#Dryad_Hunt": [
+      60131,
+      60132,
+      60133
+    ],
     "Local Villager#hunt": [
       60125,
       60126,
@@ -288,6 +736,11 @@
     ],
     "Mantis Researcher": [
       60179
+    ],
+    "Private Jeremy#hunt": [
+      60140,
+      60141,
+      60142
     ],
     "Vegetable Farmer#Goat": [
       60137,
@@ -298,6 +751,88 @@
       60116,
       60117,
       60118
+    ]
+  },
+  "quests_pre_re_quests_morocc": {
+    "Inspector#prince": [
+      10004,
+      10005,
+      10006,
+      10007,
+      10008,
+      10009,
+      10010,
+      10011,
+      10018,
+      10019,
+      10020,
+      10021,
+      10022
+    ],
+    "Messenger#prince1": [
+      10000
+    ],
+    "Prince": [
+      10012
+    ],
+    "Prince#eisen": [
+      10012
+    ],
+    "Prince#eisen1": [
+      10023
+    ],
+    "Prince#eisen2": [
+      10023
+    ],
+    "Prince#eisen3": [
+      10023
+    ],
+    "Prince#eisen4": [
+      10023
+    ],
+    "Prince#eisen5": [
+      10023
+    ],
+    "Prince#ern": [
+      10012
+    ],
+    "Prince#helmut": [
+      10012
+    ],
+    "Prince#peter": [
+      10012,
+      10013
+    ],
+    "Prince#poe": [
+      10012
+    ],
+    "Prince#urgen": [
+      10012
+    ]
+  },
+  "quests_rachel": {
+    "High Priest Zhed#rachel": [
+      2114,
+      8100
+    ],
+    "Mr. Shendar": [
+      8106
+    ],
+    "Sincere Follower Urstia": [
+      2109
+    ],
+    "Vincent#ra_in01": [
+      8089
+    ]
+  },
+  "quests_thana_quest": {
+    "Entrance Guide": [
+      7048
+    ]
+  },
+  "quests_veins": {
+    "Kid#camelcamel": [
+      3060
     ]
   }
 }

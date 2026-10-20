@@ -1,23 +1,31 @@
 //! `/db/maps/<name>`: a map with its flags, walkable regions, warps, the NPCs that send characters elsewhere, monster spawns,
 //! the NPCs placed on it and the quests they start.
 use std::collections::BTreeSet;
+use std::sync::OnceLock;
 
 use script_sdk::Entry;
 use serde_json::{Value, json};
 
-use super::{DbError, Link, ListQuery, index, matches, mobs, not_found, npcs, quests, transports, warps};
+use super::{DbError, Link, ListQuery, embedded_json, index, matches, mobs, not_found, npcs, quests, transports, warps};
 use crate::server::model::map_flags::MapFlag;
 use crate::server::model::map_regions;
 use crate::server::model::warp::Warp;
 use crate::server::script::entries;
 use crate::server::service::global_config_service::GlobalConfigService;
 
+static DISPLAY_NAMES: OnceLock<Value> = OnceLock::new();
+
+/// The English name the client shows for a map, copied into `config/map_names.json` by `tools/scripts-import/extract_map_names.py`.
+pub fn display_name(name: &str) -> Option<&'static str> {
+    embedded_json(&DISPLAY_NAMES, include_str!("../../../../../config/map_names.json")).get(name).and_then(Value::as_str)
+}
+
 pub fn link(name: &str) -> Link {
-    Link::new("maps", name, json!(name), name)
+    Link::new("maps", name, json!(name), display_name(name).unwrap_or(name))
 }
 
 pub fn links(query: &ListQuery) -> Vec<Link> {
-    let mut names: Vec<&String> = GlobalConfigService::instance().maps().keys().filter(|name| matches(query.q.as_deref(), &[name])).collect();
+    let mut names: Vec<&String> = GlobalConfigService::instance().maps().keys().filter(|name| matches(query.q.as_deref(), &[name, display_name(name).unwrap_or_default()])).collect();
     names.sort();
     names.into_iter().map(|name| link(name)).collect()
 }
@@ -114,6 +122,7 @@ pub fn entry(key: &str) -> Result<Value, DbError> {
         .collect();
     Ok(json!({
         "name": map.name(),
+        "display_name": display_name(map.name()),
         "x_size": map.x_size(),
         "y_size": map.y_size(),
         "flags": flags,
