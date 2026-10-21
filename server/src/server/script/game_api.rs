@@ -675,6 +675,8 @@ impl ScriptService {
                                 | "min_cloth_color"
                                 | "max_cloth_color"
                                 | "feature.refineui"
+                                | "base_exp_rate"
+                                | "job_exp_rate"
                         ) {
                             return Err("Unknown battle flag".into());
                         }

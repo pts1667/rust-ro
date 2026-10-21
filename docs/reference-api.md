@@ -91,6 +91,11 @@ of that cell (`region`); without them it may start in any region. Maps are named
 - An NPC hop: `{ kind: "npc", map, x, y, npc, destination, menu, to_map, ..., checks: [] }`, a warper to talk to and the
   entries of `menu` to pick in order (category, group, then the place unless the group holds one). Warpers are test NPCs, so
   these hops exist only with `scripting.test_npcs`.
+- Each hop also has `path: [[x, y], ...]`, the cells to walk to on its map in order: from the player's `x`, `y` for the first
+  hop and from the previous hop's `to_x`, `to_y` for the others, to the closest cell of the warp's area or within 2 cells of
+  the warper (the start cell left out, `[]` when it is one already). Each leg is one the client's own A* walks, which gives up
+  after 100 iterations, so a client goes from cell to cell. `path` is absent when no walk is known: no `x` and `y`, an
+  unreachable warp, or a map missing from the map cache.
 
 Only ways the data states are taken: no guessed way back of a warp, no random warp, and no NPC without a known menu (guards,
 Kafras, the Culvert Guardian, touch NPCs). Without the warpers, Morocc (its Continental Guards), the sewers, `pay_dun04`

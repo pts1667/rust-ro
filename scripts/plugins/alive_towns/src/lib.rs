@@ -38,6 +38,7 @@ script_sdk_2::plugin_module! {
     }
     interceptors {}
     windows { "offer" => quests::offer_event }
+    bot_actions { "offers" => (quests::bot_offers, "The quests the townsfolk of your town offer you this hour, with where they stand: no arguments") }
     generated_npcs => generated_npc,
 }
 

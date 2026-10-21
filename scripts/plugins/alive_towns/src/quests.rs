@@ -11,13 +11,13 @@
 
 use script_sdk_2::constants::*;
 use script_sdk_2::ui::{EventKind, HudSlot, Node, Overhead, UiEvent, Window, format_countdown};
-use script_sdk_2::{Above, Ctx, Function, MapPlayer, Request, Script, Stop, Value, VariableScope};
+use script_sdk_2::{Above, BotAction, Ctx, Function, MapPlayer, Request, Script, Stop, Val, Value, VariableScope};
 use serde::{Deserialize, Serialize};
 
 use crate::persona::{self, Kind, Persona};
 use crate::random::{QUEST, Rng};
 use crate::schedule::Plan;
-use crate::towns::{Cell, Prey, TOWNS, direction};
+use crate::towns::{Cell, Prey, TOWNS, direction, find};
 use crate::Settings;
 
 pub const OFFER_WINDOW: &str = "offer";
@@ -99,6 +99,32 @@ pub struct Offer {
     pub quest: Quest,
     pub minutes: u32,
     pub text: String,
+}
+
+impl Offer {
+    /// The offer with its exp at the server's rates; [`offer`] draws it at 1x.
+    pub fn rated(mut self, rates: ExpRates) -> Self {
+        let rate = |exp: u32, percent: u32| (u64::from(exp) * u64::from(percent) / 100).min(i32::MAX as u64) as u32;
+        self.quest.base_exp = rate(self.quest.base_exp, rates.base);
+        self.quest.job_exp = rate(self.quest.job_exp, rates.job);
+        self
+    }
+}
+
+/// The server's exp rates in percent (100 is 1x), those kill exp gets. Quest exp follows them, zeny does not.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct ExpRates {
+    pub base: u32,
+    pub job: u32,
+}
+
+/// Needs an attached player.
+pub fn exp_rates(ctx: &Ctx) -> Result<ExpRates, Stop> {
+    let mut reads = ctx.batch();
+    reads.call(Function::GetBattleFlag, vec!["base_exp_rate".into()]);
+    reads.call(Function::GetBattleFlag, vec!["job_exp_rate".into()]);
+    let replies = reads.send()?;
+    Ok(ExpRates { base: replies[0].number()?.max(0) as u32, job: replies[1].number()?.max(0) as u32 })
 }
 
 impl Quest {
@@ -418,6 +444,12 @@ fn in_town(settings: &Settings, map: &str) -> bool {
     settings.towns.iter().any(|town| town == map)
 }
 
+/// The attached player's map, named like the hooks name it (the server answers `prontera.gat`).
+fn player_map(ctx: &Ctx) -> Result<String, Stop> {
+    let map = ctx.player().map_name()?;
+    Ok(map.strip_suffix(".gat").map(str::to_string).unwrap_or(map))
+}
+
 /// A map was entered or the character logged in: expired quests go, finished ones are rewarded in town, and the tracker
 /// is drawn again.
 pub fn arrived(ctx: &Ctx, settings: &Settings, map: &str) -> Script {
@@ -464,7 +496,7 @@ pub fn obtained(ctx: &Ctx, settings: &Settings, item: u32, amount: u32) -> Scrip
     if !journal.quests.iter().any(|quest| quest.task == Task::Gather { item } && quest.expires > now) {
         return Ok(());
     }
-    let map = ctx.player().map_name()?;
+    let map = player_map(ctx)?;
     if in_town(settings, &map) {
         return arrived(ctx, settings, &map);
     }
@@ -504,6 +536,7 @@ pub fn offer_event(ctx: &Ctx, event: &UiEvent) -> Script {
     };
     let persona = persona::persona(&settings, usize::from(key.town), u32::from(key.npc));
     let Some(offer) = offer(&settings, usize::from(key.town), u32::from(key.npc), &persona, char_id, level, i64::from(key.slot)) else { return Ok(()) };
+    let offer = offer.rated(exp_rates(ctx)?);
     let mut quest = offer.quest;
     quest.index = index;
     quest.expires = now + i64::from(offer.minutes) * 60;
@@ -517,6 +550,83 @@ pub fn offer_event(ctx: &Ctx, event: &UiEvent) -> Script {
     save(ctx, &journal)?;
     let statuses = self::statuses(ctx, &journal)?;
     show(ctx, &settings, &journal, &statuses, now)
+}
+
+/// An offer of the `offers` bot action.
+#[derive(Serialize)]
+struct Listed {
+    /// The townsperson's unit, above which the bubble shows.
+    npc_id: i32,
+    giver: String,
+    /// Where they stand now; absent while they are inside a building.
+    x: Option<u16>,
+    y: Option<u16>,
+    title: String,
+    task: Task,
+    target: String,
+    count: u32,
+    map: String,
+    map_name: String,
+    minutes: u32,
+    base_exp: u32,
+    job_exp: u32,
+    zeny: u32,
+}
+
+/// Bot action `offers`: what the townsfolk of the bot's town offer its character this hour, at its current base level,
+/// leaving out the offers it took or declined. The bot accepts one in the bubble, by walking up to the townsperson.
+pub fn bot_offers(ctx: &Ctx, _action: &BotAction) -> Script {
+    let settings: Settings = ctx.plugin_config()?;
+    let map = player_map(ctx)?;
+    let Some(town) = find(&map).filter(|_| settings.quests && in_town(&settings, &map)) else {
+        return ctx.bot().reply(&serde_json::json!({ "offers": [], "error": "Quests are offered in the towns of alive_towns only" }));
+    };
+    let char_id = ctx.player().char_id()? as u32;
+    let level = ctx.player().base_level()?.max(1) as u32;
+    let (journal, now) = load(ctx)?;
+    let rates = exp_rates(ctx)?;
+    let slot = now.div_euclid(OFFER_SLOT_SECS);
+    let offers: Vec<(u32, Offer)> = (0..settings.npcs_per_town)
+        .filter_map(|npc| offer(&settings, town, npc, &persona::persona(&settings, town, npc), char_id, level, slot).map(|offer| (npc, offer.rated(rates))))
+        .filter(|(_, offer)| !journal.taken(offer.quest.key))
+        .collect();
+    let (ids, cells) = if offers.is_empty() {
+        (Vec::new(), Vec::new())
+    } else {
+        let names = offers.iter().map(|(npc, offer)| Value::String(persona::unique_name(&offer.quest.giver, town, *npc))).collect();
+        let found = ctx.call(Function::GetNpcId, vec![0.into(), Val::from(Value::Array(names))])?;
+        let ids: Vec<i32> = found.into_array().ok_or_else(|| Stop::from("GetNpcId did not answer an array"))?.iter().map(|id| id.number().unwrap_or(0)).collect();
+        let cells = ctx.npc_cells(TOWNS[town].map, &ids)?;
+        (ids, cells)
+    };
+    let listed: Vec<Listed> = offers
+        .into_iter()
+        .zip(ids.into_iter().zip(cells))
+        .filter(|(_, (id, _))| *id != 0)
+        .map(|((_, offer), (npc_id, cell))| Listed {
+            npc_id,
+            title: offer.quest.title(),
+            giver: offer.quest.giver,
+            x: cell.map(|cell| cell.0),
+            y: cell.map(|cell| cell.1),
+            task: offer.quest.task,
+            target: offer.quest.target,
+            count: offer.quest.count,
+            map: offer.quest.map,
+            map_name: offer.quest.map_name,
+            minutes: offer.minutes,
+            base_exp: offer.quest.base_exp,
+            job_exp: offer.quest.job_exp,
+            zeny: offer.quest.zeny,
+        })
+        .collect();
+    ctx.bot().reply(&serde_json::json!({
+        "town": TOWNS[town].map,
+        "offers": listed,
+        "range": settings.quest_offer_range,
+        "free_slots": settings.quest_max_active.saturating_sub(journal.quests.len() as u32),
+        "renews_in_secs": OFFER_SLOT_SECS - now.rem_euclid(OFFER_SLOT_SECS),
+    }))
 }
 
 /// Set by a click in the bubble, so the controller lets the townsperson go.
@@ -643,7 +753,7 @@ pub fn offer_round(ctx: &Ctx, settings: &Settings, plan: &Plan, town: usize, ids
                 return Ok(false);
             }
             ctx.request(Request::Write { name: answered_var(player.char_id), value: Value::Number(0) })?;
-            ctx.ui().open(&bubble(&offer, player.base_level, ids[npc] as u32))?;
+            ctx.ui().open(&bubble(&offer.rated(exp_rates(ctx)?), player.base_level, ids[npc] as u32))?;
             Ok(true)
         })?;
         let Some(open) = shown else { continue };
@@ -688,6 +798,15 @@ mod tests {
 
     const CHAR_ID: u32 = 150_001;
     const NOW: i64 = 1_800_000_000;
+    const BASE_RATE: u32 = 500;
+    const JOB_RATE: u32 = 300;
+    const RATES: ExpRates = ExpRates { base: BASE_RATE, job: JOB_RATE };
+
+    /// The game id of a townsperson, from their unique name.
+    fn npc_id(name: &str) -> i32 {
+        let (_, index) = persona::parse_name(name).unwrap();
+        110_000_000 + index as i32
+    }
 
     fn prontera() -> usize {
         find("prontera").unwrap()
@@ -750,6 +869,11 @@ mod tests {
                 Ok(Value::default())
             }
             Request::Call { function: Function::AttachRid, .. } => Ok(Value::Number(1)),
+            Request::Call { function: Function::GetBattleFlag, arguments } => Ok(Value::Number(if arguments[0].text() == "base_exp_rate" { BASE_RATE } else { JOB_RATE } as i32)),
+            Request::Call { function: Function::GetNpcId, arguments } => {
+                let Value::Array(names) = &arguments[1] else { return Err("names".into()) };
+                Ok(Value::Array(names.iter().map(|name| Value::Number(npc_id(&name.text()))).collect()))
+            }
             Request::Call { function: Function::GetNpcXy, arguments } => {
                 let Value::Array(ids) = &arguments[1] else { return Err("ids".into()) };
                 let cell = |id: &Value| npcs.borrow().get(&id.number_value().unwrap()).map_or([-1, -1], |cell| [i32::from(cell.0), i32::from(cell.1)]);
@@ -832,6 +956,7 @@ mod tests {
         let quest = &journal.quests[0];
         assert_eq!((quest.target.as_str(), quest.count, quest.index), (first.quest.target.as_str(), first.quest.count, 0));
         assert_eq!(quest.expires, NOW + i64::from(first.minutes) * 60);
+        assert_eq!((quest.base_exp, quest.job_exp, quest.zeny), (first.quest.base_exp * 5, first.quest.job_exp * 3, first.quest.zeny), "exp at the server's rates");
         assert_eq!(transport.calls(Function::UiClose)[0], [Value::String(OFFER_WINDOW.into())]);
         let opened = transport.calls(Function::UiOpen);
         let tracker: Window = serde_json::from_str(&opened.last().unwrap()[0].text()).unwrap();
@@ -1031,6 +1156,50 @@ mod tests {
         let reopened = offer_round(&ctx, &settings, &plan, town, &ids, tick, NOW, &standing(cell.0, cell.1 + 1), &[]).unwrap();
         assert!(offer_round(&ctx, &settings, &plan, town, &ids, tick, NOW, &[], &reopened).unwrap().is_empty());
         assert_eq!(walks_back(&transport), 3, "a player leaving the town lets the townsperson go");
+    }
+
+    #[test]
+    fn bots_list_the_offers_of_their_town_at_the_server_rates() {
+        let settings = settings();
+        let (player, transport) = player();
+        let ctx = Ctx::new(&transport);
+        let action = BotAction { name: "offers".into(), args: "null".into() };
+        let reply = |transport: &MockTransport| -> serde_json::Value { serde_json::from_str(&transport.calls(Function::BotReply).last().unwrap()[0].text()).unwrap() };
+        bot_offers(&ctx, &action).unwrap();
+        assert!(reply(&transport)["error"].is_string(), "no offers on a field");
+
+        *player.map.borrow_mut() = "prontera.gat".into();
+        player.variables.borrow_mut().insert("BaseLevel".into(), Value::Number(30));
+        let town = prontera();
+        let (taken, _) = first_offer(&settings, 30);
+        accept(&ctx, taken, 30);
+        let mine: Vec<(u32, Offer)> = (0..settings.npcs_per_town)
+            .filter(|npc| *npc != taken)
+            .filter_map(|npc| offer(&settings, town, npc, &persona::persona(&settings, town, npc), CHAR_ID, 30, NOW / OFFER_SLOT_SECS).map(|offer| (npc, offer)))
+            .collect();
+        let (seen, _) = mine[0];
+        player.npcs.borrow_mut().insert(110_000_000 + seen as i32, (150, 180));
+        bot_offers(&ctx, &action).unwrap();
+        let reply = reply(&transport);
+        assert_eq!(reply["town"], "prontera");
+        assert_eq!(reply["free_slots"], settings.quest_max_active - 1);
+        let listed = reply["offers"].as_array().unwrap();
+        assert_eq!(listed.len(), mine.len(), "every offer but the one taken");
+        for (entry, (npc, offer)) in listed.iter().zip(&mine) {
+            assert_eq!(entry["npc_id"], 110_000_000 + npc);
+            assert_eq!(entry["title"], offer.quest.title());
+            assert_eq!((entry["base_exp"].as_u64(), entry["job_exp"].as_u64()), (Some(u64::from(offer.quest.base_exp * 5)), Some(u64::from(offer.quest.job_exp * 3))));
+        }
+        assert_eq!((listed[0]["x"].as_u64(), listed[0]["y"].as_u64()), (Some(150), Some(180)));
+        assert!(listed[1]["x"].is_null(), "indoors");
+    }
+
+    #[test]
+    fn rates_scale_exp_only() {
+        let (_, offer) = first_offer(&settings(), 30);
+        let (base, job, zeny) = (offer.quest.base_exp, offer.quest.job_exp, offer.quest.zeny);
+        let rated = offer.rated(RATES);
+        assert_eq!((rated.quest.base_exp, rated.quest.job_exp, rated.quest.zeny), (base * 5, job * 3, zeny));
     }
 
     #[test]

@@ -1,11 +1,16 @@
 //! `/db/route?from=<map>&to=<map>&x=<x>&y=<y>`: the fewest hops from one map to another, for a client that walks them in
 //! order. A hop is a warp cell or a warper NPC (with the menu entries that lead there). Only ways the data states are
 //! taken: no guessed way back of a warp, no random warp, no NPC whose menu is unknown (guards, Kafras).
+//! Each hop's `path` lists the cells to walk to on its map, each one leg the client's own A* can walk.
 use std::collections::{HashMap, HashSet, VecDeque};
-use std::sync::OnceLock;
+use std::path::Path;
+use std::sync::{Arc, Mutex, OnceLock};
 
 use axum::Json;
 use axum::extract::Query;
+use map_cache::MapCells;
+use movement::hierarchy::{self, Cell, NavHierarchy};
+use movement::path::path_search_client_side_algorithm;
 use serde::Deserialize;
 use serde_json::{Value, json};
 
@@ -15,6 +20,8 @@ use crate::server::model::warp::Warp;
 use crate::server::service::global_config_service::GlobalConfigService;
 
 pub const MAX_HOPS: usize = 20;
+/// The client talks to an NPC from this many cells away, |dx| and |dy| each.
+const TALK_RANGE: u16 = 2;
 
 #[derive(Deserialize)]
 pub struct RouteQuery {
@@ -95,7 +102,121 @@ pub async fn answer(Query(query): Query<RouteQuery>) -> Result<Json<Value>, DbEr
     let edges = graph();
     let hops = plan(from, region, to, |map| edges.get(map).map_or(&[][..], Vec::as_slice))
         .ok_or_else(|| DbError::NotFound(format!("no route from {from} to {to} within {MAX_HOPS} hops")))?;
-    Ok(Json(json!({ "from": from, "to": to, "region": region, "hops": hops.iter().map(Hop::to_json).collect::<Vec<Value>>() })))
+    let start = query.x.zip(query.y);
+    let walks = tokio::task::spawn_blocking({
+        let hops = hops.clone();
+        move || walks(start, &hops)
+    })
+    .await
+    .unwrap_or_default();
+    let hops: Vec<Value> = hops
+        .iter()
+        .zip(walks.into_iter().chain(std::iter::repeat(None)))
+        .map(|(hop, walk)| {
+            let mut value = hop.to_json();
+            if let Some(walk) = walk {
+                value["path"] = json!(walk.iter().map(|(x, y)| [x, y]).collect::<Vec<_>>());
+            }
+            value
+        })
+        .collect();
+    Ok(Json(json!({ "from": from, "to": to, "region": region, "hops": hops })))
+}
+
+/// The waypoints of each hop, see [`Ground::walk`]: from `start` for the first, from where the one before lands for the
+/// others. `None` where no walk is known.
+fn walks(start: Option<Cell>, hops: &[Hop]) -> Vec<Option<Vec<Cell>>> {
+    let mut from = start;
+    hops.iter()
+        .map(|hop| {
+            let walk = from.and_then(|from| ground(&hop.map)?.walk(from, hop));
+            from = Some((hop.to_x, hop.to_y));
+            walk
+        })
+        .collect()
+}
+
+/// The cells of a map from the map cache, and its pathfinding hierarchy.
+struct Ground {
+    cells: MapCells,
+    navigation: NavHierarchy,
+}
+
+/// Grounds kept for the next routes; the cache starts over when it is full.
+const CACHED_GROUNDS: usize = 64;
+
+fn ground(map: &str) -> Option<Arc<Ground>> {
+    static GROUNDS: OnceLock<Mutex<HashMap<String, Arc<Ground>>>> = OnceLock::new();
+    let grounds = GROUNDS.get_or_init(Default::default);
+    if let Some(ground) = grounds.lock().unwrap().get(map) {
+        return Some(ground.clone());
+    }
+    let cells = map_cache::read_mcache(Path::new(unsafe { crate::MAP_DIR }), map).ok()?;
+    let ground = Arc::new(Ground::new(cells)?);
+    let mut grounds = grounds.lock().unwrap();
+    if grounds.len() >= CACHED_GROUNDS {
+        grounds.clear();
+    }
+    grounds.insert(map.to_string(), ground.clone());
+    Some(ground)
+}
+
+impl Ground {
+    fn new(cells: MapCells) -> Option<Self> {
+        (cells.cells.len() == usize::from(cells.xs) * usize::from(cells.ys))
+            .then(|| Self { navigation: NavHierarchy::build(cells.xs, cells.ys, &cells.cells), cells })
+    }
+
+    /// Where `hop` is taken from: a cell of the warp's area, or one the client talks to the NPC from.
+    fn ends(&self, hop: &Hop) -> Vec<Cell> {
+        let (reach_x, reach_y) = match hop.way {
+            Way::Warp { x_size, y_size } => (x_size, y_size),
+            Way::Warper { .. } => (TALK_RANGE, TALK_RANGE),
+        };
+        let xs = hop.x.saturating_sub(reach_x)..=hop.x.saturating_add(reach_x);
+        xs.flat_map(|x| (hop.y.saturating_sub(reach_y)..=hop.y.saturating_add(reach_y)).map(move |y| (x, y)))
+            .filter(|(x, y)| self.cells.is_walkable(*x, *y))
+            .collect()
+    }
+
+    /// Waypoints from `from` to the closest end of `hop`, `from` left out and that end last. The client's own A* walks
+    /// each leg, as it gives up on longer ones: a leg it cannot walk is cut along a local route.
+    fn walk(&self, from: Cell, hop: &Hop) -> Option<Vec<Cell>> {
+        let to = self.ends(hop).into_iter().filter(|end| self.navigation.reachable(from, *end)).min_by_key(|end| hierarchy::octile(from, *end))?;
+        if to == from {
+            return Some(Vec::new());
+        }
+        if self.client_walks(from, to) {
+            return Some(vec![to]);
+        }
+        let mut legs = Vec::new();
+        let mut at = from;
+        for waypoint in self.navigation.route(&self.cells.cells, from, to)? {
+            if waypoint == at {
+                continue;
+            }
+            if self.client_walks(at, waypoint) {
+                legs.push(waypoint);
+                at = waypoint;
+                continue;
+            }
+            let local = hierarchy::local_route(self.cells.xs, self.cells.ys, &self.cells.cells, at, waypoint, hierarchy::CHUNK)?;
+            for leg in hierarchy::sub_legs(&local) {
+                if !self.client_walks(at, leg) {
+                    return None;
+                }
+                legs.push(leg);
+                at = leg;
+            }
+        }
+        Some(legs)
+    }
+
+    fn client_walks(&self, (from_x, from_y): Cell, to: Cell) -> bool {
+        let path = path_search_client_side_algorithm(self.cells.xs, self.cells.ys, &self.cells.cells, from_x, from_y, to.0, to.1);
+        // The search answers a path to the last cell it tried when it gives up
+        path.last().is_some_and(|end| (end.x, end.y) == to)
+    }
 }
 
 /// Fewest hops from the part `region` of `from` (`None` for any) to any part of `to`.
@@ -214,7 +335,56 @@ fn live_warps(warps: &[Warp]) -> Vec<&Warp> {
 
 #[cfg(test)]
 mod tests {
+    use models::enums::EnumWithMaskValueU16;
+    use models::enums::cell::CellType;
+
     use super::*;
+
+    /// An open 120×120 map split by a wall at x = 60, open only for y ≥ 100.
+    fn walled() -> Ground {
+        let size = 120u16;
+        let cells = (0..size)
+            .flat_map(|y| (0..size).map(move |x| (x, y)))
+            .map(|(x, y)| if x == 60 && y < 100 { 0 } else { CellType::Walkable.as_flag() })
+            .collect();
+        Ground::new(MapCells { name: "walled".into(), xs: size, ys: size, cells }).unwrap()
+    }
+
+    fn hop_at(x: u16, y: u16, way: Way) -> Hop {
+        Hop { map: "walled".into(), x, y, region: None, to_map: "elsewhere".into(), to_x: 0, to_y: 0, to_region: None, way }
+    }
+
+    #[test]
+    fn a_long_walk_comes_as_legs_the_client_walks() {
+        let ground = walled();
+        let from = (10, 10);
+        let hop = hop_at(110, 10, Way::Warp { x_size: 1, y_size: 1 });
+        assert!(!ground.client_walks(from, (110, 10)), "too far for the client in one go");
+        let walk = ground.walk(from, &hop).unwrap();
+        let end = *walk.last().unwrap();
+        assert!(end.0.abs_diff(110) <= 1 && end.1.abs_diff(10) <= 1, "ends in the warp: {end:?}");
+        let mut at = from;
+        for leg in walk {
+            assert!(ground.client_walks(at, leg), "{at:?} to {leg:?}");
+            at = leg;
+        }
+    }
+
+    #[test]
+    fn a_warper_is_walked_up_to_and_a_short_walk_is_one_leg() {
+        let ground = walled();
+        let hop = hop_at(30, 30, Way::Warper { npc: "Warper".into(), destination: "Prontera".into(), menu: vec![] });
+        assert_eq!(ground.walk((20, 30), &hop), Some(vec![(28, 30)]), "to the closest cell the NPC is talked to from");
+        assert_eq!(ground.walk((29, 31), &hop), Some(vec![]), "already in talking range");
+    }
+
+    #[test]
+    fn an_end_out_of_reach_has_no_walk() {
+        let size = 40u16;
+        let cells = (0..size).flat_map(|y| (0..size).map(move |x| (x, y))).map(|(x, _)| if x == 20 { 0 } else { CellType::Walkable.as_flag() }).collect();
+        let ground = Ground::new(MapCells { name: "split".into(), xs: size, ys: size, cells }).unwrap();
+        assert_eq!(ground.walk((5, 5), &hop_at(35, 5, Way::Warp { x_size: 0, y_size: 0 })), None);
+    }
 
     fn warp(map: &str, region: Option<u32>, to_map: &str, to_region: Option<u32>) -> Hop {
         Hop {
@@ -288,3 +458,4 @@ mod tests {
         assert_eq!(destinations::menu_path(field), ["Fields", "Prontera Fields", "Prontera Field 8"]);
     }
 }
+

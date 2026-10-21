@@ -33,11 +33,15 @@ Settings are in `info.json`, with their defaults; override them in `config/plugi
 - A quest is a hunt (kill a number of one monster) or a gathering (bring a number of one etc. item): guards hunt, children
   gather, others gather 40% of the time. The monster is one of the town's prey (see Town data) within 10 levels below and
   3 above the player, or the 3 closest in level when fewer fit. Rewards grow with the count and the monster's experience and
-  level, scaled by `quest_reward_percent`; the time limit is drawn from `quest_minutes`.
+  level, scaled by `quest_reward_percent`. The exp also follows the server's exp rates, the ones kill exp gets (`game`
+  `base_exp_rate`/`job_exp_rate` times the battle options of the same names, read with `getbattleflag`); zeny does not.
+  The exp a quest pays is fixed when it is accepted. The time limit is drawn from `quest_minutes`.
 - A player holds `quest_max_active` quests at most. Expired ones are dropped silently. A finished quest is rewarded as soon
   as the player is in one of the plugin's towns: at once when it finishes there, otherwise on the next town entry or login.
 - The tracker is a frameless, collapsible window under the minimap with each quest, its progress and the time left. Bots
-  read the same under `plugins.alive_towns.data.quests` and answer offers through `plugin_ui` clicks on the bubble.
+  read the same under `plugins.alive_towns.data.quests` and answer offers through `plugin_ui` clicks on the bubble. The bot
+  action `offers` lists what the townsfolk of the bot's town offer it this hour (at its current base level, without the
+  offers it took or declined), with each townsperson's `npc_id` and where they stand, so a bot can pick one and walk to it.
 - State: the journal is JSON in the character variable `alive_towns_quests$`, written only on an answer, a town entry, a
   login or a reward. Kills are atomic counters (`alive_towns_kills_<n>`), so concurrent hooks cannot lose one, and a reward
   is paid by the one run that takes the claim counter `alive_towns_claim_<n>` from 0 to 1. Gathering progress is the

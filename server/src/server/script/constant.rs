@@ -1463,8 +1463,18 @@ pub fn get_battle_flag(flag_name: &String) -> Value {
         "max_cloth_color" => Value::new_number(4),
         // The 20120307 client has no refine window.
         "feature.refineui" => Value::new_number(0),
+        "base_exp_rate" | "job_exp_rate" => {
+            let config = crate::server::service::global_config_service::GlobalConfigService::instance().config();
+            let rate = if flag_name == "base_exp_rate" { config.game.base_exp_rate } else { config.game.job_exp_rate };
+            Value::new_number(exp_rate_percent(rate, config.battle.get(flag_name)))
+        }
         &_ => panic!("unknown battle flag {flag_name}"),
     }
+}
+
+/// The exp rate kill exp gets, in percent like rathena's battle option: the `game` multiplier times the battle option.
+fn exp_rate_percent(rate: f32, battle_percent: i64) -> i32 {
+    (f64::from(rate) * battle_percent as f64).round().clamp(0.0, f64::from(i32::MAX)) as i32
 }
 
 #[cfg(test)]
@@ -1476,5 +1486,12 @@ mod tests {
         assert_eq!(load_constant(&"Ele_fire".into()), Some(Value::new_number(Element::Fire.value() as i32)));
         assert_eq!(load_constant(&"Ele_earth".into()), Some(Value::new_number(Element::Earth.value() as i32)));
         assert_eq!(load_constant(&"Ele_All".into()), Some(Value::new_number(10)));
+    }
+
+    #[test]
+    fn exp_rates_are_percents_of_both_settings() {
+        assert_eq!(exp_rate_percent(1.0, 100), 100);
+        assert_eq!(exp_rate_percent(5.0, 100), 500);
+        assert_eq!(exp_rate_percent(2.5, 150), 375);
     }
 }
