@@ -204,6 +204,7 @@ mod tests {
         let variables: RefCell<HashMap<String, Value>> = RefCell::new(HashMap::new());
         let config = config_json();
         let name = controller_name(find("prontera").unwrap());
+        let plan = Plan::new(Box::leak(Box::new(settings())), find("prontera").unwrap());
         let transport = MockTransport::new(move |request| match request {
             Request::Read(variable) => Ok(variables.borrow().get(variable).cloned().unwrap_or_else(|| if variable.ends_with('$') { Value::String(String::new()) } else { Value::Number(0) })),
             Request::Write { name, value } => {
@@ -219,6 +220,11 @@ mod tests {
             Request::Call { function: Function::GetNpcId, arguments } => {
                 let Value::Array(names) = &arguments[1] else { return Err("names".into()) };
                 Ok(Value::Array((0..names.len()).map(|index| Value::Number(if loaded.get() { FIRST_ID + index as i32 } else { 0 })).collect()))
+            }
+            Request::Call { function: Function::GetNpcXy, arguments } => {
+                let Value::Array(ids) = &arguments[1] else { return Err("ids".into()) };
+                let cell = |id: &Value| plan.position_at((id.number_value().unwrap() - FIRST_ID) as u32, now.get()).map_or([-1, -1], |cell| [i32::from(cell.0), i32::from(cell.1)]);
+                Ok(Value::Array(ids.iter().map(|id| Value::Array(cell(id).map(Value::Number).to_vec())).collect()))
             }
             _ => Ok(Value::default()),
         });

@@ -41,7 +41,8 @@ Settings are in `info.json`, with their defaults; override them in `config/plugi
   login or a reward. Kills are atomic counters (`alive_towns_kills_<n>`), so concurrent hooks cannot lose one, and a reward
   is paid by the one run that takes the claim counter `alive_towns_claim_<n>` from 0 to 1. Gathering progress is the
   inventory count, and the items are taken when the reward is paid.
-- The controller drives the offers: in its once-a-second run it also reads the town's players, opens and closes bubbles,
+- The controller drives the offers: in its once-a-second run it also reads the town's players and where the townsfolk
+  really stand (`ctx.npc_cells`, since walks around buildings drift from the plan), opens and closes bubbles,
   and keeps who stands by whom in `$@near_<map>$`. Townsfolk waiting for an answer skip their routine steps.
 
 ## Town data

@@ -29,6 +29,7 @@ pub(crate) fn handles(function: Function) -> bool {
             | Function::StrNpcInfo
             | Function::GetMapUsers
             | Function::GetMapPlayers
+            | Function::GetNpcXy
             | Function::GetAreaUsers
             | Function::GetTimeTick
             | Function::GetTimeStr
@@ -508,6 +509,21 @@ impl Server {
                         Value::Number(character.get_base_level() as i32),
                     ])
                 }).collect()))
+            }
+            Function::GetNpcXy => {
+                let (map, instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
+                let Some(Value::Array(ids)) = arguments.get(1) else { return Err("getnpcxy needs an array of NPC ids".into()) };
+                let map_instance = state.get_map_instance(&map, instance.unwrap_or(0));
+                let map_state = map_instance.as_ref().map(|map_instance| map_instance.state());
+                ids.iter()
+                    .map(|id| {
+                        let id = id.number_value()? as u32;
+                        let npc = map_state.as_ref().and_then(|map_state| map_state.script_skill_state.npcs.get(&id).filter(|npc| !npc.hidden).map(|npc| (npc.x, npc.y)));
+                        let (x, y) = npc.map_or((-1, -1), |(x, y)| (i32::from(x), i32::from(y)));
+                        Ok(Value::Array(vec![x.into(), y.into()]))
+                    })
+                    .collect::<Result<Vec<_>, String>>()
+                    .map(Value::Array)
             }
             Function::GetAreaUsers => {
                 let (map, instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);

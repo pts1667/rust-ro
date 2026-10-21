@@ -525,6 +525,19 @@ fn getmapplayers_lists_each_player_of_the_map_with_their_cell_and_level() {
 }
 
 #[test]
+fn getnpcxy_gives_where_each_npc_stands_now() {
+    let walk = fixture();
+    walk.call(Function::MoveNpc, vec![Value::Number(BAKER as i32), Value::Number(41), Value::Number(50), Value::Number(2)]).unwrap();
+    let ids = Value::Array(vec![Value::Number(BAKER as i32), Value::Number(999_999)]);
+    let cells = |map: &str| walk.call(Function::GetNpcXy, vec![Value::String(map.into()), ids.clone()]).unwrap();
+    let cell = |x: i32, y: i32| Value::Array(vec![Value::Number(x), Value::Number(y)]);
+    assert_eq!(cells("empty"), Value::Array(vec![cell(41, 50), cell(-1, -1)]));
+    assert_eq!(cells("prontera"), Value::Array(vec![cell(-1, -1), cell(-1, -1)]), "on another map");
+    walk.call(Function::DisableNpc, vec![Value::Number(BAKER as i32)]).unwrap();
+    assert_eq!(cells("empty"), Value::Array(vec![cell(-1, -1), cell(-1, -1)]), "hidden");
+}
+
+#[test]
 fn getnpcid_resolves_a_list_of_names_in_one_call() {
     let walk = fixture();
     let names = Value::Array(vec!["Baker".into(), "Nobody".into(), "Battle Therapist#b01_a".into()]);

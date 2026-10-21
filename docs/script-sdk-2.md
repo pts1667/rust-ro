@@ -121,7 +121,7 @@ Actions are grouped by domain. Each group is a thin typed wrapper over one or mo
   walks. The arrival label of an NPC or monster walk gets the walker's id as `ctx.arguments()[0]`.
 - `ctx.monster(map, x, y, name, class, amount, event)`, `ctx.area_monster(map, area, name, class, amount, event)`, `ctx.kill_monster(map, label)`, `ctx.announce(message, flag)`, and `ctx.announce_colored(message, flag, "0xFFCE00")`.
 - `ctx.map_announce(map, message, flag, color)`, `ctx.view_point(action, x, y, number, color)`, `ctx.map_users(map)`, `ctx.mob_count(map, label)`, `ctx.time_string(format, limit)`.
-- `ctx.map_players(map)` lists the players on a map as `MapPlayer { account_id, char_id, x, y, base_level }` (`GetMapPlayers`); in a batch, read the reply with `MapPlayer::from_reply`.
+- `ctx.map_players(map)` lists the players on a map as `MapPlayer { account_id, char_id, x, y, base_level }` (`GetMapPlayers`); in a batch, read the reply with `MapPlayer::from_reply`. `ctx.npc_cells(map, ids)` gives where each of those NPCs stands now, `None` for one not on the map or hidden (`GetNpcXy`).
 - `ctx.rand(max)` for `0..max - 1`, and `ctx.rand_range(min, max)` for both ends included, as rathena's `rand`.
 - `ctx.map_warp(source, destination)`, `ctx.area_warp(source, area, destination)`, `ctx.area_heal(map, area, hp, sp)` (percentages), `ctx.time_field(field)`, `ctx.time_tick(kind)`.
 - `ctx.sleep(ms)` and `ctx.progress_bar(color, seconds)`: both pause the script while the game keeps running.

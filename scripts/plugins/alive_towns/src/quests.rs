@@ -592,7 +592,7 @@ pub fn offer_round(ctx: &Ctx, settings: &Settings, plan: &Plan, town: usize, ids
     let positions: Vec<Option<Cell>> = if players.is_empty() {
         Vec::new()
     } else {
-        ids.iter().enumerate().map(|(index, id)| if *id == 0 { None } else { plan.position_at(index as u32, tick) }).collect()
+        ctx.npc_cells(TOWNS[town].map, ids)?
     };
     let slot = now.div_euclid(OFFER_SLOT_SECS);
     let range = settings.quest_offer_range as u16;
@@ -683,6 +683,8 @@ mod tests {
         items: Rc<RefCell<HashMap<i32, i32>>>,
         now: Rc<RefCell<i64>>,
         map: Rc<RefCell<String>>,
+        /// Where the townsfolk stand, by NPC id; the others are not in view.
+        npcs: Rc<RefCell<HashMap<i32, Cell>>>,
     }
 
     fn player() -> (Player, MockTransport) {
@@ -691,8 +693,9 @@ mod tests {
             items: Rc::new(RefCell::new(HashMap::new())),
             now: Rc::new(RefCell::new(NOW)),
             map: Rc::new(RefCell::new("prt_fild08".into())),
+            npcs: Rc::default(),
         };
-        let (variables, items, now, map) = (player.variables.clone(), player.items.clone(), player.now.clone(), player.map.clone());
+        let (variables, items, now, map, npcs) = (player.variables.clone(), player.items.clone(), player.now.clone(), player.map.clone(), player.npcs.clone());
         let config = config_json();
         let transport = MockTransport::new(move |request| match request {
             Request::Read(name) => Ok(variables.borrow().get(name).cloned().unwrap_or_else(|| if name.ends_with('$') { Value::String(String::new()) } else { Value::Number(0) })),
@@ -723,6 +726,11 @@ mod tests {
                 Ok(Value::default())
             }
             Request::Call { function: Function::AttachRid, .. } => Ok(Value::Number(1)),
+            Request::Call { function: Function::GetNpcXy, arguments } => {
+                let Value::Array(ids) = &arguments[1] else { return Err("ids".into()) };
+                let cell = |id: &Value| npcs.borrow().get(&id.number_value().unwrap()).map_or([-1, -1], |cell| [i32::from(cell.0), i32::from(cell.1)]);
+                Ok(Value::Array(ids.iter().map(|id| Value::Array(cell(id).map(Value::Number).to_vec())).collect()))
+            }
             _ => Ok(Value::default()),
         });
         (player, transport)
@@ -952,6 +960,7 @@ mod tests {
             .find(|(npc, _)| offer(&settings, town, *npc, &plan.personas[*npc as usize], CHAR_ID, 30, NOW / OFFER_SLOT_SECS).is_some())
             .unwrap();
         let (player, transport) = player();
+        player.npcs.borrow_mut().insert(50_000 + npc as i32, cell);
         let ctx = Ctx::new(&transport);
         let standing = |x: u16, y: u16| [MapPlayer { account_id: 2_000_000, char_id: CHAR_ID, x, y, base_level: 30 }];
         let id = Value::Number(50_000 + npc as i32);

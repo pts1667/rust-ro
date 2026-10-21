@@ -493,6 +493,9 @@ pub enum Function {
     CommandReply,
     /// `GetMapPlayers(map)`: one `[account id, char id, x, y, base level]` array per player on `map`.
     GetMapPlayers,
+    /// `GetNpcXy(map, [npc ids])`: one `[x, y]` per id, where that NPC stands on `map` now, `[-1, -1]` when it is not there
+    /// or hidden.
+    GetNpcXy,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

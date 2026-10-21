@@ -1,5 +1,5 @@
 use crate::battleground::Spot;
-use script_sdk::Function;
+use script_sdk::{Function, Value};
 
 use crate::args;
 use crate::ctx::Ctx;
@@ -107,6 +107,21 @@ impl Ctx<'_> {
     /// The players on `map`, wherever they stand.
     pub fn map_players(&self, map: &str) -> Result<Vec<MapPlayer>, Stop> {
         MapPlayer::from_reply(self.call(Function::GetMapPlayers, args![map])?)
+    }
+
+    /// Where each NPC of `ids` stands on `map` now, `None` for one that is not there or is hidden.
+    pub fn npc_cells(&self, map: &str, ids: &[i32]) -> Result<Vec<Option<(u16, u16)>>, Stop> {
+        let ids = Value::Array(ids.iter().map(|id| Value::Number(*id)).collect());
+        let cells = self.call(Function::GetNpcXy, vec![map.into(), Val::from(ids)])?.into_array().ok_or_else(|| Stop::from("GetNpcXy did not answer an array"))?;
+        cells
+            .into_iter()
+            .map(|cell| {
+                let fields = cell.into_array().ok_or_else(|| Stop::from("GetNpcXy answered a non-array cell"))?;
+                let field = |index: usize| fields.get(index).ok_or_else(|| Stop::from("GetNpcXy answered a short cell")).and_then(Val::number);
+                let (x, y) = (field(0)?, field(1)?);
+                Ok((x >= 0 && y >= 0).then_some((x as u16, y as u16)))
+            })
+            .collect()
     }
 
     /// How many script monsters on `map` belong to the event `label`. `"all"` counts every script monster there.

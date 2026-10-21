@@ -352,7 +352,9 @@ impl<'s> Plan<'s> {
     }
 
     /// Where townsperson `index` stands at `time`, `None` while inside or heading in: along the walk under way at its
-    /// speed, where [`state_at`](Self::state_at) gives where the walk ends.
+    /// speed, where [`state_at`](Self::state_at) gives where the walk ends. Only an estimate: the server walks them around
+    /// obstacles, so the controller asks it where they are.
+    #[cfg(test)]
     pub fn position_at(&self, index: u32, time: i64) -> Option<Cell> {
         let state = self.state_at(index, time);
         if state.hidden {
