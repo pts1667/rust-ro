@@ -377,6 +377,9 @@ impl Server {
             dialog_open: false, attached: None, remote_dialogue: Default::default(),
             error: None,
         };
+        let plugin_timer = (event.timer_guard.is_some()
+            && crate::server::script::entries::resolve(event.entry_id).is_some_and(|named| named.module.starts_with("plugin:")))
+        .then(|| (host.script.name.clone(), std::time::Instant::now()));
         if let Some(guard) = event.timer_guard { state.script_timers.consume(guard); }
         let vm = self.script_service().vm.clone();
         let timeout = std::time::Duration::from_secs(self.configuration.scripting.conversation_timeout_secs.max(1));
@@ -389,6 +392,8 @@ impl Server {
             };
             if let Some(error) = &error {
                 script_debug!("NPC event failed: npc={} entry={} char={}: {error}", event.npc_id, event.entry_id, session.char_id());
+            } else if let Some((name, started)) = &plugin_timer {
+                script_debug!("Plugin timer event ran: npc={} ({name}) entry={} in {}ms", event.npc_id, event.entry_id, started.elapsed().as_millis());
             }
             if !background && (error.is_some() || dialog_open) && session.script_generation.load(std::sync::atomic::Ordering::Acquire) == generation {
                 let mut packet = PacketZcCloseDialog::new(packetver);

@@ -38,6 +38,13 @@ impl Server {
                     *unit_id = self.client_unit_id(state, context, *unit_id)?;
                 }
                 self.plugin_ui().open(char_id, plugin.name(), window.clone())?;
+                script_debug!(
+                    "Plugin {} opened window {} for character {char_id} ({:?}), {}",
+                    plugin.name(),
+                    window.id,
+                    window.placement,
+                    if self.plugin_ui().has_client(char_id) { "sent" } else { "held until the client announces plugin UI" }
+                );
                 self.send_plugin_ui(char_id, plugin_ui::wire::encode_open(&WindowOpen { plugin: plugin.name().into(), window }));
             }
             Function::UiClose => {
