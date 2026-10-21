@@ -27,6 +27,7 @@ pub fn handle_raw(server: &Server, context: &Request) -> bool {
     };
     match wire::decode_client(raw) {
         Ok(ClientMessage::Features(flags)) => {
+            script_debug!("Character {char_id} announced client features {flags:#x}");
             for open in server.plugin_ui().set_client_features(char_id, flags) {
                 server.send_plugin_ui(char_id, wire::encode_open(&wire::WindowOpen { plugin: open.plugin, window: open.window }));
             }
