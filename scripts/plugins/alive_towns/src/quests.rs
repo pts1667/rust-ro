@@ -551,8 +551,9 @@ pub fn held(near: &[Near]) -> Vec<usize> {
     near.iter().filter(|near| near.open).map(|near| near.npc).collect()
 }
 
+/// Measured like the server's sight (`PLAYER_FOV`, 20 cells), so an offer's townsperson is in view.
 fn distance(a: Cell, b: Cell) -> u16 {
-    a.0.abs_diff(b.0).max(a.1.abs_diff(b.1))
+    a.0.abs_diff(b.0) + a.1.abs_diff(b.1)
 }
 
 /// Runs `with` with the player of `account_id` attached, if they are still online; detaches afterwards.
@@ -966,6 +967,9 @@ mod tests {
         let id = Value::Number(50_000 + npc as i32);
         let walks_back = |transport: &MockTransport| transport.calls(Function::NpcWalkTo).iter().filter(|walk| walk[2] == id).count();
 
+        assert_eq!(settings.quest_offer_range, 14);
+        assert!(offer_round(&ctx, &settings, &plan, town, &ids, tick, NOW, &standing(cell.0 + 10, cell.1 + 10), &[]).unwrap().is_empty(), "20 cells away as sight counts them");
+        assert!(transport.calls(Function::UiOpen).is_empty());
         let near = offer_round(&ctx, &settings, &plan, town, &ids, tick, NOW, &standing(cell.0, cell.1 + 1), &[]).unwrap();
         let opened = transport.calls(Function::UiOpen);
         assert_eq!(opened.len(), 1);

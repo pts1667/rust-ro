@@ -55,7 +55,7 @@ pub struct Settings {
     pub walk_speed: [u16; 2],
     pub quests: bool,
     pub quest_offer_percent: u32,
-    /// Cells between a player and a townsperson for an offer to show.
+    /// Cells between a player and a townsperson for an offer to show, |dx| + |dy| as for sight.
     pub quest_offer_range: u32,
     /// Shortest and longest time limit, in minutes.
     pub quest_minutes: [u32; 2],
@@ -77,8 +77,8 @@ impl Settings {
         if !(10..=1440).contains(&shortest) || !(10..=1440).contains(&longest) || shortest > longest {
             return Err(format!("quest_minutes {:?} must be [shortest, longest] within 10 to 1440", self.quest_minutes));
         }
-        if !(1..=10).contains(&self.quest_offer_range) || !(1..=5).contains(&self.quest_max_active) || self.quest_offer_percent > 100 {
-            return Err("quest_offer_range is 1 to 10, quest_max_active 1 to 5 and quest_offer_percent at most 100".into());
+        if !(1..=17).contains(&self.quest_offer_range) || !(1..=5).contains(&self.quest_max_active) || self.quest_offer_percent > 100 {
+            return Err("quest_offer_range is 1 to 17, quest_max_active 1 to 5 and quest_offer_percent at most 100".into());
         }
         let mut towns = Vec::new();
         for map in &self.towns {

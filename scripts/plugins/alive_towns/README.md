@@ -23,7 +23,8 @@ Settings are in `info.json`, with their defaults; override them in `config/plugi
   runs `Alive Towns::OnDoor` on arrival, which hides the walker.
 
 ## Mini-quests
-- A player walking within `quest_offer_range` cells of a townsperson with a quest for them sees it in a bubble above that
+- A player walking within `quest_offer_range` cells (14 by default, 70% of the 20 cells of sight, counted |dx| + |dy| as
+  the server does) of a townsperson with a quest for them sees it in a bubble above that
   townsperson, with Accept and Decline. The townsperson stops, turns to the player and waits until the player answers or
   walks away, then goes back to their routine. After an answer, no other offer shows until the player moves on.
 - Offers are per player: whether a townsperson has one, and what it is, is drawn from (seed, town, townsperson, character,

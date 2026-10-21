@@ -16,7 +16,7 @@
     "walk_speed": { "default": [140, 220], "description": "Range of walking speeds, in milliseconds per cell (20 to 1000)." },
     "quests": { "default": true, "description": "Townsfolk offer short quests, shown above them as a player walks up." },
     "quest_offer_percent": { "default": 15, "description": "Share of the townsfolk with a quest for a given player, drawn anew every hour." },
-    "quest_offer_range": { "default": 3, "description": "Cells between a player and a townsperson for the offer to show (1 to 10)." },
+    "quest_offer_range": { "default": 14, "description": "Cells between a player and a townsperson for the offer to show, counted |dx| + |dy| like sight (20); 1 to 17, so the offer goes when the townsperson is 3 cells further, still in view." },
     "quest_minutes": { "default": [120, 180], "description": "Range of time limits of an accepted quest, in minutes (10 to 1440)." },
     "quest_max_active": { "default": 3, "description": "Quests a player can hold at once (1 to 5)." },
     "quest_reward_percent": { "default": 100, "description": "Scales the experience and zeny of quest rewards." }
