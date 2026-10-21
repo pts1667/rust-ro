@@ -542,8 +542,12 @@ Plugins can open their own windows (a shop, a board, a quest tracker) and offer 
 ```
 
 - `windows` are what a player's client draws: a tree of nodes (`column`, `row`, `text`, `image`, `item_icon`, `button`, `number_input`,
-  `text_input`, `table`, `gauge`, `spacer`, `separator`). The ids of buttons, inputs and tables are what `plugin_ui` takes; the node
-  reference is in `docs/plugin-ui.md`.
+  `text_input`, `table`, `gauge`, `spacer`, `separator`, `countdown` with the `seconds` left when it was sent). The ids of buttons,
+  inputs and tables are what `plugin_ui` takes; the node reference is in `docs/plugin-ui.md`.
+- A window's `placement` tells where a player sees it: absent for an ordinary window, `{"type": "anchored", "unit_id"}` for a
+  bubble above a unit (an NPC's `id` in `npcs`, or a player's), `{"type": "hud", "slot": "below_minimap"}` for a tracker fixed
+  on the screen. Anchored windows go when the bot changes map. `alive_towns` shows its quest offers this way: walk up to a
+  townsperson, then click `accept:...` or `decline:...` in the `offer` window.
 - `data` is whatever the plugin chose to let bots read, under keys it picked.
 - `actions` are the `plugin` actions it offers, with what they take.
 

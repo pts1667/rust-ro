@@ -351,6 +351,25 @@ impl<'s> Plan<'s> {
         steps
     }
 
+    /// Where townsperson `index` stands at `time`, `None` while inside or heading in: along the walk under way at its
+    /// speed, where [`state_at`](Self::state_at) gives where the walk ends.
+    pub fn position_at(&self, index: u32, time: i64) -> Option<Cell> {
+        let state = self.state_at(index, time);
+        if state.hidden {
+            return None;
+        }
+        let walk = self.steps_between(index, time - 60_000, time).into_iter().rev().find_map(|(at, step)| match step {
+            Step::Walk { to, .. } => Some((at, to)),
+            _ => None,
+        });
+        let Some((started, to)) = walk else { return Some(state.cell) };
+        let from = self.state_at(index, started - 1).cell;
+        let duration = (octile(from, to) as i64 * i64::from(self.personas[index as usize].speed) / 10).max(1);
+        let done = (time - started).clamp(0, duration);
+        let between = |a: u16, b: u16| (i64::from(a) + (i64::from(b) - i64::from(a)) * done / duration) as u16;
+        Some((between(from.0, to.0), between(from.1, to.1)))
+    }
+
     pub fn state_at(&self, index: u32, time: i64) -> State {
         let slot = time.div_euclid(SLOT_MS);
         let gathered = |gathering: Gathering| State {

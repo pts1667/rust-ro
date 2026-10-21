@@ -93,4 +93,4 @@ pub use ui::{Above, BotActionFn, UiEvent, WindowFn, bot_args};
 pub use value::Val;
 pub use vars::Var;
 pub use waiting_room::{Rules, WaitingRoom};
-pub use world::Area;
+pub use world::{Area, MapPlayer};

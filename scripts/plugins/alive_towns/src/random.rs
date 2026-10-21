@@ -4,6 +4,7 @@ pub const PERSONA: u64 = 1;
 pub const ROUTINE: u64 = 2;
 pub const GATHERING: u64 = 3;
 pub const CHAT: u64 = 4;
+pub const QUEST: u64 = 5;
 
 pub struct Rng(u64);
 

@@ -491,6 +491,8 @@ pub enum Function {
     BotReply,
     /// `CommandReply(text)`: a line in the chat window of the player who typed the plugin command being run.
     CommandReply,
+    /// `GetMapPlayers(map)`: one `[account id, char id, x, y, base level]` array per player on `map`.
+    GetMapPlayers,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

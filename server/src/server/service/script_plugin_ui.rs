@@ -2,7 +2,7 @@
 //! runtime appends the calling plugin's name to each call, and refuses them to base modules.
 
 use plugin_ui::wire::{OverheadMessage, WindowClose, WindowOpen};
-use plugin_ui::{Audience, Overhead, Window, validate_overhead, validate_window};
+use plugin_ui::{Audience, Overhead, Placement, Window, validate_overhead, validate_window};
 use script_sdk::{Function, Reply, Value};
 
 use crate::server::Server;
@@ -34,6 +34,9 @@ impl Server {
             Function::UiOpen => {
                 let mut window: Window = serde_json::from_str(&text(arguments, 0, "window")?).map_err(|error| format!("Invalid window: {error}"))?;
                 validate_window(&mut window, plugin.name())?;
+                if let Placement::Anchored { unit_id, .. } = &mut window.placement {
+                    *unit_id = self.client_unit_id(state, context, *unit_id)?;
+                }
                 self.plugin_ui().open(char_id, plugin.name(), window.clone())?;
                 self.send_plugin_ui(char_id, plugin_ui::wire::encode_open(&WindowOpen { plugin: plugin.name().into(), window }));
             }
@@ -79,6 +82,22 @@ impl Server {
                 .unwrap_or_else(|_| error!("Failed to send a plugin UI packet")),
             Err(error) => warn!("Plugin UI packet not sent: {error}"),
         }
+    }
+
+    /// Closes the windows the character had above units of the map they leave.
+    pub(crate) fn close_anchored_plugin_windows(&self, char_id: u32) {
+        for open in self.plugin_ui().close_anchored(char_id) {
+            self.send_plugin_ui(char_id, plugin_ui::wire::encode_close(&WindowClose { plugin: open.plugin, id: open.window.id }));
+        }
+    }
+
+    /// The id the client knows a unit in the game by: the account id for players.
+    fn client_unit_id(&self, state: &ServerState, context: &ScriptRequest, unit_id: u32) -> Result<u32, String> {
+        let target = crate::server::script::unit_data::request_actor(self, state, context, unit_id)?.ok_or_else(|| format!("Unit {unit_id} is not in the game"))?;
+        Ok(match target.object_type {
+            MapItemType::Character => state.get_character(target.id).map_or(target.id, |character| character.account_id),
+            _ => target.id,
+        })
     }
 
     /// `unit` 0 is the attached player. The client knows players by account id, so that is the id the packet carries.

@@ -481,7 +481,7 @@ impl Function {
             | GetEquipWeaponLevel | GetEquipArmorLevel | GetEquipCardId | GetEquipIsEquipped | GetEquipIsEnableRefine
             | GetEquipPercentRefinery | GetEquipRefineCost | GetBrokenId | GetGmLevel | ArrayGet | ArraySet | GetWaitingRoomState
             | GetInventoryList | MercenaryGetFaith | GetMonsterInfo | GetGuildMaster | GetCastleName | AttachRid | DetachRid
-            | IsLoggedIn | RequestGuildInfo | PluginConfig | GetRate | BotObserve | BotReply | CommandReply => None,
+            | IsLoggedIn | RequestGuildInfo | PluginConfig | GetRate | BotObserve | BotReply | CommandReply | GetMapPlayers => None,
             Mes | Close | Next | Select | InputNumber | InputString | Message | DispBottom | Cutin | Emotion | ShowEvent | QuestInfo
             | QuestInfoRefresh | ViewPoint | NpcTalk | SoundEffect | ProgressBar | SpecialEffect | SkillEffect | NpcSpecialEffect
             | PlayBgm | ReadBook => Some(Dialogue),

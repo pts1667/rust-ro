@@ -506,6 +506,25 @@ fn movenpc_onto_its_own_cell_turns_the_npc_without_drawing_it_again() {
 }
 
 #[test]
+fn getmapplayers_lists_each_player_of_the_map_with_their_cell_and_level() {
+    let walk = fixture();
+    let mut expected: Vec<Vec<Value>> = walk
+        .server
+        .state()
+        .characters()
+        .values()
+        .map(|character| [character.account_id as i32, character.char_id as i32, i32::from(character.x()), i32::from(character.y()), character.get_base_level() as i32].map(Value::Number).to_vec())
+        .collect();
+    expected.sort_by_key(|player| player[1].number_value().unwrap());
+    assert!(expected.iter().any(|player| player[1] == Value::Number(walk.char_id as i32)));
+    let Value::Array(players) = walk.call(Function::GetMapPlayers, vec![Value::String("empty".into())]).unwrap() else { panic!("not an array") };
+    let mut players: Vec<Vec<Value>> = players.into_iter().map(|player| if let Value::Array(fields) = player { fields } else { panic!("{player:?}") }).collect();
+    players.sort_by_key(|player| player[1].number_value().unwrap());
+    assert_eq!(players, expected);
+    assert_eq!(walk.call(Function::GetMapPlayers, vec![Value::String("prontera".into())]).unwrap(), Value::Array(vec![]));
+}
+
+#[test]
 fn getnpcid_resolves_a_list_of_names_in_one_call() {
     let walk = fixture();
     let names = Value::Array(vec!["Baker".into(), "Nobody".into(), "Battle Therapist#b01_a".into()]);

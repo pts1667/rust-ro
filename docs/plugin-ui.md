@@ -62,7 +62,10 @@ fn shop_event(ctx: &Ctx, event: &UiEvent) -> Script {
 - Opening an id that is already open replaces its content. The window keeps where the player moved it, its scroll position
   and what the player typed, except in an input whose `value` the plugin changed. A handler that changes something re-opens
   the window with the new state.
-- A plugin can have 8 windows open per player. The server keeps them until the character logs out, across map changes.
+- A plugin can have 8 windows open per player. The server keeps them until the character logs out, across map changes,
+  except windows anchored above a unit (see [Placement and frame](#placement-and-frame)).
+- When the client announces itself again (`CZ_CLIENT_FEATURES`, after each map enter), the server sends it every window
+  still open, with their countdowns shortened by the time since they were opened.
 - Only plugins can open windows. Base script modules use the stock dialogue (`mes`, `menu`, `callshop`).
 
 ### Nodes
@@ -74,7 +77,8 @@ Nodes are tagged by `type` in JSON. The SDK builders are on `Node`, `Table` and 
 | --- | --- | --- |
 | `column` | `Node::column([..])` | `gap` (4), `align` of the children (`start`, `center`, `end`), `children` |
 | `row` | `Node::row([..])` | `gap` (4), `align` vertical (`center` from the builder), `children` |
-| `text` | `Node::text`, `wrapped`, `title` (bold) | `text`, `color` `RRGGBB`, `bold`, `align`, `wrap`. `^RRGGBB` codes work inside the text, except in bold text |
+| `text` | `Node::text`, `wrapped`, `title` (bold) | `text`, `color` `RRGGBB`, `bold`, `align`, `wrap`, `shadow`, `outline` (`.outlined()` sets both). `^RRGGBB` codes work inside the text, except in bold text |
+| `countdown` | `Node::countdown(seconds)` | time left, counted down by the client as `2h 05m`, `42m 10s`, `9s` (`format_countdown`); `color`, `bold`, `align`, `shadow`, `outline` like text |
 | `image` | `Node::image(ImageRef, w, h)` | an image, animated when it has several frames, see [Assets](#assets) |
 | `item_icon` | `Node::item(id)` | the item's icon, with its name as tooltip, and an optional `amount` |
 | `button` | `Node::button(id, label)`, `.disabled()` | `id`, `label`, `enabled` |
@@ -112,6 +116,32 @@ The handler gets a `UiEvent`:
   the player.
 - One event or bot action runs at a time per player and plugin, and up to 4 more wait their turn; anything beyond that is
   refused. Two fast clicks on Buy therefore cannot race on the player's zeny.
+
+### Placement and frame
+
+A window floats by default: the player moves it, and the title bar closes it. Two other placements exist:
+
+```rust
+// A speech bubble above an NPC, 4 px over its head, with buttons the player can click
+Window::new("offer", "Dalia", 230, content).anchored(npc_id, 4);
+// A tracker under the minimap, text over the game with no background, that the player folds to its title
+Window::new("quests", "Quests", 180, lines).hud(HudSlot::BelowMinimap).frameless().collapsible();
+```
+
+| Placement | Builder | Drawn |
+| --- | --- | --- |
+| `floating` | (default) | where the player moves it |
+| `anchored` | `.anchored(unit_id, offset_y)` | above the unit, following it, hidden while the unit is out of view. `unit_id` is the unit's id in scripts (a character id or an NPC id); the server sends the client the id it knows the unit by (the account id for players) |
+| `hud` | `.hud(HudSlot::BelowMinimap)` | right-aligned under the minimap; the windows of a slot stack in the order they were opened |
+
+- Only floating windows can be closed or moved by the player: the others are always `closable: false`.
+- Anchored windows close when the character changes map, since their unit is not there anymore.
+- `.frameless()` (`frame: "none"`) draws no background, border or title bar: only the content. Use `.outlined()` text so it
+  stays readable over the game.
+- `.collapsible()` adds a `-`/`+` toggle by the title; a frameless collapsible window shows its title as a header line.
+  Re-opening the same id, as a handler or the re-send at map enter does, keeps it folded or unfolded; closing the window or
+  restarting the client forgets it.
+- A countdown is sent as seconds left and counted down by the client; the server does not resend it each second.
 
 ## Overheads
 
@@ -213,6 +243,7 @@ the reason:
 | text / labels and ids | 1024 / 64 characters, no control characters (use several nodes instead of newlines) |
 | widget ids | unique in the window |
 | colours | `RRGGBB` |
+| anchored window | a unit id other than 0 |
 | image frames / path / side | 64 / 128 characters / 512 px, fps 0..=60 |
 | overhead | an image or a text, 1..=10000 ms, 16 motions |
 

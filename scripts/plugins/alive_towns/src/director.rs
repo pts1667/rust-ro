@@ -3,10 +3,12 @@
 //!
 //! Map instances are only made when a player first enters the map, and an NPC timer needs its NPC on a loaded map, so a
 //! player entering a town starts its controller (`MapEnter`), and the controller of an empty town lets its timer lapse.
+//! The same run shows the quest offers of the townsfolk to the players walking up to them (`quests::offer_round`).
 
-use script_sdk_2::{Batch, Ctx, Function, Hook, Request, Script, Stop, Val, Value};
+use script_sdk_2::{Batch, Ctx, Function, Hook, MapPlayer, Request, Script, Stop, Val, Value};
 
 use crate::persona::unique_name;
+use crate::quests;
 use crate::schedule::{Plan, State, Step};
 use crate::towns::{TOWNS, find};
 use crate::Settings;
@@ -36,6 +38,11 @@ fn ids_var(map: &str) -> String {
     format!("$@ids_{map}$")
 }
 
+/// Who stands by a townsperson with a quest for them, from the previous run.
+fn near_var(map: &str) -> String {
+    format!("$@near_{map}$")
+}
+
 /// Clicking the hidden controller does nothing.
 pub fn controller(_ctx: &Ctx) -> Script {
     Ok(())
@@ -46,11 +53,14 @@ pub fn start(_ctx: &Ctx) -> Script {
     Ok(())
 }
 
+/// Starts the controller of a town a player enters, and settles that player's quests wherever they are.
 pub fn entered(ctx: &Ctx, hook: &Hook) -> Script {
     let Hook::MapEnter { map, .. } = hook else { return Ok(()) };
     let settings: Settings = ctx.plugin_config()?;
-    let Some(town) = find(map).filter(|town| settings.towns.iter().any(|configured| configured == TOWNS[*town].map)) else { return Ok(()) };
-    ctx.call(Function::InitNpcTimer, vec![controller_name(town).into()]).map(|_| ())
+    if let Some(town) = find(map).filter(|town| settings.towns.iter().any(|configured| configured == TOWNS[*town].map)) {
+        ctx.call(Function::InitNpcTimer, vec![controller_name(town).into()])?;
+    }
+    if settings.quests { quests::arrived(ctx, &settings, map) } else { Ok(()) }
 }
 
 /// `OnTimer1000`: the timer starts again while the town is active, also when the run fails.
@@ -80,6 +90,11 @@ fn run(ctx: &Ctx, town: usize) -> Result<bool, Stop> {
     reads.call(Function::GetMapUsers, vec![map.into()]);
     reads.request(Request::Read(active_var(map)));
     reads.request(Request::Read(ids_var(map)));
+    if settings.quests {
+        reads.call(Function::GetTimeTick, vec![2.into()]);
+        reads.call(Function::GetMapPlayers, vec![map.into()]);
+        reads.request(Request::Read(near_var(map)));
+    }
     let replies = reads.send()?;
     let tick = |reply: &Val| reply.number().map(|value| i64::from(value as u32));
     let (now, last) = (tick(&replies[0])?, tick(&replies[1])?);
@@ -110,8 +125,10 @@ fn run(ctx: &Ctx, town: usize) -> Result<bool, Stop> {
         known
     };
     let caught_up = was_active && !fetched && last != 0 && now > last && now - last <= MAX_GAP_MS;
+    let near = if settings.quests && caught_up { quests::parse_near(&replies[7].text()) } else { Vec::new() };
+    let held = quests::held(&near);
     let door = format!("{}::OnDoor", controller_name(town));
-    for (index, id) in ids.iter().enumerate().filter(|(_, id)| **id != 0) {
+    for (index, id) in ids.iter().enumerate().filter(|(index, id)| **id != 0 && !held.contains(index)) {
         if caught_up {
             for (_, step) in plan.steps_between(index as u32, last, now) {
                 send(&mut commands, *id, step, &door);
@@ -122,6 +139,13 @@ fn run(ctx: &Ctx, town: usize) -> Result<bool, Stop> {
     }
     commands.request(Request::Write { name: last_var(map), value: Value::Number(now as u32 as i32) });
     commands.send()?;
+    if settings.quests {
+        let players = MapPlayer::from_reply(replies[6].clone())?;
+        let next = quests::format_near(&quests::offer_round(ctx, &settings, &plan, town, &ids, now, i64::from(replies[5].number()?), &players, &near)?);
+        if next != replies[7].text() {
+            ctx.request(Request::Write { name: near_var(map), value: Value::String(next) })?;
+        }
+    }
     Ok(true)
 }
 
@@ -169,12 +193,14 @@ mod tests {
         now: Rc<Cell<i64>>,
         users: Rc<Cell<i32>>,
         loaded: Rc<Cell<bool>>,
+        /// `GetMapPlayers` entries.
+        players: Rc<RefCell<Vec<Value>>>,
     }
 
     /// The controller of Prontera, its townsfolk ids starting at [`FIRST_ID`] once the town is `loaded`.
     fn world() -> (World, MockTransport) {
-        let world = World { now: Rc::new(Cell::new(9_000_000)), users: Rc::new(Cell::new(1)), loaded: Rc::new(Cell::new(true)) };
-        let (now, users, loaded) = (world.now.clone(), world.users.clone(), world.loaded.clone());
+        let world = World { now: Rc::new(Cell::new(9_000_000)), users: Rc::new(Cell::new(1)), loaded: Rc::new(Cell::new(true)), players: Rc::default() };
+        let (now, users, loaded, players) = (world.now.clone(), world.users.clone(), world.loaded.clone(), world.players.clone());
         let variables: RefCell<HashMap<String, Value>> = RefCell::new(HashMap::new());
         let config = config_json();
         let name = controller_name(find("prontera").unwrap());
@@ -188,6 +214,8 @@ mod tests {
             Request::Call { function: Function::StrNpcInfo, .. } => Ok(Value::String(name.clone())),
             Request::Call { function: Function::GetTimeTick, .. } => Ok(Value::Number(now.get() as u32 as i32)),
             Request::Call { function: Function::GetMapUsers, .. } => Ok(Value::Number(users.get())),
+            Request::Call { function: Function::GetMapPlayers, .. } => Ok(Value::Array(players.borrow().clone())),
+            Request::Call { function: Function::AttachRid, .. } => Ok(Value::Number(1)),
             Request::Call { function: Function::GetNpcId, arguments } => {
                 let Value::Array(names) = &arguments[1] else { return Err("names".into()) };
                 Ok(Value::Array((0..names.len()).map(|index| Value::Number(if loaded.get() { FIRST_ID + index as i32 } else { 0 })).collect()))
@@ -279,6 +307,38 @@ mod tests {
         tick(&ctx).unwrap();
         assert_eq!(transport.calls(Function::GetNpcId).len(), 2);
         assert_eq!(transport.calls(Function::MoveNpc).len(), 100);
+    }
+
+    #[test]
+    fn a_player_by_a_townsperson_with_a_quest_for_them_sees_it_above_them() {
+        let settings = settings();
+        let prontera = find("prontera").unwrap();
+        let plan = Plan::new(&settings, prontera);
+        let (world, transport) = world();
+        let now = world.now.get();
+        let (npc, cell) = (0..settings.npcs_per_town)
+            .filter_map(|index| plan.position_at(index, now).map(|cell| (index, cell)))
+            .find(|(index, _)| quests::offer(&settings, prontera, *index, &plan.personas[*index as usize], 7, 20, now.div_euclid(3600)).is_some())
+            .unwrap();
+        world.players.borrow_mut().push(Value::Array([2_000_007, 7, i32::from(cell.0), i32::from(cell.1), 20].map(Value::Number).to_vec()));
+        let ctx = Ctx::new(&transport);
+        tick(&ctx).unwrap();
+        let opened = transport.calls(Function::UiOpen);
+        assert_eq!(opened.len(), 1);
+        assert!(opened[0][0].text().contains(&format!(r#""unit_id":{}"#, FIRST_ID + npc as i32)));
+        assert_eq!(transport.calls(Function::AttachRid), [vec![Value::Number(2_000_007)]]);
+        let before = transport.requests().len();
+        for second in 1..=60 {
+            world.now.set(now + second * 1_000);
+            tick(&ctx).unwrap();
+        }
+        assert_eq!(transport.calls(Function::UiOpen).len(), 1, "the offer stays up without being sent again");
+        let id = Value::Number(FIRST_ID + npc as i32);
+        let moved = transport.requests()[before..]
+            .iter()
+            .filter(|request| matches!(request, Request::Call { function: Function::NpcWalkTo | Function::MoveNpc, arguments } if arguments.contains(&id)))
+            .count();
+        assert_eq!(moved, 0, "the townsperson waits for the answer");
     }
 
     #[test]

@@ -218,7 +218,8 @@ they are online. It cannot cancel what happened; it reacts through ordinary call
 | `SkillUsed` | the character used a skill |
 | `PartyChanged` / `GuildChanged` | joined (id) or left (0) a party / guild |
 
-Hooks are queued by the game loop and run in the next tick; a hook nobody declared costs nothing.
+Hooks are queued by the game loop and run in the next tick; a hook nobody declared costs nothing. Maps are named without
+`.gat` (`prontera`).
 
 ### Interceptors
 An interceptor is a `fn(&Interception) -> Verdict` the game loop waits for before it does something. It runs in a separate

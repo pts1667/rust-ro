@@ -14,6 +14,30 @@ pub struct Town {
     pub spots: &'static [Cell],
     /// Centres of open 7×7 areas, so a ring of radius 2 around them is walkable.
     pub plazas: &'static [Cell],
+    /// Common monsters of the maps around, by level.
+    pub prey: &'static [Prey],
+}
+
+/// A monster townsfolk send players after, on the closest map with a good number of them.
+pub struct Prey {
+    pub mob: u32,
+    pub name: &'static str,
+    pub level: u16,
+    pub base_exp: u32,
+    pub job_exp: u32,
+    pub map: &'static str,
+    pub map_name: &'static str,
+    /// Never leaves its cell (Pupa, eggs, plants).
+    pub still: bool,
+    /// The most common etc. item it drops, if any is common enough to ask for.
+    pub loot: Option<Loot>,
+}
+
+pub struct Loot {
+    pub item: u32,
+    pub name: &'static str,
+    /// Out of 10000.
+    pub rate: u16,
 }
 
 /// A warp into a building.
@@ -69,8 +93,14 @@ mod tests {
             assert!(town.spots.len() >= 8 && !town.plazas.is_empty(), "{}", town.map);
             assert!(town.counters.iter().all(|counter| counter.face < 8 && !counter.npc.is_empty()), "{}", town.map);
             assert!(town.doors.iter().all(|door| door.cell != door.front), "{}", town.map);
+            assert!(town.prey.windows(2).all(|pair| pair[0].level <= pair[1].level), "{}", town.map);
         }
         assert!(find("prontera").is_some() && find("prt_fild08").is_none());
+        let settings = crate::tests::settings();
+        for map in settings.towns.iter().filter(|map| *map != "moscovia") {
+            let prey = TOWNS[find(map).unwrap()].prey;
+            assert!(prey.len() >= 3, "{map} has {} monsters around for its quests", prey.len());
+        }
     }
 
     #[test]

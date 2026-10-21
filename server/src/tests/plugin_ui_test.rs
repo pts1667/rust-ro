@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 
 use configuration::configuration::{PluginSetting, ScriptingConfig};
 use plugin_ui::wire::{self, FEATURE_PLUGIN_UI, ServerMessage};
-use plugin_ui::{Node, Overhead, UiEvent, Window};
+use plugin_ui::{Node, Overhead, Placement, UiEvent, Window};
 use script_sdk::{Function, Reply, Request, Value};
 use tokio::sync::oneshot;
 
@@ -122,6 +122,25 @@ fn a_window_is_stored_with_its_assets_resolved_and_sent_only_to_a_client_that_dr
     assert!(matches!(&packets[0], (BUYER, ServerMessage::Open(open)) if open.plugin == PLUGIN && open.window == stored), "{packets:?}");
     assert!(matches!(&packets[1], (BUYER, ServerMessage::Close(close)) if close.id == "shop"));
     assert!(context.server.plugin_ui().window(BUYER, PLUGIN, "shop").is_none());
+}
+
+#[test]
+fn a_window_above_a_player_names_their_account_and_goes_when_the_map_changes() {
+    let context = context();
+    context.server.plugin_ui().set_client_features(BUYER, FEATURE_PLUGIN_UI);
+    open(&context, &shop().anchored(NEIGHBOUR, 4)).unwrap();
+    let stored = context.server.plugin_ui().window(BUYER, PLUGIN, "shop").unwrap();
+    assert_eq!(stored.placement, Placement::Anchored { unit_id: account(NEIGHBOUR), offset_y: 4 }, "the client knows players by account");
+    assert!(!stored.closable);
+    let ghost = Window::new("ghost", "Ghost", 100, Node::text("Boo")).anchored(999_999, 0);
+    assert!(open(&context, &ghost).unwrap_err().contains("not in the game"));
+    open(&context, &Window::new("floating", "Stays", 100, Node::text("x"))).unwrap();
+
+    context.server.close_anchored_plugin_windows(BUYER);
+    let packets = plugin_packets(&context, 3);
+    assert!(matches!(&packets[2], (BUYER, ServerMessage::Close(close)) if close.id == "shop"), "{packets:?}");
+    assert!(context.server.plugin_ui().window(BUYER, PLUGIN, "shop").is_none());
+    assert!(context.server.plugin_ui().window(BUYER, PLUGIN, "floating").is_some(), "floating windows follow the player");
 }
 
 #[test]

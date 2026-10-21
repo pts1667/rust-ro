@@ -26,7 +26,11 @@ pub fn handle_raw(server: &Server, context: &Request) -> bool {
         return true;
     };
     match wire::decode_client(raw) {
-        Ok(ClientMessage::Features(flags)) => server.plugin_ui().set_client_features(char_id, flags),
+        Ok(ClientMessage::Features(flags)) => {
+            for open in server.plugin_ui().set_client_features(char_id, flags) {
+                server.send_plugin_ui(char_id, wire::encode_open(&wire::WindowOpen { plugin: open.plugin, window: open.window }));
+            }
+        }
         Ok(ClientMessage::Event(message)) => {
             server.add_to_next_tick(GameEvent::PluginUiEvent(PluginUiEvent { char_id, plugin: message.plugin, event: message.event }))
         }

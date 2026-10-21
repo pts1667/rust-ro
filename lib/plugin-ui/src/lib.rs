@@ -12,7 +12,7 @@ pub mod wire;
 pub use event::{EventKind, InputValue, UiEvent};
 pub use overhead::{Audience, Easing, Motion, MotionKind, Overhead, OverheadText, Transform};
 pub use validate::{validate_overhead, validate_window, Limits, LIMITS};
-pub use window::{Align, Column, ImageRef, Node, Row, Table, TableColumn, TableRow, Window};
+pub use window::{format_countdown, Align, Column, Frame, HudSlot, ImageRef, Node, Placement, Row, Table, TableColumn, TableRow, Window};
 
 /// Where the assets a plugin ships in its `ui/` folder are found by the client: `plugin/<name>/<file>`.
 pub fn plugin_asset_path(plugin: &str, file: &str) -> String {

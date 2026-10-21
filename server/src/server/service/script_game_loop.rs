@@ -1132,7 +1132,7 @@ impl Server {
             let killer_account = state.characters().get(&killer_id).filter(|killer| killer.char_id != damage.target_id).map(|killer| killer.account_id);
             let victim_account = state.characters().get(&damage.target_id).map(|victim| victim.account_id);
             self.broadcast_player_npc_event(state, damage.target_id, "OnPCDieEvent", killer_account.map(|account| ("killerrid", account as i32)));
-            let map = state.characters().get(&damage.target_id).map(|victim| victim.current_map_name().clone()).unwrap_or_default();
+            let map = state.characters().get(&damage.target_id).map(|victim| crate::server::model::map::Map::name_without_ext(victim.current_map_name())).unwrap_or_default();
             self.queue_hook(script_sdk::Hook::Die { char_id: damage.target_id, killer_id: (killer_id != 0 && killer_id != damage.target_id).then_some(killer_id), map: map.clone() });
             if let (Some(_), Some(victim_account)) = (killer_account, victim_account) {
                 self.broadcast_player_npc_event(state, killer_id, "OnPCKillEvent", Some(("killedrid", victim_account as i32)));
@@ -1301,7 +1301,7 @@ impl Server {
         self.queue_hook(script_sdk::Hook::MobKilled {
             char_id: kill.char_id,
             mob_id: kill.mob_id as u32,
-            map: kill.map_instance_key.map_name().clone(),
+            map: kill.map_instance_key.map_without_ext(),
             x: kill.mob_x,
             y: kill.mob_y,
         });

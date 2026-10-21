@@ -4,9 +4,10 @@
 
 use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::sync::{Arc, Mutex, MutexGuard};
+use std::time::Instant;
 
 use plugin_ui::wire::FEATURE_PLUGIN_UI;
-use plugin_ui::{UiEvent, Window};
+use plugin_ui::{Placement, UiEvent, Window};
 use script_sdk::{BotAction, PluginCommand};
 use serde_json::Value as Json;
 
@@ -45,6 +46,8 @@ pub fn answer(reply: &BotReply, result: Result<Json, String>) {
 pub struct OpenWindow {
     pub plugin: String,
     pub window: Window,
+    /// When the client was sent this content, which its countdowns count from.
+    pub opened: Instant,
 }
 
 #[derive(Default)]
@@ -75,8 +78,23 @@ impl PluginUiStore {
         self.characters.lock().unwrap_or_else(|poisoned| poisoned.into_inner())
     }
 
-    pub fn set_client_features(&self, char_id: u32, flags: u32) {
-        self.lock().entry(char_id).or_default().client = flags & FEATURE_PLUGIN_UI != 0;
+    /// Records what the client draws. A client that draws plugin UI gets back every window the character has open,
+    /// countdowns shortened by the time since they were sent: windows opened before it said so never reached it.
+    pub fn set_client_features(&self, char_id: u32, flags: u32) -> Vec<OpenWindow> {
+        let mut characters = self.lock();
+        let ui = characters.entry(char_id).or_default();
+        ui.client = flags & FEATURE_PLUGIN_UI != 0;
+        if !ui.client {
+            return Vec::new();
+        }
+        ui.windows
+            .iter()
+            .map(|open| {
+                let mut open = open.clone();
+                open.window.elapse(open.opened.elapsed().as_secs() as u32);
+                open
+            })
+            .collect()
     }
 
     /// Whether plugin UI packets may be sent to the character's client: the stock client does not know them.
@@ -90,13 +108,23 @@ impl PluginUiStore {
         let ui = characters.entry(char_id).or_default();
         if let Some(open) = ui.windows.iter_mut().find(|open| open.plugin == plugin && open.window.id == window.id) {
             open.window = window;
+            open.opened = Instant::now();
             return Ok(());
         }
         if ui.windows.iter().filter(|open| open.plugin == plugin).count() >= MAX_WINDOWS {
             return Err(format!("Plugin {plugin} already has {MAX_WINDOWS} windows open for this player"));
         }
-        ui.windows.push(OpenWindow { plugin: plugin.into(), window });
+        ui.windows.push(OpenWindow { plugin: plugin.into(), window, opened: Instant::now() });
         Ok(())
+    }
+
+    /// Removes the windows drawn above a unit, which stays behind when the character changes map.
+    pub fn close_anchored(&self, char_id: u32) -> Vec<OpenWindow> {
+        let mut characters = self.lock();
+        let Some(ui) = characters.get_mut(&char_id) else { return Vec::new() };
+        let (anchored, kept) = std::mem::take(&mut ui.windows).into_iter().partition(|open| matches!(open.window.placement, Placement::Anchored { .. }));
+        ui.windows = kept;
+        anchored
     }
 
     pub fn close(&self, char_id: u32, plugin: &str, id: &str) -> bool {
@@ -222,6 +250,22 @@ mod tests {
         assert!(store.open(1, "q", window("over")).is_ok(), "other plugins have their own limit");
         assert!(store.close(1, "p", "a"));
         assert!(!store.close(1, "p", "a"));
+    }
+
+    #[test]
+    fn a_client_announcing_itself_gets_the_open_windows_back_and_bubbles_stay_on_their_map() {
+        let store = PluginUiStore::default();
+        store.open(1, "p", Window::new("quests", "Q", 100, Node::countdown(600))).unwrap();
+        store.open(1, "p", window("offer").anchored(5_000, 4)).unwrap();
+        assert!(store.set_client_features(1, 0).is_empty());
+        let resent = store.set_client_features(1, FEATURE_PLUGIN_UI);
+        assert_eq!(resent.iter().map(|open| open.window.id.as_str()).collect::<Vec<_>>(), ["quests", "offer"]);
+        assert!(matches!(resent[0].window.node, Node::Countdown { seconds: 590..=600, .. }));
+        let closed = store.close_anchored(1);
+        assert_eq!(closed.len(), 1);
+        assert_eq!(closed[0].window.id, "offer");
+        assert_eq!(store.windows(1).len(), 1);
+        assert!(store.close_anchored(2).is_empty());
     }
 
     #[test]

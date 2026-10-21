@@ -10,13 +10,68 @@ pub struct Window {
     /// Grows with the content when absent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub height: Option<u16>,
+    /// Always false for a window that is not `floating`.
     #[serde(default = "yes")]
     pub closable: bool,
+    #[serde(default, skip_serializing_if = "Placement::is_floating")]
+    pub placement: Placement,
+    #[serde(default, skip_serializing_if = "Frame::is_standard")]
+    pub frame: Frame,
+    /// The player can fold the window down to its title; the client keeps that across re-opens of the id.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub collapsible: bool,
     pub node: Node,
 }
 
 fn yes() -> bool {
     true
+}
+
+/// Where the client draws a window.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum Placement {
+    /// A window the player can move.
+    #[default]
+    Floating,
+    /// Above a unit, following it like a speech bubble, hidden while the unit is out of view. `unit_id` is the id the
+    /// client knows the unit by (account id for players). The server drops these windows when the character changes map.
+    Anchored {
+        unit_id: u32,
+        /// Pixels between the top of the unit and the bottom of the window.
+        #[serde(default)]
+        offset_y: i16,
+    },
+    /// A fixed place of the screen.
+    Hud { slot: HudSlot },
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HudSlot {
+    /// Right-aligned under the minimap; windows of one slot stack in opening order.
+    BelowMinimap,
+}
+
+impl Placement {
+    pub fn is_floating(&self) -> bool {
+        *self == Placement::Floating
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum Frame {
+    #[default]
+    Standard,
+    /// No background, border or title bar: only the content, and the title as a header line when `collapsible`.
+    None,
+}
+
+impl Frame {
+    pub fn is_standard(&self) -> bool {
+        *self == Frame::Standard
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default, Serialize, Deserialize)]
@@ -50,6 +105,25 @@ pub enum Node {
         /// Wraps at the width of its parent instead of growing it.
         #[serde(default, skip_serializing_if = "is_false")]
         wrap: bool,
+        #[serde(default, skip_serializing_if = "is_false")]
+        shadow: bool,
+        /// A dark ring around the glyphs, for text drawn over the game without a background.
+        #[serde(default, skip_serializing_if = "is_false")]
+        outline: bool,
+    },
+    /// Time left, counted down by the client from the moment the window arrived and written by [`format_countdown`].
+    Countdown {
+        seconds: u32,
+        #[serde(default, skip_serializing_if = "Option::is_none")]
+        color: Option<String>,
+        #[serde(default, skip_serializing_if = "is_false")]
+        bold: bool,
+        #[serde(default)]
+        align: Align,
+        #[serde(default, skip_serializing_if = "is_false")]
+        shadow: bool,
+        #[serde(default, skip_serializing_if = "is_false")]
+        outline: bool,
     },
     Image {
         image: ImageRef,
@@ -219,7 +293,47 @@ impl ImageRef {
 
 impl Window {
     pub fn new(id: &str, title: &str, width: u16, node: Node) -> Self {
-        Self { id: id.to_string(), title: title.to_string(), width, height: None, closable: true, node }
+        Self {
+            id: id.to_string(),
+            title: title.to_string(),
+            width,
+            height: None,
+            closable: true,
+            placement: Placement::Floating,
+            frame: Frame::Standard,
+            collapsible: false,
+            node,
+        }
+    }
+
+    /// Drawn above the unit the client knows as `unit_id`, `offset_y` pixels over its top.
+    pub fn anchored(mut self, unit_id: u32, offset_y: i16) -> Self {
+        self.placement = Placement::Anchored { unit_id, offset_y };
+        self
+    }
+
+    pub fn hud(mut self, slot: HudSlot) -> Self {
+        self.placement = Placement::Hud { slot };
+        self
+    }
+
+    pub fn frameless(mut self) -> Self {
+        self.frame = Frame::None;
+        self
+    }
+
+    pub fn collapsible(mut self) -> Self {
+        self.collapsible = true;
+        self
+    }
+
+    /// Takes `seconds` off every countdown, for a window sent again that long after it was opened.
+    pub fn elapse(&mut self, seconds: u32) {
+        self.node.for_each_mut(&mut |node| {
+            if let Node::Countdown { seconds: left, .. } = node {
+                *left = left.saturating_sub(seconds);
+            }
+        });
     }
 
     pub fn height(mut self, height: u16) -> Self {
@@ -259,15 +373,19 @@ impl Node {
     }
 
     pub fn text(text: impl Into<String>) -> Self {
-        Node::Text { text: text.into(), color: None, bold: false, align: Align::Start, wrap: false }
+        Node::Text { text: text.into(), color: None, bold: false, align: Align::Start, wrap: false, shadow: false, outline: false }
     }
 
     pub fn wrapped(text: impl Into<String>) -> Self {
-        Node::Text { text: text.into(), color: None, bold: false, align: Align::Start, wrap: true }
+        Node::Text { text: text.into(), color: None, bold: false, align: Align::Start, wrap: true, shadow: false, outline: false }
     }
 
     pub fn title(text: impl Into<String>) -> Self {
-        Node::Text { text: text.into(), color: None, bold: true, align: Align::Start, wrap: false }
+        Node::Text { text: text.into(), color: None, bold: true, align: Align::Start, wrap: false, shadow: false, outline: false }
+    }
+
+    pub fn countdown(seconds: u32) -> Self {
+        Node::Countdown { seconds, color: None, bold: false, align: Align::Start, shadow: false, outline: false }
     }
 
     pub fn image(image: ImageRef, width: u16, height: u16) -> Self {
@@ -298,18 +416,33 @@ impl Node {
         Node::Spacer { size }
     }
 
-    /// Sets the colour of a `Text` (`RRGGBB`) or a `Gauge`; other nodes are unchanged.
+    /// Sets the colour of a `Text`, a `Countdown` (`RRGGBB`) or a `Gauge`; other nodes are unchanged.
     pub fn color(mut self, rgb: &str) -> Self {
-        if let Node::Text { color, .. } | Node::Gauge { color, .. } = &mut self {
+        if let Node::Text { color, .. } | Node::Countdown { color, .. } | Node::Gauge { color, .. } = &mut self {
             *color = Some(rgb.to_string());
         }
         self
     }
 
-    /// Aligns a `Text`, or the children of a `Column`/`Row`.
+    /// Shadow and outline on a `Text` or a `Countdown`, readable over the game without a background.
+    pub fn outlined(mut self) -> Self {
+        if let Node::Text { shadow, outline, .. } | Node::Countdown { shadow, outline, .. } = &mut self {
+            (*shadow, *outline) = (true, true);
+        }
+        self
+    }
+
+    pub fn bold(mut self) -> Self {
+        if let Node::Text { bold, .. } | Node::Countdown { bold, .. } = &mut self {
+            *bold = true;
+        }
+        self
+    }
+
+    /// Aligns a `Text` or a `Countdown`, or the children of a `Column`/`Row`.
     pub fn align(mut self, to: Align) -> Self {
         match &mut self {
-            Node::Text { align, .. } => *align = to,
+            Node::Text { align, .. } | Node::Countdown { align, .. } => *align = to,
             Node::Column(column) => column.align = to,
             Node::Row(row) => row.align = to,
             _ => {}
@@ -355,6 +488,15 @@ impl Node {
         }
     }
 
+    fn for_each_mut(&mut self, apply: &mut impl FnMut(&mut Node)) {
+        apply(self);
+        match self {
+            Node::Column(Column { children, .. }) | Node::Row(Row { children, .. }) => children.iter_mut().for_each(|child| child.for_each_mut(apply)),
+            Node::Table(table) => table.rows.iter_mut().flat_map(|row| row.cells.iter_mut()).for_each(|cell| cell.for_each_mut(apply)),
+            _ => {}
+        }
+    }
+
     fn for_each_image(&mut self, apply: &mut impl FnMut(&mut ImageRef)) {
         match self {
             Node::Image { image, .. } => apply(image),
@@ -388,6 +530,16 @@ impl Table {
     pub fn row_height(mut self, height: u16) -> Self {
         self.row_height = height;
         self
+    }
+}
+
+/// `2h 05m` from an hour, `42m 10s` under it, `9s` under a minute.
+pub fn format_countdown(seconds: u32) -> String {
+    let (hours, minutes, seconds) = (seconds / 3600, seconds / 60 % 60, seconds % 60);
+    match (hours, minutes) {
+        (0, 0) => format!("{seconds}s"),
+        (0, _) => format!("{minutes}m {seconds:02}s"),
+        _ => format!("{hours}h {minutes:02}m"),
     }
 }
 
@@ -434,5 +586,34 @@ mod tests {
         assert_eq!(serde_json::from_str::<Window>(&json).unwrap(), window);
         assert!(window.widget("buy:501").is_some());
         assert!(window.widget("amount").is_some());
+    }
+
+    #[test]
+    fn placements_frames_and_countdowns_round_trip_and_default_away() {
+        let tracker = Window::new("quests", "Quests", 180, Node::column([Node::text("Hunt Poring 3/10").outlined(), Node::countdown(5400).color("ffcc00")]))
+            .hud(HudSlot::BelowMinimap)
+            .frameless()
+            .collapsible();
+        let json = serde_json::to_string(&tracker).unwrap();
+        assert!(json.contains(r#""placement":{"type":"hud","slot":"below_minimap"}"#) && json.contains(r#""frame":"none""#), "{json}");
+        assert_eq!(serde_json::from_str::<Window>(&json).unwrap(), tracker);
+        let bubble = Window::new("offer", "Ann", 200, Node::text("Hi")).anchored(110_000_123, 8);
+        assert_eq!(serde_json::from_str::<Window>(&serde_json::to_string(&bubble).unwrap()).unwrap(), bubble);
+        let plain = serde_json::to_string(&Window::new("w", "W", 100, Node::text("x"))).unwrap();
+        assert!(!plain.contains("placement") && !plain.contains("frame") && !plain.contains("shadow"), "{plain}");
+        let old: Window = serde_json::from_str(r#"{"id":"w","title":"W","width":100,"node":{"type":"text","text":"x"}}"#).unwrap();
+        assert_eq!((old.placement, old.frame, old.collapsible), (Placement::Floating, Frame::Standard, false));
+    }
+
+    #[test]
+    fn countdowns_read_in_the_largest_units_and_elapse_on_a_resend() {
+        assert_eq!(format_countdown(0), "0s");
+        assert_eq!(format_countdown(59), "59s");
+        assert_eq!(format_countdown(2530), "42m 10s");
+        assert_eq!(format_countdown(7500), "2h 05m");
+        let mut window = Window::new("q", "Q", 100, Node::column([Node::row([Node::countdown(100)]), Node::countdown(5)]));
+        window.elapse(30);
+        let left: Vec<u32> = window.nodes().into_iter().filter_map(|node| if let Node::Countdown { seconds, .. } = node { Some(*seconds) } else { None }).collect();
+        assert_eq!(left, [70, 0]);
     }
 }

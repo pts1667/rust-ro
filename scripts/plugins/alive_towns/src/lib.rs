@@ -1,16 +1,18 @@
 //! Alive Towns: about a hundred procedural townsfolk per town. Each repeats a small routine (shopping at a counter, going
 //! into a building, strolling between two places, loitering), joins small groups on the plazas now and then, and emotes.
+//! Some have short quests for the players who walk up to them (`quests.rs`).
 //! Settings and their defaults are in `info.json`; `config/plugins/alive_towns.json` overrides them.
 
 mod director;
 mod persona;
+mod quests;
 mod random;
 mod schedule;
 mod towns;
 mod towns_data;
 
 use script_sdk_2::constants::*;
-use script_sdk_2::{Ctx, Function, PluginNpc, Script};
+use script_sdk_2::{Ctx, Function, Hook, PluginNpc, Script};
 use serde::Deserialize;
 
 use crate::persona::{Kind, Persona, parse_name, unique_name};
@@ -18,7 +20,7 @@ use crate::schedule::{Doing, Plan};
 use crate::towns::{TOWNS, find};
 
 script_sdk_2::plugin_module! {
-    info { name: "alive_towns", version: "1.0.0", capabilities: [World, Dialogue] }
+    info { name: "alive_towns", version: "1.1.0", capabilities: [World, Dialogue, Interface, Character, Economy] }
     init => director::start,
     npcs {
         "Alive Towns" => director::controller,
@@ -28,8 +30,14 @@ script_sdk_2::plugin_module! {
         "Alive Towns::OnDoor" => director::went_inside,
         "Alive Towns::OnTimer1000" => director::tick,
     }
-    hooks { MapEnter => director::entered }
+    hooks {
+        MapEnter => director::entered,
+        Login => logged_in,
+        MobKilled => killed,
+        ItemObtained => obtained,
+    }
     interceptors {}
+    windows { "offer" => quests::offer_event }
     generated_npcs => generated_npc,
 }
 
@@ -45,6 +53,14 @@ pub struct Settings {
     pub guards_per_town: u32,
     /// Fastest and slowest, in ms per cell.
     pub walk_speed: [u16; 2],
+    pub quests: bool,
+    pub quest_offer_percent: u32,
+    /// Cells between a player and a townsperson for an offer to show.
+    pub quest_offer_range: u32,
+    /// Shortest and longest time limit, in minutes.
+    pub quest_minutes: [u32; 2],
+    pub quest_max_active: u32,
+    pub quest_reward_percent: u32,
 }
 
 impl Settings {
@@ -56,6 +72,13 @@ impl Settings {
         let [fast, slow] = self.walk_speed;
         if !(20..=1000).contains(&fast) || !(20..=1000).contains(&slow) || fast > slow {
             return Err(format!("walk_speed {:?} must be [fastest, slowest] within 20 to 1000", self.walk_speed));
+        }
+        let [shortest, longest] = self.quest_minutes;
+        if !(10..=1440).contains(&shortest) || !(10..=1440).contains(&longest) || shortest > longest {
+            return Err(format!("quest_minutes {:?} must be [shortest, longest] within 10 to 1440", self.quest_minutes));
+        }
+        if !(1..=10).contains(&self.quest_offer_range) || !(1..=5).contains(&self.quest_max_active) || self.quest_offer_percent > 100 {
+            return Err("quest_offer_range is 1 to 10, quest_max_active 1 to 5 and quest_offer_percent at most 100".into());
         }
         let mut towns = Vec::new();
         for map in &self.towns {
@@ -103,6 +126,24 @@ fn generated_npc(index: usize) -> Result<Option<PluginNpc>, String> {
         speed: Some(persona.speed),
         ..Default::default()
     }))
+}
+
+fn logged_in(ctx: &Ctx, hook: &Hook) -> Script {
+    let Hook::Login { map, .. } = hook else { return Ok(()) };
+    let settings: Settings = ctx.plugin_config()?;
+    if settings.quests { quests::arrived(ctx, &settings, map) } else { Ok(()) }
+}
+
+fn killed(ctx: &Ctx, hook: &Hook) -> Script {
+    let Hook::MobKilled { mob_id, map, .. } = hook else { return Ok(()) };
+    let settings: Settings = ctx.plugin_config()?;
+    if settings.quests { quests::killed(ctx, &settings, *mob_id, map) } else { Ok(()) }
+}
+
+fn obtained(ctx: &Ctx, hook: &Hook) -> Script {
+    let Hook::ItemObtained { item_id, amount, .. } = hook else { return Ok(()) };
+    let settings: Settings = ctx.plugin_config()?;
+    if settings.quests { quests::obtained(ctx, &settings, *item_id, *amount) } else { Ok(()) }
 }
 
 /// A townsperson says what it is busy with.
@@ -160,6 +201,12 @@ pub(crate) mod tests {
         assert!(settings.towns().unwrap_err().contains("prt_fild08 is not a town"));
         let mut settings = super::tests::settings();
         settings.walk_speed = [300, 100];
+        assert!(settings.towns().is_err());
+        let mut settings = super::tests::settings();
+        settings.quest_minutes = [180, 120];
+        assert!(settings.towns().is_err());
+        let mut settings = super::tests::settings();
+        settings.quest_max_active = 6;
         assert!(settings.towns().is_err());
     }
 

@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::{ImageRef, MotionKind, Node, Overhead, Window};
+use crate::{ImageRef, MotionKind, Node, Overhead, Placement, Window};
 
 /// Bounds the server holds plugin UI to, so a plugin cannot make a client allocate or draw without limit.
 pub struct Limits {
@@ -45,6 +45,12 @@ pub fn validate_window(window: &mut Window, plugin: &str) -> Result<(), String> 
     }
     if window.height.is_some_and(|height| height > 768) {
         return Err("window height is over 768".into());
+    }
+    if !window.placement.is_floating() {
+        window.closable = false;
+    }
+    if matches!(window.placement, Placement::Anchored { unit_id: 0, .. }) {
+        return Err("an anchored window needs a unit".into());
     }
     let mut checker = Checker { plugin, nodes: 0, widgets: HashSet::new() };
     checker.node(&window.node, 1)?;
@@ -136,7 +142,7 @@ impl Checker<'_> {
                 }
                 check_chars("text input value", value, *max_len as usize)?;
             }
-            Node::Gauge { color, .. } => check_color(color.as_deref())?,
+            Node::Gauge { color, .. } | Node::Countdown { color, .. } => check_color(color.as_deref())?,
             Node::Table(table) => {
                 if table.columns.is_empty() || table.columns.len() > LIMITS.table_columns {
                     return Err(format!("table {} needs 1..={} columns", table.id, LIMITS.table_columns));
@@ -273,6 +279,15 @@ mod tests {
         assert!(validate_window(&mut window(Node::number_input("n", 5, 6, 9)), "p").is_err());
         assert!(validate_window(&mut window(Node::text("x").color("red")), "p").is_err());
         assert!(validate_window(&mut window(Node::text("bell\u{7}")), "p").is_err());
+    }
+
+    #[test]
+    fn placed_windows_cannot_be_closed_by_the_player() {
+        let mut tracker = window(Node::text("x")).hud(crate::HudSlot::BelowMinimap);
+        validate_window(&mut tracker, "p").unwrap();
+        assert!(!tracker.closable);
+        assert!(validate_window(&mut window(Node::text("x")).anchored(0, 0), "p").is_err());
+        assert!(validate_window(&mut window(Node::countdown(60).color("blue")), "p").is_err());
     }
 
     #[test]

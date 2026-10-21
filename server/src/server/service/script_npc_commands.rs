@@ -28,6 +28,7 @@ pub(crate) fn handles(function: Function) -> bool {
             | Function::CheckWeight
             | Function::StrNpcInfo
             | Function::GetMapUsers
+            | Function::GetMapPlayers
             | Function::GetAreaUsers
             | Function::GetTimeTick
             | Function::GetTimeStr
@@ -495,6 +496,18 @@ impl Server {
             Function::GetMapUsers => {
                 let (map, instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
                 Ok(Value::Number(state.characters().values().filter(|character| normalize_map(character.current_map_name()) == map && instance.is_none_or(|instance| instance == character.current_map_instance())).count() as i32))
+            }
+            Function::GetMapPlayers => {
+                let (map, instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);
+                Ok(Value::Array(state.characters().values().filter(|character| normalize_map(character.current_map_name()) == map && instance.is_none_or(|instance| instance == character.current_map_instance())).map(|character| {
+                    Value::Array(vec![
+                        Value::Number(character.account_id as i32),
+                        Value::Number(character.char_id as i32),
+                        Value::Number(i32::from(character.x())),
+                        Value::Number(i32::from(character.y())),
+                        Value::Number(character.get_base_level() as i32),
+                    ])
+                }).collect()))
             }
             Function::GetAreaUsers => {
                 let (map, instance) = self.resolve_script_map(context.npc_scope_instance, &text(0)?);

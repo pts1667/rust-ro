@@ -6,6 +6,31 @@ use crate::ctx::Ctx;
 use crate::flow::{Script, Stop};
 use crate::Val;
 
+/// A player of [`Ctx::map_players`].
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct MapPlayer {
+    pub account_id: u32,
+    pub char_id: u32,
+    pub x: u16,
+    pub y: u16,
+    pub base_level: u32,
+}
+
+impl MapPlayer {
+    /// The answer to a `GetMapPlayers` call, for one sent in a [`Batch`](crate::Batch).
+    pub fn from_reply(reply: Val) -> Result<Vec<MapPlayer>, Stop> {
+        let players = reply.into_array().ok_or_else(|| Stop::from("GetMapPlayers did not answer an array"))?;
+        players
+            .into_iter()
+            .map(|player| {
+                let fields = player.into_array().ok_or_else(|| Stop::from("GetMapPlayers answered a non-array player"))?;
+                let field = |index: usize| fields.get(index).ok_or_else(|| Stop::from("GetMapPlayers answered a short player")).and_then(Val::number);
+                Ok(MapPlayer { account_id: field(0)? as u32, char_id: field(1)? as u32, x: field(2)? as u16, y: field(3)? as u16, base_level: field(4)? as u32 })
+            })
+            .collect()
+    }
+}
+
 /// A rectangle of map cells, from `(x1, y1)` to `(x2, y2)`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Area {
@@ -77,6 +102,11 @@ impl Ctx<'_> {
     /// How many players are on `map`.
     pub fn map_users(&self, map: &str) -> Result<i32, Stop> {
         self.call(Function::GetMapUsers, args![map])?.number()
+    }
+
+    /// The players on `map`, wherever they stand.
+    pub fn map_players(&self, map: &str) -> Result<Vec<MapPlayer>, Stop> {
+        MapPlayer::from_reply(self.call(Function::GetMapPlayers, args![map])?)
     }
 
     /// How many script monsters on `map` belong to the event `label`. `"all"` counts every script monster there.
