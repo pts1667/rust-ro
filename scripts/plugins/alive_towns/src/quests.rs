@@ -35,6 +35,10 @@ const MAX_KILLS: u32 = 40;
 const DONE_COLOR: &str = "7cfc7c";
 const DIM_COLOR: &str = "c8c8c8";
 const GOLD_COLOR: &str = "ffd34d";
+/// Reward and time limit in the bubble, whose body is near white.
+const REWARD_COLOR: &str = "8a6200";
+const LIMIT_COLOR: &str = "606060";
+const TITLE_COLOR: &str = "ffffff";
 
 fn kills_var(index: u8) -> String {
     format!("alive_towns_kills_{index}")
@@ -260,8 +264,8 @@ pub fn bubble(offer: &Offer, level: u32, npc_id: u32) -> Window {
         230,
         Node::column([
             Node::wrapped(offer.text.as_str()),
-            Node::wrapped(format!("Reward: {} base exp, {} job exp, {} zeny", grouped(quest.base_exp), grouped(quest.job_exp), grouped(quest.zeny))).color(GOLD_COLOR),
-            Node::text(format!("Time limit: {}", format_countdown(offer.minutes * 60))).color(DIM_COLOR),
+            Node::wrapped(format!("Reward: {} base exp, {} job exp, {} zeny", grouped(quest.base_exp), grouped(quest.job_exp), grouped(quest.zeny))).color(REWARD_COLOR),
+            Node::text(format!("Time limit: {}", format_countdown(offer.minutes * 60))).color(LIMIT_COLOR),
             Node::row([Node::button(button_id("accept", quest.key, level), "Accept"), Node::button(button_id("decline", quest.key, level), "Decline")]),
         ]),
     )
@@ -280,7 +284,7 @@ pub fn tracker(journal: &Journal, statuses: &[Status], now: i64, max: u32) -> Op
             lines.push(Node::text("Done! Enter a town for the reward.").outlined().color(DONE_COLOR));
         } else {
             let left = (quest.expires - now).clamp(0, i64::from(u32::MAX)) as u32;
-            lines.push(Node::row([Node::text(quest.title()).outlined(), Node::countdown(left).outlined().color(DIM_COLOR)]));
+            lines.push(Node::row([Node::text(quest.title()).outlined().color(TITLE_COLOR), Node::countdown(left).outlined().color(DIM_COLOR)]));
             lines.push(Node::text(format!("{}/{} - {}", status.have.min(quest.count), quest.count, quest.map_name)).outlined().color(DIM_COLOR));
         }
     }
@@ -520,6 +524,18 @@ fn answered_var(char_id: u32) -> String {
     format!("$@answered_{char_id}")
 }
 
+/// Set when the player enters a map, logins included: the server took their bubble down, so the controller forgets what it
+/// showed them and lets the townsperson go.
+fn entered_var(char_id: u32) -> String {
+    format!("$@entered_{char_id}")
+}
+
+/// `MapEnter` of the attached player.
+pub fn entered_map(ctx: &Ctx) -> Script {
+    let char_id = ctx.player().char_id()? as u32;
+    ctx.request(Request::Write { name: entered_var(char_id), value: Value::Number(1) }).map(|_| ())
+}
+
 /// A player standing by a townsperson with a quest for them. While the bubble is `open`, the townsperson waits at `cell`
 /// facing the player; once it is answered, the player gets no other offer until they walk away from `cell`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -573,19 +589,25 @@ fn with_player<T>(ctx: &Ctx, account_id: u32, with: impl FnOnce(&Ctx) -> Result<
 pub fn offer_round(ctx: &Ctx, settings: &Settings, plan: &Plan, town: usize, ids: &[i32], tick: i64, now: i64, players: &[MapPlayer], previous: &[Near]) -> Result<Vec<Near>, Stop> {
     let was_held = held(previous);
     let mut previous = previous.to_vec();
-    let waiting: Vec<u32> = previous.iter().filter(|near| near.open).map(|near| near.char_id).collect();
-    if !waiting.is_empty() {
+    if !previous.is_empty() {
         let mut reads = ctx.batch();
-        for char_id in &waiting {
-            reads.request(Request::Read(answered_var(*char_id)));
+        for near in &previous {
+            reads.request(Request::Read(answered_var(near.char_id)));
+            reads.request(Request::Read(entered_var(near.char_id)));
         }
+        let replies = reads.send()?;
         let mut clear = ctx.batch();
-        for (char_id, answer) in waiting.iter().zip(reads.send()?) {
-            if answer.number()? != 0 {
-                previous.iter_mut().filter(|near| near.char_id == *char_id).for_each(|near| near.open = false);
-                clear.request(Request::Write { name: answered_var(*char_id), value: Value::Number(0) });
+        let mut gone = Vec::new();
+        for (near, reply) in previous.iter_mut().zip(replies.chunks(2)) {
+            if reply[1].number()? != 0 {
+                gone.push(near.char_id);
+                clear.request(Request::Write { name: entered_var(near.char_id), value: Value::Number(0) });
+            } else if reply[0].number()? != 0 {
+                near.open = false;
+                clear.request(Request::Write { name: answered_var(near.char_id), value: Value::Number(0) });
             }
         }
+        previous.retain(|near| !gone.contains(&near.char_id));
         if !clear.is_empty() {
             clear.send()?;
         }
@@ -615,6 +637,7 @@ pub fn offer_round(ctx: &Ctx, settings: &Settings, plan: &Plan, town: usize, ids
         let found = close.into_iter().find_map(|(_, npc, cell)| offer(settings, town, npc as u32, &plan.personas[npc], player.char_id, player.base_level, slot).map(|offer| (npc, cell, offer)));
         let Some((npc, cell, offer)) = found else { continue };
         let shown = with_player(ctx, player.account_id, |ctx| {
+            ctx.request(Request::Write { name: entered_var(player.char_id), value: Value::Number(0) })?;
             let (journal, _) = load(ctx)?;
             if journal.taken(offer.quest.key) || journal.quests.len() >= settings.quest_max_active as usize {
                 return Ok(false);
@@ -986,6 +1009,13 @@ mod tests {
         let still = offer_round(&ctx, &settings, &plan, town, &ids, later, NOW, &standing(cell.0, cell.1 + 1), &near).unwrap();
         assert_eq!(still, near, "the townsperson waits where they stopped, whatever their routine says");
         assert_eq!(transport.calls(Function::UiOpen).len(), 1, "shown once while the player stays");
+
+        player.variables.borrow_mut().insert(entered_var(CHAR_ID), Value::Number(1));
+        let reentered = offer_round(&ctx, &settings, &plan, town, &ids, later, NOW, &standing(cell.0, cell.1 + 1), &still).unwrap();
+        assert_eq!(reentered, still);
+        assert_eq!(transport.calls(Function::UiOpen).len(), 2, "a map change, a login included, took the bubble down: it is sent again");
+        assert_eq!(player.variables.borrow()[&entered_var(CHAR_ID)], Value::Number(0));
+        assert_eq!(walks_back(&transport), 0, "the townsperson keeps waiting");
 
         player.variables.borrow_mut().insert(answered_var(CHAR_ID), Value::Number(1));
         let answered = offer_round(&ctx, &settings, &plan, town, &ids, later, NOW, &standing(cell.0, cell.1 + 1), &still).unwrap();

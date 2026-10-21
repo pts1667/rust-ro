@@ -60,7 +60,11 @@ pub fn entered(ctx: &Ctx, hook: &Hook) -> Script {
     if let Some(town) = find(map).filter(|town| settings.towns.iter().any(|configured| configured == TOWNS[*town].map)) {
         ctx.call(Function::InitNpcTimer, vec![controller_name(town).into()])?;
     }
-    if settings.quests { quests::arrived(ctx, &settings, map) } else { Ok(()) }
+    if !settings.quests {
+        return Ok(());
+    }
+    quests::entered_map(ctx)?;
+    quests::arrived(ctx, &settings, map)
 }
 
 /// `OnTimer1000`: the timer starts again while the town is active, also when the run fails.
