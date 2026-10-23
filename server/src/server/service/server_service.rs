@@ -297,12 +297,17 @@ impl ServerService {
         );
         if let Some(map_item) = map_item {
             let range = self.get_status_snapshot(&character.status, tick).attack_range();
-            let target_position = server_state
-                .map_item_x_y(&map_item, character.current_map_name(), character.current_map_instance())
-                .unwrap();
+            // The target can leave the map between the two lookups (a mob dies, a skill unit expires): stop the attack then
+            let Some(target_position) = server_state.map_item_x_y(&map_item, character.current_map_name(), character.current_map_instance()) else {
+                character.clear_attack();
+                return;
+            };
             let is_in_range = range as i16 >= manhattan_distance(character.x, character.y, target_position.x, target_position.y) as i16 - 1;
             let maybe_map_instance = server_state.get_map_instance(character.current_map_name(), character.current_map_instance());
-            let map_instance = maybe_map_instance.as_ref().unwrap();
+            let Some(map_instance) = maybe_map_instance.as_ref() else {
+                character.clear_attack();
+                return;
+            };
             if !is_in_range && !character.is_moving() {
                 let path = path_search_client_side_algorithm(
                     map_instance.x_size(),
@@ -336,9 +341,10 @@ impl ServerService {
                 if character.is_moving() {
                     self.character_service.cancel_movement(character, tick);
                 }
-                let snapshot = server_state
-                    .map_item_snapshot(map_item.id(), character.current_map_name(), character.current_map_instance())
-                    .unwrap();
+                let Some(snapshot) = server_state.map_item_snapshot(map_item.id(), character.current_map_name(), character.current_map_instance()) else {
+                    character.clear_attack();
+                    return;
+                };
                 let mut maybe_damage = None;
                 if matches!(*map_item.object_type(), MapItemType::Mob | MapItemType::Character | MapItemType::Homunculus | MapItemType::Mercenary | MapItemType::SkillUnit) {
                     let source = self.get_status_snapshot(&character.status, tick);
