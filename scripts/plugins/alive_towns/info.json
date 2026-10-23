@@ -19,6 +19,10 @@
     "quest_offer_range": { "default": 14, "description": "Cells between a player and a townsperson for the offer to show, counted |dx| + |dy| like sight (20); 1 to 17, so the offer goes when the townsperson is 3 cells further, still in view." },
     "quest_minutes": { "default": [120, 180], "description": "Range of time limits of an accepted quest, in minutes (10 to 1440)." },
     "quest_max_active": { "default": 3, "description": "Quests a player can hold at once (1 to 5)." },
-    "quest_reward_percent": { "default": 100, "description": "Scales the experience and zeny of quest rewards." }
+    "quest_reward_percent": { "default": 100, "description": "Scales the experience and zeny of quest rewards." },
+    "fame_per_level": { "default": 10, "description": "Fame for quests one monster level harder; quests start at level 1 with no fame and stop getting harder at 99 (1 to 1000)." },
+    "fame_quest_done": { "default": 10, "description": "Fame gained for a finished quest (at most 1000, as are the losses)." },
+    "fame_lost": { "default": 10, "description": "Fame lost when a quest runs out of time, and on dying." },
+    "fame_quest_declined": { "default": 2, "description": "Fame lost for declining an offer; walking away from it costs nothing." }
   }
 }

@@ -20,7 +20,7 @@ use crate::schedule::{Doing, Plan};
 use crate::towns::{TOWNS, find};
 
 script_sdk_2::plugin_module! {
-    info { name: "alive_towns", version: "1.1.0", capabilities: [World, Dialogue, Interface, Character, Economy] }
+    info { name: "alive_towns", version: "1.2.0", capabilities: [World, Dialogue, Interface, Character, Economy] }
     init => director::start,
     npcs {
         "Alive Towns" => director::controller,
@@ -34,6 +34,7 @@ script_sdk_2::plugin_module! {
         MapEnter => director::entered,
         Login => logged_in,
         MobKilled => killed,
+        Die => died,
         ItemObtained => obtained,
     }
     interceptors {}
@@ -62,6 +63,11 @@ pub struct Settings {
     pub quest_minutes: [u32; 2],
     pub quest_max_active: u32,
     pub quest_reward_percent: u32,
+    pub fame_per_level: u32,
+    pub fame_quest_done: u32,
+    /// For a quest run out of time, and for a death.
+    pub fame_lost: u32,
+    pub fame_quest_declined: u32,
 }
 
 impl Settings {
@@ -80,6 +86,10 @@ impl Settings {
         }
         if !(1..=17).contains(&self.quest_offer_range) || !(1..=5).contains(&self.quest_max_active) || self.quest_offer_percent > 100 {
             return Err("quest_offer_range is 1 to 17, quest_max_active 1 to 5 and quest_offer_percent at most 100".into());
+        }
+        let changes = [self.fame_quest_done, self.fame_lost, self.fame_quest_declined];
+        if !(1..=1000).contains(&self.fame_per_level) || changes.iter().any(|change| *change > 1000) {
+            return Err("fame_per_level is 1 to 1000, and fame_quest_done, fame_lost and fame_quest_declined at most 1000".into());
         }
         let mut towns = Vec::new();
         for map in &self.towns {
@@ -139,6 +149,12 @@ fn killed(ctx: &Ctx, hook: &Hook) -> Script {
     let Hook::MobKilled { mob_id, map, .. } = hook else { return Ok(()) };
     let settings: Settings = ctx.plugin_config()?;
     if settings.quests { quests::killed(ctx, &settings, *mob_id, map) } else { Ok(()) }
+}
+
+fn died(ctx: &Ctx, hook: &Hook) -> Script {
+    let Hook::Die { .. } = hook else { return Ok(()) };
+    let settings: Settings = ctx.plugin_config()?;
+    if settings.quests { quests::died(ctx, &settings) } else { Ok(()) }
 }
 
 fn obtained(ctx: &Ctx, hook: &Hook) -> Script {
@@ -208,6 +224,9 @@ pub(crate) mod tests {
         assert!(settings.towns().is_err());
         let mut settings = super::tests::settings();
         settings.quest_max_active = 6;
+        assert!(settings.towns().is_err());
+        let mut settings = super::tests::settings();
+        settings.fame_per_level = 0;
         assert!(settings.towns().is_err());
     }
 

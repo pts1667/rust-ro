@@ -1,8 +1,13 @@
 //! Mini-quests. A player walking up to a townsperson who has a quest for them sees it in a bubble above that townsperson,
 //! with Accept and Decline. Offers are drawn per player from (seed, town, townsperson, character, hour): who offers, what
-//! (hunting one of the monsters around the town, or bringing some of their loot), and how much, from the player's level.
-//! Nothing is stored for an offer; an accepted quest goes to the character's journal, and its reward is granted as soon
-//! as it is done and the player is in one of the towns. The accepted quests show in a tracker under the minimap.
+//! (hunting one of the monsters around the town, or bringing some of their loot), and how much, from the player's fame
+//! (see [`quest_level`]) rather than their base level, so a character who never fights is not sent after what their
+//! level would face. Nothing is stored for an offer; an accepted quest goes to the character's journal, and its reward is
+//! granted as soon as it is done and the player is in one of the towns. The accepted quests show in a tracker under the
+//! minimap.
+//!
+//! Fame is a counter of the character's: finished quests raise it, quests run out of time, declined offers and deaths
+//! lower it, within 0 and the fame of the hardest quests.
 //!
 //! Hooks of one character can run at the same time (an area spell kills several monsters at once), so kills are counted
 //! with atomic increments, one counter per journal place, and a reward is claimed through another counter that only one
@@ -23,13 +28,16 @@ use crate::Settings;
 pub const OFFER_WINDOW: &str = "offer";
 pub const TRACKER_WINDOW: &str = "quests";
 const JOURNAL: &str = "alive_towns_quests$";
+const FAME: &str = "alive_towns_fame";
+/// Quests stop getting harder at this monster level.
+const MAX_QUEST_LEVEL: u32 = 99;
 /// Offers are drawn anew every hour.
 const OFFER_SLOT_SECS: i64 = 3600;
 /// An offer stays up until the player is this many cells beyond the offer range.
 const OFFER_LEEWAY: u16 = 3;
 /// Monsters this many levels below the player, or above, are what they are sent after.
-const LEVELS_BELOW: u32 = 10;
-const LEVELS_ABOVE: u32 = 3;
+const LEVELS_BELOW: u32 = 20;
+const LEVELS_ABOVE: u32 = 10;
 /// A loot quest asks for no more than this many kills' worth of drops.
 const MAX_KILLS: u32 = 40;
 const DONE_COLOR: &str = "7cfc7c";
@@ -99,6 +107,30 @@ pub struct Offer {
     pub quest: Quest,
     pub minutes: u32,
     pub text: String,
+    /// Gained on finishing it.
+    pub fame: u32,
+}
+
+/// The monster level quests are drawn at: 1 without fame, one more every `fame_per_level`.
+pub fn quest_level(settings: &Settings, fame: i32) -> u32 {
+    (1 + fame.max(0) as u32 / settings.fame_per_level).min(MAX_QUEST_LEVEL)
+}
+
+fn max_fame(settings: &Settings) -> i32 {
+    ((MAX_QUEST_LEVEL - 1) * settings.fame_per_level) as i32
+}
+
+/// Adds `change` to the attached player's fame `fame`, kept within 0 and [`max_fame`], and tells them; the fame after it.
+fn change_fame(ctx: &Ctx, settings: &Settings, fame: i32, change: i32) -> Result<i32, Stop> {
+    let max = max_fame(settings);
+    let change = change.clamp(-fame.max(0), (max - fame).max(0));
+    if change == 0 {
+        return Ok(fame);
+    }
+    let after = ctx.increment(&[(VariableScope::Character, FAME, change)])?[0].clamp(0, max);
+    let moved = if after > fame { "rises" } else { "falls" };
+    ctx.player().message(&format!("Your fame {moved} to {after} ({change:+})."))?;
+    Ok(after)
 }
 
 impl Offer {
@@ -150,17 +182,19 @@ impl Journal {
     }
 }
 
-/// `level` is the player's base level when the offer is shown; accepting it draws the same quest again from it.
-pub fn offer(settings: &Settings, town: usize, npc: u32, persona: &Persona, char_id: u32, level: u32, slot: i64) -> Option<Offer> {
-    let all = TOWNS[town].prey;
-    if all.is_empty() {
+/// Whether townsperson `npc` has an offer for `char_id` in hour `slot`, whatever its quest level; [`offer`] draws on from it.
+fn draw(settings: &Settings, town: usize, npc: u32, char_id: u32, slot: i64) -> Option<Rng> {
+    if TOWNS[town].prey.is_empty() {
         return None;
     }
     let mut rng = Rng::new(&[u64::from(settings.seed), QUEST, town as u64, u64::from(npc), u64::from(char_id), slot as u64]);
-    if !rng.chance(settings.quest_offer_percent) {
-        return None;
-    }
-    let fitting = fitting_prey(all, level);
+    rng.chance(settings.quest_offer_percent).then_some(rng)
+}
+
+/// `level` is the player's [`quest_level`] when the offer is shown; accepting it draws the same quest again from it.
+pub fn offer(settings: &Settings, town: usize, npc: u32, persona: &Persona, char_id: u32, level: u32, slot: i64) -> Option<Offer> {
+    let mut rng = draw(settings, town, npc, char_id, slot)?;
+    let fitting = fitting_prey(TOWNS[town].prey, level);
     let prey = *rng.pick(&fitting);
     let gather = match persona.kind {
         Kind::Guard => false,
@@ -197,10 +231,10 @@ pub fn offer(settings: &Settings, town: usize, npc: u32, persona: &Persona, char
         job_exp: scaled(u64::from(prey.job_exp) * u64::from(kills) * 3 / 2),
         zeny: scaled((u64::from(prey.level) * 10 + 20) * u64::from(kills)),
     };
-    Some(Offer { quest, minutes, text })
+    Some(Offer { quest, minutes, text, fame: settings.fame_quest_done })
 }
 
-/// The monsters around the town close to the player's level, or the three closest when there are fewer.
+/// The monsters around the town close to `level`, or the three closest when there are fewer.
 fn fitting_prey(prey: &'static [Prey], level: u32) -> Vec<&'static Prey> {
     let near: Vec<&Prey> = prey.iter().filter(|prey| (level.saturating_sub(LEVELS_BELOW)..=level + LEVELS_ABOVE).contains(&u32::from(prey.level))).collect();
     if near.len() >= 3 {
@@ -290,7 +324,7 @@ pub fn bubble(offer: &Offer, level: u32, npc_id: u32) -> Window {
         230,
         Node::column([
             Node::wrapped(offer.text.as_str()),
-            Node::wrapped(format!("Reward: {} base exp, {} job exp, {} zeny", grouped(quest.base_exp), grouped(quest.job_exp), grouped(quest.zeny))).color(REWARD_COLOR),
+            Node::wrapped(format!("Reward: {} base exp, {} job exp, {} zeny, {} fame", grouped(quest.base_exp), grouped(quest.job_exp), grouped(quest.zeny), offer.fame)).color(REWARD_COLOR),
             Node::text(format!("Time limit: {}", format_countdown(offer.minutes * 60))).color(LIMIT_COLOR),
             Node::row([Node::button(button_id("accept", quest.key, level), "Accept"), Node::button(button_id("decline", quest.key, level), "Decline")]),
         ]),
@@ -299,7 +333,7 @@ pub fn bubble(offer: &Offer, level: u32, npc_id: u32) -> Window {
 }
 
 /// The tracker under the minimap, or `None` without quests.
-pub fn tracker(journal: &Journal, statuses: &[Status], now: i64, max: u32) -> Option<Window> {
+pub fn tracker(journal: &Journal, statuses: &[Status], now: i64, max: u32, fame: i32) -> Option<Window> {
     if journal.quests.is_empty() {
         return None;
     }
@@ -314,7 +348,7 @@ pub fn tracker(journal: &Journal, statuses: &[Status], now: i64, max: u32) -> Op
             lines.push(Node::text(format!("{}/{} - {}", status.have.min(quest.count), quest.count, quest.map_name)).outlined().color(DIM_COLOR));
         }
     }
-    let title = format!("Quests {}/{max}", journal.quests.len());
+    let title = format!("Quests {}/{max} - Fame {fame}", journal.quests.len());
     Some(Window::new(TRACKER_WINDOW, &title, 200, Node::column(lines).gap(2)).hud(HudSlot::BelowMinimap).frameless().collapsible())
 }
 
@@ -330,15 +364,16 @@ struct Observed<'q> {
     seconds_left: i64,
 }
 
-/// The journal and the time, in one round trip.
-fn load(ctx: &Ctx) -> Result<(Journal, i64), Stop> {
+/// The journal, the time and the fame, in one round trip.
+fn load(ctx: &Ctx, settings: &Settings) -> Result<(Journal, i64, i32), Stop> {
     let mut reads = ctx.batch();
     reads.request(Request::Read(JOURNAL.into()));
     reads.call(Function::GetTimeTick, vec![2.into()]);
+    reads.request(Request::Read(FAME.into()));
     let replies = reads.send()?;
     let text = replies[0].text();
     let journal = if text.is_empty() { Journal::default() } else { serde_json::from_str(&text).unwrap_or_default() };
-    Ok((journal, i64::from(replies[1].number()?)))
+    Ok((journal, i64::from(replies[1].number()?), replies[2].number()?.clamp(0, max_fame(settings))))
 }
 
 fn save(ctx: &Ctx, journal: &Journal) -> Script {
@@ -362,8 +397,9 @@ fn statuses(ctx: &Ctx, journal: &Journal) -> Result<Vec<Status>, Stop> {
     replies.chunks(2).map(|pair| Ok(Status { have: pair[0].number()?.max(0) as u32, claimed: pair[1].number()? != 0 })).collect()
 }
 
-/// Drops claimed quests, expired unfinished ones (telling the player) and old closed offers; whether anything went.
-fn settle(ctx: &Ctx, journal: &mut Journal, statuses: &mut Vec<Status>, now: i64) -> Result<bool, Stop> {
+/// Drops claimed quests, expired unfinished ones and old closed offers; whether anything went. An expired quest costs
+/// fame once: the run that takes its claim counter tells the player, as [`claim`] does for a reward.
+fn settle(ctx: &Ctx, settings: &Settings, journal: &mut Journal, statuses: &mut Vec<Status>, now: i64, fame: &mut i32) -> Result<bool, Stop> {
     let before = (journal.quests.len(), journal.closed.len());
     let mut kept = Vec::new();
     let mut kept_statuses = Vec::new();
@@ -372,7 +408,10 @@ fn settle(ctx: &Ctx, journal: &mut Journal, statuses: &mut Vec<Status>, now: i64
             continue;
         }
         if quest.expires <= now && !quest.done(status) {
-            ctx.player().message(&format!("Quest expired: {}.", quest.title()))?;
+            if ctx.increment(&[(VariableScope::Character, &claim_var(quest.index), 1)])?[0] == 1 {
+                ctx.player().message(&format!("Quest expired: {}.", quest.title()))?;
+                *fame = change_fame(ctx, settings, *fame, -(settings.fame_lost as i32))?;
+            }
             continue;
         }
         kept.push(quest);
@@ -385,8 +424,8 @@ fn settle(ctx: &Ctx, journal: &mut Journal, statuses: &mut Vec<Status>, now: i64
     Ok(before != (journal.quests.len(), journal.closed.len()))
 }
 
-/// Grants the reward of every finished quest whose claim this run takes; whether any was granted.
-fn claim(ctx: &Ctx, journal: &mut Journal, statuses: &mut Vec<Status>) -> Result<bool, Stop> {
+/// Grants the reward of every finished quest whose claim this run takes, fame included; whether any was granted.
+fn claim(ctx: &Ctx, settings: &Settings, journal: &mut Journal, statuses: &mut Vec<Status>, fame: &mut i32) -> Result<bool, Stop> {
     let mut granted = false;
     for (quest, status) in journal.quests.iter().zip(statuses.iter_mut()) {
         if status.claimed || !quest.done(*status) {
@@ -404,6 +443,7 @@ fn claim(ctx: &Ctx, journal: &mut Journal, statuses: &mut Vec<Status>) -> Result
         let zeny = ctx.player().zeny()?;
         ctx.player().set_zeny(zeny.saturating_add(quest.zeny as i32))?;
         ctx.player().message(&format!("{} thanks you: {} done, {} zeny received.", quest.giver, quest.title(), grouped(quest.zeny)))?;
+        *fame = change_fame(ctx, settings, *fame, settings.fame_quest_done as i32)?;
         let overhead = Overhead::text("Quest complete!", Some(GOLD_COLOR), 2_400).pop(300).rise(36.0, 1_800).fade_out(600);
         ctx.ui().overhead(Above::Player, &overhead)?;
         granted = true;
@@ -415,8 +455,8 @@ fn claim(ctx: &Ctx, journal: &mut Journal, statuses: &mut Vec<Status>) -> Result
     Ok(granted)
 }
 
-fn show(ctx: &Ctx, settings: &Settings, journal: &Journal, statuses: &[Status], now: i64) -> Script {
-    match tracker(journal, statuses, now, settings.quest_max_active) {
+fn show(ctx: &Ctx, settings: &Settings, journal: &Journal, statuses: &[Status], now: i64, fame: i32) -> Script {
+    match tracker(journal, statuses, now, settings.quest_max_active, fame) {
         Some(window) => ctx.ui().open(&window)?,
         None => ctx.ui().close(TRACKER_WINDOW)?,
     }
@@ -453,24 +493,35 @@ fn player_map(ctx: &Ctx) -> Result<String, Stop> {
 /// A map was entered or the character logged in: expired quests go, finished ones are rewarded in town, and the tracker
 /// is drawn again.
 pub fn arrived(ctx: &Ctx, settings: &Settings, map: &str) -> Script {
-    let (mut journal, now) = load(ctx)?;
+    let (mut journal, now, mut fame) = load(ctx, settings)?;
     if journal == Journal::default() {
         return Ok(());
     }
     let mut statuses = statuses(ctx, &journal)?;
-    let mut changed = settle(ctx, &mut journal, &mut statuses, now)?;
+    let mut changed = settle(ctx, settings, &mut journal, &mut statuses, now, &mut fame)?;
     if in_town(settings, map) {
-        changed |= claim(ctx, &mut journal, &mut statuses)?;
+        changed |= claim(ctx, settings, &mut journal, &mut statuses, &mut fame)?;
     }
     if changed {
         save(ctx, &journal)?;
     }
-    show(ctx, settings, &journal, &statuses, now)
+    show(ctx, settings, &journal, &statuses, now, fame)
+}
+
+/// `Die`: dying costs fame, and the tracker shows the new one.
+pub fn died(ctx: &Ctx, settings: &Settings) -> Script {
+    let (journal, now, fame) = load(ctx, settings)?;
+    let after = change_fame(ctx, settings, fame, -(settings.fame_lost as i32))?;
+    if after == fame || journal.quests.is_empty() {
+        return Ok(());
+    }
+    let statuses = statuses(ctx, &journal)?;
+    show(ctx, settings, &journal, &statuses, now, after)
 }
 
 /// `MobKilled`: counts the kill for every hunt of that monster.
 pub fn killed(ctx: &Ctx, settings: &Settings, mob: u32, map: &str) -> Script {
-    let (journal, now) = load(ctx)?;
+    let (journal, now, fame) = load(ctx, settings)?;
     let hunts: Vec<&Quest> = journal.quests.iter().filter(|quest| quest.task == Task::Hunt { mob } && quest.expires > now).collect();
     if hunts.is_empty() {
         return Ok(());
@@ -487,12 +538,12 @@ pub fn killed(ctx: &Ctx, settings: &Settings, mob: u32, map: &str) -> Script {
         }
     }
     let statuses = statuses(ctx, &journal)?;
-    show(ctx, settings, &journal, &statuses, now)
+    show(ctx, settings, &journal, &statuses, now, fame)
 }
 
 /// `ItemObtained`: the loot of a gathering quest; finishing one in town rewards it at once.
 pub fn obtained(ctx: &Ctx, settings: &Settings, item: u32, amount: u32) -> Script {
-    let (journal, now) = load(ctx)?;
+    let (journal, now, fame) = load(ctx, settings)?;
     if !journal.quests.iter().any(|quest| quest.task == Task::Gather { item } && quest.expires > now) {
         return Ok(());
     }
@@ -506,10 +557,12 @@ pub fn obtained(ctx: &Ctx, settings: &Settings, item: u32, amount: u32) -> Scrip
             ctx.player().message(&format!("{}: done! Enter a town for your reward.", quest.title()))?;
         }
     }
-    show(ctx, settings, &journal, &statuses, now)
+    show(ctx, settings, &journal, &statuses, now, fame)
 }
 
-/// Accept or Decline in a bubble. Either way the townsperson goes back to their routine (see [`offer_round`]).
+/// Accept or Decline in a bubble. Either way the townsperson goes back to their routine (see [`offer_round`]). The
+/// button names the quest level the offer was drawn at; it is accepted only at the player's level now, so a forged
+/// button cannot ask for harder quests, and an offer drawn before the fame moved is not taken as another quest.
 pub fn offer_event(ctx: &Ctx, event: &UiEvent) -> Script {
     if event.kind != EventKind::Click {
         return Ok(());
@@ -519,16 +572,22 @@ pub fn offer_event(ctx: &Ctx, event: &UiEvent) -> Script {
     let char_id = ctx.player().char_id()? as u32;
     ctx.ui().close(OFFER_WINDOW)?;
     ctx.request(Request::Write { name: answered_var(char_id), value: Value::Number(1) })?;
-    let (mut journal, now) = load(ctx)?;
+    let (mut journal, now, mut fame) = load(ctx, &settings)?;
     let mut statuses = statuses(ctx, &journal)?;
-    let changed = settle(ctx, &mut journal, &mut statuses, now)?;
+    let changed = settle(ctx, &settings, &mut journal, &mut statuses, now, &mut fame)?;
     let current = now.div_euclid(OFFER_SLOT_SECS) as u32;
     if journal.taken(key) || key.slot + 1 < current || u32::from(key.npc) >= settings.npcs_per_town {
         return if changed { save(ctx, &journal) } else { Ok(()) };
     }
     if verb != "accept" {
         journal.closed.push(key);
-        return save(ctx, &journal);
+        save(ctx, &journal)?;
+        let after = change_fame(ctx, &settings, fame, -(settings.fame_quest_declined as i32))?;
+        return if after == fame || journal.quests.is_empty() { Ok(()) } else { show(ctx, &settings, &journal, &statuses, now, after) };
+    }
+    if level != quest_level(&settings, fame) {
+        ctx.player().message("Your fame has changed since this offer was made: walk up to them again.")?;
+        return if changed { save(ctx, &journal) } else { Ok(()) };
     }
     let Some(index) = journal.free_index(settings.quest_max_active) else {
         ctx.player().message(&format!("You already hold {} quests.", settings.quest_max_active))?;
@@ -549,7 +608,7 @@ pub fn offer_event(ctx: &Ctx, event: &UiEvent) -> Script {
     journal.closed.push(key);
     save(ctx, &journal)?;
     let statuses = self::statuses(ctx, &journal)?;
-    show(ctx, &settings, &journal, &statuses, now)
+    show(ctx, &settings, &journal, &statuses, now, fame)
 }
 
 /// An offer of the `offers` bot action.
@@ -571,10 +630,11 @@ struct Listed {
     base_exp: u32,
     job_exp: u32,
     zeny: u32,
+    fame: u32,
 }
 
-/// Bot action `offers`: what the townsfolk of the bot's town offer its character this hour, at its current base level,
-/// leaving out the offers it took or declined. The bot accepts one in the bubble, by walking up to the townsperson.
+/// Bot action `offers`: what the townsfolk of the bot's town offer its character this hour, at its current fame, leaving
+/// out the offers it took or declined. The bot accepts one in the bubble, by walking up to the townsperson.
 pub fn bot_offers(ctx: &Ctx, _action: &BotAction) -> Script {
     let settings: Settings = ctx.plugin_config()?;
     let map = player_map(ctx)?;
@@ -582,8 +642,8 @@ pub fn bot_offers(ctx: &Ctx, _action: &BotAction) -> Script {
         return ctx.bot().reply(&serde_json::json!({ "offers": [], "error": "Quests are offered in the towns of alive_towns only" }));
     };
     let char_id = ctx.player().char_id()? as u32;
-    let level = ctx.player().base_level()?.max(1) as u32;
-    let (journal, now) = load(ctx)?;
+    let (journal, now, fame) = load(ctx, &settings)?;
+    let level = quest_level(&settings, fame);
     let rates = exp_rates(ctx)?;
     let slot = now.div_euclid(OFFER_SLOT_SECS);
     let offers: Vec<(u32, Offer)> = (0..settings.npcs_per_town)
@@ -618,10 +678,13 @@ pub fn bot_offers(ctx: &Ctx, _action: &BotAction) -> Script {
             base_exp: offer.quest.base_exp,
             job_exp: offer.quest.job_exp,
             zeny: offer.quest.zeny,
+            fame: offer.fame,
         })
         .collect();
     ctx.bot().reply(&serde_json::json!({
         "town": TOWNS[town].map,
+        "fame": fame,
+        "quest_level": level,
         "offers": listed,
         "range": settings.quest_offer_range,
         "free_slots": settings.quest_max_active.saturating_sub(journal.quests.len() as u32),
@@ -744,16 +807,18 @@ pub fn offer_round(ctx: &Ctx, settings: &Settings, plan: &Plan, town: usize, ids
         let mut close: Vec<(u16, usize, Cell)> =
             positions.iter().enumerate().filter_map(|(npc, cell)| cell.map(|cell| (distance(cell, at), npc, cell))).filter(|(gap, ..)| *gap <= range).collect();
         close.sort();
-        let found = close.into_iter().find_map(|(_, npc, cell)| offer(settings, town, npc as u32, &plan.personas[npc], player.char_id, player.base_level, slot).map(|offer| (npc, cell, offer)));
-        let Some((npc, cell, offer)) = found else { continue };
+        let found = close.into_iter().find(|(_, npc, _)| draw(settings, town, *npc as u32, player.char_id, slot).is_some());
+        let Some((_, npc, cell)) = found else { continue };
         let shown = with_player(ctx, player.account_id, |ctx| {
             ctx.request(Request::Write { name: entered_var(player.char_id), value: Value::Number(0) })?;
-            let (journal, _) = load(ctx)?;
+            let (journal, _, fame) = load(ctx, settings)?;
+            let level = quest_level(settings, fame);
+            let Some(offer) = offer(settings, town, npc as u32, &plan.personas[npc], player.char_id, level, slot) else { return Ok(false) };
             if journal.taken(offer.quest.key) || journal.quests.len() >= settings.quest_max_active as usize {
                 return Ok(false);
             }
             ctx.request(Request::Write { name: answered_var(player.char_id), value: Value::Number(0) })?;
-            ctx.ui().open(&bubble(&offer.rated(exp_rates(ctx)?), player.base_level, ids[npc] as u32))?;
+            ctx.ui().open(&bubble(&offer.rated(exp_rates(ctx)?), level, ids[npc] as u32))?;
             Ok(true)
         })?;
         let Some(open) = shown else { continue };
@@ -801,6 +866,16 @@ mod tests {
     const BASE_RATE: u32 = 500;
     const JOB_RATE: u32 = 300;
     const RATES: ExpRates = ExpRates { base: BASE_RATE, job: JOB_RATE };
+    /// The quest level of the test character, whatever its base level.
+    const LEVEL: u32 = 30;
+
+    fn fame_at(settings: &Settings, level: u32) -> i32 {
+        ((level - 1) * settings.fame_per_level) as i32
+    }
+
+    fn fame(player: &Player) -> i32 {
+        player.variables.borrow().get(FAME).map_or(0, |fame| fame.number_value().unwrap())
+    }
 
     /// The game id of a townsperson, from their unique name.
     fn npc_id(name: &str) -> i32 {
@@ -832,7 +907,7 @@ mod tests {
 
     fn player() -> (Player, MockTransport) {
         let player = Player {
-            variables: Rc::new(RefCell::new(HashMap::new())),
+            variables: Rc::new(RefCell::new(HashMap::from([(FAME.to_string(), Value::Number(fame_at(&settings(), LEVEL)))]))),
             items: Rc::new(RefCell::new(HashMap::new())),
             now: Rc::new(RefCell::new(NOW)),
             map: Rc::new(RefCell::new("prt_fild08".into())),
@@ -934,7 +1009,7 @@ mod tests {
     #[test]
     fn low_and_high_levels_are_sent_after_what_suits_them() {
         let prey = TOWNS[prontera()].prey;
-        assert!(fitting_prey(prey, 1).iter().all(|prey| prey.level <= 4));
+        assert!(fitting_prey(prey, 1).iter().all(|prey| u32::from(prey.level) <= 1 + LEVELS_ABOVE));
         let top = prey.iter().map(|prey| prey.level).max().unwrap();
         assert!(fitting_prey(prey, 99).iter().all(|fit| top - fit.level <= 20), "the strongest around are left for level 99");
         assert_eq!(plural("Poring"), "Porings");
@@ -968,14 +1043,20 @@ mod tests {
         let decline = OfferKey { town: prontera() as u8, npc: 99, slot: (NOW / OFFER_SLOT_SECS) as u32 };
         offer_event(&ctx, &click(&button_id("decline", decline, 30))).unwrap();
         assert!(self::journal(&player).closed.contains(&decline));
+        assert_eq!(fame(&player), fame_at(&settings, LEVEL) - settings.fame_quest_declined as i32, "declining costs fame");
+        let level = quest_level(&settings, fame(&player));
+        assert_eq!(level, LEVEL - 1);
 
         let town = prontera();
         let more: Vec<u32> = (npc + 1..settings.npcs_per_town)
-            .filter(|other| offer(&settings, town, *other, &persona::persona(&settings, town, *other), CHAR_ID, 30, NOW / OFFER_SLOT_SECS).is_some())
+            .filter(|other| offer(&settings, town, *other, &persona::persona(&settings, town, *other), CHAR_ID, level, NOW / OFFER_SLOT_SECS).is_some())
             .take(settings.quest_max_active as usize)
             .collect();
+        accept(&ctx, more[0], LEVEL);
+        assert_eq!(self::journal(&player).quests.len(), 1, "an offer drawn at another fame is not taken");
+        assert!(transport.calls(Function::Message).iter().any(|line| line[0].text().contains("fame has changed")));
         for other in &more {
-            accept(&ctx, *other, 30);
+            accept(&ctx, *other, level);
         }
         let journal = self::journal(&player);
         assert_eq!(journal.quests.len(), settings.quest_max_active as usize);
@@ -1011,6 +1092,8 @@ mod tests {
         arrived(&ctx, &settings, "prontera").unwrap();
         assert_eq!(transport.calls(Function::GetExperience), [vec![Value::Number(quest.base_exp as i32), Value::Number(quest.job_exp as i32)]]);
         assert_eq!(player.variables.borrow()["Zeny"], Value::Number(quest.zeny as i32));
+        assert_eq!(fame(&player), fame_at(&settings, LEVEL) + settings.fame_quest_done as i32);
+        assert!(transport.calls(Function::Message).iter().any(|line| line[0].text() == format!("Your fame rises to {} (+10).", fame(&player))));
         assert!(journal(&player).quests.is_empty());
         assert_eq!(transport.calls(Function::UiClose).last().unwrap()[0], Value::String(TRACKER_WINDOW.into()), "no quest, no tracker");
         arrived(&ctx, &settings, "prontera").unwrap();
@@ -1069,12 +1152,21 @@ mod tests {
         assert_eq!(transport.calls(Function::GetExperience).len(), 1, "finished in town, rewarded at once");
         assert_eq!(player.items.borrow()[&(item as i32)], 2);
 
+        let rewarded = fame(&player);
+        assert_eq!(rewarded, fame_at(&settings, LEVEL) + settings.fame_quest_done as i32);
         accept_with(&ctx, &settings, town, 0, 30);
         *player.now.borrow_mut() = journal(&player).quests[0].expires + 1;
         arrived(&ctx, &settings, "prontera").unwrap();
         assert!(journal(&player).quests.is_empty());
         assert!(transport.calls(Function::Message).iter().any(|line| line[0].text().starts_with("Quest expired")));
         assert_eq!(transport.calls(Function::GetExperience).len(), 1);
+        assert_eq!(fame(&player), rewarded - settings.fame_lost as i32, "running out of time costs fame");
+
+        accept_with(&ctx, &settings, town, 0, 30);
+        player.variables.borrow_mut().insert(claim_var(0), Value::Number(1));
+        *player.now.borrow_mut() = journal(&player).quests[0].expires + 1;
+        arrived(&ctx, &settings, "prontera").unwrap();
+        assert_eq!(fame(&player), rewarded - settings.fame_lost as i32, "another run took the expiry, and its cost");
     }
 
     #[test]
@@ -1087,14 +1179,14 @@ mod tests {
         done.index = 1;
         let journal = Journal { quests: vec![quest.clone(), done], closed: Vec::new() };
         let statuses = [Status { have: 1, claimed: false }, Status { have: quest.count, claimed: false }];
-        let mut window = tracker(&journal, &statuses, NOW, 3).unwrap();
+        let mut window = tracker(&journal, &statuses, NOW, 3, 40).unwrap();
         validate_window(&mut window, "alive_towns").unwrap();
-        assert_eq!(window.title, "Quests 2/3");
+        assert_eq!(window.title, "Quests 2/3 - Fame 40");
         let nodes = window.nodes();
         assert!(nodes.iter().any(|node| matches!(node, Node::Countdown { seconds: 5_400, outline: true, .. })));
         assert!(nodes.iter().any(|node| matches!(node, Node::Text { text, .. } if text.starts_with(&format!("1/{}", quest.count)))));
         assert!(nodes.iter().any(|node| matches!(node, Node::Text { text, color: Some(color), .. } if text.starts_with("Done!") && color == DONE_COLOR)));
-        assert!(tracker(&Journal::default(), &[], NOW, 3).is_none());
+        assert!(tracker(&Journal::default(), &[], NOW, 3, 40).is_none());
     }
 
     #[test]
@@ -1111,7 +1203,7 @@ mod tests {
         let (player, transport) = player();
         player.npcs.borrow_mut().insert(50_000 + npc as i32, cell);
         let ctx = Ctx::new(&transport);
-        let standing = |x: u16, y: u16| [MapPlayer { account_id: 2_000_000, char_id: CHAR_ID, x, y, base_level: 30 }];
+        let standing = |x: u16, y: u16| [MapPlayer { account_id: 2_000_000, char_id: CHAR_ID, x, y, base_level: 99 }];
         let id = Value::Number(50_000 + npc as i32);
         let walks_back = |transport: &MockTransport| transport.calls(Function::NpcWalkTo).iter().filter(|walk| walk[2] == id).count();
 
@@ -1123,6 +1215,8 @@ mod tests {
         assert_eq!(opened.len(), 1);
         let window: Window = serde_json::from_str(&opened[0][0].text()).unwrap();
         assert_eq!(window.placement, Placement::Anchored { unit_id: 50_000 + npc, offset_y: 4 });
+        let drawn_at = format!(":{LEVEL}");
+        assert!(window.nodes().iter().any(|node| matches!(node, Node::Button { id, .. } if id.starts_with("accept:") && id.ends_with(&drawn_at))), "drawn at the fame's level, not base level 99");
         assert_eq!(near, [Near { char_id: CHAR_ID, npc: npc as usize, open: true, cell }]);
         assert_eq!(held(&near), [npc as usize]);
         assert_eq!(transport.calls(Function::NpcStop), [vec![id.clone()]]);
@@ -1169,7 +1263,6 @@ mod tests {
         assert!(reply(&transport)["error"].is_string(), "no offers on a field");
 
         *player.map.borrow_mut() = "prontera.gat".into();
-        player.variables.borrow_mut().insert("BaseLevel".into(), Value::Number(30));
         let town = prontera();
         let (taken, _) = first_offer(&settings, 30);
         accept(&ctx, taken, 30);
@@ -1182,6 +1275,7 @@ mod tests {
         bot_offers(&ctx, &action).unwrap();
         let reply = reply(&transport);
         assert_eq!(reply["town"], "prontera");
+        assert_eq!((reply["fame"].as_i64(), reply["quest_level"].as_u64()), (Some(i64::from(fame_at(&settings, LEVEL))), Some(u64::from(LEVEL))));
         assert_eq!(reply["free_slots"], settings.quest_max_active - 1);
         let listed = reply["offers"].as_array().unwrap();
         assert_eq!(listed.len(), mine.len(), "every offer but the one taken");
@@ -1192,6 +1286,39 @@ mod tests {
         }
         assert_eq!((listed[0]["x"].as_u64(), listed[0]["y"].as_u64()), (Some(150), Some(180)));
         assert!(listed[1]["x"].is_null(), "indoors");
+    }
+
+    #[test]
+    fn fame_sets_the_quest_level_and_deaths_cost_it_within_bounds() {
+        let settings = settings();
+        assert_eq!(quest_level(&settings, 0), 1);
+        assert_eq!(quest_level(&settings, -40), 1);
+        assert_eq!(quest_level(&settings, 9), 1);
+        assert_eq!(quest_level(&settings, 10), 2);
+        assert_eq!(quest_level(&settings, max_fame(&settings)), MAX_QUEST_LEVEL);
+        assert_eq!(quest_level(&settings, i32::MAX), MAX_QUEST_LEVEL);
+        let (_, fresh) = first_offer(&settings, quest_level(&settings, 0));
+        assert!(TOWNS[prontera()].prey.iter().filter(|prey| prey.name == fresh.quest.target || prey.loot.as_ref().is_some_and(|loot| loot.name == fresh.quest.target)).any(|prey| u32::from(prey.level) <= 1 + LEVELS_ABOVE), "no fame, the weakest monsters");
+
+        let (player, transport) = player();
+        let ctx = Ctx::new(&transport);
+        accept(&ctx, first_offer(&settings, LEVEL).0, LEVEL);
+        let opened = transport.calls(Function::UiOpen).len();
+        died(&ctx, &settings).unwrap();
+        assert_eq!(fame(&player), fame_at(&settings, LEVEL) - settings.fame_lost as i32);
+        let tracker: Window = serde_json::from_str(&transport.calls(Function::UiOpen)[opened][0].text()).unwrap();
+        assert_eq!(tracker.title, format!("Quests 1/3 - Fame {}", fame(&player)), "the tracker shows the fame left");
+
+        player.variables.borrow_mut().insert(FAME.into(), Value::Number(3));
+        died(&ctx, &settings).unwrap();
+        assert_eq!(fame(&player), 0, "fame stops at 0");
+        let messages = transport.calls(Function::Message).len();
+        died(&ctx, &settings).unwrap();
+        assert_eq!((fame(&player), transport.calls(Function::Message).len()), (0, messages), "nothing to lose, nothing said");
+
+        player.variables.borrow_mut().insert(FAME.into(), Value::Number(max_fame(&settings) - 4));
+        assert_eq!(change_fame(&ctx, &settings, max_fame(&settings) - 4, 10).unwrap(), max_fame(&settings), "nor goes past the hardest quests");
+        assert_eq!(fame(&player), max_fame(&settings));
     }
 
     #[test]

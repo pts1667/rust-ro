@@ -548,10 +548,13 @@ Plugins can open their own windows (a shop, a board, a quest tracker) and offer 
   bubble above a unit (an NPC's `id` in `npcs`, or a player's), `{"type": "hud", "slot": "below_minimap"}` for a tracker fixed
   on the screen. Anchored windows go when the bot changes map. `alive_towns` shows its quest offers this way: walk up to a
   townsperson, then click `accept:...` or `decline:...` in the `offer` window. Its `offers` action (no `args`) lists the
-  offers of the bot's town for this hour before walking anywhere: `{"town", "offers": [{"npc_id", "giver", "x", "y",
-  "title", "task", "target", "count", "map", "map_name", "minutes", "base_exp", "job_exp", "zeny"}], "range",
-  "free_slots", "renews_in_secs"}`. `x`/`y` are absent while the townsperson is inside a building; the bubble shows once the
-  bot is within `range` cells (|dx| + |dy|) of them. Offers depend on the base level, so they change when the bot levels.
+  offers of the bot's town for this hour before walking anywhere: `{"town", "fame", "quest_level", "offers": [{"npc_id",
+  "giver", "x", "y", "title", "task", "target", "count", "map", "map_name", "minutes", "base_exp", "job_exp", "zeny",
+  "fame"}], "range", "free_slots", "renews_in_secs"}`. `x`/`y` are absent while the townsperson is inside a building; the
+  bubble shows once the bot is within `range` cells (|dx| + |dy|) of them. Offers depend on the bot's fame (`quest_level`
+  is the monster level they are drawn at), not its base level: finishing a quest raises it by the offer's `fame`, and a
+  quest running out of time, declining an offer or dying lowers it, which changes the offers and refuses an Accept from a
+  bubble drawn before.
 - `data` is whatever the plugin chose to let bots read, under keys it picked.
 - `actions` are the `plugin` actions it offers, with what they take.
 
