@@ -12,7 +12,7 @@ use crate::server::model::events::client_notification::{AreaNotification, AreaNo
 use crate::server::model::events::game_event::{GameEvent, ScriptSkillCast};
 use crate::server::model::events::map_event::ScriptSpawn;
 use crate::server::script::skill::ScriptSkillService;
-use crate::server::script::skill::actor::{ScriptSkillActor, actor_cast_time};
+use crate::server::script::skill::actor::{ScriptSkillActor, actor_cast_time, actor_skill_range, usable_terrain};
 use crate::server::script::skill::metadata::SkillMetadata;
 use crate::server::service::map_instance_service::MapInstanceService;
 use crate::server::state::map_instance::MapInstanceState;
@@ -684,8 +684,9 @@ impl MapInstanceService {
         }
     }
 
-    /// Mirrors rathena `map_search_freecell`: a random walkable cell within `radius`, falling back to the center.
-    fn free_cell_around(state: &MapInstanceState, center: (u16, u16), radius: i32) -> (u16, u16) {
+    /// Mirrors rathena `map_search_freecell`: a random walkable cell within `radius` of `center` that `from` can see
+    /// within the skill's `range`, falling back to the center. `None` when neither can be reached, since the cast would fail.
+    fn free_cell_around(state: &MapInstanceState, from: (u16, u16), center: (u16, u16), radius: i32, range: u16) -> Option<(u16, u16)> {
         let walkable = |x: i32, y: i32| {
             x >= 0
                 && y >= 0
@@ -696,13 +697,18 @@ impl MapInstanceService {
                     .get(y as usize * state.x_size() as usize + x as usize)
                     .is_some_and(|cell| cell & CellType::Walkable.as_flag() != 0)
         };
+        // The cast is checked from the caster, within the skill's range and along the line, so a cell behind a wall is no use
+        let usable = |cell: (u16, u16)| {
+            from.0.abs_diff(cell.0).max(from.1.abs_diff(cell.1)) <= range && usable_terrain(state, from, cell)
+        };
         (0..FREE_CELL_ATTEMPTS)
             .find_map(|_| {
                 let x = i32::from(center.0) + fastrand::i32(-radius..=radius);
                 let y = i32::from(center.1) + fastrand::i32(-radius..=radius);
-                walkable(x, y).then_some((x as u16, y as u16))
+                let cell = (x as u16, y as u16);
+                (walkable(x, y) && usable(cell)).then_some(cell)
             })
-            .unwrap_or(center)
+            .or_else(|| usable(center).then_some(center))
     }
 
     fn build_cast(
@@ -718,6 +724,8 @@ impl MapInstanceService {
         let range = u16::try_from(metadata.range(entry.level as u8).unwrap_or(0).unsigned_abs())
             .unwrap_or(14)
             .max(mob.attack_range.max(1));
+        // The reach the cast is validated against, so a ground cell picked here is never out of it
+        let cast_range = actor_skill_range(actor, metadata, entry.level.min(u16::from(metadata.max_level)) as u8, true);
         let distance = |x: u16, y: u16| x.abs_diff(mob.x).max(y.abs_diff(mob.y));
         let current_target = mob
             .get_target_id()
@@ -754,7 +762,7 @@ impl MapInstanceService {
                     }
                     _ => ((mob.x, mob.y), 4),
                 };
-                (mob.id, Self::free_cell_around(state, center, radius))
+                (mob.id, Self::free_cell_around(state, (mob.x, mob.y), center, radius, cast_range)?)
             }
             _ => return None,
         };
@@ -847,5 +855,21 @@ mod tests {
         assert!(mob.status.speed() < original);
         mob.tick_statuses(3000);
         assert_eq!((mob.status.speed(), mob.base_status.speed()), (original, original));
+    }
+
+    #[test]
+    fn free_cells_are_ones_the_caster_can_see() {
+        let mut state = crate::tests::common::map_instance_helper::create_empty_map_instance_state();
+        let open = CellType::Walkable.as_flag() | CellType::Shootable.as_flag();
+        state.set_cells(vec![open; 100 * 100 + 1]);
+        // A wall along x = 51 hides everything east of it from a caster at x = 50
+        for y in 0..100 {
+            state.cells_mut()[y * 100 + 51] = 0;
+        }
+        for _ in 0..50 {
+            let (x, y) = MapInstanceService::free_cell_around(&state, (50, 50), (50, 50), 4, 2).unwrap();
+            assert!(x <= 50, "picked {x}, behind the wall");
+            assert!(x.abs_diff(50).max(y.abs_diff(50)) <= 2, "picked ({x}, {y}), out of the skill's range");
+        }
     }
 }
