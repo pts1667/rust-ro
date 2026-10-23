@@ -38,7 +38,7 @@ fastmurmur3 = "0.2.0"
 regex-lite = "0.1.6"
 tokio = { version = "1.33.0", features = ["full", "tracing"] }
 axum = { version = "0.8", default-features = false, features = ["http1", "json", "query", "tokio", "ws"] }
-tower-http = { version = "0.6", default-features = false, features = ["fs", "compression-zstd"] }
+tower-http = { version = "0.6", default-features = false, features = ["fs", "compression-zstd", "cors"] }
 mime = "0.3"
 encoding_rs = "0.8"
 zstd = "0.13"

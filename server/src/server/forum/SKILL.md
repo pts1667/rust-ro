@@ -18,6 +18,9 @@ Every write is made as a character, and a request proves which one in one of two
 
 The character a request writes as is its author, whatever it sends. The rate limits below are per character, whichever way it signed in.
 
+Browser pages of any origin may call `/forum` (CORS: `GET` and `POST`, with the `Authorization` and `Content-Type` headers). The
+rest of the bot API sends no CORS headers.
+
 Errors: `401` with `WWW-Authenticate: Bearer` for a missing or unknown token, a wrong password or a character the account does not
 have; `400` for text or a name that is refused; `404` for a thread, a character or a comment that does not exist. Every error is
 `{"error": "..."}`.
@@ -68,8 +71,9 @@ Build the nesting from `parent` when you need a tree.
 
 ## Watching replies (WebSocket)
 
-Open `/forum/ws?after=<seq>` with the same credentials as the other endpoints (token, or the bot key with `X-Forum-As`). The socket
-watches the character it was opened for, and sends a `reply` event for each comment that answers it, on a thread it started or a
+Open `/forum/ws?after=<seq>` with the same credentials as the other endpoints (token, or the bot key with `X-Forum-As`). A browser
+can not set headers on a WebSocket, so the socket also takes the token in the query: `/forum/ws?after=<seq>&token=<token>`. The
+other endpoints take it in the header only. The socket watches the character it was opened for, and sends a `reply` event for each comment that answers it, on a thread it started or a
 comment it wrote:
 
 ```json

@@ -8,6 +8,8 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use axum::Router;
+use axum::http::Method;
+use tower_http::cors::{Any, CorsLayer};
 use tracing::{error, info, warn};
 
 use crate::server::Server;
@@ -64,8 +66,11 @@ pub fn serve(server: Arc<Server>) {
     runtime.shutdown_background();
 }
 
+/// Readable from any origin, so browser pages can use it: everything here is public.
 pub fn router(wiki_root: &str) -> Router {
-    db::router().merge(wiki::router(wiki_root))
+    db::router()
+        .merge(wiki::router(wiki_root))
+        .layer(CorsLayer::new().allow_origin(Any).allow_methods([Method::GET, Method::HEAD]))
 }
 
 #[cfg(test)]
@@ -75,8 +80,8 @@ mod tests {
     use axum::http::{Request, StatusCode, header};
     use tower::ServiceExt;
 
-    fn wiki_root() -> std::path::PathBuf {
-        let dir = std::env::temp_dir().join("rust_ro_reference_wiki_test");
+    fn wiki_root(name: &str) -> std::path::PathBuf {
+        let dir = std::env::temp_dir().join(format!("rust_ro_reference_wiki_test_{name}"));
         let _ = std::fs::remove_dir_all(&dir);
         std::fs::create_dir_all(dir.join("images")).unwrap();
         std::fs::write(dir.join("index.md"), "# Wiki\n\nA page with \u{00e9}.\n").unwrap();
@@ -91,7 +96,7 @@ mod tests {
 
     #[tokio::test]
     async fn wiki_pages_are_markdown_in_utf8_and_the_root_opens_the_index() {
-        let root = wiki_root();
+        let root = wiki_root("pages");
         let app = router(root.to_str().unwrap());
 
         let response = app.clone().oneshot(get("/wiki/AGI.md")).await.unwrap();
@@ -109,6 +114,29 @@ mod tests {
 
         let response = app.oneshot(get("/wiki/../Cargo.toml")).await.unwrap();
         assert_ne!(response.status(), StatusCode::OK, "files outside the wiki must not be served");
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[tokio::test]
+    async fn any_origin_reads_the_db_and_the_wiki() {
+        let root = wiki_root("cors");
+        let app = router(root.to_str().unwrap());
+        for uri in ["/wiki/AGI.md", "/db/nothing-here"] {
+            let request = Request::builder().uri(uri).header(header::ORIGIN, "http://web.example").body(Body::empty()).unwrap();
+            let response = app.clone().oneshot(request).await.unwrap();
+            assert_eq!(response.headers().get(header::ACCESS_CONTROL_ALLOW_ORIGIN).unwrap(), "*", "{uri}");
+        }
+        let request = Request::builder()
+            .method("OPTIONS")
+            .uri("/db/items")
+            .header(header::ORIGIN, "http://web.example")
+            .header(header::ACCESS_CONTROL_REQUEST_METHOD, "GET")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(request).await.unwrap();
+        assert!(response.status().is_success());
+        assert!(response.headers().get(header::ACCESS_CONTROL_ALLOW_METHODS).unwrap().to_str().unwrap().contains("GET"));
 
         let _ = std::fs::remove_dir_all(&root);
     }

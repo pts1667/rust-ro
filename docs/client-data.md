@@ -70,9 +70,22 @@ the endpoint sends. A client re-fetches every path whose local file is missing o
   when the request accepts it; without `Accept-Encoding: zstd` they return 404, while the files
   stored as-is (audio, images) are served to every client.
 - `GET /data/manifest.json` returns the setup manifest.
+- `GET /data/<name>.zst` returns the stored compressed bytes as they are, with no `Content-Encoding`
+  whatever the request accepts; a client that decodes zstd itself (the web client: Safari never
+  advertises zstd) asks for these names.
 - `GET /data/check` returns the per-file checksum list (`application/x-ndjson`, zstd-encoded when the
   request accepts it). It answers 404 when the tree was built before the list existed: run the setup
-  again.
+  again. When enabled plugins or music copied after the setup add files, the list is rebuilt at boot,
+  and `check.jsonl` and `check.jsonl.zst` are that list too, never the setup's alone.
+- Caching: `/data/<path>?v=<md5 from /data/check>` answers with `Cache-Control: public,
+  max-age=31536000, immutable`; the query does not change the file served. Everything else under
+  `/data` (the check list whatever its query, files without `v`, errors) answers `no-cache`.
+- Browser pages of any origin may read `/data` (CORS: `GET` and `HEAD`, `Content-Length` and
+  `Content-Encoding` exposed).
+
+With `web_root` set, the endpoint also serves that directory at `/` (`index.html` for a directory,
+`.wasm` as `application/wasm`), so a built web client is same-origin with `/data`. Its files get no
+`Cache-Control` from the server.
 
 Configuration in `config.json` (defaults shown, also in `config.template.json`):
 
@@ -81,7 +94,8 @@ Configuration in `config.json` (defaults shown, also in `config.template.json`):
   "enabled": true,
   "host": "127.0.0.1",
   "port": 6903,
-  "root": "config/client-data"
+  "root": "config/client-data",
+  "web_root": ""
 }
 ```
 

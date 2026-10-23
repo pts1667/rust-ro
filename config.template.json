@@ -326,7 +326,8 @@
     "enabled": true,
     "host": "127.0.0.1",
     "port": 6903,
-    "root": "config/client-data"
+    "root": "config/client-data",
+    "web_root": ""
   },
   "reference": {
     "enabled": true,

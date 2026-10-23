@@ -3,7 +3,7 @@
 A read-only HTTP server on its own port (default `127.0.0.1:6904`, the `reference` block of `config.json`) that publishes what the
 server knows about the game as JSON (`/db`) and the iRO Wiki Classic copy as markdown (`/wiki`). It needs no key and no character,
 and it never touches the game state: everything comes from the configuration and script catalogs loaded at boot, so it can run
-while the game runs. Code: `server/src/server/reference`.
+while the game runs. Browser pages of any origin may read it (CORS, `GET` and `HEAD`). Code: `server/src/server/reference`.
 
 ```json
 "reference": { "enabled": true, "host": "127.0.0.1", "port": 6904, "wiki_root": "wiki" }

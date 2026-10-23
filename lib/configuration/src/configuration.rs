@@ -101,6 +101,8 @@ pub struct ClientDataConfig {
     pub port: u16,
     /// Directory the `client-data-setup` tool writes; every file in it is served at `/data/<relative path>`.
     pub root: String,
+    /// Directory served at `/` on the same port, so a built web client is same-origin with `/data`; empty serves nothing.
+    pub web_root: String,
 }
 
 impl Default for ClientDataConfig {
@@ -110,6 +112,7 @@ impl Default for ClientDataConfig {
             host: "127.0.0.1".into(),
             port: 6903,
             root: "config/client-data".into(),
+            web_root: String::new(),
         }
     }
 }

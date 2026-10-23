@@ -13,6 +13,9 @@
 //! is `plugin-catalog.json`, listed and cached the same way (`plugin_ui::catalog`).
 //!
 //! Music copied into `bgm/` after the setup ran is listed too: clients only fetch what `/data/check` names.
+//!
+//! Browsers read the data from other origins (CORS for any origin, the data is public), and a web client asks for
+//! `/data/<path>?v=<md5>`, which is cached for good. `client_data.web_root` serves a built web client at `/`.
 
 use std::collections::{HashMap, HashSet};
 use std::path::{Path, PathBuf};
@@ -20,6 +23,13 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use axum::Router;
+use axum::body::Bytes;
+use axum::extract::Request;
+use axum::http::{HeaderValue, Method, Uri, header};
+use axum::middleware::{self, Next};
+use axum::response::Response;
+use axum::routing::MethodRouter;
+use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::{ServeDir, ServeFile};
 use tracing::{error, info, warn};
 
@@ -27,6 +37,10 @@ use crate::server::Server;
 
 /// Written by the setup tool next to `manifest.json`, one JSON object per file.
 const CHECK_FILE: &str = "check.jsonl";
+/// The check list under every name it is served at: it changes with the files, so it is never cached without asking.
+const CHECK_PATHS: [&str; 3] = ["/data/check", "/data/check.jsonl", "/data/check.jsonl.zst"];
+const VERSIONED: &str = "public, max-age=31536000, immutable";
+const REVALIDATED: &str = "no-cache";
 const BGM_FOLDER: &str = "bgm";
 
 /// How often the loop checks whether the game server stopped.
@@ -72,7 +86,14 @@ pub fn serve(server: Arc<Server>) {
         let assets: Vec<(String, PathBuf)> =
             server.plugins().iter().map(|plugin| (plugin.name().to_string(), plugin.folder.join("ui"))).filter(|(_, folder)| folder.is_dir()).collect();
         let catalog = server.plugins().published_catalog().map(|catalog| serde_json::to_vec(catalog).expect("the plugin catalog is JSON"));
-        let app = router(&config.root, &assets, catalog);
+        if !config.web_root.is_empty() {
+            if Path::new(&config.web_root).is_dir() {
+                info!("The web client is served on http://{}:{}/ from {}", config.host, config.port, config.web_root);
+            } else {
+                warn!("The web client is not served, {} is not a directory", config.web_root);
+            }
+        }
+        let app = router(&config.root, &assets, catalog, &config.web_root);
         let stopped = {
             let server = server.clone();
             async move {
@@ -102,8 +123,11 @@ pub fn serve(server: Arc<Server>) {
 /// `plugins` are the `ui/` folders of the enabled plugins by plugin name, served under `/data/plugin/<name>/`, and
 /// `catalog` the plugin catalog's JSON, served as `/data/plugin-catalog.json`. With any, or with `bgm/` files the setup's
 /// list lacks or lists with another size, `/data/check` is built once here: the setup's list with the music on disk,
-/// followed by the plugin files.
-pub fn router(root: &str, plugins: &[(String, PathBuf)], catalog: Option<Vec<u8>>) -> Router {
+/// followed by the plugin files. It is also served as `check.jsonl` and `check.jsonl.zst`, so those never name the setup's
+/// list alone.
+///
+/// `web_root`, when not empty, is served at `/` (`index.html` for directories).
+pub fn router(root: &str, plugins: &[(String, PathBuf)], catalog: Option<Vec<u8>>, web_root: &str) -> Router {
     let mut router = Router::new();
     let bgm = bgm_files(Path::new(root));
     let setup = setup_list(Path::new(root), !plugins.is_empty() || !bgm.is_empty() || catalog.is_some());
@@ -118,33 +142,57 @@ pub fn router(root: &str, plugins: &[(String, PathBuf)], catalog: Option<Vec<u8>
     } else {
         if let Some(catalog) = catalog {
             setup.extend_from_slice(&check_entry(plugin_ui::catalog::CATALOG_PATH, &catalog));
-            let catalog = Arc::new(catalog);
-            router = router.route(
-                &format!("/data/{}", plugin_ui::catalog::CATALOG_PATH),
-                axum::routing::get(move || {
-                    let catalog = catalog.clone();
-                    async move { ([(axum::http::header::CONTENT_TYPE, "application/json")], catalog.as_ref().clone()) }
-                }),
-            );
+            router = router.route(&format!("/data/{}", plugin_ui::catalog::CATALOG_PATH), bytes_route("application/json", catalog.into()));
         }
-        let list = Arc::new(check_list(setup, plugins));
-        router = router.route(
-            "/data/check",
-            axum::routing::get(move || {
-                let list = list.clone();
-                async move { ([(axum::http::header::CONTENT_TYPE, "application/x-ndjson")], list.as_ref().clone()) }
-            }),
-        );
+        let list = Bytes::from(check_list(setup, plugins));
+        let compressed = zstd::bulk::compress(&list, 3).expect("zstd compresses a buffer");
+        router = router
+            .route("/data/check", bytes_route("application/x-ndjson", list.clone()))
+            .route("/data/check.jsonl", bytes_route("application/x-ndjson", list))
+            .route("/data/check.jsonl.zst", bytes_route("application/zstd", compressed.into()));
         for (name, folder) in plugins {
             router = router.nest_service(&format!("/data/plugin/{name}"), ServeDir::new(folder).append_index_html_on_directories(false));
         }
     }
-    router.nest_service(
+    router = router.nest_service(
         "/data",
         ServeDir::new(root)
             .append_index_html_on_directories(false)
             .precompressed_zstd(),
+    );
+    if !web_root.is_empty() {
+        router = router.fallback_service(ServeDir::new(web_root));
+    }
+    router.layer(middleware::from_fn(cache_control)).layer(
+        CorsLayer::new()
+            .allow_origin(Any)
+            .allow_methods([Method::GET, Method::HEAD])
+            .expose_headers([header::CONTENT_LENGTH, header::CONTENT_ENCODING]),
     )
+}
+
+fn bytes_route(content_type: &'static str, bytes: Bytes) -> MethodRouter {
+    axum::routing::get(move || {
+        let bytes = bytes.clone();
+        async move { ([(header::CONTENT_TYPE, content_type)], bytes) }
+    })
+}
+
+/// A file asked for with its md5 as `v` never changes under that URL; the rest of `/data` is revalidated.
+async fn cache_control(request: Request, next: Next) -> Response {
+    let path = request.uri().path();
+    if path != "/data" && !path.starts_with("/data/") {
+        return next.run(request).await;
+    }
+    let versioned = !CHECK_PATHS.contains(&path) && has_version(request.uri());
+    let mut response = next.run(request).await;
+    let policy = if versioned && response.status().is_success() { VERSIONED } else { REVALIDATED };
+    response.headers_mut().insert(header::CACHE_CONTROL, HeaderValue::from_static(policy));
+    response
+}
+
+fn has_version(uri: &Uri) -> bool {
+    uri.query().is_some_and(|query| query.split('&').any(|pair| pair.strip_prefix("v=").is_some_and(|md5| !md5.is_empty())))
 }
 
 /// The setup's check list, decompressed when it was only stored as `.zst`, rebuilt from `manifest.json` when an older setup
@@ -285,7 +333,7 @@ fn collect_files(base: &Path, folder: &Path, files: &mut Vec<(String, PathBuf)>)
 mod tests {
     use super::*;
     use axum::body::{Body, to_bytes};
-    use axum::http::{Request, StatusCode};
+    use axum::http::{Method, Request, StatusCode};
     use tower::ServiceExt;
 
     fn test_root(name: &str) -> std::path::PathBuf {
@@ -304,7 +352,7 @@ mod tests {
     #[tokio::test]
     async fn serves_files_under_data_and_refuses_escapes() {
         let root = test_root("files");
-        let app = router(root.to_str().unwrap(), &[], None);
+        let app = router(root.to_str().unwrap(), &[], None, "");
 
         let response = app.clone().oneshot(get("/data/sprite/poring.spr")).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
@@ -323,7 +371,7 @@ mod tests {
     #[tokio::test]
     async fn serves_check_list_as_jsonl_and_prefers_its_zstd_sibling() {
         let root = test_root("check");
-        let app = router(root.to_str().unwrap(), &[], None);
+        let app = router(root.to_str().unwrap(), &[], None, "");
 
         let response = app.clone().oneshot(get("/data/check")).await.unwrap();
         assert_eq!(response.status(), StatusCode::NOT_FOUND, "no check list written yet");
@@ -363,7 +411,7 @@ mod tests {
         // `only-zstd.spr` has no identity file.
         let compressed = zstd::bulk::compress(b"SPR", 3).unwrap();
         std::fs::write(root.join("sprite/only-zstd.spr.zst"), &compressed).unwrap();
-        let app = router(root.to_str().unwrap(), &[], None);
+        let app = router(root.to_str().unwrap(), &[], None, "");
 
         let request = Request::builder()
             .uri("/data/sprite/only-zstd.spr")
@@ -409,7 +457,7 @@ mod tests {
         std::fs::create_dir_all(folder.join("frames")).unwrap();
         std::fs::write(folder.join("coin.png"), b"PNG").unwrap();
         std::fs::write(folder.join("frames/a.png"), b"A").unwrap();
-        let app = router(root.to_str().unwrap(), &[("ui_shop".into(), folder)], None);
+        let app = router(root.to_str().unwrap(), &[("ui_shop".into(), folder)], None, "");
 
         let response = app.clone().oneshot(get("/data/check")).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
@@ -441,7 +489,7 @@ mod tests {
         std::fs::create_dir_all(&folder).unwrap();
         std::fs::write(folder.join("ticket.png"), b"PNG").unwrap();
         let catalog = b"{\"items\":[],\"skills\":[],\"jobs\":[]}".to_vec();
-        let app = router(root.to_str().unwrap(), &[("lucky".into(), folder)], Some(catalog.clone()));
+        let app = router(root.to_str().unwrap(), &[("lucky".into(), folder)], Some(catalog.clone()), "");
 
         let response = app.clone().oneshot(get("/data/check")).await.unwrap();
         let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
@@ -475,7 +523,7 @@ mod tests {
             "{\"path\":\"bgm/149.mp3\",\"size\":3,\"md5\":\"kept\"}",
         );
         std::fs::write(root.join(CHECK_FILE), setup).unwrap();
-        let app = router(root.to_str().unwrap(), &[], None);
+        let app = router(root.to_str().unwrap(), &[], None, "");
 
         let response = app.clone().oneshot(get("/data/check")).await.unwrap();
         assert_eq!(response.status(), StatusCode::OK);
@@ -494,10 +542,141 @@ mod tests {
 
         std::fs::remove_file(root.join("bgm/03.mp3")).unwrap();
         std::fs::write(root.join("bgm/08.mp3"), b"MP3").unwrap();
-        let app = router(root.to_str().unwrap(), &[], None);
+        let app = router(root.to_str().unwrap(), &[], None, "");
         let response = app.oneshot(get("/data/check")).await.unwrap();
         let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
         assert_eq!(&body[..], setup.as_bytes(), "a list that names the music on disk is served as the setup wrote it");
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    fn header<'a>(response: &'a axum::response::Response, name: &str) -> Option<&'a str> {
+        response.headers().get(name).map(|value| value.to_str().unwrap())
+    }
+
+    #[tokio::test]
+    async fn any_origin_reads_the_data_and_a_preflight_allows_get() {
+        let root = test_root("cors");
+        let app = router(root.to_str().unwrap(), &[], None, "");
+
+        let request = Request::builder().uri("/data/sprite/poring.spr").header("origin", "http://web.example").body(Body::empty()).unwrap();
+        let response = app.clone().oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(header(&response, "access-control-allow-origin"), Some("*"));
+        let exposed = header(&response, "access-control-expose-headers").unwrap().to_ascii_lowercase();
+        assert!(exposed.contains("content-length") && exposed.contains("content-encoding"), "{exposed}");
+
+        let request = Request::builder()
+            .method(Method::OPTIONS)
+            .uri("/data/sprite/poring.spr")
+            .header("origin", "http://web.example")
+            .header("access-control-request-method", "GET")
+            .body(Body::empty())
+            .unwrap();
+        let response = app.oneshot(request).await.unwrap();
+        assert!(response.status().is_success());
+        assert_eq!(header(&response, "access-control-allow-origin"), Some("*"));
+        assert!(header(&response, "access-control-allow-methods").unwrap().contains("GET"));
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[tokio::test]
+    async fn a_versioned_file_is_cached_for_good_and_the_rest_is_revalidated() {
+        let root = test_root("cache");
+        std::fs::write(root.join(CHECK_FILE), b"{\"path\":\"sprite/poring.spr\",\"size\":3,\"md5\":\"abc\"}\n").unwrap();
+        let app = router(root.to_str().unwrap(), &[], None, "");
+
+        let response = app.clone().oneshot(get("/data/sprite/poring.spr?v=abc")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(header(&response, "cache-control"), Some(VERSIONED));
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        assert_eq!(&body[..], b"SPR", "the query does not change the file served");
+
+        for uri in ["/data/sprite/poring.spr", "/data/sprite/poring.spr?v=", "/data/check", "/data/check?v=abc", "/data/missing.spr?v=abc"] {
+            let response = app.clone().oneshot(get(uri)).await.unwrap();
+            assert_eq!(header(&response, "cache-control"), Some(REVALIDATED), "{uri}");
+        }
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[tokio::test]
+    async fn a_zst_asked_for_by_name_is_sent_compressed_without_content_encoding() {
+        let root = test_root("explicit_zst");
+        let jsonl = b"{\"path\":\"sprite/poring.spr\",\"size\":3,\"md5\":\"abc\"}\n";
+        std::fs::write(root.join(CHECK_FILE), jsonl).unwrap();
+        let compressed_list = zstd::bulk::compress(jsonl, 3).unwrap();
+        std::fs::write(root.join(format!("{CHECK_FILE}.zst")), &compressed_list).unwrap();
+        let compressed = zstd::bulk::compress(b"SPR", 3).unwrap();
+        std::fs::write(root.join("sprite/only-zstd.spr.zst"), &compressed).unwrap();
+        let app = router(root.to_str().unwrap(), &[], None, "");
+
+        for (uri, expected) in [("/data/sprite/only-zstd.spr.zst", &compressed), ("/data/check.jsonl.zst", &compressed_list)] {
+            for accept in ["zstd", "gzip, deflate, br, zstd", "identity"] {
+                let request = Request::builder().uri(uri).header("accept-encoding", accept).body(Body::empty()).unwrap();
+                let response = app.clone().oneshot(request).await.unwrap();
+                assert_eq!(response.status(), StatusCode::OK, "{uri} {accept}");
+                assert!(response.headers().get("content-encoding").is_none(), "{uri} {accept}");
+                let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+                assert_eq!(&body[..], &expected[..], "{uri} {accept}");
+            }
+        }
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[tokio::test]
+    async fn a_rebuilt_check_list_is_served_under_every_name_of_the_list() {
+        let root = test_root("check_names");
+        let setup = b"{\"path\":\"sprite/poring.spr\",\"size\":3,\"md5\":\"abc\"}\n";
+        std::fs::write(root.join(CHECK_FILE), setup).unwrap();
+        std::fs::write(root.join(format!("{CHECK_FILE}.zst")), zstd::bulk::compress(setup, 3).unwrap()).unwrap();
+        let folder = root.join("lucky_ui");
+        std::fs::create_dir_all(&folder).unwrap();
+        std::fs::write(folder.join("ticket.png"), b"PNG").unwrap();
+        let app = router(root.to_str().unwrap(), &[("lucky".into(), folder)], None, "");
+
+        let response = app.clone().oneshot(get("/data/check")).await.unwrap();
+        let list = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        assert!(list.len() > setup.len(), "the plugin file is listed");
+
+        let response = app.clone().oneshot(get("/data/check.jsonl")).await.unwrap();
+        assert_eq!(header(&response, "cache-control"), Some(REVALIDATED));
+        assert_eq!(to_bytes(response.into_body(), usize::MAX).await.unwrap(), list);
+
+        let request = Request::builder().uri("/data/check.jsonl.zst?v=x").header("accept-encoding", "zstd").body(Body::empty()).unwrap();
+        let response = app.oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert!(response.headers().get("content-encoding").is_none());
+        assert_eq!(header(&response, "cache-control"), Some(REVALIDATED));
+        let body = to_bytes(response.into_body(), usize::MAX).await.unwrap();
+        assert_eq!(zstd::bulk::decompress(&body, 1024).unwrap(), list.to_vec());
+
+        let _ = std::fs::remove_dir_all(&root);
+    }
+
+    #[tokio::test]
+    async fn the_web_root_is_served_at_the_root_next_to_the_data() {
+        let root = test_root("web_root");
+        let web = root.join("web");
+        std::fs::create_dir_all(&web).unwrap();
+        std::fs::write(web.join("index.html"), b"<!doctype html>").unwrap();
+        std::fs::write(web.join("client_bg.wasm"), b"\0asm").unwrap();
+
+        let app = router(root.to_str().unwrap(), &[], None, "");
+        assert_eq!(app.oneshot(get("/")).await.unwrap().status(), StatusCode::NOT_FOUND, "no web root, nothing at /");
+
+        let app = router(root.to_str().unwrap(), &[], None, web.to_str().unwrap());
+        let response = app.clone().oneshot(get("/")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(&to_bytes(response.into_body(), usize::MAX).await.unwrap()[..], b"<!doctype html>");
+        let response = app.clone().oneshot(get("/client_bg.wasm")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(header(&response, "content-type"), Some("application/wasm"));
+        assert!(response.headers().get("cache-control").is_none(), "the data's cache policy is not the web client's");
+        let response = app.oneshot(get("/data/sprite/poring.spr")).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
 
         let _ = std::fs::remove_dir_all(&root);
     }

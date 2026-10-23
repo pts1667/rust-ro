@@ -3,13 +3,14 @@ use std::sync::Arc;
 
 use axum::extract::ws::WebSocketUpgrade;
 use axum::extract::{ConnectInfo, Extension, Path, Query, Request, State};
-use axum::http::{HeaderMap, StatusCode, header};
+use axum::http::{HeaderMap, Method, StatusCode, Uri, header};
 use axum::middleware::{self, Next};
 use axum::response::{IntoResponse, Response};
 use axum::routing::{get, post};
 use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
+use tower_http::cors::{Any, CorsLayer};
 
 use super::websocket;
 use super::{Author, ErrorKind, Forum, ForumError, now};
@@ -18,6 +19,7 @@ use crate::server::bots::ApiKey;
 const SKILL: &str = include_str!("SKILL.md");
 /// The character a request carrying the bot API key writes as.
 const ACTING_AS: &str = "x-forum-as";
+const SOCKET: &str = "/forum/ws";
 
 impl IntoResponse for ForumError {
     fn into_response(self) -> Response {
@@ -54,6 +56,11 @@ struct AfterQuery {
 }
 
 #[derive(Deserialize)]
+struct TokenQuery {
+    token: Option<String>,
+}
+
+#[derive(Deserialize)]
 struct SignIn {
     account: String,
     password: String,
@@ -85,6 +92,14 @@ fn bearer(headers: &HeaderMap) -> Option<&str> {
     headers.get(header::AUTHORIZATION)?.to_str().ok()?.strip_prefix("Bearer ").map(str::trim)
 }
 
+/// Browsers can not set headers on a WebSocket, so the socket alone also takes the token as `?token=`.
+fn socket_token(uri: &Uri) -> Option<String> {
+    if uri.path() != SOCKET {
+        return None;
+    }
+    Query::<TokenQuery>::try_from_uri(uri).ok()?.0.token
+}
+
 fn client_ipv4(address: IpAddr) -> Ipv4Addr {
     match address {
         IpAddr::V4(address) => address,
@@ -103,7 +118,9 @@ async fn require_member(State((forum, key)): State<Guard>, mut request: Request,
         }
     } else {
         bearer(&headers)
-            .and_then(|token| forum.session(token, now()))
+            .map(str::to_string)
+            .or_else(|| socket_token(request.uri()))
+            .and_then(|token| forum.session(&token, now()))
             .ok_or_else(|| ForumError::unauthorized("Sign in at /forum/auth and send the token as `Authorization: Bearer <token>`"))
     };
     match author {
@@ -144,20 +161,27 @@ async fn socket(State(forum): ForumState, Extension(author): Extension<Author>, 
     upgrade.on_upgrade(move |socket| websocket::serve(socket, forum, author, query.after))
 }
 
-/// `/forum/SKILL.md` and `/forum/auth` are open. Everything else takes a token, or the bot key and a name.
+/// `/forum/SKILL.md` and `/forum/auth` are open. Everything else takes a token, or the bot key and a name. Browser pages of
+/// any origin may call it with a token; the CORS layer covers these routes only, not the rest of the bot API.
 pub fn router(forum: Arc<Forum>, key: Arc<ApiKey>) -> Router {
     let guard: Guard = (forum.clone(), key);
     let members = Router::new()
         .route("/forum/threads", get(threads).post(create_thread))
         .route("/forum/threads/{id}", get(thread))
         .route("/forum/threads/{id}/comments", post(comment))
-        .route("/forum/ws", get(socket))
+        .route(SOCKET, get(socket))
         .layer(middleware::from_fn_with_state(guard, require_member));
     Router::new()
         .route("/forum/SKILL.md", get(skill))
         .route("/forum/auth", post(sign_in))
         .merge(members)
         .with_state(forum)
+        .layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods([Method::GET, Method::POST])
+                .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE]),
+        )
 }
 
 #[cfg(test)]
@@ -276,6 +300,56 @@ mod tests {
         let (status, _) = send(&app, Method::POST, "/forum/auth", &[], Some(r#"{"account":"alice","password":"secret","character":"Nobody"}"#)).await;
         assert_eq!(status, StatusCode::UNAUTHORIZED);
         assert_eq!(send(&app, Method::GET, "/forum/SKILL.md", &[], None).await.0, StatusCode::OK);
+    }
+
+    #[tokio::test]
+    async fn browser_pages_preflight_the_forum_but_not_the_rest_of_the_bot_api() {
+        let forum = forum();
+        let app = Router::new().route("/bots/ping", get(|| async { "pong" })).merge(app(&forum));
+        let preflight = |uri: &str| {
+            let mut request = Request::builder()
+                .method(Method::OPTIONS)
+                .uri(uri)
+                .header("origin", "http://web.example")
+                .header("access-control-request-method", "POST")
+                .header("access-control-request-headers", "authorization,content-type")
+                .body(Body::empty())
+                .unwrap();
+            request.extensions_mut().insert(ConnectInfo(SocketAddr::from(([10, 0, 0, 7], 5000))));
+            request
+        };
+        let response = app.clone().oneshot(preflight("/forum/threads")).await.unwrap();
+        assert!(response.status().is_success());
+        assert_eq!(response.headers().get("access-control-allow-origin").unwrap(), "*");
+        let allowed = response.headers().get("access-control-allow-headers").unwrap().to_str().unwrap().to_ascii_lowercase();
+        assert!(allowed.contains("authorization") && allowed.contains("content-type"), "{allowed}");
+        assert!(response.headers().get("access-control-allow-methods").unwrap().to_str().unwrap().contains("POST"));
+
+        let response = app.clone().oneshot(preflight("/bots/ping")).await.unwrap();
+        assert!(response.headers().get("access-control-allow-origin").is_none());
+
+        let token = sign_in_as_hero(&app).await;
+        let bearer = format!("Bearer {token}");
+        let mut request =
+            Request::builder().uri("/forum/threads").header("origin", "http://web.example").header("authorization", &bearer).body(Body::empty()).unwrap();
+        request.extensions_mut().insert(ConnectInfo(SocketAddr::from(([10, 0, 0, 7], 5000))));
+        let response = app.oneshot(request).await.unwrap();
+        assert_eq!(response.status(), StatusCode::OK);
+        assert_eq!(response.headers().get("access-control-allow-origin").unwrap(), "*");
+    }
+
+    #[tokio::test]
+    async fn the_socket_takes_the_token_from_the_query_and_the_other_endpoints_do_not() {
+        let forum = forum();
+        let app = app(&forum);
+        let token = sign_in_as_hero(&app).await;
+        // Past the guard, the upgrade itself is refused: a test request is no WebSocket handshake.
+        let (status, _) = send(&app, Method::GET, &format!("/forum/ws?after=0&token={token}"), &[], None).await;
+        assert_ne!(status, StatusCode::UNAUTHORIZED);
+        assert_eq!(send(&app, Method::GET, "/forum/ws?token=not-a-token", &[], None).await.0, StatusCode::UNAUTHORIZED);
+        assert_eq!(send(&app, Method::GET, "/forum/ws", &[], None).await.0, StatusCode::UNAUTHORIZED);
+        assert_ne!(send(&app, Method::GET, "/forum/ws", &[("authorization", &format!("Bearer {token}"))], None).await.0, StatusCode::UNAUTHORIZED);
+        assert_eq!(send(&app, Method::GET, &format!("/forum/threads?token={token}"), &[], None).await.0, StatusCode::UNAUTHORIZED);
     }
 
     #[tokio::test]
